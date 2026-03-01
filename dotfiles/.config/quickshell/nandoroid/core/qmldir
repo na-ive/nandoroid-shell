@@ -1,0 +1,5 @@
+singleton Appearance Appearance.qml
+singleton Config Config.qml
+singleton GlobalStates GlobalStates.qml
+singleton Directories Directories.qml
+singleton Images Images.qml

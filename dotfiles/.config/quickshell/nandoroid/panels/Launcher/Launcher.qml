@@ -1,0 +1,113 @@
+import QtQuick
+import Quickshell
+import Quickshell.Wayland
+import Quickshell.Hyprland
+import "../../core"
+import "../../services"
+
+PanelWindow {
+    id: root
+    
+    visible: GlobalStates.launcherOpen || (content && content.opacity > 0)
+    
+    // Fill the screen with a transparent window to handle clicks outside
+    anchors {
+        left: true
+        right: true
+        top: true
+        bottom: true
+    }
+
+    WlrLayershell.namespace: "quickshell:launcher"
+    WlrLayershell.layer: WlrLayer.Overlay
+    WlrLayershell.keyboardFocus: GlobalStates.launcherOpen ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
+
+    HyprlandFocusGrab {
+        id: grab
+        windows: [root]
+        active: GlobalStates.launcherOpen
+    }
+
+    color: "transparent"
+    
+    onVisibleChanged: {
+        if (visible) {
+            LauncherSearch.query = "";
+        }
+    }
+    
+    // Close on click outside (on the window background)
+    MouseArea {
+        anchors.fill: parent
+        onClicked: GlobalStates.launcherOpen = false
+    }
+    
+    readonly property var screen: Quickshell.screens[0]
+
+    LauncherContent {
+        id: content
+        
+        width: screen.width * 0.5
+        height: screen.height * 0.7
+        x: (screen.width - width) / 2
+        
+        // Default state: below screen
+        y: screen.height
+        opacity: 0
+        focus: true
+
+        states: [
+            State {
+                name: "active"
+                when: GlobalStates.launcherOpen
+                PropertyChanges {
+                    target: content
+                    y: screen.height - height - 36
+                    opacity: 1
+                }
+            }
+        ]
+
+        transitions: [
+            Transition {
+                from: ""
+                to: "active"
+                ParallelAnimation {
+                    NumberAnimation {
+                        target: content
+                        property: "y"
+                        duration: 300
+                        easing.type: Easing.OutCubic
+                    }
+                    NumberAnimation {
+                        target: content
+                        property: "opacity"
+                        duration: 200
+                    }
+                }
+            },
+            Transition {
+                from: "active"
+                to: ""
+                ParallelAnimation {
+                    NumberAnimation {
+                        target: content
+                        property: "y"
+                        to: screen.height
+                        duration: 300
+                        easing.type: Easing.InCubic // Smooth slide out
+                    }
+                    NumberAnimation {
+                        target: content
+                        property: "opacity"
+                        to: 0
+                        duration: 250
+                    }
+                }
+            }
+        ]
+        
+        // Capture Escape key to close
+        Keys.onEscapePressed: GlobalStates.launcherOpen = false
+    }
+}

@@ -1,0 +1,4 @@
+module panels.OSD
+OsdValueIndicator 1.0 OsdValueIndicator.qml
+OsdToggleIndicator 1.0 OsdToggleIndicator.qml
+OSD 1.0 OSD.qml

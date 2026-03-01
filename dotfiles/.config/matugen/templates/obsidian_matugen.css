@@ -1,0 +1,141 @@
+/* Obsidian Matugen Theme - Optimized for Readability */
+
+.theme-light {
+    --interactive-accent: {{ colors.primary.light.hex }};
+    --interactive-accent-hover: {{ colors.primary_container.light.hex }};
+    --text-accent: {{ colors.primary.light.hex }};
+    --text-accent-hover: {{ colors.primary_container.light.hex }};
+
+    /* Grayscale - optimized for high contrast readability */
+    --800: {{ colors.on_surface.light.hex }};
+    --800-RGB: {{ colors.on_surface.light.red }}, {{ colors.on_surface.light.green }}, {{ colors.on_surface.light.blue }};
+    --700: {{ colors.on_surface.light.hex }};
+    --700-RGB: {{ colors.on_surface.light.red }}, {{ colors.on_surface.light.green }}, {{ colors.on_surface.light.blue }};
+    --600: {{ colors.on_surface_variant.light.hex }};
+    --600-RGB: {{ colors.on_surface_variant.light.red }}, {{ colors.on_surface_variant.light.green }}, {{ colors.on_surface_variant.light.blue }};
+    --500: {{ colors.outline.light.hex }};
+    --500-RGB: {{ colors.outline.light.red }}, {{ colors.outline.light.green }}, {{ colors.outline.light.blue }};
+    --400: {{ colors.outline_variant.light.hex }};
+    --400-RGB: {{ colors.outline_variant.light.red }}, {{ colors.outline_variant.light.green }}, {{ colors.outline_variant.light.blue }};
+    --300: {{ colors.surface_container_highest.light.hex }};
+    --300-RGB: {{ colors.surface_container_highest.light.red }}, {{ colors.surface_container_highest.light.green }}, {{ colors.surface_container_highest.light.blue }};
+    --200: {{ colors.surface_container_high.light.hex }};
+    --200-RGB: {{ colors.surface_container_high.light.red }}, {{ colors.surface_container_high.light.green }}, {{ colors.surface_container_high.light.blue }};
+    --100: {{ colors.surface_container.light.hex }};
+    --100-RGB: {{ colors.surface_container.light.red }}, {{ colors.surface_container.light.green }}, {{ colors.surface_container.light.blue }};
+    --000: {{ colors.surface.light.hex }};
+    --000-RGB: {{ colors.surface.light.red }}, {{ colors.surface.light.green }}, {{ colors.surface.light.blue }};
+
+    /* Color palette */
+    --C001: {{ colors.primary.light.hex }};
+    --C001-RGB: {{ colors.primary.light.red }}, {{ colors.primary.light.green }}, {{ colors.primary.light.blue }};
+    --C002: {{ colors.primary_container.light.hex }};
+    --C002-RGB: {{ colors.primary_container.light.red }}, {{ colors.primary_container.light.green }}, {{ colors.primary_container.light.blue }};
+    --C003: {{ colors.secondary.light.hex }};
+    --C003-RGB: {{ colors.secondary.light.red }}, {{ colors.secondary.light.green }}, {{ colors.secondary.light.blue }};
+    --C004: {{ colors.secondary_container.light.hex }};
+    --C004-RGB: {{ colors.secondary_container.light.red }}, {{ colors.secondary_container.light.green }}, {{ colors.secondary_container.light.blue }};
+    --C005: {{ colors.tertiary.light.hex }};
+    --C005-RGB: {{ colors.tertiary.light.red }}, {{ colors.tertiary.light.green }}, {{ colors.tertiary.light.blue }};
+    --C006: {{ colors.tertiary_container.light.hex }};
+    --C006-RGB: {{ colors.tertiary_container.light.red }}, {{ colors.tertiary_container.light.green }}, {{ colors.tertiary_container.light.blue }};
+    --C007: {{ colors.error.light.hex }};
+    --C007-RGB: {{ colors.error.light.red }}, {{ colors.error.light.green }}, {{ colors.error.light.blue }};
+    --C008: {{ colors.error_container.light.hex }};
+    --C008-RGB: {{ colors.error_container.light.red }}, {{ colors.error_container.light.green }}, {{ colors.error_container.light.blue }};
+    --C009: {{ colors.primary.light.hex }};
+    --C009-RGB: {{ colors.primary.light.red }}, {{ colors.primary.light.green }}, {{ colors.primary.light.blue }};
+    --C010: {{ colors.secondary.light.hex }};
+    --C010-RGB: {{ colors.secondary.light.red }}, {{ colors.secondary.light.green }}, {{ colors.secondary.light.blue }};
+    --C011: {{ colors.tertiary.light.hex }};
+    --C011-RGB: {{ colors.tertiary.light.red }}, {{ colors.tertiary.light.green }}, {{ colors.tertiary.light.blue }};
+}
+
+.theme-dark {
+    --interactive-accent: {{ colors.primary.dark.hex }};
+    --interactive-accent-hover: {{ colors.primary_container.dark.hex }};
+    --text-accent: {{ colors.primary.dark.hex }};
+    --text-accent-hover: {{ colors.primary_container.dark.hex }};
+
+    /* Grayscale - optimized for high contrast readability */
+    --800: {{ colors.on_surface.dark.hex }};
+    --800-RGB: {{ colors.on_surface.dark.red }}, {{ colors.on_surface.dark.green }}, {{ colors.on_surface.dark.blue }};
+    --700: {{ colors.on_surface.dark.hex }};
+    --700-RGB: {{ colors.on_surface.dark.red }}, {{ colors.on_surface.dark.green }}, {{ colors.on_surface.dark.blue }};
+    --600: {{ colors.on_surface.dark.hex }};
+    --600-RGB: {{ colors.on_surface.dark.red }}, {{ colors.on_surface.dark.green }}, {{ colors.on_surface.dark.blue }};
+    --500: {{ colors.on_surface_variant.dark.hex }};
+    --500-RGB: {{ colors.on_surface_variant.dark.red }}, {{ colors.on_surface_variant.dark.green }}, {{ colors.on_surface_variant.dark.blue }};
+    --400: {{ colors.outline.dark.hex }};
+    --400-RGB: {{ colors.outline.dark.red }}, {{ colors.outline.dark.green }}, {{ colors.outline.dark.blue }};
+    --300: {{ colors.outline_variant.dark.hex }};
+    --300-RGB: {{ colors.outline_variant.dark.red }}, {{ colors.outline_variant.dark.green }}, {{ colors.outline_variant.dark.blue }};
+    --200: {{ colors.surface_container_highest.dark.hex }};
+    --200-RGB: {{ colors.surface_container_highest.dark.red }}, {{ colors.surface_container_highest.dark.green }}, {{ colors.surface_container_highest.dark.blue }};
+    --100: {{ colors.surface_container_high.dark.hex }};
+    --100-RGB: {{ colors.surface_container_high.dark.red }}, {{ colors.surface_container_high.dark.green }}, {{ colors.surface_container_high.dark.blue }};
+    --000: {{ colors.surface.dark.hex }};
+    --000-RGB: {{ colors.surface.dark.red }}, {{ colors.surface.dark.green }}, {{ colors.surface.dark.blue }};
+
+    /* Color palette */
+    --C001: {{ colors.primary.dark.hex }};
+    --C001-RGB: {{ colors.primary.dark.red }}, {{ colors.primary.dark.green }}, {{ colors.primary.dark.blue }};
+    --C002: {{ colors.primary_container.dark.hex }};
+    --C002-RGB: {{ colors.primary_container.dark.red }}, {{ colors.primary_container.dark.green }}, {{ colors.primary_container.dark.blue }};
+    --C003: {{ colors.secondary.dark.hex }};
+    --C003-RGB: {{ colors.secondary.dark.red }}, {{ colors.secondary.dark.green }}, {{ colors.secondary.dark.blue }};
+    --C004: {{ colors.secondary_container.dark.hex }};
+    --C004-RGB: {{ colors.secondary_container.dark.red }}, {{ colors.secondary_container.dark.green }}, {{ colors.secondary_container.dark.blue }};
+    --C005: {{ colors.tertiary.dark.hex }};
+    --C005-RGB: {{ colors.tertiary.dark.red }}, {{ colors.tertiary.dark.green }}, {{ colors.tertiary.dark.blue }};
+    --C006: {{ colors.tertiary_container.dark.hex }};
+    --C006-RGB: {{ colors.tertiary_container.dark.red }}, {{ colors.tertiary_container.dark.green }}, {{ colors.tertiary_container.dark.blue }};
+    --C007: {{ colors.error.dark.hex }};
+    --C007-RGB: {{ colors.error.dark.red }}, {{ colors.error.dark.green }}, {{ colors.error.dark.blue }};
+    --C008: {{ colors.error_container.dark.hex }};
+    --C008-RGB: {{ colors.error_container.dark.red }}, {{ colors.error_container.dark.green }}, {{ colors.error_container.dark.blue }};
+    --C009: {{ colors.primary.dark.hex }};
+    --C009-RGB: {{ colors.primary.dark.red }}, {{ colors.primary.dark.green }}, {{ colors.primary.dark.blue }};
+    --C010: {{ colors.secondary.dark.hex }};
+    --C010-RGB: {{ colors.secondary.dark.red }}, {{ colors.secondary.dark.green }}, {{ colors.secondary.dark.blue }};
+    --C011: {{ colors.tertiary.dark.hex }};
+    --C011-RGB: {{ colors.tertiary.dark.red }}, {{ colors.tertiary.dark.green }}, {{ colors.tertiary.dark.blue }};
+}
+
+/* Graph view */
+.graph-view.color-fill {
+    color: {{ colors.tertiary.dark.hex }};
+}
+
+/* File explorer - enhanced readability */
+.theme-dark body:not(.vibrant-folders) .nav-files-container > div > .nav-folder .nav-folder-title,
+.theme-dark body:not(.vibrant-folders) .nav-files-container > div > .nav-folder .nav-file-title,
+.theme-dark body:not(.vibrant-folders) .nav-files-container .collapse-icon svg.svg-icon,
+.theme-dark body:not(.vibrant-folders) .workspace-leaf-content[data-type="file-explorer"] .tree-item-self .tree-item-icon {
+    color: {{ colors.on_surface.dark.hex }} !important;
+    --icon-color: {{ colors.on_surface.dark.hex }} !important;
+}
+
+/* Tags - high contrast */
+.theme-light .multi-select-pill,
+.theme-light a.tag {
+    color: {{ colors.on_surface.light.hex }} !important;
+}
+
+/* Callouts - enhanced readability */
+.theme-dark .callout-icon .svg-icon,
+.theme-dark .callout-title-inner {
+    color: {{ colors.on_surface.dark.hex }} !important;
+}
+
+.theme-dark .callout-style-02 .callout-content {
+    color: {{ colors.on_surface.dark.hex }} !important;
+}
+
+.theme-dark .callout-style-03 .callout,
+.theme-dark .callout-style-03 .callout-content,
+.theme-dark .callout-style-03 .callout-icon .svg-icon,
+.theme-dark .callout-style-03 .callout-title-inner {
+    color: {{ colors.on_surface.dark.hex }} !important;
+    border-top: 1px solid {{ colors.on_surface_variant.dark.hex }};
+}

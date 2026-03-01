@@ -1,0 +1,83 @@
+[config]
+# Matugen v4 Configuration
+# Using import_json_files if custom variables were needed, but keeping it simple for now.
+
+[templates.m3colors]
+input_path = '~/.config/matugen/templates/colors.json'
+output_path = '~/.local/state/quickshell/user/generated/colors.json'
+
+[templates.hyprland]
+input_path = '~/.config/matugen/templates/hyprland/colors.conf'
+output_path = '~/.config/hypr/hyprland/colors.conf'
+
+[templates.hyprlock]
+input_path = '~/.config/matugen/templates/hyprland/hyprlock-colors.conf'
+output_path = '~/.config/hypr/hyprlock/colors.conf'
+
+[templates.fuzzel]
+input_path = '~/.config/matugen/templates/fuzzel/fuzzel_theme.ini'
+output_path = '~/.config/fuzzel/fuzzel_theme.ini'
+
+[templates.kitty]
+input_path = '~/.config/matugen/templates/kitty_theme.conf'
+output_path = '~/.config/kitty/current-theme.conf'
+
+[templates.gtk3]
+input_path = '~/.config/matugen/templates/gtk-3.0/gtk.css'
+output_path = '~/.config/gtk-3.0/gtk.css'
+
+[templates.gtk4]
+input_path = '~/.config/matugen/templates/gtk-4.0/gtk.css'
+output_path = '~/.config/gtk-4.0/gtk.css'
+
+[templates.kde_colors]
+input_path = '~/.config/matugen/templates/kde/color.txt'
+output_path = '~/.local/state/quickshell/user/generated/color.txt'
+
+[templates.wallpaper]
+input_path = '~/.config/matugen/templates/wallpaper.txt'
+output_path = '~/.local/state/quickshell/user/generated/wallpaper/path.txt'
+
+[templates.discord]
+input_path = "~/.config/matugen/templates/midnight.theme.css"
+output_path = "~/.config/vesktop/themes/midnight.theme.css"
+
+[templates.vscode]
+input_path = "~/.config/matugen/templates/hyprlunavsc.json"
+output_path = "~/.vscode/extensions/hyprluna.hyprluna-theme-1.0.2/themes/hyprluna.json"
+
+[templates.antigravity]
+input_path = "~/.config/matugen/templates/hyprlunavsc.json"
+output_path = "~/.antigravity/extensions/hyprluna.hyprluna-theme-1.0.2/themes/hyprluna.json"
+
+[templates.zeditor]
+input_path = "~/.config/matugen/templates/zed_theme.json"
+output_path = "~/.local/share/zed/extensions/installed/material-dark/themes/zed_material_theme.json"
+
+[templates.spicetify]
+input_path = "~/.config/matugen/templates/spicetify-color.ini"
+output_path = "~/.config/spicetify/Themes/caelestia/color.ini"
+post_hook = "spicetify-smart-apply"
+
+[templates.cava]
+input_path = '~/.config/matugen/templates/cava_color.ini'
+output_path = '~/.config/cava/config'
+post_hook = "pkill -USR1 cava"
+
+[templates.btop]
+input_path = '~/.config/matugen/templates/btop.theme'
+output_path = '~/.config/btop/themes/matugen.theme'
+
+[templates.obsidian]
+input_path = '~/.config/matugen/templates/obsidian_matugen.css'
+# output_path = '~/Documents/Obsidian-Vault/.obsidian/snippets/matugen.css' # Example: path to your obsidian vault snippet
+
+[templates.iisddmtheme]
+input_path = '~/.config/ii-sddm-theme/SddmColors.qml'
+output_path = '~/.config/ii-sddm-theme/Colors.qml'
+post_hook = 'python3 ~/.config/ii-sddm-theme/generate_settings.py && sudo ~/.config/ii-sddm-theme/sddm-theme-apply.sh &'
+
+[templates.terminal]
+input_path = '~/.config/matugen/templates/terminal/sequences.txt'
+output_path = '~/.local/state/quickshell/user/generated/terminal/sequences.txt'
+post_hook = "~/.config/quickshell/nandoroid/scripts/colors/apply_terminal_colors.sh"

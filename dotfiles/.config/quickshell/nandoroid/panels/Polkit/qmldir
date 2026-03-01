@@ -1,0 +1,2 @@
+module panels.Polkit
+PolkitPanel 1.0 PolkitPanel.qml

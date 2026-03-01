@@ -1,0 +1,4 @@
+singleton LockContext LockContext.qml
+Lock Lock.qml
+LockSurface LockSurface.qml
+PasswordChars PasswordChars.qml

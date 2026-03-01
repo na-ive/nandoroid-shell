@@ -1,0 +1,192 @@
+/**
+ * @name midnight-matugen
+ * @description a dark discord theme that uses matugen generated colors
+ * @author refact0r (modified for matugen)
+ * @version 2.1.1-matugen
+ * @invite nz87hXyvcy
+ * @website https://github.com/refact0r/midnight-discord
+ * @source https://github.com/refact0r/midnight-discord/blob/master/themes/midnight.theme.css
+ * @authorId 508863359777505290
+ * @authorLink https://www.refact0r.dev
+ */
+
+/* import theme modules */
+@import url('https://refact0r.github.io/midnight-discord/build/midnight.css');
+
+body {
+    /* font options */
+    --font: 'figtree';
+    --code-font: '';
+    font-weight: 400;
+
+    /* sizes */
+    --gap: 12px;
+    --divider-thickness: 4px;
+    --border-thickness: 0.25px;
+
+    /* animation/transition options */
+    --animations: on;
+    --list-item-transition: 0.2s ease;
+    --dms-icon-svg-transition: 0.4s ease;
+    --border-hover-transition: 0.2s ease;
+
+    /* top bar options */
+    --top-bar-height: var(--gap);
+    --top-bar-button-position: titlebar;
+    --top-bar-title-position: off;
+    --subtle-top-bar-title: off;
+
+    /* window controls */
+    --custom-window-controls: on;
+    --window-control-size: 14px;
+
+    /* dms button options */
+    --custom-dms-icon: off;
+    --dms-icon-svg-url: url('https://refact0r.github.io/midnight-discord/assets/Font_Awesome_5_solid_moon.svg');
+    --dms-icon-svg-size: 90%;
+    --dms-icon-color-before: var(--icon-subtle);
+    --dms-icon-color-after: var(--white);
+    --custom-dms-background: off;
+    --dms-background-image-url: url('');
+    --dms-background-image-size: cover;
+    --dms-background-color: linear-gradient(70deg, var(--blue-2), var(--purple-2), var(--red-2));
+
+    /* background image options */
+    --background-image: off;
+    --background-image-url: url('');
+
+    /* transparency/blur options */
+    --transparency-tweaks: off;
+    --remove-bg-layer: off;
+    --panel-blur: off;
+    --blur-amount: 12px;
+    --bg-floating: var(--bg-3);
+
+    /* chatbar options */
+    --custom-chatbar: off;
+    --chatbar-height: 47px;
+
+    /* other options */
+    --small-user-panel: on;
+}
+
+:root {
+    --colors: on;
+
+    /* Matugen generated colors */
+    --primary: {{colors.primary.default.hex}};
+    --on-primary: {{colors.on_primary.default.hex}};
+    --primary-container: {{colors.primary_container.default.hex}};
+    --on-primary-container: {{colors.on_primary_container.default.hex}};
+
+    --secondary: {{colors.secondary.default.hex}};
+    --on-secondary: {{colors.on_secondary.default.hex}};
+    --secondary-container: {{colors.secondary_container.default.hex}};
+    --on-secondary-container: {{colors.on_secondary_container.default.hex}};
+
+    --tertiary: {{colors.tertiary.default.hex}};
+    --on-tertiary: {{colors.on_tertiary.default.hex}};
+    --tertiary-container: {{colors.tertiary_container.default.hex}};
+    --on-tertiary-container: {{colors.on_tertiary_container.default.hex}};
+
+    --error: {{colors.error.default.hex}};
+    --on-error: {{colors.on_error.default.hex}};
+    --error-container: {{colors.error_container.default.hex}};
+    --on-error-container: {{colors.on_error_container.default.hex}};
+
+    --surface: {{colors.surface.default.hex}};
+    --surface-dim: {{colors.surface_dim.default.hex}};
+    --surface-bright: {{colors.surface_bright.default.hex}};
+    --surface-container-lowest: {{colors.surface_container_lowest.default.hex}};
+    --surface-container-low: {{colors.surface_container_low.default.hex}};
+    --surface-container: {{colors.surface_container.default.hex}};
+    --surface-container-high: {{colors.surface_container_high.default.hex}};
+    --surface-container-highest: {{colors.surface_container_highest.default.hex}};
+    --surface-variant: {{colors.surface_variant.default.hex}};
+    --on-surface: {{colors.on_surface.default.hex}};
+    --on-surface-variant: {{colors.on_surface_variant.default.hex}};
+
+    --outline: {{colors.outline.default.hex}};
+    --outline-variant: {{colors.outline_variant.default.hex}};
+
+    --background: {{colors.background.default.hex}};
+    --on-background: {{colors.on_background.default.hex}};
+
+    /* Text colors - optimized for readability with high contrast */
+    --text-0: var(--on-primary-container); /* text on colored elements */
+    --text-1: var(--on-surface); /* primary text - highest contrast */
+    --text-2: var(--on-surface); /* headings - same as primary for consistency */
+    --text-3: color-mix(in srgb, var(--on-surface) 90%, transparent); /* normal text - slightly dimmed */
+    --text-4: var(--on-surface-variant); /* secondary text - icons and channels */
+    --text-5: color-mix(in srgb, var(--on-surface-variant) 75%, transparent); /* muted text - timestamps */
+
+    /* Background colors - using material surface hierarchy */
+    --bg-1: var(--surface-container-high); /* elevated surfaces */
+    --bg-2: var(--surface-container); /* secondary surfaces */
+    --bg-3: var(--surface-container-low); /* tertiary surfaces */
+    --bg-4: var(--surface); /* base surface */
+
+    /* Interactive states */
+    --hover: color-mix(in srgb, var(--primary) 10%, transparent);
+    --active: color-mix(in srgb, var(--primary) 15%, transparent);
+    --active-2: color-mix(in srgb, var(--primary) 20%, transparent);
+    --message-hover: color-mix(in srgb, var(--on-surface) 5%, transparent);
+
+    /* Accent colors */
+    --accent-1: var(--primary); /* links */
+    --accent-2: var(--primary-container); /* small accents */
+    --accent-3: var(--primary-container); /* buttons */
+    --accent-4: color-mix(in srgb, var(--primary-container) 85%, var(--primary)); /* hover */
+    --accent-5: color-mix(in srgb, var(--primary-container) 70%, var(--primary)); /* active */
+    --accent-new: var(--error-container); /* error/destructive actions */
+
+    /* Mention backgrounds */
+    --mention: linear-gradient(to right, color-mix(in srgb, var(--primary-container) 35%, transparent) 40%, transparent);
+    --mention-hover: linear-gradient(to right, color-mix(in srgb, var(--primary-container) 45%, transparent) 40%, transparent);
+    --reply: linear-gradient(to right, color-mix(in srgb, var(--secondary-container) 35%, transparent) 40%, transparent);
+    --reply-hover: linear-gradient(to right, color-mix(in srgb, var(--secondary-container) 45%, transparent) 40%, transparent);
+
+    /* Status indicators - optimized for visibility */
+    --online: #4ade80; /* bright green */
+    --dnd: var(--error); /* use error color */
+    --idle: #facc15; /* bright yellow */
+    --streaming: var(--tertiary); /* use tertiary color */
+    --offline: var(--outline); /* neutral gray */
+
+    /* Border colors */
+    --border-light: color-mix(in srgb, var(--surface-bright) 60%, transparent);
+    --border: color-mix(in srgb, var(--surface-bright) 40%, transparent);
+    --border-hover: color-mix(in srgb, var(--outline) 100%, var(--primary) 20%);
+    --border-hover: var(--border);
+
+    /* Base color palette - derived from matugen colors */
+    --red-1: color-mix(in srgb, var(--error) 100%, white 30%);
+    --red-2: var(--error);
+    --red-3: color-mix(in srgb, var(--error) 100%, black 15%);
+    --red-4: color-mix(in srgb, var(--error) 100%, black 30%);
+    --red-5: var(--error-container);
+
+    --green-1: #86efac;
+    --green-2: #4ade80;
+    --green-3: #22c55e;
+    --green-4: #16a34a;
+    --green-5: #15803d;
+
+    --blue-1: color-mix(in srgb, var(--primary) 100%, white 30%);
+    --blue-2: var(--primary);
+    --blue-3: color-mix(in srgb, var(--primary) 100%, black 15%);
+    --blue-4: color-mix(in srgb, var(--primary) 100%, black 30%);
+    --blue-5: var(--primary-container);
+
+    --yellow-1: #fef08a;
+    --yellow-2: #facc15;
+    --yellow-3: #eab308;
+    --yellow-4: #ca8a04;
+    --yellow-5: #a16207;
+
+    --purple-1: color-mix(in srgb, var(--tertiary) 100%, white 30%);
+    --purple-2: var(--tertiary);
+    --purple-3: color-mix(in srgb, var(--tertiary) 100%, black 15%);
+    --purple-4: color-mix(in srgb, var(--tertiary) 100%, black 30%);
+    --purple-5: var(--tertiary-container);
+}
