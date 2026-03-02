@@ -20,6 +20,7 @@ Scope {
     readonly property int actionOCR: 3
     readonly property int actionRecord: 4
     readonly property int actionRecordWithSound: 5
+    readonly property int actionRecordFullscreenWithSound: 6
     
     readonly property int modeRect: 0
     readonly property int modeCircle: 1
@@ -101,6 +102,16 @@ Scope {
         GlobalStates.regionSelectorOpen = true
     }
 
+    function recordFullscreenWithSound() {
+        root.action = actionRecordFullscreenWithSound
+        root.selectionMode = modeRect
+        // Fullscreen doesn't strictly need a selection UI but we use it to handle state and script call
+        // Actually, if it's fullscreen, maybe it should just START?
+        // But record.sh handles it.
+        // Actually, RegionSelection.qml has logic for preparation.
+        GlobalStates.regionSelectorOpen = true
+    }
+
     IpcHandler {
         target: "region"
 
@@ -109,6 +120,7 @@ Scope {
         function ocr() { root.ocr() }
         function record() { root.record() }
         function recordWithSound() { root.recordWithSound() }
+        function recordFullscreenWithSound() { root.recordFullscreenWithSound() }
     }
 
 }

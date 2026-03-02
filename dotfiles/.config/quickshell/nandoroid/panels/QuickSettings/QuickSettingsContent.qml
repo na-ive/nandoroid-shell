@@ -219,13 +219,22 @@ Item {
             icon: "screen_record",
             iconOff: "screen_record",
             toggled: ScreenRecord.active,
-            statusText: ScreenRecord.active ? "Tap to save" : "Off",
-            tooltipText: ScreenRecord.active ? "Tap to save" : "Record Screen: Off",
+            statusText: ScreenRecord.active ? "Tap to save" : ScreenRecord.modeLabel,
+            tooltipText: ScreenRecord.active ? "Tap to save" : ("Mode: " + ScreenRecord.modeLabel),
             action: () => {
                 if (ScreenRecord.active) ScreenRecord.stop();
                 else {
                     root.close();
-                    Functions.General.delayedAction(300, () => RegionService.record());
+                    Functions.General.delayedAction(300, () => {
+                        if (ScreenRecord.recordingMode === 0) RegionService.record();
+                        else if (ScreenRecord.recordingMode === 1) RegionService.recordWithSound();
+                        else if (ScreenRecord.recordingMode === 2) RegionService.recordFullscreenWithSound();
+                    });
+                }
+            },
+            altAction: () => {
+                if (!ScreenRecord.active) {
+                    ScreenRecord.cycleMode();
                 }
             }
         },
@@ -303,7 +312,10 @@ Item {
                 row = [];
                 totalSize = 0;
             }
-            row.push(togglesList[i]);
+            // Clone the object and add the original index
+            var toggleWithIdx = Object.assign({}, togglesList[i]);
+            toggleWithIdx.originalIndex = i;
+            row.push(toggleWithIdx);
             totalSize += size;
         }
         if (row.length > 0) rows.push(row);
@@ -614,14 +626,6 @@ Item {
                             id: toggleRow
                             required property int index
                             property var modelData: root.toggleRows[index]
-                            property int startingIndex: {
-                                const rows = root.toggleRows;
-                                let sum = 0;
-                                for (let i = 0; i < index; i++) {
-                                    sum += rows[i].length;
-                                }
-                                return sum;
-                            }
                             width: parent.width
                             spacing: root.toggleSpacing
 
@@ -634,7 +638,7 @@ Item {
                                 delegate: ToggleDelegate {
                                     required property var modelData
                                     required property int index
-                                    buttonIndex: toggleRow.startingIndex + index
+                                    buttonIndex: modelData.originalIndex ?? -1
                                     buttonData: modelData
                                     allToggles: root.allToggles
                                     editMode: root.editMode

@@ -34,6 +34,7 @@ PanelWindow {
     readonly property int actionOCR: 3
     readonly property int actionRecord: 4
     readonly property int actionRecordWithSound: 5
+    readonly property int actionRecordFullscreenWithSound: 6
     
     readonly property int modeRect: 0
     readonly property int modeCircle: 1
@@ -146,7 +147,7 @@ PanelWindow {
         }
     }
     
-    property bool isRecording: root.action === actionRecord || root.action === actionRecordWithSound
+    property bool isRecording: root.action === actionRecord || root.action === actionRecordWithSound || root.action === actionRecordFullscreenWithSound
     property bool recordingShouldStop: false
     
     Process {
@@ -169,6 +170,13 @@ PanelWindow {
             root.dismiss();
             return;
         }
+
+        // For fullscreen recording, skip the selection UI and start immediately
+        if (root.action === actionRecordFullscreenWithSound) {
+            root.snip();
+            return;
+        }
+
         console.log("[RegionSelection] Setting visible to true")
         root.visible = true;
         HyprlandData.updateAll();
@@ -185,7 +193,7 @@ PanelWindow {
     */
 
     function snip() {
-        if (root.regionWidth <= 0 || root.regionHeight <= 0) {
+        if (root.action !== actionRecordFullscreenWithSound && (root.regionWidth <= 0 || root.regionHeight <= 0)) {
             root.dismiss();
             return;
         }
@@ -210,6 +218,7 @@ PanelWindow {
             case actionOCR: actionEnum = ScreenshotAction.Action.CharRecognition; break;
             case actionRecord: actionEnum = ScreenshotAction.Action.Record; break;
             case actionRecordWithSound: actionEnum = ScreenshotAction.Action.RecordWithSound; break;
+            case actionRecordFullscreenWithSound: actionEnum = ScreenshotAction.Action.RecordFullscreenWithSound; break;
         }
 
         console.log(`[RegionSelection] Snipping: x=${root.regionX}, y=${root.regionY}, w=${root.regionWidth}, h=${root.regionHeight}, scale=${root.monitorScale}`)
