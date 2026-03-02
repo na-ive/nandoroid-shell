@@ -94,7 +94,7 @@ Singleton {
                     property string monospace: "JetBrains Mono NF"
                 }
                 property JsonObject background: JsonObject {
-                    property string wallpaperPath: Directories.shellConfigPath + "/assets/wallpapers/default_wallpaper.png"
+                    property string wallpaperPath: "file://" + Directories.assetsPath + "/wallpapers/default_wallpaper.png"
                     property bool darkmode: true
                     property bool matugen: true
                     property string matugenScheme: "scheme-content"

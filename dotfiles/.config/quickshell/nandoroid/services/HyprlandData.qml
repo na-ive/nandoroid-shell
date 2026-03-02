@@ -85,8 +85,10 @@ Singleton {
             }
         }
         stderr: StdioCollector {
-            onStreamFinished: (collector) => {
-                if (collector.text.trim()) console.warn("HyprlandData Stderr: " + collector.text);
+            id: clientsStderr
+            onStreamFinished: {
+                const err = clientsStderr.text.trim();
+                if (err) console.warn("HyprlandData Stderr: " + err);
             }
         }
     }
@@ -116,7 +118,6 @@ Singleton {
                     temp[ws.id] = ws;
                 }
                 root.workspaceById = temp;
-                root.workspaceIds = root.workspaces.map(ws => ws.id);
             }
         }
     }

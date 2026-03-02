@@ -39,5 +39,10 @@ Singleton {
     Component.onCompleted: {
         Quickshell.execDetached(["mkdir", "-p", `${shellConfig}`])
         Quickshell.execDetached(["mkdir", "-p", `${screenshotTemp}`])
+        
+        // Ensure matugen output dir exists
+        const matugenFile = generatedMaterialThemePath;
+        const matugenDir = matugenFile.substring(0, matugenFile.lastIndexOf('/'));
+        Quickshell.execDetached(["mkdir", "-p", matugenDir])
     }
 }

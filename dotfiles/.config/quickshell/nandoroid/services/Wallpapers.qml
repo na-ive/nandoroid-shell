@@ -144,6 +144,31 @@ Singleton {
         }
     }
     
+    function initializeMatugen() {
+        if (!Config.ready) {
+            console.log("[Wallpapers] Config not ready, delaying initialization...");
+            configWaitTimer.start();
+            return;
+        }
+        
+        if (Config.options.appearance.background.matugen) {
+            console.log("[Wallpapers] Triggering initial theme generation from default wallpaper...");
+            const path = Config.options.appearance.background.wallpaperPath;
+            const cleanPath = path.toString().startsWith("file://") ? path.toString().substring(7) : path.toString();
+            if (cleanPath !== "") {
+                matugenProc.filePath = cleanPath;
+                matugenProc.running = true;
+            }
+        }
+    }
+
+    Timer {
+        id: configWaitTimer
+        interval: 500
+        repeat: false
+        onTriggered: root.initializeMatugen()
+    }
+
     function findBasicThemeByFile(fileName) {
         const basicThemes = [
             { file: "angel.json", colors: ["#5682A3"] },
