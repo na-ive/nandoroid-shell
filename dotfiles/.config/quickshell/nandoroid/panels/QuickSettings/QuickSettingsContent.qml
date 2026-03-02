@@ -501,7 +501,11 @@ Item {
         }
 
         // ── Performance Stats Island ──
-        PerformanceStats {}
+        PerformanceStats {
+            visible: Config.ready && (Config.options.quickSettings?.showPerformanceStats ?? true)
+            Layout.preferredHeight: visible ? implicitHeight : 0
+            clip: !visible
+        }
 
         // ── Sliders Island ──
         Rectangle {
