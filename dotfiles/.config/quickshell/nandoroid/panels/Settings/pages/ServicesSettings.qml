@@ -1471,7 +1471,71 @@ Flickable {
                     }
                 }
 
-                // 2. Privacy Indicators
+                // 2. Notification Counter
+                SegmentedWrapper {
+                    Layout.fillWidth: true
+                    implicitHeight: notifyCounterRow.implicitHeight + 40
+                    orientation: Qt.Vertical
+                    color: Appearance.m3colors.m3surfaceContainerHigh
+                    maxRadius: 20
+                    
+                    RowLayout {
+                        id: notifyCounterRow
+                        anchors.fill: parent
+                        anchors.margins: 20
+                        spacing: 20
+
+                        ColumnLayout {
+                            spacing: 2
+                            StyledText {
+                                text: "Notification Counter"
+                                font.pixelSize: Appearance.font.pixelSize.normal
+                                font.weight: Font.Medium
+                                color: Appearance.colors.colOnLayer1
+                            }
+                            StyledText {
+                                text: "Unread notification indicator style in the status bar."
+                                font.pixelSize: Appearance.font.pixelSize.small
+                                color: Appearance.colors.colSubtext
+                            }
+                        }
+                        
+                        Item { Layout.fillWidth: true }
+                        
+                        RowLayout {
+                            spacing: 4
+                            Layout.preferredHeight: 40
+                            
+                            Repeater {
+                                model: [
+                                    { label: "Counter", value: "counter" },
+                                    { label: "Simple", value: "simple" },
+                                    { label: "Hidden", value: "hidden" }
+                                ]
+                                delegate: SegmentedButton {
+                                    isHighlighted: (Config.ready && Config.options.notifications) ? Config.options.notifications.counterStyle === modelData.value : false
+                                    Layout.fillHeight: true
+                                    
+                                    buttonText: modelData.label
+                                    leftPadding: 16
+                                    rightPadding: 16
+                                    
+                                    colActive: Appearance.m3colors.m3primary
+                                    colActiveText: Appearance.m3colors.m3onPrimary
+                                    colInactive: Appearance.m3colors.m3surfaceContainerLow
+                                    
+                                    onClicked: {
+                                        if (Config.ready && Config.options.notifications) {
+                                            Config.options.notifications.counterStyle = modelData.value;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // 3. Privacy Indicators
                 SegmentedWrapper {
                     Layout.fillWidth: true
                     implicitHeight: privRow.implicitHeight + 40
@@ -1536,7 +1600,7 @@ Flickable {
                     }
                 }
 
-                // 3. Region Selector: Windows Snapping
+                // 4. Region Selector: Windows Snapping
                 SegmentedWrapper {
                     Layout.fillWidth: true
                     implicitHeight: snapRow.implicitHeight + 40

@@ -247,7 +247,9 @@ Item {
 
             // Notification counter (hidden when 0, moved to end)
             Item {
-                visible: Notifications.unread > 0
+                readonly property string style: (Config.ready && Config.options.notifications) ? Config.options.notifications.counterStyle : "counter"
+                
+                visible: style !== "hidden" && Notifications.unread > 0
                 Layout.preferredWidth: 20
                 Layout.preferredHeight: 20
                 Layout.alignment: Qt.AlignVCenter
@@ -261,6 +263,7 @@ Item {
                 }
 
                 Rectangle {
+                    visible: parent.style === "counter"
                     anchors.top: parent.top
                     anchors.right: parent.right
                     anchors.topMargin: -2
