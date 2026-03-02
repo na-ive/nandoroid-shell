@@ -15,28 +15,18 @@ Singleton {
     property var windowList: []
     property var windowByAddress: ({})
     property var workspaces: []
-    property var workspaceIds: []
     property var workspaceById: ({})
     property var activeWorkspace: null
     property var monitors: []
     property var activeWindow: null
     
+    function hyprlandClientsForWorkspace(workspaceId) {
+        return root.windowList.filter(win => win.workspace.id === workspaceId);
+    }
+
     readonly property bool fullscreenActive: {
         if (!activeWorkspace) return false;
         return windowList.some(win => win.workspace.id === activeWorkspace.id && (win.fullscreen || win.fullscreenClient !== 0));
-    }
-
-    function hyprlandClientsForWorkspace(workspace) {
-        return root.windowList.filter(win => win.workspace.id === workspace);
-    }
-
-    function biggestWindowForWorkspace(workspaceId) {
-        const windowsInThisWorkspace = root.windowList.filter(w => w.workspace.id == workspaceId);
-        return windowsInThisWorkspace.reduce((maxWin, win) => {
-            const maxArea = (maxWin?.size?.[0] ?? 0) * (maxWin?.size?.[1] ?? 0);
-            const winArea = (win?.size?.[0] ?? 0) * (win?.size?.[1] ?? 0);
-            return winArea > maxArea ? win : maxWin;
-        }, null);
     }
 
     function updateWindowList() { getClients.running = true; }
