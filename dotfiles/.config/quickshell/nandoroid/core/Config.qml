@@ -369,12 +369,6 @@ Singleton {
                 }
             }
 
-            // --- Overview ---
-            property JsonObject overview: JsonObject {
-                property real scale: 0.12
-                property bool showPreviews: true
-                property int maxWorkspaces: 10
-            }
         }
     }
 }

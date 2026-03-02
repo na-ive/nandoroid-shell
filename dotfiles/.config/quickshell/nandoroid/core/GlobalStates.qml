@@ -25,8 +25,6 @@ Singleton {
     property bool calendarOpen: false
     property bool systemMonitorOpen: false
     property bool regionSelectorOpen: false
-    property bool overviewOpen: false
-    property string overviewStyle: "auto" // "auto", "dwindle", or "scrolling"
     property string wallpaperSelectorTarget: "desktop" // "desktop" or "lock"
     property var wallpaperSelectorWindow: null // For focus-grab synchronization
     property var activeComboBox: null
@@ -52,7 +50,6 @@ Singleton {
             quickWallpaperOpen = false
             calendarOpen = false
             sessionOpen = false
-            overviewOpen = false
         }
     }
 
@@ -64,7 +61,6 @@ Singleton {
             quickWallpaperOpen = false
             calendarOpen = false
             sessionOpen = false
-            overviewOpen = false
         }
     }
 
@@ -76,7 +72,6 @@ Singleton {
             quickWallpaperOpen = false
             calendarOpen = false
             sessionOpen = false
-            overviewOpen = false
         }
     }
 
@@ -89,7 +84,6 @@ Singleton {
             quickWallpaperOpen = false
             calendarOpen = false
             sessionOpen = false
-            overviewOpen = false
         }
     }
 
@@ -101,7 +95,6 @@ Singleton {
             spotlightOpen = false
             calendarOpen = false
             sessionOpen = false
-            overviewOpen = false
         }
     }
 
@@ -113,7 +106,6 @@ Singleton {
             spotlightOpen = false
             quickWallpaperOpen = false
             sessionOpen = false
-            overviewOpen = false
         }
     }
 
@@ -126,7 +118,6 @@ Singleton {
             quickWallpaperOpen = false
             calendarOpen = false
             sessionOpen = false
-            overviewOpen = false
         }
     }
 
@@ -138,7 +129,6 @@ Singleton {
             quickWallpaperOpen = false
             calendarOpen = false
             sessionOpen = false
-            overviewOpen = false
         }
     }
 
@@ -150,25 +140,12 @@ Singleton {
             spotlightOpen = false
             quickWallpaperOpen = false
             calendarOpen = false
-            overviewOpen = false
         }
     }
 
     onRegionSelectorOpenChanged: {
         if (regionSelectorOpen) {
             // Do nothing, let other panels stay open.
-        }
-    }
-
-    onOverviewOpenChanged: {
-        if (overviewOpen) {
-            notificationCenterOpen = false
-            quickSettingsOpen = false
-            launcherOpen = false
-            spotlightOpen = false
-            quickWallpaperOpen = false
-            calendarOpen = false
-            sessionOpen = false
         }
     }
 
@@ -182,7 +159,6 @@ Singleton {
         calendarOpen = false
         systemMonitorOpen = false
         sessionOpen = false
-        overviewOpen = false
         // Note: wallpaperSelectorOpen and regionSelectorOpen are excluded
     }
 }
