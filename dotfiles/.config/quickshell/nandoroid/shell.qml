@@ -21,7 +21,6 @@ import "panels/SystemMonitor"
 import "panels/Polkit"
 import "panels/RegionSelector"
 import "panels/ScreenCorners"
-import "panels/Overview"
 
 import QtQuick
 import Quickshell
@@ -98,7 +97,6 @@ ShellRoot {
 
     // ── Phase 13: Polkit Agent ──
     PolkitPanel {}
-    OverviewLauncher {}
 
     IpcHandler {
         target: "launcher"
@@ -199,19 +197,6 @@ ShellRoot {
         function open() { GlobalStates.systemMonitorOpen = true }
         function close() { GlobalStates.systemMonitorOpen = false }
         function toggle() { GlobalStates.systemMonitorOpen = !GlobalStates.systemMonitorOpen }
-    }
-
-    IpcHandler {
-        target: "overview"
-        function open() { GlobalStates.overviewOpen = true }
-        function close() { GlobalStates.overviewOpen = false }
-        function toggle() { GlobalStates.overviewOpen = !GlobalStates.overviewOpen }
-    }
-
-    GlobalShortcut {
-        name: "overviewToggle"
-        description: "Toggle Hyprland Workspace Overview"
-        onPressed: GlobalStates.overviewOpen = !GlobalStates.overviewOpen
     }
 
     // ── Phase 14: Region Selector ──

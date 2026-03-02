@@ -5,6 +5,7 @@ MouseArea {
 
     signal scrollUp(delta: int)
     signal scrollDown(delta: int)
+    signal layoutCycle()
     signal movedAway()
 
     property bool hovered: false
@@ -13,7 +14,7 @@ MouseArea {
     property bool trackingScroll: false
     property real moveThreshold: 20
 
-    acceptedButtons: Qt.LeftButton
+    acceptedButtons: Qt.LeftButton | Qt.MiddleButton
     hoverEnabled: true
 
     onEntered: {

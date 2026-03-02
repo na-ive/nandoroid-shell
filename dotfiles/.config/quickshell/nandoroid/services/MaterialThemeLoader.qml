@@ -52,7 +52,15 @@ Singleton {
         }
         onLoadedChanged: {
             const fileContent = themeFileView.text()
-            root.applyColors(fileContent)
+            if (fileContent.trim() !== "") {
+                root.applyColors(fileContent)
+            }
+        }
+        onLoadFailed: error => {
+            if (error == FileViewError.FileNotFound) {
+                console.log("[MaterialThemeLoader] Theme file not found, triggering initial generation...")
+                Wallpapers.initializeMatugen()
+            }
         }
     }
 }

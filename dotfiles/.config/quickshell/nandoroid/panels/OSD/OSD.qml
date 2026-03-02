@@ -13,6 +13,14 @@ Scope {
     property var focusedScreen: Quickshell.screens.find(s => s.name === Hyprland.focusedMonitor?.name)
 
     property string currentIndicator: "volume"
+    property bool ready: false
+
+    Timer {
+        interval: 2500
+        running: true
+        repeat: false
+        onTriggered: root.ready = true
+    }
     property var indicators: [
         {
             id: "volume",
@@ -38,16 +46,14 @@ Scope {
             id: "conservation",
             sourceUrl: "indicators/ConservationIndicator.qml"
         },
+        {
+            id: "layout",
+            sourceUrl: "indicators/LayoutIndicator.qml"
+        },
     ]
 
     function triggerOsd() {
-        // GlobalStates might not exist, using internal visible prop or similar if needed.
-        // But let's assume GlobalStates or similar. 
-        // Wait, user used "root.visible" in previous OSD. 
-        // Let's use "osdOpen" property on root? 
-        // Or if GlobalStates is available (it was imported in example).
-        // I don't see GlobalStates in my file list. I'll use local property.
-        
+        if (!root.ready) return;
         osdLoader.active = true;
         osdTimeout.restart();
     }
@@ -106,9 +112,19 @@ Scope {
 
     Connections {
         target: ConservationMode
+        enabled: ConservationMode.available
         function onActiveChanged() {
             root.protectionMessage = "";
             root.currentIndicator = "conservation";
+            root.triggerOsd();
+        }
+    }
+
+    Connections {
+        target: HyprlandData
+        function onLayoutChanged() {
+            root.protectionMessage = "";
+            root.currentIndicator = "layout";
             root.triggerOsd();
         }
     }

@@ -12,31 +12,22 @@ import Quickshell.Hyprland
  */
 Singleton {
     id: root
+    signal layoutChanged()
     property var windowList: []
     property var windowByAddress: ({})
     property var workspaces: []
-    property var workspaceIds: []
     property var workspaceById: ({})
     property var activeWorkspace: null
     property var monitors: []
     property var activeWindow: null
     
+    function hyprlandClientsForWorkspace(workspaceId) {
+        return root.windowList.filter(win => win.workspace.id === workspaceId);
+    }
+
     readonly property bool fullscreenActive: {
         if (!activeWorkspace) return false;
         return windowList.some(win => win.workspace.id === activeWorkspace.id && (win.fullscreen || win.fullscreenClient !== 0));
-    }
-
-    function hyprlandClientsForWorkspace(workspace) {
-        return root.windowList.filter(win => win.workspace.id === workspace);
-    }
-
-    function biggestWindowForWorkspace(workspaceId) {
-        const windowsInThisWorkspace = root.windowList.filter(w => w.workspace.id == workspaceId);
-        return windowsInThisWorkspace.reduce((maxWin, win) => {
-            const maxArea = (maxWin?.size?.[0] ?? 0) * (maxWin?.size?.[1] ?? 0);
-            const winArea = (win?.size?.[0] ?? 0) * (win?.size?.[1] ?? 0);
-            return winArea > maxArea ? win : maxWin;
-        }, null);
     }
 
     function updateWindowList() { getClients.running = true; }
@@ -53,6 +44,28 @@ Singleton {
     }
 
     function updateActiveWindow() { getActiveWindow.running = true; }
+    
+    Process {
+        id: layoutProc
+    }
+
+    function cycleLayout(forward = true) {
+        const layouts = ["dwindle", "master", "scrolling"];
+        const current = root.activeWorkspace?.tiledLayout || "dwindle";
+        let index = layouts.indexOf(current);
+        if (index === -1) index = 0;
+        
+        if (forward) {
+            index = (index + 1) % layouts.length;
+        } else {
+            index = (index - 1 + layouts.length) % layouts.length;
+        }
+        
+        const nextLayout = layouts[index];
+        layoutProc.exec(["hyprctl", "keyword", "general:layout", nextLayout]);
+        root.layoutChanged();
+        refreshTimer.restart(); // Refresh data with a small delay
+    }
     
     Component.onCompleted: updateAll()
 
@@ -95,8 +108,10 @@ Singleton {
             }
         }
         stderr: StdioCollector {
-            onStreamFinished: (collector) => {
-                if (collector.text.trim()) console.warn("HyprlandData Stderr: " + collector.text);
+            id: clientsStderr
+            onStreamFinished: {
+                const err = clientsStderr.text.trim();
+                if (err) console.warn("HyprlandData Stderr: " + err);
             }
         }
     }
@@ -126,7 +141,6 @@ Singleton {
                     temp[ws.id] = ws;
                 }
                 root.workspaceById = temp;
-                root.workspaceIds = root.workspaces.map(ws => ws.id);
             }
         }
     }

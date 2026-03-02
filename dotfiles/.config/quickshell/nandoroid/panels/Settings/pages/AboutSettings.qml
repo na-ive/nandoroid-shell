@@ -492,45 +492,16 @@ Flickable {
                     url: "https://github.com/AvengeMedia/DankMaterialShell"
                     accentColor: "#f38ba8"
                 }
-            }
-            
-            // --- Signature Section ---
-            Rectangle {
-                Layout.fillWidth: true
-                Layout.preferredHeight: 120
-                radius: 28
-                color: Appearance.m3colors.m3surfaceContainerHigh
-                
-                RowLayout {
-                    anchors.fill: parent
-                    anchors.margins: 24
-                    spacing: 20
-                    
-                    MaterialSymbol {
-                        text: "volunteer_activism"
-                        iconSize: 48
-                        color: "#f38ba8"
-                    }
-                    
-                    ColumnLayout {
-                        Layout.fillWidth: true
-                        spacing: 2
-                        StyledText {
-                            text: "Made with love"
-                            font.pixelSize: Appearance.font.pixelSize.large
-                            font.weight: Font.Bold
-                            color: Appearance.colors.colOnLayer1
-                        }
-                        StyledText {
-                            text: "NAnDoroid Shell is a labor of love & a passion project from na-ive with help of agents."
-                            color: Appearance.colors.colSubtext
-                            font.pixelSize: Appearance.font.pixelSize.normal
-                            wrapMode: Text.WordWrap
-                            Layout.fillWidth: true
-                        }
-                    }
+
+                ProjectCard {
+                    title: "Ambxst"
+                    description: "Axenide's Ambxst. Where the notch idea came from, and probably a few other things down the line."
+                    iconSource: "../../../assets/icons/ambxst-logo-color.svg"
+                    url: "https://github.com/Axenide/Ambxst"
+                    accentColor: "#89dceb"
                 }
             }
+            
 
         }
 

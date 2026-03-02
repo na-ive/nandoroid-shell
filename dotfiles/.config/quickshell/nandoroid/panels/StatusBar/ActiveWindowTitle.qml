@@ -16,15 +16,12 @@ Item {
     property HyprlandMonitor monitor
     readonly property Toplevel activeWindow: ToplevelManager.activeToplevel
     readonly property bool focusingThisMonitor: HyprlandData.activeWorkspace?.monitor == monitor?.name
-    readonly property var biggestWindow: HyprlandData.biggestWindowForWorkspace(
-        HyprlandData.monitors[root.monitor?.id]?.activeWorkspace?.id ?? root.monitor?.activeWorkspace?.id ?? 1
-    )
 
-    property string appClassText: root.focusingThisMonitor && root.activeWindow?.activated && root.biggestWindow ?
-                root.activeWindow?.appId : (root.biggestWindow?.class) ?? "Desktop"
+    property string appClassText: root.focusingThisMonitor && root.activeWindow?.activated ?
+                root.activeWindow?.appId : (HyprlandData.activeWindow?.class) ?? "Desktop"
 
-    property string appTitleText: root.focusingThisMonitor && root.activeWindow?.activated && root.biggestWindow ?
-                root.activeWindow?.title : (root.biggestWindow?.title) ?? `Workspace ${monitor?.activeWorkspace?.id ?? 1}`
+    property string appTitleText: root.focusingThisMonitor && root.activeWindow?.activated ?
+                root.activeWindow?.title : (HyprlandData.activeWindow?.title) ?? `Workspace ${monitor?.activeWorkspace?.id ?? 1}`
 
     implicitWidth: titleColumn.implicitWidth
     implicitHeight: titleColumn.implicitHeight
