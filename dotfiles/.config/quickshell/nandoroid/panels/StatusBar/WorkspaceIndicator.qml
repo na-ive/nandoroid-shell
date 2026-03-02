@@ -41,6 +41,22 @@ Item {
         })
     }
 
+    // Layout cycle handlers
+    MouseArea {
+        anchors.fill: parent
+        acceptedButtons: Qt.MiddleButton
+        onClicked: (mouse) => {
+            if (mouse.button === Qt.MiddleButton) HyprlandData.cycleLayout()
+        }
+    }
+
+    WheelHandler {
+        onWheel: (event) => {
+            if (event.angleDelta.y > 0) Hyprland.dispatch("workspace r-1")
+            else if (event.angleDelta.y < 0) Hyprland.dispatch("workspace r+1")
+        }
+    }
+
     Row {
         id: pillRow
         anchors.verticalCenter: parent.verticalCenter

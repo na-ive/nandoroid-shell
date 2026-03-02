@@ -310,7 +310,11 @@ Item {
             hoverEnabled: true
             preventStealing: true
             cursorShape: Qt.PointingHandCursor
-            onClicked: {
+            onClicked: (mouse) => {
+                if (mouse.button === Qt.MiddleButton) {
+                    HyprlandData.cycleLayout();
+                    return;
+                }
                 if (islandState === "notification" && Notifications.activePopup) {
                     Notifications.activePopup.expanded = !Notifications.activePopup.expanded
                 } else if (islandState === "media") {

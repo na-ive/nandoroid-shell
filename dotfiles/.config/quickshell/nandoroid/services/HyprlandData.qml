@@ -44,6 +44,27 @@ Singleton {
 
     function updateActiveWindow() { getActiveWindow.running = true; }
     
+    Process {
+        id: layoutProc
+    }
+
+    function cycleLayout(forward = true) {
+        const layouts = ["dwindle", "master", "scrolling"];
+        const current = root.activeWorkspace?.tiledLayout || "dwindle";
+        let index = layouts.indexOf(current);
+        if (index === -1) index = 0;
+        
+        if (forward) {
+            index = (index + 1) % layouts.length;
+        } else {
+            index = (index - 1 + layouts.length) % layouts.length;
+        }
+        
+        const nextLayout = layouts[index];
+        layoutProc.exec(["hyprctl", "keyword", "general:layout", nextLayout]);
+        refreshTimer.restart(); // Refresh data with a small delay
+    }
+    
     Component.onCompleted: updateAll()
 
     Connections {
