@@ -38,6 +38,10 @@ Scope {
             id: "conservation",
             sourceUrl: "indicators/ConservationIndicator.qml"
         },
+        {
+            id: "layout",
+            sourceUrl: "indicators/LayoutIndicator.qml"
+        },
     ]
 
     function triggerOsd() {
@@ -109,6 +113,15 @@ Scope {
         function onActiveChanged() {
             root.protectionMessage = "";
             root.currentIndicator = "conservation";
+            root.triggerOsd();
+        }
+    }
+
+    Connections {
+        target: HyprlandData
+        function onLayoutChanged() {
+            root.protectionMessage = "";
+            root.currentIndicator = "layout";
             root.triggerOsd();
         }
     }

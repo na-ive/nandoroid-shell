@@ -12,6 +12,7 @@ import Quickshell.Hyprland
  */
 Singleton {
     id: root
+    signal layoutChanged()
     property var windowList: []
     property var windowByAddress: ({})
     property var workspaces: []
@@ -62,6 +63,7 @@ Singleton {
         
         const nextLayout = layouts[index];
         layoutProc.exec(["hyprctl", "keyword", "general:layout", nextLayout]);
+        root.layoutChanged();
         refreshTimer.restart(); // Refresh data with a small delay
     }
     
