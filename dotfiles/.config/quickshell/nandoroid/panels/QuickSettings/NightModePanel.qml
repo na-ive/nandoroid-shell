@@ -135,75 +135,7 @@ Rectangle {
             }
         }
 
-        // ── Anti-flashbang ──
-        ColumnLayout {
-            Layout.fillWidth: true
-            Layout.topMargin: 12
-            spacing: 8
 
-            Rectangle {
-                Layout.fillWidth: true
-                height: 1
-                color: Appearance.m3colors.m3outlineVariant
-            }
-
-            RowLayout {
-                Layout.fillWidth: true
-                Layout.topMargin: 4
-                spacing: 12
-
-                ColumnLayout {
-                    Layout.fillWidth: true
-                    spacing: 2
-                    StyledText {
-                        text: "Anti-Flashbang"
-                        font.pixelSize: Appearance.font.pixelSize.normal
-                        font.weight: Font.Medium
-                        color: Appearance.m3colors.m3onSurface
-                        Layout.fillWidth: true
-                    }
-                    StyledText {
-                        text: "Dim screen automatically when bright white content is shown."
-                        font.pixelSize: Appearance.font.pixelSize.smaller
-                        color: Appearance.m3colors.m3onSurfaceVariant
-                        wrapMode: Text.WordWrap
-                        Layout.fillWidth: true
-                    }
-                }
-
-                // Custom Switch
-                Rectangle {
-                    implicitWidth: 44
-                    implicitHeight: 24
-                    radius: 12
-                    color: (Config.ready && Config.options.light && Config.options.light.antiFlashbang && Config.options.light.antiFlashbang.enable)
-                        ? Appearance.colors.colPrimary
-                        : Appearance.colors.colLayer3
-
-                    Rectangle {
-                        width: 18
-                        height: 18
-                        radius: 9
-                        anchors.verticalCenter: parent.verticalCenter
-                        x: (Config.ready && Config.options.light && Config.options.light.antiFlashbang && Config.options.light.antiFlashbang.enable) ? parent.width - width - 4 : 4
-                        color: (Config.ready && Config.options.light && Config.options.light.antiFlashbang && Config.options.light.antiFlashbang.enable)
-                            ? Appearance.colors.colOnPrimary
-                            : Appearance.m3colors.m3onSurfaceVariant
-                        Behavior on x { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
-                    }
-
-                    MouseArea {
-                        anchors.fill: parent
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: {
-                            if (Config.ready && Config.options.light && Config.options.light.antiFlashbang) {
-                                Config.options.light.antiFlashbang.enable = !Config.options.light.antiFlashbang.enable;
-                            }
-                        }
-                    }
-                }
-            }
-        }
 
         Item { Layout.fillHeight: true }
 

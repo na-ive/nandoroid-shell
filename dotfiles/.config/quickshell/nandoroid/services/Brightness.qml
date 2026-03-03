@@ -96,7 +96,7 @@ Singleton {
         property string busNum
         property int rawMaxBrightness: 100
         property real brightness
-        property real brightnessMultiplier: 1.0
+
         property real multipliedBrightness: Math.max(0, Math.min(1, brightness))
         property bool ready: false
         property bool animateChanges: false // set in initialize
@@ -227,9 +227,7 @@ Singleton {
             monitor.brightness = value;
         }
 
-        function setBrightnessMultiplier(value: real): void {
-            monitor.brightnessMultiplier = value;
-        }
+
     }
 
     Component {
@@ -238,65 +236,7 @@ Singleton {
         BrightnessMonitor {}
     }
 
-    // Anti-flashbang
-    property int workspaceAnimationDelay: 500
-    property int contentSwitchDelay: 30
-    property string screenshotDir: "/tmp/quickshell/brightness/antiflashbang"
-    function brightnessMultiplierForLightness(x: real): real {
-        // I hand picked some values and fitted an exponential curve for this
-        // 6.600135 + 216.360356 * e^(-0.0811129189x)
-        // Division by 100 is to normalize to [0, 1]
-        return (6.600135 + 216.360356 * Math.pow(Math.E, -0.0811129189 * x)) / 100.0;
-    }
-    Variants {
-        model: Quickshell.screens
-        Scope {
-            id: screenScope
-            required property var modelData
-            property string screenName: modelData.name
-            property string screenshotPath: `${root.screenshotDir}/screenshot-${screenName}.png`
-            Connections {
-                enabled: Config.ready && Config.options.light.antiFlashbang.enable && Appearance.m3colors.darkmode
-                target: Hyprland
-                function onRawEvent(event) {
-                    if (["activewindowv2", "windowtitlev2"].includes(event.name)) {
-                        screenshotTimer.interval = root.contentSwitchDelay;
-                        screenshotTimer.restart();
-                    } else if (["workspacev2"].includes(event.name)) {
-                        screenshotTimer.interval = root.workspaceAnimationDelay;
-                        screenshotTimer.restart();
-                    }
-                }
-            }
 
-            Timer {
-                id: screenshotTimer
-                interval: 700 // This is what I have for a Hyprland ws anim
-                onTriggered: {
-                    screenshotProc.running = false;
-                    screenshotProc.running = true;
-                }
-            }
-
-            Process {
-                id: screenshotProc
-                command: ["bash", "-c",
-                    `mkdir -p '${StringUtils.shellSingleQuoteEscape(root.screenshotDir)}'`
-                    + ` && grim -o '${StringUtils.shellSingleQuoteEscape(screenScope.screenName)}' -`
-                    + ` | magick png:- -colorspace Gray -format "%[fx:mean*100]" info:`
-                ]
-                stdout: StdioCollector {
-                    id: lightnessCollector
-                    onStreamFinished: {
-                        Quickshell.execDetached(["rm", screenScope.screenshotPath]); // Cleanup
-                        const lightness = lightnessCollector.text
-                        const newMultiplier = root.brightnessMultiplierForLightness(parseFloat(lightness))
-                        Brightness.getMonitorForScreen(screenScope.modelData).setBrightnessMultiplier(newMultiplier)
-                    }
-                }
-            }
-        }
-    }
 
     // External trigger points
 
