@@ -64,7 +64,7 @@ _Note: The automated installer script is currently under development. Please use
 - **ddcutil**: For controlling external monitor brightness.
 - **playerctl**: For media playback (MPRIS) controls.
 - **matugen**: Crucial for Material 3 theme generation from wallpapers.
-- **grim**: For taking screenshots and color detection (anti-flashbang).
+- **grim**: For taking screenshots and color detection.
 - **slurp**: For region selection (screenshots, recording, OCR).
 - **wf-recorder**: For screen recording functionality.
 - **ImageMagick (`magick`)**: Used for color detection, resizing, and image processing.
