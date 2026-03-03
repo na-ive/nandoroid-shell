@@ -1,0 +1,180 @@
+# NAnDoroid-shell
+
+A Quickshell-based desktop shell for Hyprland adopting Android 16 design elements.
+
+**Version:** v0.9-alpha
+**License:** AGPL-3.0
+
+## Key Features
+
+- **Universal Dynamic Island:** Displays media playback indicators, workspace switching, pomodoro timers, and popup notifications inside a single central notch.
+- **Deep Customizability:** Extensive personalization options (clocks, lockscreen visuals, UI sizing) accessible directly via the built-in Settings panel.
+- **Auto-generated Colors:** Entire shell theme dynamically generated from your wallpaper's colors using Material 3 design tokens (via Matugen).
+
+## Installation (Alpha Stage)
+
+_Note: The automated installer script is currently under development. Please use the following manual installation method._
+
+1.  Clone this repository to your local source directory:
+    ```bash
+    git clone https://github.com/na-ive/nandoroid-shell ~/.local/src/nandoroid-shell
+    ```
+2.  Copy the `nandoroid` shell configuration to your Quickshell config directory:
+    ```bash
+    mkdir -p ~/.config/quickshell
+    cp -r ~/.local/src/nandoroid-shell/dotfiles/.config/quickshell/nandoroid ~/.config/quickshell/
+    ```
+3.  Ensure primary dependencies are installed on your system:
+    - `quickshell`
+    - `matugen`
+    - `hyprland`
+
+## Requirements & Dependencies
+
+<details>
+<summary>Click to view full dependency list</summary>
+
+### Core Components
+
+- **Hyprland**: The tiling Wayland compositor that hosts the shell.
+- **Quickshell (0.5.0+)**: The engine used to build and run the shell.
+- **Qt 6**: The base framework for the UI (QtQuick, Qt Background, etc.).
+
+### System Services & Protocols
+
+- **Pipewire**: For audio management.
+- **NetworkManager (`nmcli`)**: For Wi-Fi and Ethernet controls.
+- **BlueZ (`bluetoothctl`)**: For Bluetooth management.
+- **libnotify (`notify-send`)**: For system notifications and temporary popups.
+- **Polkit (`pkexec`)**: For privileged actions (like password recovery).
+- **Systemd (`systemctl`)**: For power management (suspend, etc.).
+
+### CLI Utilities (Functional)
+
+- **dgop**: Essential for system monitoring, CPU, RAM, and temperature stats.
+- **brightnessctl**: For controlling screen backlight.
+- **ddcutil**: For controlling external monitor brightness.
+- **playerctl**: For media playback (MPRIS) controls.
+- **matugen**: Crucial for Material 3 theme generation from wallpapers.
+- **grim**: For taking screenshots and color detection (anti-flashbang).
+- **slurp**: For region selection (screenshots, recording, OCR).
+- **wf-recorder**: For screen recording functionality.
+- **ImageMagick (`magick`)**: Used for color detection, resizing, and image processing.
+- **ffmpeg (`ffplay`)**: Used for system sounds.
+- **songrec**: Required for the Shazam-like music recognition feature.
+- **cava**: Used for audio visualization in the shell.
+- **easyeffects**: For audio effects and equalization management.
+- **hyprpicker**: For the color picker tool.
+- **hyprlock**: The lock screen provider.
+- **hyprsunset**: For the blue light filter (night light) functionality.
+- **jq**: For parsing and generating JSON (configs and state files).
+- **xdg-utils (`xdg-open`)**: For opening URLs and files in external apps.
+- **warp-cli** (Optional): Cloudflare WARP client for VPN integration.
+
+### Shell & Terminal
+
+- **fish**: The user's primary interactive shell.
+- **kitty**: The terminal emulator used for the shell experience.
+- **starship**: Cross-shell prompt often used for the terminal experience.
+- **bash / awk / grep / cut / sed**: Standard Unix utilities utilized by core scripts.
+
+### Fonts
+
+- **Google Sans Flex**: The primary variable font used for the interface, numbers, and titles.
+- **Material Symbols Rounded**: The icon font for all system symbols.
+- **JetBrains Mono NF**: The default monospace font (Nerd Font variation).
+
+</details>
+
+## Configuration
+
+The `configs/` directory distributed with this repository contains necessary supplementary configurations. It includes the required `matugen` configuration files and the `starship.toml` prompt configuration to run correctly alongside this shell environment.
+
+## IPC Commands
+
+<details>
+<summary>Click to view IPC commands & Keybinds</summary>
+
+The basic syntax for calling a command via terminal is:
+
+```bash
+qs -c nandoroid ipc call <target> <method>
+```
+
+_(Note: `qs` is an alias for `quickshell`. Replace it if you use the full command.)_
+
+### Sidebar & Panels
+
+Manage the visibility of all UI panels.
+
+| Feature                 | Target          | Method   | Terminal Command                                |
+| :---------------------- | :-------------- | :------- | :---------------------------------------------- |
+| **App Launcher**        | `launcher`      | `toggle` | `qs -c nandoroid ipc call launcher toggle`      |
+| **Spotlight Search**    | `spotlight`     | `toggle` | `qs -c nandoroid ipc call spotlight toggle`     |
+| **Notification Center** | `notifications` | `toggle` | `qs -c nandoroid ipc call notifications toggle` |
+| **Quick Settings**      | `quicksettings` | `toggle` | `qs -c nandoroid ipc call quicksettings toggle` |
+| **System Monitor**      | `systemmonitor` | `toggle` | `qs -c nandoroid ipc call systemmonitor toggle` |
+| **Overview Panel**      | `overview`      | `toggle` | `qs -c nandoroid ipc call overview toggle`      |
+| **Session (Power)**     | `session`       | `toggle` | `qs -c nandoroid ipc call session toggle`       |
+| **Calendar**            | `calender`      | `toggle` | `qs -c nandoroid ipc call calender toggle`      |
+| **Nandoroid Settings**  | `settings`      | `toggle` | `qs -c nandoroid ipc call settings toggle`      |
+
+### Region Tools (Screenshots & Recording)
+
+Trigger selection-based actions.
+
+| Action                | Target   | Method            | Terminal Command                                  |
+| :-------------------- | :------- | :---------------- | :------------------------------------------------ |
+| **Region Screenshot** | `region` | `screenshot`      | `qs -c nandoroid ipc call region screenshot`      |
+| **Visual Search**     | `region` | `search`          | `qs -c nandoroid ipc call region search`          |
+| **Text OCR**          | `region` | `ocr`             | `qs -c nandoroid ipc call region ocr`             |
+| **Record Region**     | `region` | `record`          | `qs -c nandoroid ipc call region record`          |
+| **Record w/ Audio**   | `region` | `recordWithSound` | `qs -c nandoroid ipc call region recordWithSound` |
+
+### Media & System
+
+Control specific system services.
+
+| Feature              | Target       | Method        | Terminal Command                                 |
+| :------------------- | :----------- | :------------ | :----------------------------------------------- |
+| **Brightness +**     | `brightness` | `increment`   | `qs -c nandoroid ipc call brightness increment`  |
+| **Brightness -**     | `brightness` | `decrement`   | `qs -c nandoroid ipc call brightness decrement`  |
+| **Pomodoro Start**   | `pomodoro`   | `start`       | `qs -c nandoroid ipc call pomodoro start`        |
+| **Wallpaper (Home)** | `wallpaper`  | `openDesktop` | `qs -c nandoroid ipc call wallpaper openDesktop` |
+| **Wallpaper (Lock)** | `wallpaper`  | `openLock`    | `qs -c nandoroid ipc call wallpaper openLock`    |
+
+### Global Shortcuts (Native Quickshell)
+
+Nandoroid uses native Quickshell Global Shortcuts for specialized tool operations. These are triggered using the `global` dispatcher in Hyprland with the format `quickshell:<name>`.
+
+| Shortcut Name           | Description                      | Hyprland Bind Example                                                                      |
+| :---------------------- | :------------------------------- | :----------------------------------------------------------------------------------------- |
+| `spotlightClipboard`    | Open Spotlight in Clipboard mode | `bindd = SUPER, V, Clipboard history, global, quickshell:spotlightClipboard`               |
+| `spotlightEmoji`        | Open Spotlight in Emoji mode     | `bindd = SUPER, E, Emoji picker, global, quickshell:spotlightEmoji`                        |
+| `regionScreenshot`      | Capture selected region          | `bindd = SUPER, S, Region screenshot, global, quickshell:regionScreenshot`                 |
+| `regionOcr`             | Extract text from region         | `bindd = SUPER SHIFT, S, Region OCR, global, quickshell:regionOcr`                         |
+| `regionSearch`          | Visual search from region        | `bindd = SUPER, Z, Visual search, global, quickshell:regionSearch`                         |
+| `regionRecord`          | Record selected region           | `bindd = SUPER, R, Record region, global, quickshell:regionRecord`                         |
+| `regionRecordWithSound` | Record region with audio         | `bindd = SUPER SHIFT, R, Record region w/ audio, global, quickshell:regionRecordWithSound` |
+
+</details>
+
+## Credits
+
+### Core Framework
+
+- **[Quickshell](https://github.com/outfoxxed)** - The QML-based framework powering this shell environment.
+
+### Design References & Special Thanks
+
+This project is a personal creation heavily inspired by the following developers and their repositories:
+
+- **[end-4](https://github.com/end-4)** - Architecture and shell logic inspired by [dots-hyprland](https://github.com/end-4/dots-hyprland).
+- **[vaguesyntax (Vynx)](https://github.com/vaguesyntax)** - Quickshell translation references from [ii-vynx](https://github.com/vaguesyntax/ii-vynx).
+- **[AvengeMedia](https://github.com/AvengeMedia)** - System monitoring logic from [DankMaterialShell](https://github.com/AvengeMedia/DankMaterialShell) and [dgop](https://github.com/AvengeMedia/dgop).
+- **[Axenide](https://github.com/Axenide)** - Notch concept and spatial references from [Ambxst](https://github.com/Axenide/Ambxst) (AGPL-3.0).
+
+### Assets
+
+- **Weather Icons:** Sourced from [mrdarrengriffin/google-weather-icons](https://github.com/mrdarrengriffin/google-weather-icons).
+  - _Disclaimer: These icons are property of Google. Used here for aesthetic purposes in this community project._

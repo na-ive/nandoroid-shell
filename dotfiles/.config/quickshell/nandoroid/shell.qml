@@ -21,6 +21,7 @@ import "panels/SystemMonitor"
 import "panels/Polkit"
 import "panels/RegionSelector"
 import "panels/ScreenCorners"
+import "panels/Overview"
 
 import QtQuick
 import Quickshell
@@ -81,8 +82,9 @@ ShellRoot {
     // ── Phase 8: Session Menu ──
     SessionPanel {}
 
-    // ── Phase 9: Launcher ──
+    // ── Phase 9: Launcher & Overview ──
     Launcher {}
+    OverviewPopup {}
 
     SpotlightLauncher {}
 
@@ -137,6 +139,13 @@ ShellRoot {
         function open() { GlobalStates.quickSettingsOpen = true }
         function close() { GlobalStates.quickSettingsOpen = false }
         function toggle() { GlobalStates.quickSettingsOpen = !GlobalStates.quickSettingsOpen }
+    }
+
+    IpcHandler {
+        target: "overview"
+        function open() { GlobalStates.overviewOpen = true }
+        function close() { GlobalStates.overviewOpen = false }
+        function toggle() { GlobalStates.overviewOpen = !GlobalStates.overviewOpen }
     }
 
     IpcHandler {

@@ -44,9 +44,10 @@ Item {
     // Layout cycle handlers
     MouseArea {
         anchors.fill: parent
-        acceptedButtons: Qt.MiddleButton
+        acceptedButtons: Qt.MiddleButton | Qt.RightButton
         onClicked: (mouse) => {
             if (mouse.button === Qt.MiddleButton) HyprlandData.cycleLayout()
+            if (mouse.button === Qt.RightButton) GlobalStates.overviewOpen = !GlobalStates.overviewOpen
         }
     }
 

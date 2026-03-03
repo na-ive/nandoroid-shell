@@ -286,6 +286,19 @@ Singleton {
                 property int updateInterval: 30 // in minutes
             }
 
+            // ──────────────────────────────────────────────
+            // Overview Panel
+            // ──────────────────────────────────────────────
+            property QtObject overview: QtObject {
+                property int rows: 2
+                property int columns: 5
+                property real scale: 0.15
+                property real workspaceSpacing: 10
+            }
+
+            ///////////////////////////////////
+            /// Signals & Functions
+            ///////////////////////////////////
             // --- Notifications ---
             property JsonObject notifications: JsonObject {
                 property int timeout_ms: 2000
