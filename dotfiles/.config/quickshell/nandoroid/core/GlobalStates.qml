@@ -3,6 +3,8 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import Quickshell
+import Quickshell.Io
+import Quickshell.Hyprland
 
 /**
  * Central state management for all NAnDoroid panels.
@@ -25,6 +27,7 @@ Singleton {
     property bool calendarOpen: false
     property bool systemMonitorOpen: false
     property bool regionSelectorOpen: false
+    property bool overviewOpen: false
     property string wallpaperSelectorTarget: "desktop" // "desktop" or "lock"
     property var wallpaperSelectorWindow: null // For focus-grab synchronization
     property var activeComboBox: null
@@ -149,6 +152,20 @@ Singleton {
         }
     }
 
+    onOverviewOpenChanged: {
+        if (overviewOpen) {
+            notificationCenterOpen = false
+            quickSettingsOpen = false
+            launcherOpen = false
+            spotlightOpen = false
+            quickWallpaperOpen = false
+            calendarOpen = false
+            sessionOpen = false
+            systemMonitorOpen = false
+            settingsOpen = false
+        }
+    }
+
     function closeAllPanels() {
         notificationCenterOpen = false
         quickSettingsOpen = false
@@ -159,6 +176,51 @@ Singleton {
         calendarOpen = false
         systemMonitorOpen = false
         sessionOpen = false
+        overviewOpen = false
         // Note: wallpaperSelectorOpen and regionSelectorOpen are excluded
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // HYPRLAND LAYOUT STATE (dynamic, not persisted)
+    // ═══════════════════════════════════════════════════════════════
+    property string hyprlandLayout: "dwindle"
+    property bool hyprlandLayoutReady: false
+    readonly property var availableLayouts: ["dwindle", "master", "scrolling"]
+
+    function setHyprlandLayout(layout) {
+        if (availableLayouts.includes(layout)) {
+            hyprlandLayout = layout;
+        }
+    }
+
+    function cycleHyprlandLayout() {
+        const currentIndex = availableLayouts.indexOf(hyprlandLayout);
+        const nextIndex = (currentIndex + 1) % availableLayouts.length;
+        hyprlandLayout = availableLayouts[nextIndex];
+    }
+
+    // Query current layout from Hyprland on startup
+    Process {
+        id: layoutQueryProcess
+        command: ["hyprctl", "getoption", "general:layout", "-j"]
+        running: true
+        stdout: SplitParser {
+            onRead: data => {
+                try {
+                    const parsed = JSON.parse(data);
+                    if (parsed.str && root.availableLayouts.includes(parsed.str)) {
+                        root.hyprlandLayout = parsed.str;
+                        console.log("GlobalStates: Layout inicial desde Hyprland: " + parsed.str);
+                    }
+                } catch (e) {
+                    console.warn("GlobalStates: Error parsing layout from hyprctl: " + e);
+                }
+                root.hyprlandLayoutReady = true;
+            }
+        }
+        onExited: {
+            // Mark as ready even if parsing failed
+            root.hyprlandLayoutReady = true;
+        }
     }
 }

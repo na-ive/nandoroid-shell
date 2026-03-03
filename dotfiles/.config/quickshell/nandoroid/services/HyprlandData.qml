@@ -5,6 +5,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 import Quickshell.Hyprland
+import "../core"
 
 /**
  * Provides Hyprland workspace and window data via hyprctl JSON.
@@ -63,6 +64,7 @@ Singleton {
         
         const nextLayout = layouts[index];
         layoutProc.exec(["hyprctl", "keyword", "general:layout", nextLayout]);
+        GlobalStates.hyprlandLayout = nextLayout;
         root.layoutChanged();
         refreshTimer.restart(); // Refresh data with a small delay
     }

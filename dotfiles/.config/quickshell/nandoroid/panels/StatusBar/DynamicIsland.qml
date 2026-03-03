@@ -310,9 +310,14 @@ Item {
             hoverEnabled: true
             preventStealing: true
             cursorShape: Qt.PointingHandCursor
+            acceptedButtons: Qt.LeftButton | Qt.MiddleButton | Qt.RightButton
             onClicked: (mouse) => {
                 if (mouse.button === Qt.MiddleButton) {
                     HyprlandData.cycleLayout();
+                    return;
+                }
+                if (mouse.button === Qt.RightButton) {
+                    GlobalStates.overviewOpen = !GlobalStates.overviewOpen;
                     return;
                 }
                 if (islandState === "notification" && Notifications.activePopup) {
