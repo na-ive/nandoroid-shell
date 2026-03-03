@@ -11,6 +11,14 @@ A Quickshell-based desktop shell for Hyprland adopting Android 16 design element
 - **Deep Customizability:** Extensive personalization options (clocks, lockscreen visuals, UI sizing) accessible directly via the built-in Settings panel.
 - **Auto-generated Colors:** Entire shell theme dynamically generated from your wallpaper's colors using Material 3 design tokens (via Matugen).
 
+## Screenshots
+
+|                                       Desktop with stacked clock                                        |                                         Settings and System monitor                                          |
+| :-------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------: |
+| <img src="https://github.com/user-attachments/assets/34d9e88e-dcf7-4916-9797-38b6429dfbae" /> | <img src="https://github.com/user-attachments/assets/ea81d8aa-ecf0-4fd8-8d23-3619f01a35f7" /> |
+|                                     **Quick Settings**                                     |                                      **Notification Center**                                      |
+| <img src="https://github.com/user-attachments/assets/35d98451-e5d3-44ad-9872-8efc4394ff1c" /> | <img src="https://github.com/user-attachments/assets/b968526c-f6e8-4220-8dd9-0acb86a3dc0c" /> |
+
 ## Installation (Alpha Stage)
 
 _Note: The automated installer script is currently under development. Please use the following manual installation method._
@@ -88,7 +96,7 @@ _Note: The automated installer script is currently under development. Please use
 
 ## Configuration
 
-The `configs/` directory distributed with this repository contains necessary supplementary configurations. It includes the required `matugen` configuration files and the `starship.toml` prompt configuration to run correctly alongside this shell environment.
+The `.config/` directory distributed with this repository contains necessary supplementary configurations. It includes the required `matugen` configuration files and the `starship.toml` prompt configuration to run correctly alongside this shell environment.
 
 ## IPC Commands
 
