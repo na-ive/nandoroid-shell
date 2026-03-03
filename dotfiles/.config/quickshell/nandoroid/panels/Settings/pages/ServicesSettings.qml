@@ -1056,6 +1056,94 @@ Flickable {
             }
         }
 
+        // ── Performance Monitoring Section ──
+        ColumnLayout {
+            Layout.fillWidth: true
+            spacing: 4
+            Layout.topMargin: 16
+
+            RowLayout {
+                spacing: 12
+                Layout.bottomMargin: 8
+                MaterialSymbol {
+                    text: "monitoring"
+                    iconSize: 24
+                    color: Appearance.colors.colPrimary
+                }
+                StyledText {
+                    text: "Performance Monitoring"
+                    font.pixelSize: Appearance.font.pixelSize.large
+                    font.weight: Font.Medium
+                    color: Appearance.colors.colOnLayer1
+                }
+            }
+
+            SegmentedWrapper {
+                Layout.fillWidth: true
+                implicitHeight: perfStatsRow.implicitHeight + 40
+                orientation: Qt.Vertical
+                color: Appearance.m3colors.m3surfaceContainerHigh
+                smallRadius: 8
+                fullRadius: 20
+                
+                RowLayout {
+                    id: perfStatsRow
+                    anchors.fill: parent
+                    anchors.margins: 20
+                    spacing: 20
+
+                    ColumnLayout {
+                        spacing: 2
+                        StyledText {
+                            text: "Show Performance Stats"
+                            font.pixelSize: Appearance.font.pixelSize.normal
+                            font.weight: Font.Medium
+                            color: Appearance.colors.colOnLayer1
+                        }
+                        StyledText {
+                            text: "Display CPU, RAM, and Disk usage in the Quick Settings panel."
+                            font.pixelSize: Appearance.font.pixelSize.small
+                            color: Appearance.colors.colSubtext
+                        }
+                    }
+                    
+                    Item { Layout.fillWidth: true }
+                    
+                    // Custom Switch
+                    Rectangle {
+                        implicitWidth: 52
+                        implicitHeight: 28
+                        radius: 14
+                        color: (Config.ready && Config.options.quickSettings && Config.options.quickSettings.showPerformanceStats)
+                            ? Appearance.colors.colPrimary
+                            : Appearance.m3colors.m3surfaceContainerLowest
+
+                        Rectangle {
+                            width: 20
+                            height: 20
+                            radius: 10
+                            anchors.verticalCenter: parent.verticalCenter
+                            x: (Config.ready && Config.options.quickSettings && Config.options.quickSettings.showPerformanceStats) ? parent.width - width - 4 : 4
+                            color: (Config.ready && Config.options.quickSettings && Config.options.quickSettings.showPerformanceStats)
+                                ? Appearance.colors.colOnPrimary
+                                : Appearance.colors.colSubtext
+                            Behavior on x { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
+                        }
+
+                        MouseArea {
+                            anchors.fill: parent
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: {
+                                if (Config.ready && Config.options.quickSettings) {
+                                    Config.options.quickSettings.showPerformanceStats = !Config.options.quickSettings.showPerformanceStats;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         // ── Media Management Section ──
         ColumnLayout {
             Layout.fillWidth: true
@@ -1383,7 +1471,71 @@ Flickable {
                     }
                 }
 
-                // 2. Privacy Indicators
+                // 2. Notification Counter
+                SegmentedWrapper {
+                    Layout.fillWidth: true
+                    implicitHeight: notifyCounterRow.implicitHeight + 40
+                    orientation: Qt.Vertical
+                    color: Appearance.m3colors.m3surfaceContainerHigh
+                    maxRadius: 20
+                    
+                    RowLayout {
+                        id: notifyCounterRow
+                        anchors.fill: parent
+                        anchors.margins: 20
+                        spacing: 20
+
+                        ColumnLayout {
+                            spacing: 2
+                            StyledText {
+                                text: "Notification Counter"
+                                font.pixelSize: Appearance.font.pixelSize.normal
+                                font.weight: Font.Medium
+                                color: Appearance.colors.colOnLayer1
+                            }
+                            StyledText {
+                                text: "Unread notification indicator style in the status bar."
+                                font.pixelSize: Appearance.font.pixelSize.small
+                                color: Appearance.colors.colSubtext
+                            }
+                        }
+                        
+                        Item { Layout.fillWidth: true }
+                        
+                        RowLayout {
+                            spacing: 4
+                            Layout.preferredHeight: 40
+                            
+                            Repeater {
+                                model: [
+                                    { label: "Counter", value: "counter" },
+                                    { label: "Simple", value: "simple" },
+                                    { label: "Hidden", value: "hidden" }
+                                ]
+                                delegate: SegmentedButton {
+                                    isHighlighted: (Config.ready && Config.options.notifications) ? Config.options.notifications.counterStyle === modelData.value : false
+                                    Layout.fillHeight: true
+                                    
+                                    buttonText: modelData.label
+                                    leftPadding: 16
+                                    rightPadding: 16
+                                    
+                                    colActive: Appearance.m3colors.m3primary
+                                    colActiveText: Appearance.m3colors.m3onPrimary
+                                    colInactive: Appearance.m3colors.m3surfaceContainerLow
+                                    
+                                    onClicked: {
+                                        if (Config.ready && Config.options.notifications) {
+                                            Config.options.notifications.counterStyle = modelData.value;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // 3. Privacy Indicators
                 SegmentedWrapper {
                     Layout.fillWidth: true
                     implicitHeight: privRow.implicitHeight + 40
@@ -1448,7 +1600,7 @@ Flickable {
                     }
                 }
 
-                // 3. Region Selector: Windows Snapping
+                // 4. Region Selector: Windows Snapping
                 SegmentedWrapper {
                     Layout.fillWidth: true
                     implicitHeight: snapRow.implicitHeight + 40

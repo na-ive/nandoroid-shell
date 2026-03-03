@@ -242,6 +242,7 @@ Singleton {
             // --- Quick Settings ---
             property JsonObject quickSettings: JsonObject {
                 property bool caffeineActive: false
+                property bool showPerformanceStats: true
                 property list<var> toggles: [
                     { "type": "wifi", "size": 2 },
                     { "type": "bluetooth", "size": 2 },
@@ -288,6 +289,7 @@ Singleton {
             // --- Notifications ---
             property JsonObject notifications: JsonObject {
                 property int timeout_ms: 2000
+                property string counterStyle: "counter" // counter, simple, hidden
             }
 
             // --- Battery ---

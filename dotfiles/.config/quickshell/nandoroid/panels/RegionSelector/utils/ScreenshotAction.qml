@@ -17,7 +17,8 @@ Singleton {
         Search,
         CharRecognition,
         Record,
-        RecordWithSound
+        RecordWithSound,
+        RecordFullscreenWithSound
     }
 
     property string imageSearchEngineBaseUrl: Config.ready ? Config.options.search.imageSearch.imageSearchEngineBaseUrl : "https://lens.google.com/uploadbyurl?url="
@@ -80,6 +81,9 @@ Singleton {
                 
             case ScreenshotAction.Action.RecordWithSound:
                 return ["bash", "-c", `'${recordScript}' --region '${slurpRegion}' --sound`]
+            
+            case ScreenshotAction.Action.RecordFullscreenWithSound:
+                return ["bash", "-c", `'${recordScript}' --fullscreen --sound`]
                 
             default:
                 console.warn("[Region Selector] Unknown snip action, skipping snip.");
