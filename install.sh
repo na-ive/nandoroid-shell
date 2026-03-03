@@ -74,7 +74,6 @@ if [[ "$DEP_CHOICE" =~ ^[Yy] ]]; then
         "hyprlock"
         "hyprsunset"
         "jq"
-        "socat"
         "xdg-utils"
         "wl-clipboard"
         "kitty"
