@@ -13,25 +13,20 @@ A Quickshell-based desktop shell for Hyprland adopting Android 16 design element
 
 ## Screenshots
 
-|                                       Desktop with stacked clock                                        |                                         Settings and System monitor                                          |
+|                                  Desktop with stacked clock                                   |                                  Settings and System monitor                                  |
 | :-------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------: |
 | <img src="https://github.com/user-attachments/assets/34d9e88e-dcf7-4916-9797-38b6429dfbae" /> | <img src="https://github.com/user-attachments/assets/ea81d8aa-ecf0-4fd8-8d23-3619f01a35f7" /> |
-|                                     **Quick Settings**                                     |                                      **Notification Center**                                      |
+|                                      **Quick Settings**                                       |                                    **Notification Center**                                    |
 | <img src="https://github.com/user-attachments/assets/35d98451-e5d3-44ad-9872-8efc4394ff1c" /> | <img src="https://github.com/user-attachments/assets/b968526c-f6e8-4220-8dd9-0acb86a3dc0c" /> |
 
 ## Installation (Alpha Stage)
 
-_Note: The automated installer script is currently under development. Please use the following manual installation method._
+You can easily install Nandoroid Shell by running the following command in your terminal. The script will guide you through cloning the repository, copying the required configuration files, and optionally injecting themes into your existing setups (e.g., Kitty, Fish, Hyprland).
 
-1.  Clone this repository to your local source directory:
-    ```bash
-    git clone https://github.com/na-ive/nandoroid-shell ~/.local/src/nandoroid-shell
-    ```
-2.  Copy the `nandoroid` shell configuration to your Quickshell config directory:
-    ```bash
-    mkdir -p ~/.config/quickshell
-    cp -r ~/.local/src/nandoroid-shell/dotfiles/.config/quickshell/nandoroid ~/.config/quickshell/
-    ```
+```bash
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/na-ive/nandoroid-shell/main/install.sh)"
+```
+
 3.  Ensure primary dependencies are installed on your system:
     - `quickshell`
     - `matugen`
