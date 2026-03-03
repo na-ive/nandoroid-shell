@@ -168,14 +168,14 @@ Item {
                 fillMode: Image.PreserveAspectCrop
                 source: Config.options?.appearance?.background?.wallpaperPath || ""
             }
+        } // ADDED MISSING BRACE for backgroundLayer Item
 
-            // Semi-transparent overlay
-            Rectangle {
-                anchors.fill: parent
-                radius: (1)
-                color: Appearance.colors.colBackground || "transparent"
-                opacity: 0.3
-            }
+        // Semi-transparent overlay
+        Rectangle {
+            anchors.fill: parent
+            radius: (1)
+            color: Appearance.colors.colBackground || "transparent"
+            opacity: 0.3
         }
 
         // Border indicator for drag target

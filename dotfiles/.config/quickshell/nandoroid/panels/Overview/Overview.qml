@@ -229,17 +229,20 @@ Item {
                             id: workspace
                             property int colIndex: index
                             property int workspaceValue: overviewRoot.workspaceGroup * workspacesShown + rowIndex * overviewRoot.columns + colIndex + 1
-                            property color defaultWorkspaceColor: Appearance.colors.colBackground
+                            property bool isActiveWorkspace: Hyprland.focusedWorkspace?.id === workspaceValue
+                            
+                            // Nandoroid Styling
+                            property color defaultWorkspaceColor: isActiveWorkspace ? Functions.ColorUtils.applyAlpha(Appearance.colors.colPrimaryContainer, 0.4) : Appearance.colors.colLayer0
                             property color hoveredWorkspaceColor: Appearance.m3colors.m3surfaceContainer
                             property color hoveredBorderColor: Appearance.m3colors.m3outline
                             property bool hoveredWhileDragging: false
 
                             implicitWidth: overviewRoot.workspaceImplicitWidth + workspacePadding
                             implicitHeight: overviewRoot.workspaceImplicitHeight + workspacePadding
-                            color: "transparent"
-                            radius: (2)
-                            border.width: 2
-                            border.color: hoveredWhileDragging ? hoveredBorderColor : "transparent"
+                            color: defaultWorkspaceColor
+                            radius: 0
+                            border.width: isActiveWorkspace || hoveredWhileDragging ? 2 : 1
+                            border.color: hoveredWhileDragging ? hoveredBorderColor : (isActiveWorkspace ? Appearance.colors.colPrimary : Appearance.colors.colOutlineVariant)
                             clip: true
 
                             // Wallpaper background for each workspace

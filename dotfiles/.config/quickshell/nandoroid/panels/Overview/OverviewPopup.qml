@@ -71,8 +71,8 @@ PanelWindow {
     Rectangle {
         id: backdrop
         anchors.fill: parent
-        color: "#80000000"
-        opacity: overviewOpen ? 0.5 : 0
+        color: Appearance.colors.colScrim
+        opacity: overviewOpen ? 1 : 0
 
         Behavior on opacity {
             enabled: 250 > 0
@@ -94,8 +94,8 @@ PanelWindow {
     Item {
         id: mainContainer
         anchors.centerIn: parent
-        width: Math.max(searchContainer.width, overviewContainer.width + (scrollbarContainer.visible ? scrollbarContainer.width + 8 : 0))
-        height: searchContainer.height + 8 + overviewContainer.height
+        width: Math.max(searchContainer.width, overviewContainer.width)
+        height: searchContainer.height + 16 + overviewContainer.height
 
         opacity: overviewOpen ? 1 : 0
         scale: overviewOpen ? 1 : 0.9
@@ -117,52 +117,68 @@ PanelWindow {
             }
         }
 
-        // Search input container
+        // Search input container - Android Pill Style
         Rectangle {
             id: searchContainer
-            color: Appearance.colors.colLayer1
+            color: Appearance.m3colors.m3surfaceContainerHigh
             anchors.top: parent.top
             anchors.horizontalCenter: parent.horizontalCenter
-            width: Math.min(400, overviewContainer.width)
-            height: 80
-            radius: (24)
+            width: Math.min(480, Math.max(300, overviewContainer.width * 0.6))
+            height: 56
+            radius: 28
 
             RowLayout {
                 anchors.fill: parent
-                anchors.margins: 16
-                spacing: 8
+                anchors.leftMargin: 20
+                anchors.rightMargin: 20
+                spacing: 12
 
                 // Icon container
-                Rectangle {
-                    Layout.preferredWidth: 48
-                    Layout.preferredHeight: 48
+                MaterialSymbol {
                     Layout.alignment: Qt.AlignVCenter
-                    color: "transparent"
-
-                    Text {
-                        anchors.centerIn: parent
-                        text: "grid_view"
-                        font.family: "Material Symbols Rounded"
-                        font.pixelSize: 24
-                        color: Appearance.colors.colPrimary
-                    }
+                    text: "search"
+                    iconSize: 22
+                    color: Appearance.m3colors.m3onSurfaceVariant
                 }
 
                 // Search input
-                TextField {
+                TextInput {
                     id: searchInput
                     Layout.fillWidth: true
-                    Layout.preferredHeight: 48
                     Layout.alignment: Qt.AlignVCenter
+                    
+                    font.pixelSize: 18
+                    color: Appearance.m3colors.m3onSurface
+                    focus: true
 
-                    placeholderText: qsTr("Search windows...")
-                    color: Appearance && Appearance.colors && Appearance.colors.colOnLayer1 ? Appearance.colors.colOnLayer1 : "white"
-                    placeholderTextColor: Appearance && Appearance.m3colors && Appearance.m3colors.m3onSurfaceVariant ? Appearance.m3colors.m3onSurfaceVariant : "gray"
-                    font.pixelSize: Appearance && Appearance.font && Appearance.font.pixelSize && Appearance.font.pixelSize.medium ? Appearance.font.pixelSize.medium : 14
-                    font.family: Appearance && Appearance.font && Appearance.font.family && Appearance.font.family.main ? Appearance.font.family.main : "sans-serif"
+                    Timer {
+                        id: focusTimer
+                        interval: 50
+                        repeat: false
+                        onTriggered: searchInput.forceActiveFocus()
+                    }
 
-                    background: Rectangle {
-                        color: "transparent"
+                    Component.onCompleted: {
+                        if (overviewOpen) focusTimer.start();
+                    }
+
+                    Connections {
+                        target: GlobalStates
+                        function onOverviewOpenChanged() {
+                            if (GlobalStates.overviewOpen) {
+                                if (searchInput) searchInput.text = "";
+                                if (overviewLoader.item) overviewLoader.item.searchQuery = "";
+                                focusTimer.start();
+                            }
+                        }
+                    }
+
+                    Text {
+                        text: "Search windows..."
+                        visible: !searchInput.text
+                        color: Appearance.m3colors.m3onSurfaceVariant
+                        opacity: 0.6
+                        font: searchInput.font
                     }
 
                     // Match counter suffix
@@ -170,26 +186,31 @@ PanelWindow {
                         id: matchCounter
                         visible: overviewLoader.item && overviewLoader.item.searchQuery.length > 0
                         anchors.right: parent.right
-                        anchors.rightMargin: 16
                         anchors.verticalCenter: parent.verticalCenter
                         text: {
-                            if (!overviewLoader.item)
-                                return "0";
+                            if (!overviewLoader.item) return "0";
                             const matches = overviewLoader.item.matchingWindows.length;
                             if (matches > 0) {
                                 return `${overviewLoader.item.selectedMatchIndex + 1}/${matches}`;
                             }
                             return "0";
                         }
-                        font.family: Appearance && Appearance.font && Appearance.font.family && Appearance.font.family.main ? Appearance.font.family.main : "sans-serif"
-                        font.pixelSize: Appearance && Appearance.font && Appearance.font.pixelSize && Appearance.font.pixelSize.small ? Appearance.font.pixelSize.small : 12
-                        color: (overviewLoader.item && overviewLoader.item.matchingWindows.length > 0) ? (Appearance && Appearance.colors && Appearance.colors.colPrimary ? Appearance.colors.colPrimary : "blue") : (Appearance && Appearance.m3colors && Appearance.m3colors.m3error ? Appearance.m3colors.m3error : "red")
+                        font: searchInput.font
+                        color: (overviewLoader.item && overviewLoader.item.matchingWindows.length > 0) ? Appearance.colors.colPrimary : Appearance.m3colors.m3error
                         opacity: 0.8
                     }
 
-                    onTextEdited: {
-                        if (overviewLoader.item) {
-                            overviewLoader.item.searchQuery = text;
+                    onTextChanged: {
+                        debounceTimer.restart()
+                    }
+
+                    Timer {
+                        id: debounceTimer
+                        interval: 20
+                        onTriggered: {
+                            if (overviewLoader.item) {
+                                overviewLoader.item.searchQuery = searchInput.text;
+                            }
                         }
                     }
 
@@ -245,7 +266,7 @@ PanelWindow {
 
                     Keys.onEscapePressed: event => {
                         if (searchInput.text.length > 0) {
-                            searchInput.clear();
+                            searchInput.text = "";
                             if (overviewLoader.item) {
                                 overviewLoader.item.searchQuery = "";
                             }
@@ -296,97 +317,105 @@ PanelWindow {
         Item {
             id: overviewContainer
             anchors.top: searchContainer.bottom
-            anchors.topMargin: 8
+            anchors.topMargin: 16
             anchors.horizontalCenter: parent.horizontalCenter
-            width: overviewLoader.item ? overviewLoader.item.implicitWidth + 48 : 400
-            height: overviewLoader.item ? overviewLoader.item.implicitHeight + 48 : 300
+            property real loaderWidth: overviewLoader.item ? overviewLoader.item.implicitWidth : 368
+            property real loaderHeight: overviewLoader.item ? overviewLoader.item.implicitHeight : 300
+            property bool showScrollbar: overviewLoader.item && overviewLoader.item.needsScrollbar
+            
+            width: loaderWidth + 32 + (showScrollbar ? 16 : 0)
+            height: loaderHeight + 32
 
             // Background panel
             Rectangle {
                 id: overviewBackground
                 color: Appearance.colors.colLayer1
                 anchors.fill: parent
-                radius: (20)
+                radius: Appearance.rounding.panel
             }
 
             // Loader for Overview to prevent issues during destruction
             Loader {
                 id: overviewLoader
-                anchors.centerIn: parent
+                anchors.left: parent.left
+                anchors.leftMargin: 16
+                anchors.verticalCenter: parent.verticalCenter
+                width: item ? item.implicitWidth : 0
+                height: item ? item.implicitHeight : 0
                 active: overviewOpen
 
                 sourceComponent: OverviewView {
                     currentScreen: overviewPopup.screen
                 }
             }
-        }
 
-        // External scrollbar for scrolling mode (to the right of overview)
-        Rectangle {
-            id: scrollbarContainer
-            visible: overviewLoader.item && overviewLoader.item.needsScrollbar
-            color: Appearance.colors.colLayer1
-            anchors.left: overviewContainer.right
-            anchors.leftMargin: 8
-            anchors.verticalCenter: overviewContainer.verticalCenter
-            width: 32
-            height: Math.max(overviewContainer.height * 0.6, 200)
-            radius: (0)
+            // Internal scrollbar for scrolling mode (anchored to the right of overview)
+            Rectangle {
+                id: scrollbarContainer
+                visible: overviewContainer.showScrollbar
+                color: "transparent"
+                anchors.left: overviewLoader.right
+                anchors.leftMargin: 12
+                anchors.top: overviewLoader.top
+                anchors.bottom: overviewLoader.bottom
+                width: 8
 
-            MouseArea {
-                anchors.fill: parent
-                acceptedButtons: Qt.NoButton
-                onWheel: wheel => {
-                    if (overviewLoader.item && overviewLoader.item.flickable) {
-                        const flickable = overviewLoader.item.flickable;
-                        const delta = wheel.angleDelta.y > 0 ? -150 : 150;
-                        flickable.contentY = Math.max(0, Math.min(flickable.contentY + delta, flickable.contentHeight - flickable.height));
-                    }
-                }
-            }
-
-            ScrollBar {
-                id: externalScrollBar
-                anchors.centerIn: parent
-                height: parent.height - 16
-                width: 12
-                orientation: Qt.Vertical
-                policy: ScrollBar.AlwaysOn
-
-                position: overviewLoader.item && overviewLoader.item.flickable ? overviewLoader.item.flickable.visibleArea.yPosition : 0
-                size: overviewLoader.item && overviewLoader.item.flickable ? overviewLoader.item.flickable.visibleArea.heightRatio : 1
-
-                // Notify flickable when manually scrolling to disable animation
-                onActiveChanged: {
-                    if (overviewLoader.item) {
-                        overviewLoader.item.isManualScrolling = active;
-                    }
-                }
-
-                onPositionChanged: {
-                    if (active && overviewLoader.item && overviewLoader.item.flickable) {
-                        overviewLoader.item.flickable.contentY = position * overviewLoader.item.flickable.contentHeight;
-                    }
-                }
-
-                contentItem: Rectangle {
-                    implicitWidth: 12
-                    radius: (-10)
-                    color: externalScrollBar.pressed ? Appearance.colors.colPrimary : (externalScrollBar.hovered ? Qt.lighter(Appearance.colors.colPrimary, 1.2) : Appearance.colors.colPrimary)
-
-                    Behavior on color {
-                        enabled: 250 > 0
-                        ColorAnimation {
-                            duration: 250 / 2
+                MouseArea {
+                    anchors.fill: parent
+                    acceptedButtons: Qt.NoButton
+                    onWheel: wheel => {
+                        if (overviewLoader.item && overviewLoader.item.flickable) {
+                            const flickable = overviewLoader.item.flickable;
+                            const delta = wheel.angleDelta.y > 0 ? -150 : 150;
+                            flickable.contentY = Math.max(0, Math.min(flickable.contentY + delta, flickable.contentHeight - flickable.height));
                         }
                     }
                 }
 
-                background: Rectangle {
-                    implicitWidth: 12
-                    radius: (-10)
-                    color: Appearance.m3colors.m3surfaceContainer
-                    opacity: 0.3
+                ScrollBar {
+                    id: externalScrollBar
+                    anchors.centerIn: parent
+                    height: parent.height
+                    width: 8
+                    orientation: Qt.Vertical
+                    policy: ScrollBar.AlwaysOn
+                    padding: 0
+
+                    position: overviewLoader.item && overviewLoader.item.flickable ? overviewLoader.item.flickable.visibleArea.yPosition : 0
+                    size: overviewLoader.item && overviewLoader.item.flickable ? overviewLoader.item.flickable.visibleArea.heightRatio : 1
+
+                    // Notify flickable when manually scrolling to disable animation
+                    onActiveChanged: {
+                        if (overviewLoader.item) {
+                            overviewLoader.item.isManualScrolling = active;
+                        }
+                    }
+
+                    onPositionChanged: {
+                        if (active && overviewLoader.item && overviewLoader.item.flickable) {
+                            overviewLoader.item.flickable.contentY = position * overviewLoader.item.flickable.contentHeight;
+                        }
+                    }
+
+                    contentItem: Rectangle {
+                        implicitWidth: 8
+                        radius: 4
+                        color: Appearance.colors.colPrimary
+
+                        Behavior on color {
+                            enabled: 250 > 0
+                            ColorAnimation {
+                                duration: 250 / 2
+                            }
+                        }
+                    }
+
+                    background: Rectangle {
+                        implicitWidth: 8
+                        radius: 4
+                        color: Appearance.colors.colLayer0
+                        opacity: 0.5
+                    }
                 }
             }
         }

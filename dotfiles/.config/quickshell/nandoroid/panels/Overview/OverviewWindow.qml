@@ -60,7 +60,7 @@ Item {
     readonly property real targetWindowHeight: Math.round((windowData?.size[1] || 100) * scale)
     readonly property bool compactMode: targetWindowHeight < 60 || targetWindowWidth < 60
     readonly property string iconPath: AppSearch && typeof AppSearch.guessIcon === 'function' ? AppSearch.guessIcon(windowData?.class || "") : "application-x-executable"
-    readonly property int calculatedRadius: (-2)
+    readonly property int calculatedRadius: Appearance.rounding.normal
 
     signal dragStarted
     signal dragFinished(int targetWorkspace)
@@ -146,9 +146,9 @@ Item {
         id: previewBackground
         anchors.fill: parent
         radius: root.calculatedRadius
-        color: pressed ? (Appearance.m3colors.m3surfaceBright || "transparent") : hovered ? (Appearance.m3colors.m3surface || "transparent") : (Appearance.colors.colBackground || "transparent")
-        border.color: root.isSearchSelected ? Appearance.m3colors.m3tertiary : root.isSearchMatch ? Appearance.colors.colPrimary : Appearance.colors.colPrimary
-        border.width: root.isSearchSelected ? 3 : root.isSearchMatch ? 2 : (hovered ? 2 : 0)
+        color: pressed ? Appearance.colors.colLayer1Active : hovered ? Appearance.colors.colLayer1Hover : Appearance.colors.colLayer1
+        border.color: root.isSearchSelected ? Appearance.m3colors.m3tertiary : root.isSearchMatch ? Appearance.colors.colPrimary : Appearance.colors.colOutlineVariant
+        border.width: root.isSearchSelected ? 3 : root.isSearchMatch ? 2 : (hovered ? 2 : 1)
         visible: !windowPreview.hasContent
         z: 0
 
@@ -187,9 +187,9 @@ Item {
         id: previewOverlay
         anchors.fill: parent
         radius: root.calculatedRadius
-        color: pressed ? Qt.rgba(Appearance.m3colors.m3surfaceContainerHighest.r, Appearance.m3colors.m3surfaceContainerHighest.g, Appearance.m3colors.m3surfaceContainerHighest.b, 0.5) : hovered ? Qt.rgba(Appearance.m3colors.m3surfaceContainer.r, Appearance.m3colors.m3surfaceContainer.g, Appearance.m3colors.m3surfaceContainer.b, 0.2) : "transparent"
-        border.color: root.isSearchSelected ? Appearance.m3colors.m3tertiary : root.isSearchMatch ? Appearance.colors.colPrimary : Appearance.colors.colPrimary
-        border.width: root.isSearchSelected ? 3 : root.isSearchMatch ? 2 : (hovered ? 2 : 0)
+        color: pressed ? Functions.ColorUtils.applyAlpha(Appearance.colors.colLayer1Active, 0.5) : hovered ? Functions.ColorUtils.applyAlpha(Appearance.colors.colLayer1Hover, 0.4) : "transparent"
+        border.color: root.isSearchSelected ? Appearance.m3colors.m3tertiary : root.isSearchMatch ? Appearance.colors.colPrimary : Appearance.colors.colOutlineVariant
+        border.width: root.isSearchSelected ? 3 : root.isSearchMatch ? 2 : (hovered ? 2 : 1)
         visible: windowPreview.hasContent
         z: 5
 
