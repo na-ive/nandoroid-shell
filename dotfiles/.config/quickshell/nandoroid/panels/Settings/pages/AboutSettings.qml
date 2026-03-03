@@ -515,9 +515,8 @@ Flickable {
 
                     RippleButton {
                         Layout.alignment: Qt.AlignHCenter
+                        implicitWidth: checkBtnContent.implicitWidth + 48
                         implicitHeight: 48
-                        leftPadding: 28
-                        rightPadding: 28
                         buttonRadius: 24
                         colBackground: Appearance.colors.colPrimary
                         onClicked: {
@@ -529,6 +528,7 @@ Flickable {
                             gitTagProc.running = true
                         }
                         RowLayout {
+                            id: checkBtnContent
                             anchors.centerIn: parent
                             spacing: 8
                             MaterialSymbol {
