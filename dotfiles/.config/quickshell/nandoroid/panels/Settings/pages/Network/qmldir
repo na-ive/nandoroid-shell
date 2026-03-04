@@ -1,0 +1,5 @@
+NetworkSettings 1.0 NetworkSettings.qml
+NetworkMainView 1.0 NetworkMainView.qml
+NetworkSavedView 1.0 NetworkSavedView.qml
+NetworkWiredView 1.0 NetworkWiredView.qml
+NetworkAddDialog 1.0 NetworkAddDialog.qml
