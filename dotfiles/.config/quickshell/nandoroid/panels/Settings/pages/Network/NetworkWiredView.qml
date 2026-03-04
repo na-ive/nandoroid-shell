@@ -170,4 +170,4 @@ import Quickshell
                         }
                     }
                 } // End wiredViewCol
-            } // End contentCol
+

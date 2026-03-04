@@ -287,12 +287,14 @@ ColumnLayout {
                     }
                 }
             }
-        }
 
 
         // ── Update Sub-page ──
 
+
     // ── Internal Components ──
+    component BrandingCard: Rectangle {
+
         id: cardRoot
         property string title
         property string name
@@ -438,4 +440,5 @@ ColumnLayout {
         }
     }
 
+    }
 }

@@ -428,7 +428,7 @@ Flickable {
 
     IpcHandler {
         target: "settings_wallpaper"
-        function test(): void {
+        function test() {
             console.log("IPC: Settings Wallpaper page received test signal");
         }
     }

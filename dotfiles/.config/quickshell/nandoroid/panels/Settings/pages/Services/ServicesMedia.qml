@@ -80,7 +80,8 @@ import Quickshell
                                 color: Appearance.colors.colOnLayer1
                                 text: (Config.ready && Config.options.media) ? Config.options.media.priority : ""
                                 onEditingFinished: { if (Config.ready && Config.options.media) Config.options.media.priority = text; }
-                        }
-                    }
                 }
             }
+        }
+    }
+}

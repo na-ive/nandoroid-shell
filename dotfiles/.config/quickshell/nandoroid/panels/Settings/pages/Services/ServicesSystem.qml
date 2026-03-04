@@ -286,6 +286,5 @@ import Quickshell
                             }
                         }
                     }
-                }
             }
         }

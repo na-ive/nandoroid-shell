@@ -270,4 +270,4 @@ import Quickshell
             }
         }
     }
-}
+

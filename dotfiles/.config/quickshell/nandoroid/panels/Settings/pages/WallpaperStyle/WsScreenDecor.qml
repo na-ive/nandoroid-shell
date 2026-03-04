@@ -61,7 +61,7 @@ ColumnLayout {
                                     delegate: SegmentedButton {
                                         required property var modelData
                                         buttonText: modelData.label
-                                        isHighlighted: Config.ready && (Config.options.appearance.screenCorners?.mode ?? 1) === modelData.val
+                                        isHighlighted: Config.ready && (Config.options.appearance.screenCorners ? Config.options.appearance.screenCorners.mode : 1) === modelData.val
                                         colActive: Appearance.m3colors.m3primary
                                         colActiveText: Appearance.m3colors.m3onPrimary
                                         colInactive: Appearance.m3colors.m3surfaceContainerLow
@@ -79,7 +79,7 @@ ColumnLayout {
                         orientation: Qt.Vertical
                         maxRadius: 20
                         color: Appearance.m3colors.m3surfaceContainerHigh
-                        visible: Config.ready && (Config.options.appearance.screenCorners?.mode ?? 1) > 0
+                        visible: Config.ready && (Config.options.appearance.screenCorners ? Config.options.appearance.screenCorners.mode : 1) > 0
                         RowLayout {
                             id: screenCornerRadRow
                             anchors.fill: parent; anchors.margins: 16
