@@ -16,13 +16,41 @@ Item {
     function startIndexing() {
         sections = []
         pageFile.startIndex([
-            "panels/Settings/pages/NetworkSettings.qml",
-            "panels/Settings/pages/BluetoothSettings.qml",
-            "panels/Settings/pages/AudioSettings.qml",
-            "panels/Settings/pages/DisplaySettings.qml",
-            "panels/Settings/pages/WallpaperStyleSettings.qml",
-            "panels/Settings/pages/ServicesSettings.qml",
-            "panels/Settings/pages/AboutSettings.qml"
+            { file: "panels/Settings/pages/Network/NetworkSettings.qml", pageIndex: 0 },
+            { file: "panels/Settings/pages/Network/NetworkMainView.qml", pageIndex: 0 },
+            { file: "panels/Settings/pages/Network/NetworkSavedView.qml", pageIndex: 0 },
+            { file: "panels/Settings/pages/Network/NetworkWiredView.qml", pageIndex: 0 },
+            { file: "panels/Settings/pages/Network/NetworkAddDialog.qml", pageIndex: 0 },
+            { file: "panels/Settings/pages/Bluetooth/BluetoothSettings.qml", pageIndex: 1 },
+            { file: "panels/Settings/pages/Bluetooth/BluetoothPairDialog.qml", pageIndex: 1 },
+            { file: "panels/Settings/pages/Audio/AudioSettings.qml", pageIndex: 2 },
+            { file: "panels/Settings/pages/Audio/AudioDeviceList.qml", pageIndex: 2 },
+            { file: "panels/Settings/pages/Display/DisplaySettings.qml", pageIndex: 3 },
+            { file: "panels/Settings/pages/Display/DisplayEyeCare.qml", pageIndex: 3 },
+            { file: "panels/Settings/pages/WallpaperStyle/WallpaperStyleSettings.qml", pageIndex: 4 },
+            { file: "panels/Settings/pages/WallpaperStyle/WsThemeColor.qml", pageIndex: 4 },
+            { file: "panels/Settings/pages/WallpaperStyle/WsLauncherIcons.qml", pageIndex: 4 },
+            { file: "panels/Settings/pages/WallpaperStyle/WsOverview.qml", pageIndex: 4 },
+            { file: "panels/Settings/pages/WallpaperStyle/WsClock.qml", pageIndex: 4 },
+            { file: "panels/Settings/pages/WallpaperStyle/WsLockscreen.qml", pageIndex: 4 },
+            { file: "panels/Settings/pages/WallpaperStyle/WsStatusBar.qml", pageIndex: 4 },
+            { file: "panels/Settings/pages/WallpaperStyle/WsScreenDecor.qml", pageIndex: 4 },
+            { file: "panels/Settings/pages/WallpaperStyle/WsTypography.qml", pageIndex: 4 },
+            { file: "panels/Settings/pages/WallpaperStyle/WsDateTime.qml", pageIndex: 4 },
+            { file: "panels/Settings/pages/Services/ServicesSettings.qml", pageIndex: 5 },
+            { file: "panels/Settings/pages/Services/ServicesWeather.qml", pageIndex: 5 },
+            { file: "panels/Settings/pages/Services/ServicesSearch.qml", pageIndex: 5 },
+            { file: "panels/Settings/pages/Services/ServicesNetwork.qml", pageIndex: 5 },
+            { file: "panels/Settings/pages/Services/ServicesDisk.qml", pageIndex: 5 },
+            { file: "panels/Settings/pages/Services/ServicesPerformance.qml", pageIndex: 5 },
+            { file: "panels/Settings/pages/Services/ServicesMedia.qml", pageIndex: 5 },
+            { file: "panels/Settings/pages/Services/ServicesPower.qml", pageIndex: 5 },
+            { file: "panels/Settings/pages/Services/ServicesSystem.qml", pageIndex: 5 },
+            { file: "panels/Settings/pages/About/AboutSettings.qml", pageIndex: 6 },
+            { file: "panels/Settings/pages/About/AboutCredits.qml", pageIndex: 6 },
+            { file: "panels/Settings/pages/About/AboutDependency.qml", pageIndex: 6 },
+            { file: "panels/Settings/pages/About/AboutUpdate.qml", pageIndex: 6 },
+            { file: "panels/Settings/pages/About/AboutMainView.qml", pageIndex: 6 }
         ])
     }
 
@@ -49,13 +77,13 @@ Item {
 
         function loadNext() {
             if (currentIndex >= files.length) return
-            path = Quickshell.shellPath(files[currentIndex])
+            path = Quickshell.shellPath(files[currentIndex].file)
             reload()
         }
 
         onLoaded: {
             console.log("[SearchRegistry] Loaded page file:", path)
-            root.indexQmlFile(text(), currentIndex)
+            root.indexQmlFile(text(), files[currentIndex].pageIndex)
             console.log("[SearchRegistry] Indexed", currentIndex + 1, "/", files.length)
             currentIndex++
             if (currentIndex < files.length) {
