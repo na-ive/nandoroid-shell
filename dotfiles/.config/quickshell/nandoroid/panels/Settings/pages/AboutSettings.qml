@@ -473,10 +473,16 @@ Flickable {
                         if [ '${installState.channel}' = 'stable' ]; then
                             git fetch --tags >/dev/null 2>&1
                             LATEST=$(git describe --tags $(git rev-list --tags --max-count=1 2>/dev/null) 2>/dev/null)
-                            LATEST_CLEAN=$(echo "$LATEST" | sed 's/^v//')
-                            CURRENT=$(grep '"version"' version.json | cut -d'"' -f4)
                             if [ -z "$LATEST" ]; then echo "Up to date"; exit 0; fi
-                            if [ "$LATEST_CLEAN" != "$CURRENT" ]; then echo "Update Available: $LATEST"; else echo "Up to date"; fi
+                            
+                            LOCAL_COMMIT=$(git rev-parse HEAD 2>/dev/null)
+                            TAG_COMMIT=$(git rev-list -n 1 "$LATEST" 2>/dev/null)
+                            
+                            if [ "$LOCAL_COMMIT" != "$TAG_COMMIT" ]; then 
+                                echo "Switch Available: $LATEST"
+                            else 
+                                echo "Up to date"
+                            fi
                         else
                             git fetch origin main >/dev/null 2>&1
                             LOCAL=$(git rev-parse HEAD)
