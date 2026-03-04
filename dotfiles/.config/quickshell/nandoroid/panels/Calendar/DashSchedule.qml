@@ -126,35 +126,20 @@ Item {
     }
 
     // ── Layout ──
-    RowLayout {
+    Row {
+        id: schedRow
         anchors.fill: parent
         spacing: 12
 
-        // ── Event List ──
-        ColumnLayout {
-            Layout.fillHeight: true
-            Layout.preferredWidth: parent.width * 0.42
-            spacing: 8
+        // ── Event List (fixed width) ──
+        Item {
+            id: schedSidebar
+            width: 210
+            height: parent.height
 
-            // New event button
-            RippleButton {
-                Layout.fillWidth: true
-                implicitHeight: 40
-                buttonRadius: 20
-                colBackground: Appearance.colors.colPrimary
-                onClicked: { selectedId = ""; clearForm() }
-                RowLayout {
-                    anchors.centerIn: parent
-                    spacing: 6
-                    MaterialSymbol { text: "add"; iconSize: 18; color: Appearance.colors.colOnPrimary }
-                    StyledText { text: "New Event"; color: Appearance.colors.colOnPrimary; font.weight: Font.Medium }
-                }
-            }
-
-            // List
+            // List (full height - “+ New Event” card is now first item in the list)
             Rectangle {
-                Layout.fillWidth: true
-                Layout.fillHeight: true
+                anchors.fill: parent
                 color: Appearance.colors.colLayer1
                 radius: Appearance.rounding.normal
                 clip: true
@@ -164,21 +149,48 @@ Item {
                     anchors.fill: parent
                     anchors.margins: 6
                     spacing: 4
-                    model: root.events.slice().sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time))
+                    // Prepend a sentinel {id:"__new__"} as the first item
+                    model: {
+                        let sorted = root.events.slice().sort((a, b) =>
+                            (a.date + a.time).localeCompare(b.date + b.time))
+                        return [{id: "__new__", title: "+ New Event", _sentinel: true}].concat(sorted)
+                    }
 
                     delegate: Rectangle {
                         required property var modelData
+                        required property int index
                         width: eventList.width
-                        height: itemCol.implicitHeight + 16
+                        height: modelData._sentinel ? 44 : (itemCol.implicitHeight + 16)
                         radius: Appearance.rounding.small
-                        color: root.selectedId === modelData.id
-                            ? Appearance.colors.colPrimaryContainer
-                            : (evMouse.containsMouse ? Appearance.colors.colLayer2 : "transparent")
+
+                        // Sentinel: “+ New Event” card
+                        visible: true
+                        color: modelData._sentinel
+                            ? (newEvMouse.containsMouse
+                                ? Qt.rgba(Appearance.colors.colPrimary.r, Appearance.colors.colPrimary.g, Appearance.colors.colPrimary.b, 0.18)
+                                : Qt.rgba(Appearance.colors.colPrimary.r, Appearance.colors.colPrimary.g, Appearance.colors.colPrimary.b, 0.10))
+                            : (root.selectedId === modelData.id
+                                ? Appearance.colors.colPrimaryContainer
+                                : (evMouse.containsMouse ? Appearance.colors.colLayer2 : "transparent"))
+
+                        border.color: modelData._sentinel ? Qt.rgba(Appearance.colors.colPrimary.r, Appearance.colors.colPrimary.g, Appearance.colors.colPrimary.b, 0.4) : "transparent"
+                        border.width: modelData._sentinel ? 1 : 0
 
                         Behavior on color { ColorAnimation { duration: 150 } }
 
+                        // “+ New Event” sentinel content
+                        RowLayout {
+                            visible: modelData._sentinel === true
+                            anchors.centerIn: parent
+                            spacing: 6
+                            MaterialSymbol { text: "add"; iconSize: 16; color: Appearance.colors.colPrimary }
+                            StyledText { text: "New Event"; color: Appearance.colors.colPrimary; font.weight: Font.Medium; font.pixelSize: Appearance.font.pixelSize.small }
+                        }
+
+                        // Normal event content
                         ColumnLayout {
                             id: itemCol
+                            visible: !modelData._sentinel
                             anchors.left: parent.left
                             anchors.right: parent.right
                             anchors.verticalCenter: parent.verticalCenter
@@ -187,7 +199,7 @@ Item {
                             spacing: 2
 
                             StyledText {
-                                text: modelData.title
+                                text: modelData._sentinel ? "" : modelData.title
                                 font.pixelSize: Appearance.font.pixelSize.normal
                                 font.weight: Font.Medium
                                 color: root.selectedId === modelData.id
@@ -197,7 +209,9 @@ Item {
                                 Layout.fillWidth: true
                             }
                             StyledText {
+                                visible: !modelData._sentinel
                                 text: {
+                                    if (modelData._sentinel) return ""
                                     let d = modelData.date + " " + modelData.time
                                     if (modelData.recurrence !== "once") d += " · " + modelData.recurrence
                                     return d
@@ -208,8 +222,9 @@ Item {
                             }
                         }
 
-                        // Delete button
+                        // Delete button (not for sentinel)
                         RippleButton {
+                            visible: !modelData._sentinel
                             anchors.right: parent.right
                             anchors.rightMargin: 6
                             anchors.verticalCenter: parent.verticalCenter
@@ -219,13 +234,26 @@ Item {
                             MaterialSymbol { anchors.centerIn: parent; text: "delete"; iconSize: 16; color: Appearance.colors.colSubtext }
                         }
 
+                        // Sentinel mouse
+                        MouseArea {
+                            id: newEvMouse
+                            anchors.fill: parent
+                            visible: modelData._sentinel === true
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: { root.selectedId = ""; root.clearForm() }
+                        }
+
+                        // Event mouse
                         MouseArea {
                             id: evMouse
                             anchors.fill: parent
                             anchors.rightMargin: 36
+                            visible: !modelData._sentinel
                             hoverEnabled: true
                             cursorShape: Qt.PointingHandCursor
                             onClicked: {
+                                if (modelData._sentinel) return
                                 root.selectedId = modelData.id
                                 root.formTitle = modelData.title
                                 root.formDate = modelData.date
@@ -242,8 +270,8 @@ Item {
 
         // ── Event Editor ──
         ColumnLayout {
-            Layout.fillHeight: true
-            Layout.fillWidth: true
+            width: schedRow.width - schedSidebar.width - schedRow.spacing
+            height: parent.height
             spacing: 12
 
             // Header

@@ -25,12 +25,11 @@ Scope {
 
         anchors {
             top: true
-            left: false
-            right: false
+            left: true
+            right: true
         }
         margins.top: Appearance.sizes.statusBarHeight + 6
 
-        implicitWidth: contentLoader.item ? contentLoader.item.implicitWidth : 0
         implicitHeight: contentLoader.item ? contentLoader.item.implicitHeight : 0
 
         HyprlandFocusGrab {
@@ -44,7 +43,11 @@ Scope {
 
         Loader {
             id: contentLoader
-            anchors.fill: parent
+            // Center horizontally in the full-width window
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.top: parent.top
+            width: Appearance.sizes.dashboardWidth
+            height: parent.height
             active: GlobalStates.calendarOpen
             sourceComponent: CalendarContent {
                 onClosed: {

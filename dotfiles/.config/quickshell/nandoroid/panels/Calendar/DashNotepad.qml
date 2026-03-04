@@ -77,15 +77,17 @@ Item {
         }
     }
 
-    RowLayout {
+    // Fixed-width sidebar + flexible editor side-by-side
+    Row {
+        id: mainRow
         anchors.fill: parent
         spacing: 12
 
-        // ── Note List Sidebar ──
+        // ── Note List Sidebar (fixed width, always same) ──
         ColumnLayout {
-            Layout.fillHeight: true
-            Layout.fillWidth: true
-            Layout.maximumWidth: root.width * 0.38
+            id: sidebar
+            width: 200
+            height: parent.height
             spacing: 8
 
             // New note button
@@ -167,15 +169,14 @@ Item {
         }
 
         // ── Note Editor ──
-        ColumnLayout {
-            Layout.fillHeight: true
-            Layout.fillWidth: true
-            spacing: 8
+        Item {
+            id: editorArea
+            width: mainRow.width - sidebar.width - mainRow.spacing
+            height: parent.height
 
             // Show placeholder when nothing is selected
             Item {
-                Layout.fillWidth: true
-                Layout.fillHeight: true
+                anchors.fill: parent
                 visible: root.selectedId === ""
 
                 ColumnLayout {
@@ -193,8 +194,7 @@ Item {
 
             // Editor (only when a note is selected)
             ColumnLayout {
-                Layout.fillHeight: true
-                Layout.fillWidth: true
+                anchors.fill: parent
                 spacing: 8
                 visible: root.selectedId !== ""
 

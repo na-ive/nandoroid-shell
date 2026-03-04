@@ -8,7 +8,8 @@ import Quickshell.Io
 
 /**
  * Dashboard Tab 4: GitHub Profile Tracker
- * Fetches profile + repos via curl. Supports API token for private repos.
+ * Shows avatar, stats, contribution heatmap (52 weeks × 7 days), and top repos.
+ * Uses curl + GitHub GraphQL API for contribution graph (token required for GraphQL).
  */
 Item {
     id: root
@@ -17,24 +18,30 @@ Item {
     readonly property string token: Config.ready && Config.options.github ? (Config.options.github.githubToken || "") : ""
 
     property var profile: null
+    property var contribWeeks: []   // [{contributionDays: [{date, contributionCount, color},...]}]
+    property int totalContribs: 0
     property var repos: []
     property bool loading: false
     property string errorMsg: ""
 
+    // ── max contribution count for shade normalisation ──
+    readonly property int maxCount: {
+        let m = 1
+        for (let w of contribWeeks) for (let d of w.contributionDays) if (d.contributionCount > m) m = d.contributionCount
+        return m
+    }
+
     function fetch() {
         if (!username) return
-        root.profile = null
-        root.repos = []
-        root.errorMsg = ""
-        root.loading = true
-        profileProc.running = false
-        profileProc.running = true
+        root.profile = null; root.contribWeeks = []; root.repos = []
+        root.errorMsg = ""; root.loading = true
+        profileProc.running = false; profileProc.running = true
     }
 
     onUsernameChanged: fetch()
     Component.onCompleted: fetch()
 
-    // ── Profile fetch ──
+    // ── Profile REST fetch ──
     Process {
         id: profileProc
         command: {
@@ -47,17 +54,44 @@ Item {
             onStreamFinished: {
                 try {
                     root.profile = JSON.parse(this.text)
-                    reposProc.running = true
+                    contribProc.running = true
                 } catch(e) {
                     root.errorMsg = "Failed to load profile"
                     root.loading = false
                 }
             }
         }
-        onExited: (code) => { if (code !== 0) { root.errorMsg = "Network error"; root.loading = false } }
+        onExited: (code) => { if (code !== 0) { root.errorMsg = "Network error (profile)"; root.loading = false } }
     }
 
-    // ── Repos fetch ──
+    // ── Contributions GraphQL fetch ──
+    Process {
+        id: contribProc
+        command: {
+            if (!root.token || !root.username) return []   // GraphQL requires auth
+            const query = '{"query":"{ user(login: \\"' + root.username + '\\") { contributionsCollection { contributionCalendar { totalContributions weeks { contributionDays { date contributionCount } } } } } }"}'
+            return ["curl", "-s", "-f",
+                    "-H", "Authorization: bearer " + root.token,
+                    "-H", "Content-Type: application/json",
+                    "-d", query,
+                    "https://api.github.com/graphql"]
+        }
+        running: false
+        stdout: StdioCollector {
+            onStreamFinished: {
+                try {
+                    const data = JSON.parse(this.text)
+                    const cal = data.data.user.contributionsCollection.contributionCalendar
+                    root.totalContribs = cal.totalContributions
+                    root.contribWeeks = cal.weeks
+                } catch(e) {}
+                reposProc.running = true
+            }
+        }
+        onExited: (code) => { if (code !== 0) reposProc.running = true }   // not fatal — skip heatmap
+    }
+
+    // ── Repos REST fetch ──
     Process {
         id: reposProc
         command: {
@@ -68,9 +102,7 @@ Item {
         running: false
         stdout: StdioCollector {
             onStreamFinished: {
-                try {
-                    root.repos = JSON.parse(this.text)
-                } catch(e) {}
+                try { root.repos = JSON.parse(this.text) } catch(e) {}
                 root.loading = false
             }
         }
@@ -79,80 +111,56 @@ Item {
 
     // ── Empty state (no username) ──
     ColumnLayout {
-        anchors.centerIn: parent
-        spacing: 16
+        anchors.centerIn: parent; spacing: 16
         visible: !root.username && !root.loading
 
-        MaterialSymbol { Layout.alignment: Qt.AlignHCenter; text: "code"; iconSize: 56; color: Appearance.colors.colSubtext }
+        MaterialSymbol { Layout.alignment: Qt.AlignHCenter; text: "hub"; iconSize: 56; color: Appearance.colors.colSubtext }
         StyledText {
             Layout.alignment: Qt.AlignHCenter
             text: "GitHub Profile Tracker"
-            font.pixelSize: Appearance.font.pixelSize.large
-            font.weight: Font.Bold
+            font.pixelSize: Appearance.font.pixelSize.large; font.weight: Font.Bold
             color: Appearance.colors.colOnLayer1
         }
         StyledText {
-            Layout.alignment: Qt.AlignHCenter
-            horizontalAlignment: Text.AlignHCenter
+            Layout.alignment: Qt.AlignHCenter; horizontalAlignment: Text.AlignHCenter
             text: "Configure your GitHub username in\nSettings → Services → GitHub"
-            color: Appearance.colors.colSubtext
-            font.pixelSize: Appearance.font.pixelSize.normal
+            color: Appearance.colors.colSubtext; font.pixelSize: Appearance.font.pixelSize.normal
         }
     }
 
-    // ── Loading state ──
-    ColumnLayout {
-        anchors.centerIn: parent
-        spacing: 12
-        visible: root.loading
+    // ── Loading spinner ──
+    Item {
+        anchors.centerIn: parent; visible: root.loading
+        implicitWidth: 44; implicitHeight: 44
 
-        // Spinner
-        Item {
-            Layout.alignment: Qt.AlignHCenter
-            implicitWidth: 40; implicitHeight: 40
-
-            Rectangle {
-                anchors.centerIn: parent
-                width: 36; height: 36; radius: 18
-                color: "transparent"
-                border.color: Appearance.colors.colPrimary
-                border.width: 3
-                opacity: 0.3
-            }
-
-            Rectangle {
-                anchors.centerIn: parent
-                width: 36; height: 36; radius: 18
-                color: "transparent"
-                border.width: 0
-
-                Rectangle {
-                    anchors.top: parent.top
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    width: 3; height: 18; radius: 2
-                    color: Appearance.colors.colPrimary
-                }
-
-                RotationAnimation on rotation {
-                    from: 0; to: 360; duration: 800
-                    loops: Animation.Infinite; running: root.loading
-                }
+        Canvas {
+            anchors.fill: parent
+            onPaint: {
+                const ctx = getContext("2d")
+                ctx.clearRect(0, 0, width, height)
+                ctx.beginPath(); ctx.arc(width/2, height/2, 16, 0, Math.PI * 2)
+                ctx.strokeStyle = Appearance.m3colors.m3outlineVariant
+                ctx.lineWidth = 4; ctx.stroke()
             }
         }
-
-        StyledText {
-            Layout.alignment: Qt.AlignHCenter
-            text: "Loading..."
-            color: Appearance.colors.colSubtext
+        Rectangle {
+            anchors.centerIn: parent; width: 32; height: 32; radius: 16
+            color: "transparent"
+            Rectangle {
+                anchors.top: parent.top; anchors.horizontalCenter: parent.horizontalCenter
+                width: 4; height: 16; radius: 2; color: Appearance.m3colors.m3primary
+            }
+            RotationAnimation on rotation {
+                from: 0; to: 360; duration: 800
+                loops: Animation.Infinite; running: root.loading
+            }
         }
     }
 
     // ── Error state ──
     ColumnLayout {
-        anchors.centerIn: parent
-        spacing: 12
+        anchors.centerIn: parent; spacing: 12
         visible: root.errorMsg !== "" && !root.loading
-
         MaterialSymbol { Layout.alignment: Qt.AlignHCenter; text: "error_outline"; iconSize: 40; color: Appearance.colors.colError }
         StyledText { Layout.alignment: Qt.AlignHCenter; text: root.errorMsg; color: Appearance.colors.colError }
         RippleButton {
@@ -166,159 +174,170 @@ Item {
 
     // ── Profile content ──
     ColumnLayout {
-        anchors.fill: parent
-        spacing: 12
+        anchors.fill: parent; spacing: 10
         visible: root.profile !== null && !root.loading
 
-        // Header profile card
+        // ─ Profile header card ─
         Rectangle {
             Layout.fillWidth: true
-            implicitHeight: profileRow.implicitHeight + 24
-            radius: Appearance.rounding.normal
-            color: Appearance.colors.colLayer1
+            implicitHeight: profileRow.implicitHeight + 20
+            radius: Appearance.rounding.normal; color: Appearance.colors.colLayer1
 
             RowLayout {
-                id: profileRow
-                anchors.fill: parent; anchors.margins: 12
-                spacing: 16
+                id: profileRow; anchors.fill: parent; anchors.margins: 12; spacing: 14
 
                 // Avatar
                 Rectangle {
-                    width: 64; height: 64; radius: 32
-                    color: Appearance.colors.colLayer2
-                    clip: true
-
+                    width: 52; height: 52; radius: 26
+                    color: Appearance.colors.colLayer2; clip: true
                     Image {
                         anchors.fill: parent
                         source: root.profile ? root.profile.avatar_url : ""
-                        fillMode: Image.PreserveAspectCrop
-                        asynchronous: true
+                        fillMode: Image.PreserveAspectCrop; asynchronous: true
                     }
                 }
 
-                // Name + stats
+                // Name / login / bio
                 ColumnLayout {
-                    Layout.fillWidth: true
-                    spacing: 2
-
+                    Layout.fillWidth: true; spacing: 2
                     StyledText {
                         text: root.profile ? (root.profile.name || root.profile.login) : ""
-                        font.pixelSize: Appearance.font.pixelSize.large
-                        font.weight: Font.Bold
-                        color: Appearance.colors.colOnLayer1
+                        font.pixelSize: Appearance.font.pixelSize.large; font.weight: Font.Bold
+                        color: Appearance.colors.colOnLayer1; elide: Text.ElideRight; Layout.fillWidth: true
                     }
                     StyledText {
                         text: root.profile ? "@" + root.profile.login : ""
-                        font.pixelSize: Appearance.font.pixelSize.small
-                        color: Appearance.colors.colPrimary
+                        font.pixelSize: Appearance.font.pixelSize.small; color: Appearance.colors.colPrimary
                     }
                     StyledText {
-                        text: root.profile ? (root.profile.bio || "") : ""
-                        font.pixelSize: Appearance.font.pixelSize.smaller
-                        color: Appearance.colors.colSubtext
-                        elide: Text.ElideRight
-                        Layout.fillWidth: true
                         visible: root.profile && root.profile.bio
+                        text: root.profile ? (root.profile.bio || "") : ""
+                        font.pixelSize: Appearance.font.pixelSize.smaller; color: Appearance.colors.colSubtext
+                        elide: Text.ElideRight; Layout.fillWidth: true
                     }
                 }
 
-                // Followers / Following
+                // Stats column
                 ColumnLayout {
-                    spacing: 4
-                    Layout.alignment: Qt.AlignVCenter
+                    spacing: 3; Layout.alignment: Qt.AlignVCenter
 
-                    RowLayout {
-                        spacing: 4
-                        MaterialSymbol { text: "group"; iconSize: 14; color: Appearance.colors.colSubtext }
-                        StyledText {
-                            text: root.profile ? root.profile.followers + " followers" : ""
-                            font.pixelSize: Appearance.font.pixelSize.smaller
-                            color: Appearance.colors.colSubtext
+                    Repeater {
+                        model: [
+                            { icon: "folder", value: root.profile ? root.profile.public_repos : 0, label: "repos" },
+                            { icon: "group", value: root.profile ? root.profile.followers : 0, label: "followers" },
+                            { icon: "person_add", value: root.profile ? root.profile.following : 0, label: "following" }
+                        ]
+                        delegate: RowLayout {
+                            spacing: 4
+                            MaterialSymbol { text: modelData.icon; iconSize: 13; color: Appearance.colors.colSubtext }
+                            StyledText {
+                                text: modelData.value + " " + modelData.label
+                                font.pixelSize: Appearance.font.pixelSize.smaller; color: Appearance.colors.colSubtext
+                            }
                         }
                     }
-                    RowLayout {
-                        spacing: 4
-                        MaterialSymbol { text: "person_add"; iconSize: 14; color: Appearance.colors.colSubtext }
-                        StyledText {
-                            text: root.profile ? root.profile.following + " following" : ""
-                            font.pixelSize: Appearance.font.pixelSize.smaller
-                            color: Appearance.colors.colSubtext
-                        }
-                    }
+                }
 
-                    // Refresh button
-                    RippleButton {
-                        implicitWidth: 30; implicitHeight: 30; buttonRadius: 15
-                        colBackground: "transparent"
-                        onClicked: root.fetch()
-                        MaterialSymbol { anchors.centerIn: parent; text: "refresh"; iconSize: 16; color: Appearance.colors.colSubtext }
-                        StyledToolTip { text: "Refresh" }
+                // Refresh
+                RippleButton {
+                    implicitWidth: 30; implicitHeight: 30; buttonRadius: 15; colBackground: "transparent"
+                    Layout.alignment: Qt.AlignTop
+                    onClicked: root.fetch()
+                    MaterialSymbol { anchors.centerIn: parent; text: "refresh"; iconSize: 16; color: Appearance.colors.colSubtext }
+                    StyledToolTip { text: "Refresh" }
+                }
+            }
+        }
+
+        // ─ Contribution heatmap ─
+        ColumnLayout {
+            Layout.fillWidth: true; spacing: 4
+            visible: root.contribWeeks.length > 0
+
+            RowLayout {
+                StyledText {
+                    text: root.totalContribs + " contributions in the last year"
+                    font.pixelSize: Appearance.font.pixelSize.small; font.weight: Font.Medium
+                    color: Appearance.colors.colOnLayer1; Layout.fillWidth: true
+                }
+            }
+
+            // Heatmap grid — 52 columns (weeks) × 7 rows (days)
+            Rectangle {
+                Layout.fillWidth: true
+                implicitHeight: heatGrid.implicitHeight + 16
+                radius: Appearance.rounding.normal; color: Appearance.colors.colLayer1
+
+                Row {
+                    id: heatGrid
+                    anchors.centerIn: parent
+                    spacing: 3
+
+                    Repeater {
+                        model: root.contribWeeks
+                        delegate: Column {
+                            required property var modelData
+                            spacing: 3
+
+                            Repeater {
+                                model: modelData.contributionDays
+                                delegate: Rectangle {
+                                    required property var modelData
+                                    readonly property int count: modelData.contributionCount
+                                    width: 10; height: 10; radius: 2
+                                    color: count === 0
+                                        ? Qt.rgba(Appearance.colors.colOnLayer1.r, Appearance.colors.colOnLayer1.g, Appearance.colors.colOnLayer1.b, 0.08)
+                                        : Qt.rgba(Appearance.colors.colPrimary.r, Appearance.colors.colPrimary.g, Appearance.colors.colPrimary.b,
+                                            0.25 + 0.75 * (count / root.maxCount))
+                                    StyledToolTip { text: modelData.date + ": " + count + " contribution" + (count !== 1 ? "s" : "") }
+                                }
+                            }
+                        }
                     }
                 }
             }
         }
 
-        // Repos
+        // ─ No-token note for heatmap ─
         StyledText {
-            text: "Repositories"
-            font.pixelSize: Appearance.font.pixelSize.normal
-            font.weight: Font.DemiBold
+            visible: root.profile !== null && !root.loading && root.contribWeeks.length === 0
+            text: "Add a GitHub API token in Settings → Services → GitHub to show the contribution graph"
+            font.pixelSize: Appearance.font.pixelSize.smaller; color: Appearance.colors.colSubtext
+            wrapMode: Text.WordWrap; Layout.fillWidth: true; opacity: 0.7
+        }
+
+        // ─ Top repos ─
+        StyledText {
+            visible: root.repos.length > 0
+            text: "Recent Repositories"
+            font.pixelSize: Appearance.font.pixelSize.small; font.weight: Font.DemiBold
             color: Appearance.colors.colOnLayer1
         }
 
-        // Repo grid
         GridLayout {
-            Layout.fillWidth: true
-            columns: 2
-            rowSpacing: 8
-            columnSpacing: 8
+            Layout.fillWidth: true; columns: 2; rowSpacing: 6; columnSpacing: 6
+            visible: root.repos.length > 0
 
             Repeater {
-                model: root.repos.slice(0, 6)
+                model: root.repos.slice(0, 4)
                 delegate: Rectangle {
                     required property var modelData
-                    Layout.fillWidth: true
-                    Layout.preferredWidth: 1
-                    implicitHeight: repoCol.implicitHeight + 16
-                    radius: Appearance.rounding.small
-                    color: Appearance.colors.colLayer1
+                    Layout.fillWidth: true; Layout.preferredWidth: 1
+                    implicitHeight: repoCol.implicitHeight + 14
+                    radius: Appearance.rounding.small; color: Appearance.colors.colLayer1
 
-                    RippleButton {
-                        anchors.fill: parent; buttonRadius: parent.radius; colBackground: "transparent"
-                        onClicked: Qt.openUrlExternally(modelData.html_url)
-                    }
+                    RippleButton { anchors.fill: parent; buttonRadius: parent.radius; colBackground: "transparent"; onClicked: Qt.openUrlExternally(modelData.html_url) }
 
                     ColumnLayout {
-                        id: repoCol
-                        anchors.fill: parent; anchors.margins: 10
-                        spacing: 3
-
+                        id: repoCol; anchors.fill: parent; anchors.margins: 10; spacing: 2
                         RowLayout {
                             spacing: 4
-                            MaterialSymbol {
-                                text: modelData.private ? "lock" : "folder_open"
-                                iconSize: 13; color: Appearance.colors.colSubtext
-                            }
+                            MaterialSymbol { text: modelData.private ? "lock" : "folder_open"; iconSize: 12; color: Appearance.colors.colSubtext }
                             StyledText {
-                                text: modelData.name
-                                font.pixelSize: Appearance.font.pixelSize.small
-                                font.weight: Font.Medium
-                                color: Appearance.colors.colOnLayer1
-                                elide: Text.ElideRight
-                                Layout.fillWidth: true
+                                text: modelData.name; font.pixelSize: Appearance.font.pixelSize.small; font.weight: Font.Medium
+                                color: Appearance.colors.colOnLayer1; elide: Text.ElideRight; Layout.fillWidth: true
                             }
                         }
-
-                        StyledText {
-                            visible: modelData.description
-                            text: modelData.description || ""
-                            font.pixelSize: Appearance.font.pixelSize.smaller
-                            color: Appearance.colors.colSubtext
-                            elide: Text.ElideRight
-                            Layout.fillWidth: true
-                            opacity: 0.8
-                        }
-
                         RowLayout {
                             spacing: 8
                             RowLayout {
@@ -326,12 +345,7 @@ Item {
                                 MaterialSymbol { text: "star"; iconSize: 11; color: Appearance.colors.colSubtext }
                                 StyledText { text: modelData.stargazers_count; font.pixelSize: 11; color: Appearance.colors.colSubtext }
                             }
-                            StyledText {
-                                text: modelData.language || ""
-                                font.pixelSize: 11
-                                color: Appearance.colors.colPrimary
-                                visible: modelData.language
-                            }
+                            StyledText { visible: !!modelData.language; text: modelData.language || ""; font.pixelSize: 11; color: Appearance.colors.colPrimary }
                         }
                     }
                 }
