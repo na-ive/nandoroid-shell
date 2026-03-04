@@ -90,7 +90,7 @@ Item {
             }
         })
 
-        if (changed) { root.events = [...root.events]; save() }
+        if (changed) { root.events = root.events.slice(); save() }
     }
 
     Process { id: notifyProc; running: false }
@@ -110,12 +110,15 @@ Item {
     function saveEvent() {
         if (!formTitle.trim()) return
         if (selectedId) {
-            root.events = root.events.map(e => e.id === selectedId
-                ? { ...e, title: formTitle, date: formDate, time: formTime, recurrence: formRecurrence }
-                : e)
+            root.events = root.events.map(function(e) {
+                if (e.id === selectedId) {
+                    return Object.assign({}, e, { title: formTitle, date: formDate, time: formTime, recurrence: formRecurrence })
+                }
+                return e
+            })
         } else {
             const newEv = { id: makeId(), title: formTitle, date: formDate, time: formTime, recurrence: formRecurrence, lastFired: "" }
-            root.events = [...root.events, newEv]
+            root.events = root.events.concat([newEv])
         }
         save()
         selectedId = ""

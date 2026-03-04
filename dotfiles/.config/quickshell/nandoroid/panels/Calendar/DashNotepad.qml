@@ -3,6 +3,7 @@ import "../../widgets"
 import "../../services"
 import QtQuick
 import QtQuick.Layouts
+import QtQuick.Controls
 import Quickshell
 import Quickshell.Io
 
@@ -34,7 +35,7 @@ Item {
 
     function newNote() {
         const n = { id: makeId(), title: "Untitled", body: "", updatedAt: new Date().toISOString() }
-        root.notes = [...root.notes, n]
+        root.notes = root.notes.concat([n])
         save()
         selectNote(n.id)
     }
@@ -70,7 +71,7 @@ Item {
         onTriggered: {
             if (!root.selectedId) return
             root.notes = root.notes.map(n => n.id === root.selectedId
-                ? { ...n, title: titleInput.text, body: bodyArea.text, updatedAt: new Date().toISOString() }
+                ? Object.assign({}, n, { title: titleInput.text, body: bodyArea.text, updatedAt: new Date().toISOString() })
                 : n)
             root.save()
         }

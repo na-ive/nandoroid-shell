@@ -124,9 +124,7 @@ Item {
                 anchors.centerIn: parent
                 width: 36; height: 36; radius: 18
                 color: "transparent"
-                border.color: Appearance.colors.colPrimary
-                border.width: 3
-                border.color: "transparent"
+                border.width: 0
 
                 Rectangle {
                     anchors.top: parent.top
