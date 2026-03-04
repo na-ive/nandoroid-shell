@@ -21,6 +21,10 @@ Flickable {
 
     property string currentView: "main" // "main", "update", "dependency", or "credits"
 
+    onCurrentViewChanged: {
+        root.contentY = 0
+    }
+
 
     onVisibleChanged: {
         if (!visible) root.currentView = "main"

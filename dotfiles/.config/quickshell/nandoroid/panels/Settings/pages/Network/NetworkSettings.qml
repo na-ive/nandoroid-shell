@@ -25,7 +25,6 @@ Item {
     // Reset scroll when changing views
     onCurrentViewChanged: {
         mainFlicking.contentY = 0
-        Network.update()
     }
 
     ColumnLayout {
