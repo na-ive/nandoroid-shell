@@ -164,7 +164,7 @@ ColumnLayout {
                             id: tokenField
                             Layout.fillWidth: true
                             text: Config.ready && Config.options.github ? Config.options.github.githubToken : ""
-                            echoMode: showToken.checked ? TextInput.Normal : TextInput.Password
+                            echoMode: showToken.showingToken ? TextInput.Normal : TextInput.Password
                             font.family: Appearance.font.family.main
                             font.pixelSize: Appearance.font.pixelSize.normal
                             color: Appearance.colors.colOnLayer1
@@ -186,14 +186,14 @@ ColumnLayout {
 
                         // Toggle visibility
                         RippleButton {
-                            property bool checked: false
+                            id: showToken
+                            property bool showingToken: false
                             implicitWidth: 32; implicitHeight: 32; buttonRadius: 16
                             colBackground: "transparent"
-                            onClicked: checked = !checked
-                            id: showToken
+                            onClicked: showingToken = !showingToken
                             MaterialSymbol {
                                 anchors.centerIn: parent
-                                text: showToken.checked ? "visibility_off" : "visibility"
+                                text: showToken.showingToken ? "visibility_off" : "visibility"
                                 iconSize: 18
                                 color: Appearance.colors.colSubtext
                             }

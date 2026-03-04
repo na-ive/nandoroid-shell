@@ -84,7 +84,8 @@ Item {
         // ── Note List Sidebar ──
         ColumnLayout {
             Layout.fillHeight: true
-            Layout.preferredWidth: parent.width * 0.35
+            Layout.fillWidth: true
+            Layout.maximumWidth: root.width * 0.38
             spacing: 8
 
             // New note button
@@ -170,7 +171,32 @@ Item {
             Layout.fillHeight: true
             Layout.fillWidth: true
             spacing: 8
-            enabled: root.selectedId !== ""
+
+            // Show placeholder when nothing is selected
+            Item {
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                visible: root.selectedId === ""
+
+                ColumnLayout {
+                    anchors.centerIn: parent
+                    spacing: 12
+                    MaterialSymbol { Layout.alignment: Qt.AlignHCenter; text: "edit_note"; iconSize: 48; color: Appearance.colors.colSubtext }
+                    StyledText {
+                        Layout.alignment: Qt.AlignHCenter
+                        text: "Select or create a note"
+                        color: Appearance.colors.colSubtext
+                        font.pixelSize: Appearance.font.pixelSize.normal
+                    }
+                }
+            }
+
+            // Editor (only when a note is selected)
+            ColumnLayout {
+                Layout.fillHeight: true
+                Layout.fillWidth: true
+                spacing: 8
+                visible: root.selectedId !== ""
 
             // Title bar + delete button
             RowLayout {
@@ -258,24 +284,7 @@ Item {
                 }
             }
 
-            // Empty state
-            Item {
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-                visible: root.selectedId === ""
-
-                ColumnLayout {
-                    anchors.centerIn: parent
-                    spacing: 12
-                    MaterialSymbol { Layout.alignment: Qt.AlignHCenter; text: "edit_note"; iconSize: 48; color: Appearance.colors.colSubtext }
-                    StyledText {
-                        Layout.alignment: Qt.AlignHCenter
-                        text: "Select or create a note"
-                        color: Appearance.colors.colSubtext
-                        font.pixelSize: Appearance.font.pixelSize.normal
-                    }
-                }
-            }
+            } // end inner editor ColumnLayout
         }
     }
 }

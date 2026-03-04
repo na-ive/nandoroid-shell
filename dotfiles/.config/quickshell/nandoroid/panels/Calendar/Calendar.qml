@@ -28,6 +28,7 @@ Scope {
             left: false
             right: false
         }
+        margins.top: Appearance.sizes.statusBarHeight + 6
 
         implicitWidth: contentLoader.item ? contentLoader.item.implicitWidth : 0
         implicitHeight: contentLoader.item ? contentLoader.item.implicitHeight : 0
