@@ -1,4 +1,5 @@
 import "../../../../core"
+import "../../../../widgets"
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
