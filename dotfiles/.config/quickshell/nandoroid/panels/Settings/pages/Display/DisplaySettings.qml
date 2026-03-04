@@ -858,6 +858,7 @@ Item {
 
         Item { Layout.fillHeight: true }
     }
+    }
 
     // ── Revert Confirmation Popup ──
     PanelWindow {

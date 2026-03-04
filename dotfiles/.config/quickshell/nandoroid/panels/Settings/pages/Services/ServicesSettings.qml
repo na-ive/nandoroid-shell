@@ -2,6 +2,7 @@ import "../../../../core"
 import "../../../../services"
 import "../../../../widgets"
 import "../../../../core/functions" as Functions
+import "."
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls

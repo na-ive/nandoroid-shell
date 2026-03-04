@@ -2,6 +2,7 @@ import "../../../core"
 import "../../../services"
 import "../../../widgets"
 import "../../../core/functions" as Functions
+import "."
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
@@ -186,6 +187,7 @@ Item {
                     Layout.fillWidth: true
                     visible: root.currentView === "wired"
                 }
+            }
         } // End Flickable
 
         // ── Bottom Management Buttons (Main View) ──

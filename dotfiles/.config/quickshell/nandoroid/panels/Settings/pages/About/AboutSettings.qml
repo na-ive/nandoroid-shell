@@ -1,6 +1,7 @@
 import "../../../../core"
 import "../../../../services"
 import "../../../../widgets"
+import "."
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
@@ -94,7 +95,6 @@ Flickable {
         }
 
         // ── Main View ──
-        ColumnLayout {
         AboutMainView {
             visible: root.currentView === "main"
             Layout.fillWidth: true
