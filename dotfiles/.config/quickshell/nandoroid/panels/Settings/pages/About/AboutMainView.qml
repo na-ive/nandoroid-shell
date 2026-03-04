@@ -291,6 +291,4 @@ ColumnLayout {
 
         // ── Update Sub-page ──
 
-
     }
-}
