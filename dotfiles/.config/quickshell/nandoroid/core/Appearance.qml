@@ -355,6 +355,10 @@ Singleton {
         property real calendarWidth: Math.min(360, screen.width * 0.3)
         property real calendarSpacing: 4
         property real calendarCellSize: Math.floor((calendarWidth - 48 - (calendarSpacing * 6)) / 7)
+
+        // Dashboard (Calendar panel redesign)
+        property real dashboardWidth: Math.min(700, screen.width * 0.55)
+        property real dashboardHeight: Math.min(460, screen.height * 0.72)
     }
 
     // --- Animation Curves (M3 Expressive) ---

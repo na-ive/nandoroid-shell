@@ -52,5 +52,6 @@ Flickable {
         ServicesMedia { Layout.fillWidth: true }
         ServicesPower { Layout.fillWidth: true }
         ServicesSystem { Layout.fillWidth: true }
+        ServicesGitHub { Layout.fillWidth: true }
     }
 }
