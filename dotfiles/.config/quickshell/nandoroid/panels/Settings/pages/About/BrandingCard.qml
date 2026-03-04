@@ -5,6 +5,7 @@ import QtQuick.Layouts
 import QtQuick.Controls
 import Qt5Compat.GraphicalEffects
 import Quickshell
+import Quickshell.Widgets
 
 Rectangle {
     id: cardRoot
