@@ -95,7 +95,7 @@ Singleton {
             onStreamFinished: {
                 try {
                     const data = clientsCollector.text.toString().trim();
-                    if (data && data !== "null" && data !== "[]") {
+                    if (data && data !== "null") {
                         root.windowList = JSON.parse(data);
                         let temp = {};
                         for (let i = 0; i < root.windowList.length; ++i) {
