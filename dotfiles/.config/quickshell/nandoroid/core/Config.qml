@@ -384,6 +384,12 @@ Singleton {
                 }
             }
 
+            // --- GitHub ---
+            property JsonObject github: JsonObject {
+                property string githubUsername: ""
+                property string githubToken: "" // Personal access token (optional, for private repos)
+            }
+
         }
     }
 }

@@ -1,0 +1,185 @@
+import "../../../../core"
+import "../../../../services"
+import "../../../../widgets"
+import "."
+import QtQuick
+import QtQuick.Layouts
+import QtQuick.Controls
+import Qt5Compat.GraphicalEffects
+import Quickshell
+import Quickshell.Io
+
+ColumnLayout {
+    Layout.fillWidth: true
+    spacing: 0
+            // ── Overview Settings Section ──
+            ColumnLayout {
+                id: overviewSettingsSection
+                Layout.fillWidth: true
+                Layout.topMargin: 12
+                spacing: 4
+                
+                RowLayout {
+                    spacing: 12
+                    Layout.bottomMargin: 8
+                    MaterialSymbol {
+                        text: "grid_view"
+                        iconSize: 24
+                        color: Appearance.colors.colPrimary
+                    }
+                    StyledText {
+                        text: "Overview Settings"
+                        font.pixelSize: Appearance.font.pixelSize.large
+                        font.weight: Font.Medium
+                        color: Appearance.colors.colOnLayer1
+                        Layout.fillWidth: true
+                    }
+                }
+    
+                // Rows
+                SegmentedWrapper {
+                    Layout.fillWidth: true
+                    implicitHeight: overviewRowsRow.implicitHeight + 40
+                    orientation: Qt.Vertical
+                    color: Appearance.m3colors.m3surfaceContainerHigh
+                    smallRadius: 8
+                    fullRadius: 20
+                    
+                    RowLayout {
+                        id: overviewRowsRow
+                        anchors.fill: parent
+                        anchors.margins: 20
+                        spacing: 20
+    
+                        StyledText { 
+                            text: "Rows"
+                            font.pixelSize: Appearance.font.pixelSize.normal
+                            color: Appearance.colors.colOnLayer1
+                            Layout.preferredWidth: 140
+                        }
+                        StyledSlider {
+                            Layout.fillWidth: true
+                            value: Config.ready && Config.options.overview ? Config.options.overview.rows : 2
+                            from: 1; to: 5; stepSize: 1
+                            onMoved: if (Config.ready && Config.options.overview) Config.options.overview.rows = Math.round(value)
+                        }
+                        StyledText { 
+                            text: Math.round(Config.ready && Config.options.overview ? Config.options.overview.rows : 2).toString()
+                            color: Appearance.colors.colOnLayer1 
+                            Layout.preferredWidth: 40
+                            horizontalAlignment: Text.AlignRight
+                        }
+                    }
+                }
+    
+                // Columns
+                SegmentedWrapper {
+                    Layout.fillWidth: true
+                    implicitHeight: overviewColsRow.implicitHeight + 40
+                    orientation: Qt.Vertical
+                    color: Appearance.m3colors.m3surfaceContainerHigh
+                    smallRadius: 8
+                    fullRadius: 20
+                    
+                    RowLayout {
+                        id: overviewColsRow
+                        anchors.fill: parent
+                        anchors.margins: 20
+                        spacing: 20
+    
+                        StyledText { 
+                            text: "Columns"
+                            font.pixelSize: Appearance.font.pixelSize.normal
+                            color: Appearance.colors.colOnLayer1
+                            Layout.preferredWidth: 140
+                        }
+                        StyledSlider {
+                            Layout.fillWidth: true
+                            value: Config.ready && Config.options.overview ? Config.options.overview.columns : 5
+                            from: 1; to: 10; stepSize: 1
+                            onMoved: if (Config.ready && Config.options.overview) Config.options.overview.columns = Math.round(value)
+                        }
+                        StyledText { 
+                            text: Math.round(Config.ready && Config.options.overview ? Config.options.overview.columns : 5).toString()
+                            color: Appearance.colors.colOnLayer1 
+                            Layout.preferredWidth: 40
+                            horizontalAlignment: Text.AlignRight
+                        }
+                    }
+                }
+    
+                // Scale
+                SegmentedWrapper {
+                    Layout.fillWidth: true
+                    implicitHeight: overviewScaleRow.implicitHeight + 40
+                    orientation: Qt.Vertical
+                    color: Appearance.m3colors.m3surfaceContainerHigh
+                    smallRadius: 8
+                    fullRadius: 20
+                    
+                    RowLayout {
+                        id: overviewScaleRow
+                        anchors.fill: parent
+                        anchors.margins: 20
+                        spacing: 20
+    
+                        StyledText { 
+                            text: "Window Scale"
+                            font.pixelSize: Appearance.font.pixelSize.normal
+                            color: Appearance.colors.colOnLayer1
+                            Layout.preferredWidth: 140
+                        }
+                        StyledSlider {
+                            Layout.fillWidth: true
+                            value: Config.ready && Config.options.overview ? Config.options.overview.scale * 100 : 15
+                            from: 5; to: 50; stepSize: 1
+                            onMoved: if (Config.ready && Config.options.overview) Config.options.overview.scale = value / 100.0
+                        }
+                        StyledText { 
+                            text: Math.round(Config.ready && Config.options.overview ? Config.options.overview.scale * 100 : 15).toString() + "%"
+                            color: Appearance.colors.colOnLayer1 
+                            Layout.preferredWidth: 40
+                            horizontalAlignment: Text.AlignRight
+                        }
+                    }
+                }
+    
+                // Workspace Spacing
+                SegmentedWrapper {
+                    Layout.fillWidth: true
+                    implicitHeight: overviewSpacingRow.implicitHeight + 40
+                    orientation: Qt.Vertical
+                    color: Appearance.m3colors.m3surfaceContainerHigh
+                    smallRadius: 8
+                    fullRadius: 20
+                    
+                    RowLayout {
+                        id: overviewSpacingRow
+                        anchors.fill: parent
+                        anchors.margins: 20
+                        spacing: 20
+    
+                        StyledText { 
+                            text: "Workspace Spacing"
+                            font.pixelSize: Appearance.font.pixelSize.normal
+                            color: Appearance.colors.colOnLayer1
+                            Layout.preferredWidth: 140
+                        }
+                        StyledSlider {
+                            Layout.fillWidth: true
+                            value: Config.ready && Config.options.overview ? Config.options.overview.workspaceSpacing : 10
+                            from: 0; to: 50; stepSize: 1
+                            onMoved: if (Config.ready && Config.options.overview) Config.options.overview.workspaceSpacing = Math.round(value)
+                        }
+                        StyledText { 
+                            text: Math.round(Config.ready && Config.options.overview ? Config.options.overview.workspaceSpacing : 10).toString() + "px"
+                            color: Appearance.colors.colOnLayer1 
+                            Layout.preferredWidth: 40
+                            horizontalAlignment: Text.AlignRight
+                        }
+                    }
+                }
+            }
+    
+
+}

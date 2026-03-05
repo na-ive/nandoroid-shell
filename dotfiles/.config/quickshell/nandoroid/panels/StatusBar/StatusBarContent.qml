@@ -71,7 +71,7 @@ Item {
         }
     }
 
-    // Middle 30% of the screen clicks open Calendar
+    // Middle 30% of the screen clicks open Dashboard
     MouseArea {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: parent.top
@@ -79,7 +79,7 @@ Item {
         width: parent.width * 0.30
         hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
-        onClicked: GlobalStates.calendarOpen = !GlobalStates.calendarOpen
+        onClicked: GlobalStates.dashboardOpen = !GlobalStates.dashboardOpen
     }
 
 

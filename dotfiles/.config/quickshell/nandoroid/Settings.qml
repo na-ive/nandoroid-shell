@@ -281,12 +281,12 @@ Scope {
         }
     }
     readonly property var pages: [
-        { name: "Network", component: "panels/Settings/pages/NetworkSettings.qml" },
-        { name: "Bluetooth", component: "panels/Settings/pages/BluetoothSettings.qml" },
-        { name: "Audio", component: "panels/Settings/pages/AudioSettings.qml" },
-        { name: "Display", component: "panels/Settings/pages/DisplaySettings.qml" },
-        { name: "Wallpaper & Style", component: "panels/Settings/pages/WallpaperStyleSettings.qml" },
-        { name: "Services", component: "panels/Settings/pages/ServicesSettings.qml" },
-        { name: "About", component: "panels/Settings/pages/AboutSettings.qml" }
+        { name: "Network", component: "panels/Settings/pages/Network/NetworkSettings.qml" },
+        { name: "Bluetooth", component: "panels/Settings/pages/Bluetooth/BluetoothSettings.qml" },
+        { name: "Audio", component: "panels/Settings/pages/Audio/AudioSettings.qml" },
+        { name: "Display", component: "panels/Settings/pages/Display/DisplaySettings.qml" },
+        { name: "Wallpaper & Style", component: "panels/Settings/pages/WallpaperStyle/WallpaperStyleSettings.qml" },
+        { name: "Services", component: "panels/Settings/pages/Services/ServicesSettings.qml" },
+        { name: "About", component: "panels/Settings/pages/About/AboutSettings.qml" }
     ]
 }

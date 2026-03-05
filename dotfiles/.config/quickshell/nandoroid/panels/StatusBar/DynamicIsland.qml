@@ -326,7 +326,7 @@ Item {
                     MprisController.raisePlayer()
                     GlobalStates.closeAllPanels()
                 } else if (islandState === "pomodoro") {
-                    GlobalStates.calendarOpen = true
+                    GlobalStates.dashboardOpen = true
                 }
             }
 

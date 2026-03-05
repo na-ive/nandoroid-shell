@@ -1,0 +1,10 @@
+ServicesSettings 1.0 ServicesSettings.qml
+ServicesWeather 1.0 ServicesWeather.qml
+ServicesSearch 1.0 ServicesSearch.qml
+ServicesNetwork 1.0 ServicesNetwork.qml
+ServicesDisk 1.0 ServicesDisk.qml
+ServicesPerformance 1.0 ServicesPerformance.qml
+ServicesMedia 1.0 ServicesMedia.qml
+ServicesPower 1.0 ServicesPower.qml
+ServicesSystem 1.0 ServicesSystem.qml
+ServicesGitHub 1.0 ServicesGitHub.qml
