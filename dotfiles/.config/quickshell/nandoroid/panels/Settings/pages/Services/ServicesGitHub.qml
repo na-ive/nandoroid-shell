@@ -8,7 +8,7 @@ import Quickshell
 
 /**
  * Services Settings — GitHub Configuration
- * Adds GitHub username and API token fields for the Dashboard GitHub tracker.
+ * Matches the SegmentedWrapper style used by ServicesWeather etc.
  */
 ColumnLayout {
     id: root
@@ -33,7 +33,7 @@ ColumnLayout {
     }
 
     StyledText {
-        text: "Configure your GitHub account for the Dashboard GitHub tracker. An API token is required for private repositories."
+        text: "Configure your GitHub account for the Dashboard GitHub tracker. A Personal Access Token is required for private repos and the contribution heatmap."
         font.pixelSize: Appearance.font.pixelSize.small
         color: Appearance.colors.colSubtext
         wrapMode: Text.WordWrap
@@ -41,169 +41,160 @@ ColumnLayout {
         Layout.bottomMargin: 8
     }
 
-    // Settings card
-    Rectangle {
+    // ── Username card (top, full radius) ──
+    SegmentedWrapper {
         Layout.fillWidth: true
-        implicitHeight: cardCol.implicitHeight + 32
-        radius: Appearance.rounding.normal
+        implicitHeight: usernameContent.implicitHeight + 40
+        orientation: Qt.Vertical
         color: Appearance.m3colors.m3surfaceContainerHigh
+        smallRadius: 8
+        fullRadius: 20
 
-        ColumnLayout {
-            id: cardCol
+        RowLayout {
+            id: usernameContent
             anchors.fill: parent
-            anchors.margins: 16
+            anchors.margins: 20
             spacing: 12
 
-            // Username field
-            ColumnLayout {
-                Layout.fillWidth: true
-                spacing: 4
+            MaterialSymbol {
+                text: "person"
+                iconSize: 18
+                color: Appearance.colors.colSubtext
+            }
 
+            ColumnLayout {
+                spacing: 2
+                Layout.fillWidth: true
                 StyledText {
                     text: "GitHub Username"
                     font.pixelSize: Appearance.font.pixelSize.small
                     font.weight: Font.Medium
                     color: Appearance.colors.colOnLayer1
                 }
-
-                Rectangle {
+                TextInput {
+                    id: usernameField
                     Layout.fillWidth: true
-                    implicitHeight: 44
-                    radius: Appearance.rounding.small
-                    color: Appearance.colors.colLayer1
-                    border.color: usernameField.activeFocus
-                        ? Appearance.colors.colPrimary
-                        : Appearance.colors.colOutlineVariant
-                    border.width: usernameField.activeFocus ? 2 : 1
+                    text: Config.ready && Config.options.github ? Config.options.github.githubUsername : ""
+                    font.family: Appearance.font.family.main
+                    font.pixelSize: Appearance.font.pixelSize.normal
+                    color: Appearance.colors.colOnLayer1
+                    selectionColor: Appearance.colors.colPrimaryContainer
+                    selectedTextColor: Appearance.colors.colOnPrimaryContainer
+                    clip: true
+                    onEditingFinished: {
+                        if (Config.ready && Config.options.github)
+                            Config.options.github.githubUsername = text
+                    }
+                    StyledText {
+                        anchors.fill: parent
+                        text: "e.g. octocat"
+                        color: Appearance.colors.colSubtext
+                        visible: !parent.text && !parent.activeFocus
+                        font.pixelSize: Appearance.font.pixelSize.normal
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                }
+            }
+        }
+    }
+
+    // ── Personal Access Token card (bottom, full radius) ──
+    SegmentedWrapper {
+        Layout.fillWidth: true
+        implicitHeight: tokenContent.implicitHeight + 40
+        orientation: Qt.Vertical
+        color: Appearance.m3colors.m3surfaceContainerHigh
+        smallRadius: 8
+        fullRadius: 20
+
+        ColumnLayout {
+            id: tokenContent
+            anchors.fill: parent
+            anchors.margins: 20
+            spacing: 8
+
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: 12
+
+                MaterialSymbol {
+                    text: "key"
+                    iconSize: 18
+                    color: Appearance.colors.colSubtext
+                }
+
+                ColumnLayout {
+                    spacing: 2
+                    Layout.fillWidth: true
 
                     RowLayout {
-                        anchors.fill: parent
-                        anchors.margins: 12
-                        spacing: 8
-
-                        MaterialSymbol {
-                            text: "person"
-                            iconSize: 18
+                        Layout.fillWidth: true
+                        StyledText {
+                            text: "Personal Access Token"
+                            font.pixelSize: Appearance.font.pixelSize.small
+                            font.weight: Font.Medium
+                            color: Appearance.colors.colOnLayer1
+                            Layout.fillWidth: true
+                        }
+                        StyledText {
+                            text: "Optional · for private repos"
+                            font.pixelSize: Appearance.font.pixelSize.smaller
                             color: Appearance.colors.colSubtext
                         }
+                    }
 
+                    RowLayout {
+                        Layout.fillWidth: true
+                        spacing: 6
                         TextInput {
-                            id: usernameField
+                            id: tokenField
                             Layout.fillWidth: true
-                            text: Config.ready && Config.options.github ? Config.options.github.githubUsername : ""
+                            // clip so the dots don't overflow the container
+                            clip: true
+                            text: Config.ready && Config.options.github ? Config.options.github.githubToken : ""
+                            echoMode: showToken.showingToken ? TextInput.Normal : TextInput.Password
                             font.family: Appearance.font.family.main
                             font.pixelSize: Appearance.font.pixelSize.normal
                             color: Appearance.colors.colOnLayer1
-                            verticalAlignment: TextInput.AlignVCenter
+                            selectionColor: Appearance.colors.colPrimaryContainer
+                            selectedTextColor: Appearance.colors.colOnPrimaryContainer
                             onEditingFinished: {
                                 if (Config.ready && Config.options.github)
-                                    Config.options.github.githubUsername = text
+                                    Config.options.github.githubToken = text
                             }
-
                             StyledText {
                                 anchors.fill: parent
-                                text: "e.g. octocat"
+                                text: "ghp_xxxxxxxxxxxx"
                                 color: Appearance.colors.colSubtext
                                 visible: !parent.text && !parent.activeFocus
                                 font.pixelSize: Appearance.font.pixelSize.normal
                                 verticalAlignment: Text.AlignVCenter
+                            }
+                        }
+                        RippleButton {
+                            id: showToken
+                            property bool showingToken: false
+                            implicitWidth: 28; implicitHeight: 28; buttonRadius: 14
+                            colBackground: "transparent"
+                            onClicked: showingToken = !showingToken
+                            MaterialSymbol {
+                                anchors.centerIn: parent
+                                text: showToken.showingToken ? "visibility_off" : "visibility"
+                                iconSize: 16
+                                color: Appearance.colors.colSubtext
                             }
                         }
                     }
                 }
             }
 
-
-            // Token field
-            ColumnLayout {
+            StyledText {
+                text: "Create a token at GitHub → Settings → Developer settings → Personal access tokens"
+                font.pixelSize: Appearance.font.pixelSize.smaller
+                color: Appearance.colors.colSubtext
+                wrapMode: Text.WordWrap
                 Layout.fillWidth: true
-                spacing: 4
-
-                RowLayout {
-                    StyledText {
-                        text: "Personal Access Token"
-                        font.pixelSize: Appearance.font.pixelSize.small
-                        font.weight: Font.Medium
-                        color: Appearance.colors.colOnLayer1
-                        Layout.fillWidth: true
-                    }
-                    StyledText {
-                        text: "Optional · for private repos"
-                        font.pixelSize: Appearance.font.pixelSize.smaller
-                        color: Appearance.colors.colSubtext
-                    }
-                }
-
-                Rectangle {
-                    Layout.fillWidth: true
-                    implicitHeight: 44
-                    radius: Appearance.rounding.small
-                    color: Appearance.colors.colLayer1
-                    border.color: tokenField.activeFocus
-                        ? Appearance.colors.colPrimary
-                        : Appearance.colors.colOutlineVariant
-                    border.width: tokenField.activeFocus ? 2 : 1
-
-                    RowLayout {
-                        anchors.fill: parent
-                        anchors.margins: 12
-                        spacing: 8
-
-                        MaterialSymbol {
-                            text: "key"
-                            iconSize: 18
-                            color: Appearance.colors.colSubtext
-                        }
-
-                        TextInput {
-                            id: tokenField
-                            Layout.fillWidth: true
-                            text: Config.ready && Config.options.github ? Config.options.github.githubToken : ""
-                            echoMode: showToken.showingToken ? TextInput.Normal : TextInput.Password
-                            font.family: Appearance.font.family.main
-                            font.pixelSize: Appearance.font.pixelSize.normal
-                            color: Appearance.colors.colOnLayer1
-                            verticalAlignment: TextInput.AlignVCenter
-                            onEditingFinished: {
-                                if (Config.ready && Config.options.github)
-                                    Config.options.github.githubToken = text
-                            }
-
-                            StyledText {
-                                anchors.fill: parent
-                                text: "ghp_xxxxxxxxxxxxxxxxxxxx"
-                                color: Appearance.colors.colSubtext
-                                visible: !parent.text && !parent.activeFocus
-                                font.pixelSize: Appearance.font.pixelSize.normal
-                                verticalAlignment: Text.AlignVCenter
-                            }
-                        }
-
-                        // Toggle visibility
-                        RippleButton {
-                            id: showToken
-                            property bool showingToken: false
-                            implicitWidth: 32; implicitHeight: 32; buttonRadius: 16
-                            colBackground: "transparent"
-                            onClicked: showingToken = !showingToken
-                            MaterialSymbol {
-                                anchors.centerIn: parent
-                                text: showToken.showingToken ? "visibility_off" : "visibility"
-                                iconSize: 18
-                                color: Appearance.colors.colSubtext
-                            }
-                        }
-                    }
-                }
-
-                StyledText {
-                    text: "Create a token at GitHub → Settings → Developer settings → Personal access tokens"
-                    font.pixelSize: Appearance.font.pixelSize.smaller
-                    color: Appearance.colors.colSubtext
-                    wrapMode: Text.WordWrap
-                    Layout.fillWidth: true
-                    opacity: 0.8
-                }
+                opacity: 0.75
             }
         }
     }

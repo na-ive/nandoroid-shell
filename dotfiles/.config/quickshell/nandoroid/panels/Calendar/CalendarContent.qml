@@ -92,7 +92,8 @@ Item {
             // Animated stretch-highlight pill (Ambxst style)
             Rectangle {
                 id: tabHighlight
-                x: 4
+                // Centered within the strip, same as the Column's horizontalCenter
+                x: Math.round((tabStrip.width - root.tabButtonSize) / 2)
                 width: root.tabButtonSize
                 radius: Appearance.rounding.small
 

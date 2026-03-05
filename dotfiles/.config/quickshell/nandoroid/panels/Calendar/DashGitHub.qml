@@ -258,15 +258,6 @@ Item {
                         }
                     }
                 }
-
-                // Refresh
-                RippleButton {
-                    implicitWidth: 30; implicitHeight: 30; buttonRadius: 15; colBackground: "transparent"
-                    Layout.alignment: Qt.AlignTop
-                    onClicked: root.fetch()
-                    MaterialSymbol { anchors.centerIn: parent; text: "refresh"; iconSize: 16; color: Appearance.colors.colSubtext }
-                    StyledToolTip { text: "Refresh" }
-                }
             }
         }
 
@@ -276,18 +267,28 @@ Item {
             visible: root.contribWeeks.length > 0
 
             RowLayout {
+                Layout.fillWidth: true
                 StyledText {
                     text: root.totalContribs + " contributions in the last year"
                     font.pixelSize: Appearance.font.pixelSize.small; font.weight: Font.Medium
                     color: Appearance.colors.colOnLayer1; Layout.fillWidth: true
                 }
+                // Refresh button moved here for easy access
+                RippleButton {
+                    implicitWidth: 28; implicitHeight: 28; buttonRadius: 14; colBackground: "transparent"
+                    onClicked: root.fetch()
+                    MaterialSymbol { anchors.centerIn: parent; text: "refresh"; iconSize: 15; color: Appearance.colors.colSubtext }
+                    StyledToolTip { text: "Refresh GitHub data" }
+                }
             }
 
             // Heatmap grid — 52 columns (weeks) × 7 rows (days)
+            // Each column is ALWAYS 7 cells tall so widths are perfectly uniform
             Rectangle {
                 Layout.fillWidth: true
                 implicitHeight: heatGrid.implicitHeight + 16
-                radius: Appearance.rounding.normal; color: Appearance.colors.colLayer1
+                radius: Appearance.rounding.normal
+                color: Appearance.m3colors.m3surfaceContainer
 
                 Row {
                     id: heatGrid
@@ -298,19 +299,30 @@ Item {
                         model: root.contribWeeks
                         delegate: Column {
                             required property var modelData
+                            required property int index
                             spacing: 3
 
                             Repeater {
-                                model: modelData.contributionDays
+                                // Always 7 rows — pad short weeks with empty slots
+                                model: 7
                                 delegate: Rectangle {
-                                    required property var modelData
-                                    readonly property int count: modelData.contributionCount
+                                    required property int index
+                                    readonly property var dayData: {
+                                        const days = modelData.contributionDays
+                                        return index < days.length ? days[index] : null
+                                    }
+                                    readonly property int count: dayData ? dayData.contributionCount : 0
+                                    readonly property bool padded: dayData === null
                                     width: 10; height: 10; radius: 2
-                                    color: count === 0
-                                        ? Qt.rgba(Appearance.colors.colOnLayer1.r, Appearance.colors.colOnLayer1.g, Appearance.colors.colOnLayer1.b, 0.08)
-                                        : Qt.rgba(Appearance.colors.colPrimary.r, Appearance.colors.colPrimary.g, Appearance.colors.colPrimary.b,
-                                            0.25 + 0.75 * (count / root.maxCount))
-                                    StyledToolTip { text: modelData.date + ": " + count + " contribution" + (count !== 1 ? "s" : "") }
+                                    color: padded
+                                        ? "transparent"
+                                        : count === 0
+                                            ? Qt.rgba(Appearance.colors.colOnLayer1.r, Appearance.colors.colOnLayer1.g, Appearance.colors.colOnLayer1.b, 0.10)
+                                            : Qt.rgba(Appearance.colors.colPrimary.r, Appearance.colors.colPrimary.g, Appearance.colors.colPrimary.b,
+                                                0.25 + 0.75 * (count / root.maxCount))
+                                    StyledToolTip {
+                                        text: dayData ? (dayData.date + ": " + count + " contribution" + (count !== 1 ? "s" : "")) : ""
+                                    }
                                 }
                             }
                         }

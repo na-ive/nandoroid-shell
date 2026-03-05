@@ -64,10 +64,10 @@ RowLayout {
         // Centre the calendar widget - it has a fixed inner size
         CalendarWidget {
             anchors.centerIn: parent
-            // Cap width so the grid stays centred even in a wide container
             width: Math.min(parent.width - 24, implicitWidth)
             height: parent.height - 24
             eventDates: root.eventDates
+            scheduledEvents: root.scheduledEvents
         }
     }
 
@@ -76,7 +76,7 @@ RowLayout {
         Layout.fillHeight: true
         Layout.fillWidth: true
         Layout.preferredWidth: 1
-        color: Appearance.colors.colLayer1
+        color: Appearance.m3colors.m3surfaceContainer
         radius: Appearance.rounding.normal
         clip: true
 

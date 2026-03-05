@@ -8,29 +8,32 @@ import Quickshell.Wayland
 import Quickshell.Hyprland
 
 /**
- * Calendar panel — positioned top-right, directly below the status bar.
+ * Calendar / Dashboard panel — centered below the status bar.
+ * Uses only top: true anchor so wlr-layer-shell auto-centers it horizontally.
  */
 Scope {
     id: root
 
-
     PanelWindow {
         id: panelWindow
         visible: GlobalStates.calendarOpen
-        exclusiveZone: 0 // Prevent window manager from reserving space for this panel
+        exclusiveZone: 0
         WlrLayershell.namespace: "nandoroid:calendar"
         WlrLayershell.layer: WlrLayer.Overlay
         WlrLayershell.keyboardFocus: GlobalStates.calendarOpen ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
         color: "transparent"
 
+        // Only top anchor — wlr-layer-shell auto-centers on x-axis when
+        // neither left nor right is anchored, matching the status bar island style
         anchors {
             top: true
-            left: true
-            right: true
+            left: false
+            right: false
         }
         margins.top: Appearance.sizes.statusBarHeight
 
-        implicitHeight: contentLoader.item ? contentLoader.item.implicitHeight : 0
+        implicitWidth: Appearance.sizes.dashboardWidth
+        implicitHeight: contentLoader.item ? contentLoader.item.implicitHeight : Appearance.sizes.dashboardHeight
 
         HyprlandFocusGrab {
             id: focusGrab
@@ -43,11 +46,7 @@ Scope {
 
         Loader {
             id: contentLoader
-            // Explicit centering — anchors.horizontalCenter unreliable with WlrLayershell
-            x: Math.round((parent.width - width) / 2)
-            y: 0
-            width: Appearance.sizes.dashboardWidth
-            height: parent.height
+            anchors.fill: parent
             active: GlobalStates.calendarOpen
             sourceComponent: CalendarContent {
                 onClosed: {
