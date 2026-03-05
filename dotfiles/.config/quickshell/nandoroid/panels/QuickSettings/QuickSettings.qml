@@ -37,7 +37,7 @@ Scope {
 
         HyprlandFocusGrab {
             id: focusGrab
-            active: panelWindow.visible && !GlobalStates.isPickingFile
+            active: GlobalStates.quickSettingsOpen && !GlobalStates.isPickingFile
             windows: [panelWindow]
             onCleared: {
                 if (!GlobalStates.isPickingFile) {

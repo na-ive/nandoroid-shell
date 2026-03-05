@@ -42,7 +42,7 @@ Scope {
 
         HyprlandFocusGrab {
             id: focusGrab
-            active: panelWindow.visible
+            active: GlobalStates.calendarOpen
             windows: [panelWindow]
             onCleared: {
                 GlobalStates.calendarOpen = false

@@ -38,8 +38,12 @@ Item {
         profileProc.running = true
     }
 
-    // Fetch once when this tab becomes active
-    Component.onCompleted: fetch()
+    // Fetch when this tab becomes visible (since we removed the recreating Loader)
+    onVisibleChanged: {
+        if (visible && !profile && !loading) {
+            fetch()
+        }
+    }
 
     // ── Profile REST fetch ──
     Process {

@@ -43,62 +43,28 @@ Item {
     implicitWidth: panelWidth
     implicitHeight: panelHeight
 
-    // ── Animation state (launcher pattern, mirrored top-to-down) ──
-    // contentY: 0 = fully visible, -panelHeight = hidden above (behind statusbar)
-    property real contentY: -panelHeight
-    property real contentOpacity: 0
+    // ── Animation state (Caelestia pattern: implicitHeight from 0) ──
+    property real animHeight: active ? panelHeight : 0
 
-    states: State {
-        name: "open"
-        when: active
-        PropertyChanges {
-            root.contentY: 0
-            root.contentOpacity: 1
+    Behavior on animHeight {
+        NumberAnimation {
+            duration: active ? (Appearance.anim.durations.expressiveDefaultSpatial || 400) : (Appearance.anim.durations.emphasized || 250)
+            easing.bezierCurve: active ? (Appearance.anim.curves.expressiveDefaultSpatial || [0.2, 0.0, 0.0, 1.0]) : (Appearance.anim.curves.emphasized || [0.2, 0.0, 0.0, 1.0])
         }
     }
 
-    transitions: [
-        Transition {
-            from: ""
-            to: "open"
-            ParallelAnimation {
-                NumberAnimation {
-                    target: root; property: "contentY"
-                    duration: 300; easing.type: Easing.OutCubic
-                }
-                NumberAnimation {
-                    target: root; property: "contentOpacity"
-                    duration: 200
-                }
-            }
-        },
-        Transition {
-            from: "open"
-            to: ""
-            ParallelAnimation {
-                NumberAnimation {
-                    target: root; property: "contentY"
-                    to: -root.panelHeight
-                    duration: 300; easing.type: Easing.InCubic
-                }
-                NumberAnimation {
-                    target: root; property: "contentOpacity"
-                    to: 0; duration: 250
-                }
-            }
-        }
-    ]
-
     function close() {
-        // Reset tab to default (tab 1 = calendar) when closed
-        currentTab = 0
         root.closed()
     }
 
     Connections {
         target: GlobalStates
         function onCalendarOpenChanged() {
-            if (GlobalStates.calendarOpen) root.forceActiveFocus()
+            if (GlobalStates.calendarOpen) {
+                // Reset tab to default (tab 1 = calendar) when opened
+                currentTab = 0
+                root.forceActiveFocus()
+            }
         }
     }
     Component.onCompleted: {
@@ -106,63 +72,39 @@ Item {
     }
 
     // ── Main Panel Rectangle ──
-    // Fixed full-panel size; clips content sliding in from above.
-    // The window itself never resizes → zero jitter.
+    // Fixed full-panel size bounds, but actual visibility is height-clipped.
     Rectangle {
-        id: panelBg
-        // Centre the panel within the full-width window
+        id: clipRect
         x: Math.round((parent.width - root.panelWidth) / 2)
         y: 0
         width: root.panelWidth
-        height: root.panelHeight
-        color: Appearance.m3colors.m3surfaceContainerLow
-        topLeftRadius: 0
-        topRightRadius: 0
-        bottomLeftRadius: Appearance.rounding.large
-        bottomRightRadius: Appearance.rounding.large
-        visible: root.contentOpacity > 0
-        opacity: root.contentOpacity
-        clip: true  // clips content while it slides in from above
-    }
+        height: root.animHeight
+        clip: true
+        color: "transparent"
 
-    // ── Concave shoulder corners (flush with statusbar) ──
-    RoundCorner {
-        x: panelBg.x - implicitSize
-        y: 0
-        implicitSize: root.shoulderRadius
-        corner: RoundCorner.CornerEnum.TopRight
-        color: root.contentOpacity > 0 ? Appearance.colors.colStatusBarSolid : "transparent"
-        visible: root.contentOpacity > 0
-        opacity: root.contentOpacity
-        Behavior on color { ColorAnimation { duration: 100 } }
-    }
-    RoundCorner {
-        x: panelBg.x + root.panelWidth
-        y: 0
-        implicitSize: root.shoulderRadius
-        corner: RoundCorner.CornerEnum.TopLeft
-        color: root.contentOpacity > 0 ? Appearance.colors.colStatusBarSolid : "transparent"
-        visible: root.contentOpacity > 0
-        opacity: root.contentOpacity
-        Behavior on color { ColorAnimation { duration: 100 } }
-    }
+        Rectangle {
+            id: panelBg
+            width: root.panelWidth
+            height: root.panelHeight
+            anchors.bottom: clipRect.bottom
+            color: Appearance.m3colors.m3surfaceContainerLow
+            topLeftRadius: 0
+            topRightRadius: 0
+            bottomLeftRadius: Appearance.rounding.large
+            bottomRightRadius: Appearance.rounding.large
+            border.width: 0
 
-    Row {
-        id: mainLayout
-        // Centred within the full-width window, slides vertically
-        x: panelBg.x
-        // contentY: 0 when open, -panelHeight when closed (hidden above panelBg clip)
-        y: root.contentY
-        width: root.panelWidth
-        height: root.panelHeight
-        // Inner padding
-        leftPadding: 8
-        rightPadding: 8
-        topPadding: 8
-        bottomPadding: 8
-        spacing: 0
+            Row {
+                id: mainLayout
+                anchors.fill: parent
+                // Inner padding
+                leftPadding: 8
+                rightPadding: 8
+                topPadding: 8
+                bottomPadding: 8
+                spacing: 0
 
-        // ── Vertical Tab Strip ──
+                // ── Vertical Tab Strip ──
         Item {
             id: tabStrip
             width: root.tabStripWidth
@@ -280,7 +222,7 @@ Item {
                 color: Appearance.colors.colOutlineVariant
                 opacity: 0.5
             }
-        }
+        } // End tabStrip
 
         // ── Content Area ──
         Item {
@@ -331,11 +273,11 @@ Item {
                 sourceComponent: DashNotepad { width: contentArea.width - 24; height: contentArea.height - 24 }
             }
 
-            // Tab 3: GitHub  (always active — data fetches once at shell load)
+            // Tab 3: GitHub  (fetches data when opened because Loader recreates it)
             Loader {
                 anchors.fill: parent
                 anchors.margins: 12
-                active: true
+                active: root.currentTab === 3
                 visible: root.currentTab === 3
                 opacity: visible ? 1 : 0
                 transform: Translate { y: root.currentTab === 3 ? 0 : (root.currentTab > 3 ? -12 : 12)
@@ -344,6 +286,31 @@ Item {
                 Behavior on opacity { NumberAnimation { duration: 200; easing.type: Easing.OutQuart } }
                 sourceComponent: DashGitHub { width: contentArea.width - 24; height: contentArea.height - 24 }
             }
-        }
+        } // End contentArea
+            } // End mainLayout
+        } // End panelBg
+    } // End clipRect
+
+    // ── Concave shoulder corners (flush with statusbar) ──
+    RoundCorner {
+        x: clipRect.x - implicitSize
+        y: 0
+        implicitSize: root.shoulderRadius
+        corner: RoundCorner.CornerEnum.TopRight
+        color: root.animHeight > 0 ? Appearance.colors.colStatusBarSolid : "transparent"
+        visible: root.animHeight > 0
+        opacity: root.animHeight / root.panelHeight
+        Behavior on color { ColorAnimation { duration: 100 } }
     }
+    RoundCorner {
+        x: clipRect.x + root.panelWidth
+        y: 0
+        implicitSize: root.shoulderRadius
+        corner: RoundCorner.CornerEnum.TopLeft
+        color: root.animHeight > 0 ? Appearance.colors.colStatusBarSolid : "transparent"
+        visible: root.animHeight > 0
+        opacity: root.animHeight / root.panelHeight
+        Behavior on color { ColorAnimation { duration: 100 } }
+    }
+
 }
