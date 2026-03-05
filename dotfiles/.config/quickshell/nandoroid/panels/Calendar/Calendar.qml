@@ -28,16 +28,13 @@ Scope {
         WlrLayershell.keyboardFocus: GlobalStates.calendarOpen ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
         color: "transparent"
 
-        // Full-width, anchored exactly flush to the bottom of the status bar.
-        // wlr-layer-shell automatically positions top-anchored surfaces AFTER the
-        // StatusBar's exclusiveZone — no explicit margins.top needed.
+        // Centered horizontally by wlr-layer-shell when left/right are omitted.
         anchors {
             top: true
-            left: true
-            right: true
         }
 
-        implicitHeight: content.implicitHeight
+        // Implicit width must encompass the panel AND the overhanging shoulder pieces
+        implicitWidth: content.implicitWidth
 
         HyprlandFocusGrab {
             id: focusGrab

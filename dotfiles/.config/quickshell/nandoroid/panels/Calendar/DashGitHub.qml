@@ -41,8 +41,20 @@ Item {
 
     property bool fetchedOnce: false
 
-    // Fetch at shell start so data is immediately ready when the user opens the tab
-    Component.onCompleted: fetch()
+    // Fetch as soon as the configuration is fully loaded
+    function checkAndFetch() {
+        if (Config.ready && !fetchedOnce && !loading) {
+            fetchedOnce = true
+            fetch()
+        }
+    }
+
+    Connections {
+        target: Config
+        function onReadyChanged() { checkAndFetch() }
+    }
+
+    Component.onCompleted: checkAndFetch()
 
     // ── Profile REST fetch ──
     Process {

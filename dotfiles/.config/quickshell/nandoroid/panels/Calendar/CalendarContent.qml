@@ -39,8 +39,8 @@ Item {
     readonly property int shoulderRadius: Config.ready && Config.options.statusBar
         ? (Config.options.statusBar.backgroundCornerRadius ?? 20) : 20
 
-    // Window is fixed size — no resizing = no jitter
-    implicitWidth: panelWidth
+    // Window is sized exactly for the panel plus shoulder pieces
+    implicitWidth: panelWidth + (shoulderRadius * 2)
     implicitHeight: panelHeight
 
     // ── Animation state (Caelestia pattern: implicitHeight from 0) ──
@@ -76,7 +76,7 @@ Item {
     // Fixed full-panel size bounds, but actual visibility is height-clipped.
     Rectangle {
         id: clipRect
-        x: Math.round((parent.width - root.panelWidth) / 2)
+        x: root.shoulderRadius
         y: 0
         width: root.panelWidth
         height: root.animHeight
@@ -299,7 +299,7 @@ Item {
 
     // ── Concave shoulder corners (flush with statusbar) ──
     RoundCorner {
-        x: clipRect.x - implicitSize
+        x: 0
         y: 0
         implicitSize: root.shoulderRadius
         corner: RoundCorner.CornerEnum.TopRight
@@ -309,7 +309,7 @@ Item {
         Behavior on color { ColorAnimation { duration: 100 } }
     }
     RoundCorner {
-        x: clipRect.x + root.panelWidth
+        x: root.shoulderRadius + root.panelWidth
         y: 0
         implicitSize: root.shoulderRadius
         corner: RoundCorner.CornerEnum.TopLeft
