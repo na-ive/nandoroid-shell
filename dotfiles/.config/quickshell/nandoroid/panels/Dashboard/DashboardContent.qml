@@ -175,6 +175,18 @@ Item {
                 (height - root.tabCount * (root.tabButtonSize + 6) + 6) / 2
             )
 
+            // Card background for the tab buttons
+            Rectangle {
+                id: tabButtonsCard
+                anchors.horizontalCenter: parent.horizontalCenter
+                y: tabStrip.buttonsTop - 8
+                width: root.tabButtonSize + 16
+                height: (root.tabButtonSize + 6) * root.tabCount + 10
+                radius: Appearance.rounding.large
+                color: Appearance.colors.colLayer2
+                opacity: 0.8
+            }
+
             // Animated stretch-highlight pill (Ambxst style)
             Rectangle {
                 id: tabHighlight
@@ -276,17 +288,6 @@ Item {
                 }
             }
 
-            // Thin separator line (right side)
-            Rectangle {
-                anchors.right: parent.right
-                anchors.top: parent.top
-                anchors.bottom: parent.bottom
-                anchors.topMargin: 12
-                anchors.bottomMargin: 12
-                width: 1
-                color: Appearance.colors.colOutlineVariant
-                opacity: 0.5
-            }
         } // End tabStrip
 
         // ── Content Area ──
