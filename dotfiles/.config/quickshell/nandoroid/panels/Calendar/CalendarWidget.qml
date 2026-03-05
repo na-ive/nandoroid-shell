@@ -288,10 +288,11 @@ Item {
                                     eventPopup.visible = false
                                     return
                                 }
-                                // Position popup below the day cell
-                                const btnPos = mapFromItem(this, 0, height)
-                                eventPopup._popX = btnPos.x - eventPopup.width / 2 + width / 2
-                                eventPopup._popY = btnPos.y + 4
+                                // mapToItem(root, x, y): map button's bottom-center
+                                // from button-local coords → CalendarWidget root coords
+                                const pos = mapToItem(root, width / 2, height + 4)
+                                eventPopup._popX = pos.x - eventPopup.width / 2
+                                eventPopup._popY = pos.y
                                 eventPopup.dateStr = dateStr
                                 eventPopup.events = root.getEventsForDate(dateStr)
                                 eventPopup.visible = !eventPopup.visible

@@ -140,7 +140,7 @@ Item {
             // List (full height - “+ New Event” card is now first item in the list)
             Rectangle {
                 anchors.fill: parent
-                color: Appearance.colors.colLayer1
+                color: Appearance.m3colors.m3surfaceContainer
                 radius: Appearance.rounding.normal
                 clip: true
 
@@ -287,7 +287,7 @@ Item {
                 Layout.fillWidth: true
                 implicitHeight: 44
                 radius: Appearance.rounding.small
-                color: Appearance.colors.colLayer1
+                color: Appearance.m3colors.m3surfaceContainer
                 border.color: titleField.activeFocus ? Appearance.colors.colPrimary : Appearance.colors.colOutlineVariant
                 border.width: titleField.activeFocus ? 2 : 1
 
@@ -322,7 +322,7 @@ Item {
                 Rectangle {
                     Layout.fillWidth: true; implicitHeight: 44
                     radius: Appearance.rounding.small
-                    color: Appearance.colors.colLayer1
+                    color: Appearance.m3colors.m3surfaceContainer
                     border.color: dateField.activeFocus ? Appearance.colors.colPrimary : Appearance.colors.colOutlineVariant
                     border.width: dateField.activeFocus ? 2 : 1
                     RowLayout {
@@ -345,7 +345,7 @@ Item {
                 Rectangle {
                     Layout.preferredWidth: 110; implicitHeight: 44
                     radius: Appearance.rounding.small
-                    color: Appearance.colors.colLayer1
+                    color: Appearance.m3colors.m3surfaceContainer
                     border.color: timeField.activeFocus ? Appearance.colors.colPrimary : Appearance.colors.colOutlineVariant
                     border.width: timeField.activeFocus ? 2 : 1
                     RowLayout {
@@ -381,7 +381,7 @@ Item {
                             buttonRadius: 16
                             colBackground: root.formRecurrence === modelData
                                 ? Appearance.colors.colPrimary
-                                : Appearance.colors.colLayer1
+                                : Appearance.m3colors.m3surfaceContainer
                             onClicked: root.formRecurrence = modelData
                             StyledText {
                                 anchors.centerIn: parent

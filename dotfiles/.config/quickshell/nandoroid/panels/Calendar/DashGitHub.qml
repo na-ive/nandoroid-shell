@@ -187,7 +187,7 @@ Item {
         RippleButton {
             Layout.alignment: Qt.AlignHCenter
             implicitWidth: 100; implicitHeight: 36; buttonRadius: 18
-            colBackground: Appearance.colors.colLayer1
+            colBackground: Appearance.m3colors.m3surfaceContainer
             onClicked: root.fetch()
             StyledText { anchors.centerIn: parent; text: "Retry"; color: Appearance.colors.colOnLayer1 }
         }
@@ -202,7 +202,7 @@ Item {
         Rectangle {
             Layout.fillWidth: true
             implicitHeight: profileRow.implicitHeight + 20
-            radius: Appearance.rounding.normal; color: Appearance.colors.colLayer1
+            radius: Appearance.rounding.normal; color: Appearance.m3colors.m3surfaceContainer
 
             RowLayout {
                 id: profileRow; anchors.fill: parent; anchors.margins: 12; spacing: 14
@@ -357,7 +357,7 @@ Item {
                     required property var modelData
                     Layout.fillWidth: true; Layout.preferredWidth: 1
                     implicitHeight: repoCol.implicitHeight + 14
-                    radius: Appearance.rounding.small; color: Appearance.colors.colLayer1
+                    radius: Appearance.rounding.small; color: Appearance.m3colors.m3surfaceContainer
 
                     RippleButton { anchors.fill: parent; buttonRadius: parent.radius; colBackground: "transparent"; onClicked: Qt.openUrlExternally(modelData.html_url) }
 

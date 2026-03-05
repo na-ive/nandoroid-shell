@@ -108,7 +108,7 @@ Item {
             Rectangle {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                color: Appearance.colors.colLayer1
+                color: Appearance.m3colors.m3surfaceContainer
                 radius: Appearance.rounding.normal
                 clip: true
 
@@ -207,7 +207,7 @@ Item {
                     Layout.fillWidth: true
                     implicitHeight: 40
                     radius: Appearance.rounding.small
-                    color: Appearance.colors.colLayer1
+                    color: Appearance.m3colors.m3surfaceContainer
                     border.color: titleInput.activeFocus ? Appearance.colors.colPrimary : "transparent"
                     border.width: 2
 
@@ -235,7 +235,7 @@ Item {
 
                 RippleButton {
                     implicitWidth: 40; implicitHeight: 40; buttonRadius: 20
-                    colBackground: Appearance.colors.colLayer1
+                    colBackground: Appearance.m3colors.m3surfaceContainer
                     onClicked: root.deleteSelected()
                     MaterialSymbol { anchors.centerIn: parent; text: "delete"; iconSize: 20; color: Appearance.colors.colError }
                     StyledToolTip { text: "Delete note" }
@@ -246,7 +246,7 @@ Item {
             Rectangle {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                color: Appearance.colors.colLayer1
+                color: Appearance.m3colors.m3surfaceContainer
                 radius: Appearance.rounding.normal
                 border.color: bodyArea.activeFocus ? Appearance.colors.colPrimary : "transparent"
                 border.width: 2
