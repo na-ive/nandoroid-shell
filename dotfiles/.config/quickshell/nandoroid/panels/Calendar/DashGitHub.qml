@@ -40,13 +40,8 @@ Item {
 
     property bool fetchedOnce: false
 
-    // Fetch when this tab becomes visible for the FIRST time
-    onVisibleChanged: {
-        if (visible && !fetchedOnce && !loading) {
-            fetchedOnce = true
-            fetch()
-        }
-    }
+    // Fetch at shell start so data is immediately ready when the user opens the tab
+    Component.onCompleted: fetch()
 
     // ── Profile REST fetch ──
     Process {
@@ -216,7 +211,7 @@ Item {
 
                 // Avatar
                 Rectangle {
-                    width: 52; height: 52; radius: 26
+                    width: 52; height: 52; radius: Appearance.rounding.normal
                     color: Appearance.colors.colLayer2; clip: true
                     Image {
                         anchors.fill: parent
