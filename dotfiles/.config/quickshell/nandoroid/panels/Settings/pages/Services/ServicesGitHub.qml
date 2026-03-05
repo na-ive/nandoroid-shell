@@ -8,7 +8,7 @@ import Quickshell
 
 /**
  * Services Settings — GitHub Configuration
- * Uses SegmentedWrapper style matching other services pages.
+ * Field style matches ServicesDisk: Rectangle { radius:12; color:m3surfaceContainerLow }
  */
 ColumnLayout {
     id: root
@@ -44,74 +44,69 @@ ColumnLayout {
     // ── Username card ──
     SegmentedWrapper {
         Layout.fillWidth: true
-        implicitHeight: usernameRow.implicitHeight + 40
+        implicitHeight: usernameInner.implicitHeight + 40
         orientation: Qt.Vertical
         color: Appearance.m3colors.m3surfaceContainerHigh
         smallRadius: 8
         fullRadius: 20
 
-        RowLayout {
-            id: usernameRow
+        ColumnLayout {
+            id: usernameInner
             anchors.fill: parent
             anchors.margins: 20
-            spacing: 16
+            spacing: 8
 
-            MaterialSymbol {
-                text: "person"
-                iconSize: 18
-                color: Appearance.colors.colSubtext
-                Layout.alignment: Qt.AlignVCenter
-            }
-
-            ColumnLayout {
-                Layout.fillWidth: true
-                spacing: 6
-
+            RowLayout {
+                spacing: 10
+                MaterialSymbol {
+                    text: "person"
+                    iconSize: 18
+                    color: Appearance.colors.colSubtext
+                    Layout.alignment: Qt.AlignVCenter
+                }
                 StyledText {
                     text: "GitHub Username"
                     font.pixelSize: Appearance.font.pixelSize.small
                     font.weight: Font.Medium
                     color: Appearance.colors.colOnLayer1
-                }
-
-                // Visible input box
-                Rectangle {
                     Layout.fillWidth: true
-                    implicitHeight: 38
-                    radius: Appearance.rounding.small
-                    color: Appearance.m3colors.m3surfaceContainerLow
-                    border.color: usernameField.activeFocus
-                        ? Appearance.colors.colPrimary
-                        : Appearance.colors.colOutlineVariant
-                    border.width: usernameField.activeFocus ? 2 : 1
+                }
+            }
 
-                    TextInput {
-                        id: usernameField
-                        anchors {
-                            left: parent.left; right: parent.right
-                            verticalCenter: parent.verticalCenter
-                            leftMargin: 12; rightMargin: 12
-                        }
-                        clip: true
-                        text: Config.ready && Config.options.github ? Config.options.github.githubUsername : ""
-                        font.family: Appearance.font.family.main
+            // Input field — disk-monitoring style
+            Rectangle {
+                Layout.fillWidth: true
+                Layout.preferredHeight: 48
+                radius: 12
+                color: Appearance.m3colors.m3surfaceContainerLow
+                border.width: usernameField.activeFocus ? 2 : 0
+                border.color: Appearance.colors.colPrimary
+
+                TextInput {
+                    id: usernameField
+                    anchors.fill: parent
+                    anchors.leftMargin: 16
+                    anchors.rightMargin: 16
+                    verticalAlignment: TextInput.AlignVCenter
+                    clip: true
+                    text: Config.ready && Config.options.github ? Config.options.github.githubUsername : ""
+                    font.family: Appearance.font.family.main
+                    font.pixelSize: Appearance.font.pixelSize.normal
+                    color: Appearance.colors.colOnLayer1
+                    selectionColor: Appearance.colors.colPrimaryContainer
+                    selectedTextColor: Appearance.colors.colOnPrimaryContainer
+                    onEditingFinished: {
+                        if (Config.ready && Config.options.github)
+                            Config.options.github.githubUsername = text
+                    }
+
+                    StyledText {
+                        anchors.fill: parent
+                        verticalAlignment: Text.AlignVCenter
+                        text: "e.g. octocat"
+                        color: Appearance.colors.colSubtext
+                        visible: parent.text === "" && !parent.activeFocus
                         font.pixelSize: Appearance.font.pixelSize.normal
-                        color: Appearance.colors.colOnLayer1
-                        selectionColor: Appearance.colors.colPrimaryContainer
-                        selectedTextColor: Appearance.colors.colOnPrimaryContainer
-                        onEditingFinished: {
-                            if (Config.ready && Config.options.github)
-                                Config.options.github.githubUsername = text
-                        }
-
-                        StyledText {
-                            anchors.fill: parent
-                            text: "e.g. octocat"
-                            color: Appearance.colors.colSubtext
-                            visible: !parent.text && !parent.activeFocus
-                            font.pixelSize: Appearance.font.pixelSize.normal
-                            verticalAlignment: Text.AlignVCenter
-                        }
                     }
                 }
             }
@@ -121,113 +116,100 @@ ColumnLayout {
     // ── Personal Access Token card ──
     SegmentedWrapper {
         Layout.fillWidth: true
-        implicitHeight: tokenCol.implicitHeight + 40
+        implicitHeight: tokenInner.implicitHeight + 40
         orientation: Qt.Vertical
         color: Appearance.m3colors.m3surfaceContainerHigh
         smallRadius: 8
         fullRadius: 20
 
         ColumnLayout {
-            id: tokenCol
+            id: tokenInner
             anchors.fill: parent
             anchors.margins: 20
-            spacing: 6
+            spacing: 8
 
             RowLayout {
                 Layout.fillWidth: true
-                spacing: 16
-
+                spacing: 10
                 MaterialSymbol {
                     text: "key"
                     iconSize: 18
                     color: Appearance.colors.colSubtext
-                    Layout.alignment: Qt.AlignTop
-                    Layout.topMargin: 2
+                    Layout.alignment: Qt.AlignVCenter
                 }
-
-                ColumnLayout {
+                StyledText {
+                    text: "Personal Access Token"
+                    font.pixelSize: Appearance.font.pixelSize.small
+                    font.weight: Font.Medium
+                    color: Appearance.colors.colOnLayer1
                     Layout.fillWidth: true
-                    spacing: 6
+                }
+                StyledText {
+                    text: "Optional · for private repos"
+                    font.pixelSize: Appearance.font.pixelSize.smaller
+                    color: Appearance.colors.colSubtext
+                }
+            }
 
-                    RowLayout {
+            // Input field — disk-monitoring style with show/hide toggle
+            Rectangle {
+                Layout.fillWidth: true
+                Layout.preferredHeight: 48
+                radius: 12
+                color: Appearance.m3colors.m3surfaceContainerLow
+                border.width: tokenField.activeFocus ? 2 : 0
+                border.color: Appearance.colors.colPrimary
+
+                RowLayout {
+                    anchors.fill: parent
+                    anchors.leftMargin: 16
+                    anchors.rightMargin: 8
+                    spacing: 4
+
+                    TextInput {
+                        id: tokenField
                         Layout.fillWidth: true
-                        StyledText {
-                            text: "Personal Access Token"
-                            font.pixelSize: Appearance.font.pixelSize.small
-                            font.weight: Font.Medium
-                            color: Appearance.colors.colOnLayer1
-                            Layout.fillWidth: true
+                        verticalAlignment: TextInput.AlignVCenter
+                        clip: true
+                        text: Config.ready && Config.options.github ? Config.options.github.githubToken : ""
+                        echoMode: showToken.showingToken ? TextInput.Normal : TextInput.Password
+                        font.family: Appearance.font.family.main
+                        font.pixelSize: Appearance.font.pixelSize.normal
+                        color: Appearance.colors.colOnLayer1
+                        selectionColor: Appearance.colors.colPrimaryContainer
+                        selectedTextColor: Appearance.colors.colOnPrimaryContainer
+                        onEditingFinished: {
+                            if (Config.ready && Config.options.github)
+                                Config.options.github.githubToken = text
                         }
+
                         StyledText {
-                            text: "Optional · for private repos"
-                            font.pixelSize: Appearance.font.pixelSize.smaller
+                            anchors.fill: parent
+                            verticalAlignment: Text.AlignVCenter
+                            text: "ghp_xxxxxxxxxxxx"
                             color: Appearance.colors.colSubtext
+                            visible: parent.text === "" && !parent.activeFocus
+                            font.pixelSize: Appearance.font.pixelSize.normal
                         }
                     }
 
-                    // Visible input box with show/hide toggle
-                    Rectangle {
-                        Layout.fillWidth: true
-                        implicitHeight: 38
-                        radius: Appearance.rounding.small
-                        color: Appearance.m3colors.m3surfaceContainerLow
-                        border.color: tokenField.activeFocus
-                            ? Appearance.colors.colPrimary
-                            : Appearance.colors.colOutlineVariant
-                        border.width: tokenField.activeFocus ? 2 : 1
-
-                        RowLayout {
-                            anchors {
-                                left: parent.left; right: parent.right
-                                verticalCenter: parent.verticalCenter
-                                leftMargin: 12; rightMargin: 6
-                            }
-                            spacing: 4
-
-                            TextInput {
-                                id: tokenField
-                                Layout.fillWidth: true
-                                clip: true
-                                text: Config.ready && Config.options.github ? Config.options.github.githubToken : ""
-                                echoMode: showToken.showingToken ? TextInput.Normal : TextInput.Password
-                                font.family: Appearance.font.family.main
-                                font.pixelSize: Appearance.font.pixelSize.normal
-                                color: Appearance.colors.colOnLayer1
-                                selectionColor: Appearance.colors.colPrimaryContainer
-                                selectedTextColor: Appearance.colors.colOnPrimaryContainer
-                                onEditingFinished: {
-                                    if (Config.ready && Config.options.github)
-                                        Config.options.github.githubToken = text
-                                }
-
-                                StyledText {
-                                    anchors.fill: parent
-                                    text: "ghp_xxxxxxxxxxxx"
-                                    color: Appearance.colors.colSubtext
-                                    visible: !parent.text && !parent.activeFocus
-                                    font.pixelSize: Appearance.font.pixelSize.normal
-                                    verticalAlignment: Text.AlignVCenter
-                                }
-                            }
-
-                            RippleButton {
-                                id: showToken
-                                property bool showingToken: false
-                                implicitWidth: 28; implicitHeight: 28; buttonRadius: 14
-                                colBackground: "transparent"
-                                onClicked: showingToken = !showingToken
-                                MaterialSymbol {
-                                    anchors.centerIn: parent
-                                    text: showToken.showingToken ? "visibility_off" : "visibility"
-                                    iconSize: 16
-                                    color: Appearance.colors.colSubtext
-                                }
-                            }
+                    RippleButton {
+                        id: showToken
+                        property bool showingToken: false
+                        implicitWidth: 32; implicitHeight: 32; buttonRadius: 16
+                        colBackground: "transparent"
+                        onClicked: showingToken = !showingToken
+                        MaterialSymbol {
+                            anchors.centerIn: parent
+                            text: showToken.showingToken ? "visibility_off" : "visibility"
+                            iconSize: 16
+                            color: Appearance.colors.colSubtext
                         }
                     }
                 }
             }
 
+            // Help text — aligned with the input field (no leading filler)
             StyledText {
                 text: "Create a token at GitHub → Settings → Developer settings → Personal access tokens"
                 font.pixelSize: Appearance.font.pixelSize.smaller

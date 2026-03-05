@@ -32,8 +32,16 @@ Item {
     readonly property int tabButtonSize: 44
     readonly property int tabStripWidth: tabButtonSize + 16 // button + side padding
 
-    implicitWidth: Appearance.sizes.dashboardWidth
-    implicitHeight: Appearance.sizes.dashboardHeight
+    // The panel itself is centred inside the full-screen-width window
+    readonly property int panelWidth: Appearance.sizes.dashboardWidth
+    readonly property int panelHeight: Appearance.sizes.dashboardHeight
+    // Corner radius used for the shoulder pieces — match statusbar corner radius
+    readonly property int shoulderRadius: Config.ready && Config.options.statusBar
+        ? (Config.options.statusBar.backgroundCornerRadius ?? 20) : 20
+
+    // Fill the full-width PanelWindow — content is centred within
+    implicitWidth: panelWidth
+    implicitHeight: panelHeight
 
     opacity: active ? 1 : 0
     Behavior on opacity {
@@ -55,8 +63,11 @@ Item {
     // ── Main Panel Rectangle (Ambxst-style rounded corners) ──
     Rectangle {
         id: panelBg
-        anchors.fill: parent
-        // Same background as the solid statusbar — creates the "fused" look
+        // Centre the panel within the full-width window
+        x: Math.round((parent.width - root.panelWidth) / 2)
+        y: 0
+        width: root.panelWidth
+        height: root.panelHeight
         color: Appearance.m3colors.m3surfaceContainerLow
         radius: Appearance.rounding.large
         visible: active
@@ -72,10 +83,40 @@ Item {
         }
     }
 
+    // ── Concave shoulder corners (flush with statusbar) ──
+    // TopLeft corner piece: fills the "gap" between statusbar and panel top-left
+    RoundCorner {
+        x: panelBg.x - implicitSize
+        y: 0
+        implicitSize: root.shoulderRadius
+        corner: RoundCorner.CornerEnum.TopRight
+        color: active ? Appearance.colors.colStatusBarSolid : "transparent"
+        visible: active
+        Behavior on color { ColorAnimation { duration: 150 } }
+    }
+    // TopRight corner piece: fills the gap at the panel's top-right
+    RoundCorner {
+        x: panelBg.x + root.panelWidth
+        y: 0
+        implicitSize: root.shoulderRadius
+        corner: RoundCorner.CornerEnum.TopLeft
+        color: active ? Appearance.colors.colStatusBarSolid : "transparent"
+        visible: active
+        Behavior on color { ColorAnimation { duration: 150 } }
+    }
+
     Row {
         id: mainLayout
-        anchors.fill: parent
-        anchors.margins: 8
+        // Fill the panelBg rectangle (centred within the full-width window)
+        x: panelBg.x
+        y: panelBg.y
+        width: root.panelWidth
+        height: root.panelHeight
+        // Inner padding
+        leftPadding: 8
+        rightPadding: 8
+        topPadding: 8
+        bottomPadding: 8
         spacing: 0
 
         // ── Vertical Tab Strip ──
@@ -201,8 +242,9 @@ Item {
         // ── Content Area ──
         Item {
             id: contentArea
-            width: parent.width - root.tabStripWidth
-            height: parent.height
+            // panelWidth minus (leftPadding+rightPadding=16) minus tabStripWidth
+            width: root.panelWidth - 16 - root.tabStripWidth
+            height: root.panelHeight - 16
 
             // Tab 0: Calendar + Pomodoro
             Loader {

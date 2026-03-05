@@ -9,8 +9,11 @@ import Quickshell.Hyprland
 
 /**
  * Calendar / Dashboard panel.
- * Centered below the status bar, visually fused with it via RoundCorner
- * concave corner pieces at the top-left and top-right edges.
+ * Full-width overlay window (same as StatusBar) — sits directly below the
+ * status bar with margins.top = statusBarHeight. The CalendarContent
+ * positions itself centred within the full-width window.
+ * RoundCorner pieces inside CalendarContent produce the inverted concave
+ * shoulder corners that visually fuse the panel to the status bar.
  */
 Scope {
     id: root
@@ -24,40 +27,16 @@ Scope {
         WlrLayershell.keyboardFocus: GlobalStates.calendarOpen ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
         color: "transparent"
 
-        // Anchor to LEFT only — then use margins.left to offset from
-        // the left edge by (screenWidth - dashboardWidth) / 2, centering it.
+        // Full-width, anchored exactly flush to the bottom of the status bar
+        // (same technique as StatusBar.qml itself uses)
         anchors {
             top: true
             left: true
-            right: false
+            right: true
         }
         margins.top: Appearance.sizes.statusBarHeight
-        margins.left: Math.max(0, Math.round((screen.width - Appearance.sizes.dashboardWidth) / 2))
 
-        implicitWidth: Appearance.sizes.dashboardWidth
         implicitHeight: contentLoader.item ? contentLoader.item.implicitHeight : Appearance.sizes.dashboardHeight
-
-        // ── Concave top corners (RoundCorner) that "fuse" the panel with the statusbar ──
-        // These sit ABOVE the panel (negative y) to draw the inverse-corner fill
-        // using the statusbar background color
-        RoundCorner {
-            id: tlCorner
-            anchors.left: parent.left
-            anchors.top: parent.top
-            anchors.topMargin: -implicitSize
-            implicitSize: Appearance.rounding.large
-            corner: RoundCorner.CornerEnum.BottomLeft
-            color: Appearance.colors.colStatusBarSolid
-        }
-        RoundCorner {
-            id: trCorner
-            anchors.right: parent.right
-            anchors.top: parent.top
-            anchors.topMargin: -implicitSize
-            implicitSize: Appearance.rounding.large
-            corner: RoundCorner.CornerEnum.BottomRight
-            color: Appearance.colors.colStatusBarSolid
-        }
 
         HyprlandFocusGrab {
             id: focusGrab
