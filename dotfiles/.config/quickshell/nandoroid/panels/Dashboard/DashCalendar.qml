@@ -24,6 +24,10 @@ RowLayout {
             try { root.scheduledEvents = JSON.parse(scheduleView.text()) } catch(e) { root.scheduledEvents = [] }
         }
     }
+
+    function reloadSchedule() {
+        scheduleView.reload()
+    }
     // Build a flat list of all dates this event applies to (expand recurring)
     readonly property var eventDates: {
         let dates = []

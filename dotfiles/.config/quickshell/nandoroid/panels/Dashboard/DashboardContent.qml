@@ -307,6 +307,13 @@ Item {
                     Behavior on y { NumberAnimation { duration: 250; easing.type: Easing.OutQuart } }
                 }
                 Behavior on opacity { NumberAnimation { duration: 200; easing.type: Easing.OutQuart } }
+                
+                onVisibleChanged: {
+                    if (visible && item && typeof item.reloadSchedule === "function") {
+                        item.reloadSchedule()
+                    }
+                }
+                
                 sourceComponent: DashCalendar { width: contentArea.width - 24; height: contentArea.height - 24 }
             }
 
