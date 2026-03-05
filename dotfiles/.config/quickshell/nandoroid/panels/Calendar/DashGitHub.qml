@@ -5,6 +5,7 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Io
+import QtQuick.Effects
 
 /**
  * Dashboard Tab 4: GitHub Profile Tracker
@@ -211,12 +212,30 @@ Item {
 
                 // Avatar
                 Rectangle {
+                    id: avatarContainer
                     width: 52; height: 52; radius: Appearance.rounding.normal
-                    color: Appearance.colors.colLayer2; clip: true
+                    color: Appearance.colors.colLayer2
+                    
                     Image {
+                        id: avatarImg
                         anchors.fill: parent
                         source: root.profile ? root.profile.avatar_url : ""
                         fillMode: Image.PreserveAspectCrop; asynchronous: true
+                        visible: false // Hidden because mask renders it
+                    }
+
+                    Rectangle {
+                        id: avatarMask
+                        anchors.fill: parent
+                        radius: Appearance.rounding.normal
+                        visible: false
+                    }
+
+                    MultiEffect {
+                        anchors.fill: avatarImg
+                        source: avatarImg
+                        maskEnabled: true
+                        maskSource: avatarMask
                     }
                 }
 

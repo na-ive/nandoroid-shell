@@ -279,11 +279,11 @@ Item {
                 sourceComponent: DashNotepad { width: contentArea.width - 24; height: contentArea.height - 24 }
             }
 
-            // Tab 3: GitHub  (fetches data when opened because Loader recreates it)
+            // Tab 3: GitHub  (fetches data when selected because Loader recreates it)
             Loader {
                 anchors.fill: parent
                 anchors.margins: 12
-                active: root.currentTab === 3
+                active: true
                 visible: root.currentTab === 3
                 opacity: visible ? 1 : 0
                 transform: Translate { y: root.currentTab === 3 ? 0 : (root.currentTab > 3 ? -12 : 12)

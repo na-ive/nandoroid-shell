@@ -20,9 +20,8 @@ Scope {
 
     PanelWindow {
         id: panelWindow
-        // Window is always visible (mapped) to prevent Wayland surface allocation jitter on first open.
-        // The content visually hides via opacity and off-screen translation.
-        visible: true
+        // Toggle visibility directly on the window to prevent grabbing background inputs when closed
+        visible: GlobalStates.calendarOpen
         exclusiveZone: 0
         WlrLayershell.namespace: "nandoroid:calendar"
         WlrLayershell.layer: WlrLayer.Overlay
