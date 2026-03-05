@@ -358,7 +358,7 @@ Singleton {
 
         // Dashboard (Calendar panel redesign)
         property real dashboardWidth: Math.min(860, screen.width * 0.68)
-        property real dashboardHeight: Math.min(500, screen.height * 0.75)
+        property real dashboardHeight: Math.min(450, screen.height * 0.75)
     }
 
     // --- Animation Curves (M3 Expressive) ---

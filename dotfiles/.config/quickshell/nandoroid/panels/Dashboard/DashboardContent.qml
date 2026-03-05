@@ -158,11 +158,11 @@ Item {
                 id: mainLayout
                 anchors.fill: parent
                 // Inner padding
-                leftPadding: 8
-                rightPadding: 8
-                topPadding: 8
-                bottomPadding: 8
-                spacing: 0
+                leftPadding: 16
+                rightPadding: 16
+                topPadding: 16
+                bottomPadding: 16
+                spacing: 16
 
                 // ── Vertical Tab Strip ──
         Item {
@@ -293,14 +293,13 @@ Item {
         // ── Content Area ──
         Item {
             id: contentArea
-            // panelWidth minus (leftPadding+rightPadding=16) minus tabStripWidth
-            width: root.panelWidth - 16 - root.tabStripWidth
-            height: root.panelHeight - 16
+            // panelWidth minus (leftPadding+rightPadding=32) minus tabStripWidth minus spacing(16)
+            width: root.panelWidth - 48 - root.tabStripWidth
+            height: root.panelHeight - 32
 
             // Tab 0: Calendar + Pomodoro
             Loader {
                 anchors.fill: parent
-                anchors.margins: 12
                 active: true
                 visible: root.currentTab === 0
                 opacity: visible ? 1 : 0
@@ -315,13 +314,12 @@ Item {
                     }
                 }
                 
-                sourceComponent: DashCalendar { width: contentArea.width - 24; height: contentArea.height - 24 }
+                sourceComponent: DashCalendar { width: contentArea.width; height: contentArea.height }
             }
 
             // Tab 1: Schedule
             Loader {
                 anchors.fill: parent
-                anchors.margins: 12
                 active: root.currentTab === 1
                 visible: root.currentTab === 1
                 opacity: visible ? 1 : 0
@@ -329,13 +327,12 @@ Item {
                     Behavior on y { NumberAnimation { duration: 250; easing.type: Easing.OutQuart } }
                 }
                 Behavior on opacity { NumberAnimation { duration: 200; easing.type: Easing.OutQuart } }
-                sourceComponent: DashSchedule { width: contentArea.width - 24; height: contentArea.height - 24 }
+                sourceComponent: DashSchedule { width: contentArea.width; height: contentArea.height }
             }
 
             // Tab 2: Notepad
             Loader {
                 anchors.fill: parent
-                anchors.margins: 12
                 active: root.currentTab === 2
                 visible: root.currentTab === 2
                 opacity: visible ? 1 : 0
@@ -343,13 +340,12 @@ Item {
                     Behavior on y { NumberAnimation { duration: 250; easing.type: Easing.OutQuart } }
                 }
                 Behavior on opacity { NumberAnimation { duration: 200; easing.type: Easing.OutQuart } }
-                sourceComponent: DashNotepad { width: contentArea.width - 24; height: contentArea.height - 24 }
+                sourceComponent: DashNotepad { width: contentArea.width; height: contentArea.height }
             }
 
             // Tab 3: GitHub  (fetches data when selected because Loader recreates it)
             Loader {
                 anchors.fill: parent
-                anchors.margins: 12
                 active: true
                 visible: root.currentTab === 3
                 opacity: visible ? 1 : 0
@@ -357,7 +353,7 @@ Item {
                     Behavior on y { NumberAnimation { duration: 250; easing.type: Easing.OutQuart } }
                 }
                 Behavior on opacity { NumberAnimation { duration: 200; easing.type: Easing.OutQuart } }
-                sourceComponent: DashGitHub { width: contentArea.width - 24; height: contentArea.height - 24 }
+                sourceComponent: DashGitHub { width: contentArea.width; height: contentArea.height }
             }
         } // End contentArea
             } // End mainLayout
