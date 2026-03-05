@@ -256,12 +256,15 @@ Item {
                     id: bodyFlickable
                     anchors.fill: parent
                     anchors.margins: 12
-                    contentHeight: bodyArea.implicitHeight
+                    contentHeight: bodyArea.height
                     clip: true
 
                     TextEdit {
                         id: bodyArea
                         width: bodyFlickable.width
+                        // Always fill at least the visible Flickable height so
+                        // clicking anywhere in the empty area starts typing
+                        height: Math.max(implicitHeight, bodyFlickable.height)
                         font.family: Appearance.font.family.main
                         font.pixelSize: Appearance.font.pixelSize.normal
                         color: Appearance.colors.colOnLayer1
@@ -271,7 +274,9 @@ Item {
                         onTextChanged: saveTimer.restart()
 
                         StyledText {
-                            anchors.fill: parent
+                            anchors.top: parent.top
+                            anchors.left: parent.left
+                            anchors.right: parent.right
                             text: "Start typing your note..."
                             color: Appearance.colors.colSubtext
                             visible: !parent.text && !parent.activeFocus

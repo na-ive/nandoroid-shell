@@ -8,8 +8,24 @@ import "calendar_layout.js" as CalendarLayout
 Item {
     id: root
     property int monthShift: 0
+    // List of date strings that have scheduled events, e.g. ["2026-03-08", "2026-03-15"]
+    property var eventDates: []
     property var viewingDate: CalendarLayout.getDateInXMonthsTime(monthShift)
     property var calendarLayout: CalendarLayout.getCalendarLayout(viewingDate, monthShift === 0, Config.ready ? (Config.options.time.firstDayOfWeek ?? 1) : 1)
+
+    // Build a Set of "YYYY-MM-DD" strings for O(1) lookup
+    readonly property var eventDateSet: {
+        let s = {}
+        for (let d of root.eventDates) s[d] = true
+        return s
+    }
+
+    function hasEvent(year, month, day) {
+        if (day <= 0) return false
+        const mm = String(month).padStart(2, '0')
+        const dd = String(day).padStart(2, '0')
+        return !!root.eventDateSet[year + "-" + mm + "-" + dd]
+    }
     
     readonly property string currentDayShort: {
         const today = new Date();
@@ -144,8 +160,16 @@ Item {
                         model: 7
                         delegate: CalendarDayButton {
                             required property int index
-                            day: root.calendarLayout[weekIndex][index].day.toString()
-                            isToday: root.calendarLayout[weekIndex][index].today
+                            readonly property var cell: root.calendarLayout[weekIndex][index]
+                            day: cell.day.toString()
+                            isToday: cell.today
+                            // Check if this cell's actual calendar date has a scheduled event
+                            hasEvent: {
+                                if (cell.today === -1) return false  // greyed out (prev/next month)
+                                const m = root.viewingDate.getMonth() + 1  // 1-based
+                                const y = root.viewingDate.getFullYear()
+                                return root.hasEvent(y, m, cell.day)
+                            }
                         }
                     }
                 }

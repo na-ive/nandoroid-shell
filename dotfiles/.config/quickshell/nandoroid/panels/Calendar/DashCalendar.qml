@@ -3,6 +3,7 @@ import "../../widgets"
 import "../../services"
 import QtQuick
 import QtQuick.Layouts
+import Quickshell.Io
 
 /**
  * Dashboard Tab 1: Calendar (left) + Pomodoro with arc ring (right)
@@ -10,6 +11,46 @@ import QtQuick.Layouts
 RowLayout {
     id: root
     spacing: 12
+
+    // Load schedule to mark days on the calendar
+    property var scheduledEvents: []
+    FileView {
+        id: scheduleView
+        path: StandardPaths.writableLocation(StandardPaths.CacheLocation) + "/nandoroid/schedule.json"
+        onLoadFailed: root.scheduledEvents = []
+        onLoaded: {
+            try { root.scheduledEvents = JSON.parse(scheduleView.text()) } catch(e) { root.scheduledEvents = [] }
+        }
+    }
+    // Build a flat list of all dates this event applies to (expand recurring)
+    readonly property var eventDates: {
+        let dates = []
+        const today = new Date()
+        for (let ev of root.scheduledEvents) {
+            if (!ev.date) continue
+            dates.push(ev.date)
+            if (ev.recurrence === "daily") {
+                let d = new Date(ev.date); d.setDate(d.getDate() + 1)
+                for (let i = 0; i < 60; i++) {
+                    const s = d.toISOString().slice(0, 10)
+                    dates.push(s); d.setDate(d.getDate() + 1)
+                }
+            } else if (ev.recurrence === "weekly") {
+                let d = new Date(ev.date); d.setDate(d.getDate() + 7)
+                for (let i = 0; i < 8; i++) {
+                    const s = d.toISOString().slice(0, 10)
+                    dates.push(s); d.setDate(d.getDate() + 7)
+                }
+            } else if (ev.recurrence === "monthly") {
+                let d = new Date(ev.date)
+                for (let i = 0; i < 12; i++) {
+                    d.setMonth(d.getMonth() + 1)
+                    dates.push(d.toISOString().slice(0, 10))
+                }
+            }
+        }
+        return dates
+    }
 
     // ── Calendar ──
     Rectangle {
@@ -22,6 +63,7 @@ RowLayout {
         CalendarWidget {
             anchors.fill: parent
             anchors.margins: 12
+            eventDates: root.eventDates
         }
     }
 
@@ -192,28 +234,64 @@ RowLayout {
                 }
             }
 
-            // ── Auto-continue toggle ──
-            RowLayout {
+            // ── Auto-continue toggle + next-break selector ──
+            ColumnLayout {
                 Layout.fillWidth: true
-                StyledText {
+                spacing: 6
+
+                RowLayout {
                     Layout.fillWidth: true
-                    text: "Auto-continue"
-                    font.pixelSize: Appearance.font.pixelSize.smaller
-                    color: Appearance.colors.colSubtext
-                    verticalAlignment: Text.AlignVCenter
+                    StyledText {
+                        Layout.fillWidth: true
+                        text: "Auto-continue"
+                        font.pixelSize: Appearance.font.pixelSize.smaller
+                        color: Appearance.colors.colSubtext
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                    RippleButton {
+                        implicitWidth: 40; implicitHeight: 22; buttonRadius: 11
+                        colBackground: PomodoroService.autoContinue
+                            ? Appearance.m3colors.m3primary : Appearance.m3colors.m3surfaceContainerHigh
+                        onClicked: PomodoroService.autoContinue = !PomodoroService.autoContinue
+                        Rectangle {
+                            x: PomodoroService.autoContinue ? parent.width - width - 3 : 3
+                            anchors.verticalCenter: parent.verticalCenter
+                            width: 16; height: 16; radius: 8
+                            color: PomodoroService.autoContinue
+                                ? Appearance.m3colors.m3onPrimary : Appearance.colors.colSubtext
+                            Behavior on x { NumberAnimation { duration: 180 } }
+                        }
+                    }
                 }
-                RippleButton {
-                    implicitWidth: 40; implicitHeight: 22; buttonRadius: 11
-                    colBackground: PomodoroService.autoContinue
-                        ? Appearance.m3colors.m3primary : Appearance.m3colors.m3surfaceContainerHigh
-                    onClicked: PomodoroService.autoContinue = !PomodoroService.autoContinue
-                    Rectangle {
-                        x: PomodoroService.autoContinue ? parent.width - width - 3 : 3
-                        anchors.verticalCenter: parent.verticalCenter
-                        width: 16; height: 16; radius: 8
-                        color: PomodoroService.autoContinue
-                            ? Appearance.m3colors.m3onPrimary : Appearance.colors.colSubtext
-                        Behavior on x { NumberAnimation { duration: 180 } }
+
+                // Next break selector (shown when auto-continue is on)
+                RowLayout {
+                    Layout.fillWidth: true
+                    visible: PomodoroService.autoContinue
+                    StyledText {
+                        Layout.fillWidth: true
+                        text: "Next Break"
+                        font.pixelSize: Appearance.font.pixelSize.smaller
+                        color: Appearance.colors.colSubtext
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                    RowLayout {
+                        spacing: 4
+                        Repeater {
+                            model: [
+                                { icon: "coffee", name: "Short", mode: 1 },
+                                { icon: "self_improvement", name: "Long", mode: 2 }
+                            ]
+                            delegate: SegmentedButton {
+                                implicitWidth: 58; implicitHeight: 24
+                                isHighlighted: PomodoroService.nextBreakMode === modelData.mode
+                                iconName: modelData.icon; buttonText: modelData.name; iconSize: 11
+                                colInactive: Appearance.m3colors.m3surfaceContainerHigh
+                                colActive: Appearance.m3colors.m3secondary
+                                colActiveText: Appearance.m3colors.m3onSecondary
+                                onClicked: PomodoroService.nextBreakMode = modelData.mode
+                            }
+                        }
                     }
                 }
             }

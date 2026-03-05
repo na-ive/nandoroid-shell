@@ -43,9 +43,9 @@ Scope {
 
         Loader {
             id: contentLoader
-            // Center horizontally in the full-width window
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.top: parent.top
+            // Explicit centering — anchors.horizontalCenter unreliable with WlrLayershell
+            x: Math.round((parent.width - width) / 2)
+            y: 0
             width: Appearance.sizes.dashboardWidth
             height: parent.height
             active: GlobalStates.calendarOpen

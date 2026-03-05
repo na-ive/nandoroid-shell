@@ -122,10 +122,9 @@ Item {
                 onIdx2Changed: { targetY2 = getYForIndex(idx2) }
             }
 
-            // Tab buttons
+            // Tab buttons (vertically centered)
             Column {
-                anchors.top: parent.top
-                anchors.topMargin: 4
+                anchors.verticalCenter: parent.verticalCenter
                 anchors.horizontalCenter: parent.horizontalCenter
                 spacing: 6
 

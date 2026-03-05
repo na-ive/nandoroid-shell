@@ -113,11 +113,6 @@ ColumnLayout {
                 }
             }
 
-            // Separator
-            Rectangle {
-                Layout.fillWidth: true; height: 1
-                color: Appearance.colors.colOutlineVariant; opacity: 0.4
-            }
 
             // Token field
             ColumnLayout {

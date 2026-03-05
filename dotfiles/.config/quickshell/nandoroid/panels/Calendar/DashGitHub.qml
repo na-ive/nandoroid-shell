@@ -35,11 +35,13 @@ Item {
         if (!username) return
         root.profile = null; root.contribWeeks = []; root.repos = []
         root.errorMsg = ""; root.loading = true
-        profileProc.running = false; profileProc.running = true
+        // Kill any in-flight requests before restarting
+        profileProc.running = false
+        Qt.callLater(function() { profileProc.running = true })
     }
 
-    onUsernameChanged: fetch()
-    Component.onCompleted: fetch()
+    // Only fetch once on first load — user can refresh via button
+    Component.onCompleted: Qt.callLater(fetch)
 
     // ── Profile REST fetch ──
     Process {
@@ -54,14 +56,22 @@ Item {
             onStreamFinished: {
                 try {
                     root.profile = JSON.parse(this.text)
-                    contribProc.running = true
+                    root.errorMsg = ""  // clear any prior error
+                    contribProc.running = false
+                    Qt.callLater(function() { contribProc.running = true })
                 } catch(e) {
-                    root.errorMsg = "Failed to load profile"
+                    root.errorMsg = "Failed to parse profile"
                     root.loading = false
                 }
             }
         }
-        onExited: (code) => { if (code !== 0) { root.errorMsg = "Network error (profile)"; root.loading = false } }
+        onExited: (code) => {
+            // Ignore SIGTERM (15) / SIGKILL (9) — these are from fetch() killing old requests
+            if (code !== 0 && code !== 15 && code !== 9) {
+                root.errorMsg = "Network error (profile)"
+                root.loading = false
+            }
+        }
     }
 
     // ── Contributions GraphQL fetch ──
