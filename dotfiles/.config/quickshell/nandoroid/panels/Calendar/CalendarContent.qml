@@ -89,7 +89,11 @@ Item {
         }
     ]
 
-    function close() { root.closed() }
+    function close() {
+        // Reset tab to default (tab 1 = calendar) when closed
+        currentTab = 0
+        root.closed()
+    }
 
     Connections {
         target: GlobalStates

@@ -36,11 +36,69 @@ Item {
     property bool showNightModePanel: false
     property bool showPowerProfilePanel: false
 
+    // ── Animation state (launcher pattern, mirrored top-to-down) ──
+    property real contentY: -(contentColumn.implicitHeight + 20)
+    property real contentOpacity: 0
+    property bool isActive: GlobalStates.quickSettingsOpen || Config.options?.panels?.keep_right_sidebar_loaded
+
+    states: State {
+        name: "open"
+        when: root.isActive
+        PropertyChanges {
+            root.contentY: 0
+            root.contentOpacity: 1
+        }
+    }
+
+    transitions: [
+        Transition {
+            from: ""
+            to: "open"
+            ParallelAnimation {
+                NumberAnimation {
+                    target: root; property: "contentY"
+                    duration: 300; easing.type: Easing.OutCubic
+                }
+                NumberAnimation {
+                    target: root; property: "contentOpacity"
+                    duration: 200
+                }
+            }
+        },
+        Transition {
+            from: "open"
+            to: ""
+            ParallelAnimation {
+                NumberAnimation {
+                    target: root; property: "contentY"
+                    to: -(contentColumn.implicitHeight + 20)
+                    duration: 300; easing.type: Easing.InCubic
+                }
+                NumberAnimation {
+                    target: root; property: "contentOpacity"
+                    to: 0; duration: 250
+                }
+            }
+        }
+    ]
+
     Rectangle {
-        id: backgroundRect
-        anchors.fill: parent
-        color: Appearance.colors.colLayer0
-        radius: Appearance.rounding.panel
+        id: clipRect
+        width: parent.width
+        height: parent.height
+        clip: true
+        color: "transparent"
+        visible: root.contentOpacity > 0
+
+        Rectangle {
+            id: backgroundRect
+            width: parent.width
+            height: contentColumn.implicitHeight + 20
+            y: root.contentY
+            opacity: root.contentOpacity
+            color: Appearance.colors.colLayer0
+            radius: Appearance.rounding.panel
+        }
     }
 
     function close() { root.closed(); }
@@ -331,8 +389,10 @@ Item {
     // ── CONTENT UI ──
     ColumnLayout {
         id: contentColumn
+        // Animate with the background
+        y: root.contentY
+        opacity: root.contentOpacity
         anchors {
-            top: parent.top
             left: parent.left
             right: parent.right
             margins: 10

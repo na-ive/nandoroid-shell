@@ -17,8 +17,11 @@ Scope {
 
     PanelWindow {
         id: panelWindow
-        visible: GlobalStates.quickSettingsOpen
-        exclusiveZone: (Config.options?.panels?.keep_right_sidebar_loaded && GlobalStates.quickSettingsOpen && contentLoader.item) ? contentLoader.item.implicitWidth : 0
+        // Always visible (mapped) to fix Wayland jitter. The internal content toggles opacity.
+        // Wait, if it's always visible as Top layer with OnDemand focus, it might block inputs.
+        // Let's rely on content opacity driving the actual visual rect.
+        visible: true
+        exclusiveZone: (Config.options?.panels?.keep_right_sidebar_loaded && GlobalStates.quickSettingsOpen) ? content.implicitWidth : 0
         WlrLayershell.namespace: "nandoroid:quicksettings"
         WlrLayershell.layer: WlrLayer.Top
         WlrLayershell.keyboardFocus: GlobalStates.quickSettingsOpen ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
@@ -29,8 +32,8 @@ Scope {
             right: true
         }
 
-        implicitWidth: contentLoader.item ? contentLoader.item.implicitWidth : 0
-        implicitHeight: contentLoader.item ? contentLoader.item.implicitHeight : 0
+        implicitWidth: content.implicitWidth
+        implicitHeight: content.implicitHeight
 
         HyprlandFocusGrab {
             id: focusGrab
@@ -38,8 +41,7 @@ Scope {
             windows: [panelWindow]
             onCleared: {
                 if (!GlobalStates.isPickingFile) {
-                    if (contentLoader.item) contentLoader.item.close();
-                    else GlobalStates.quickSettingsOpen = false;
+                    content.close();
                 }
             }
         }
@@ -47,19 +49,17 @@ Scope {
         Connections {
             target: GlobalStates
             function onQuickSettingsOpenChanged() {
-                if (!GlobalStates.quickSettingsOpen && contentLoader.item) contentLoader.item.close();
+                if (!GlobalStates.quickSettingsOpen) content.close();
             }
         }
 
-        Loader {
-            id: contentLoader
+        QuickSettingsContent {
+            id: content
             anchors.fill: parent
-            active: GlobalStates.quickSettingsOpen || Config.options?.panels?.keep_right_sidebar_loaded
-            sourceComponent: QuickSettingsContent {
-                onClosed: {
-                    GlobalStates.quickSettingsOpen = false;
-                    GlobalStates.quickSettingsEditMode = false;
-                }
+            visible: GlobalStates.quickSettingsOpen || Config.options?.panels?.keep_right_sidebar_loaded
+            onClosed: {
+                GlobalStates.quickSettingsOpen = false;
+                GlobalStates.quickSettingsEditMode = false;
             }
         }
     }

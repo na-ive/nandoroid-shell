@@ -20,7 +20,9 @@ Scope {
 
     PanelWindow {
         id: panelWindow
-        visible: GlobalStates.calendarOpen || (contentLoader.item && contentLoader.item.contentOpacity > 0)
+        // Window is always visible (mapped) to prevent Wayland surface allocation jitter on first open.
+        // The content visually hides via opacity and off-screen translation.
+        visible: true
         exclusiveZone: 0
         WlrLayershell.namespace: "nandoroid:calendar"
         WlrLayershell.layer: WlrLayer.Overlay
@@ -36,7 +38,7 @@ Scope {
             right: true
         }
 
-        implicitHeight: contentLoader.item ? contentLoader.item.implicitHeight : Appearance.sizes.dashboardHeight
+        implicitHeight: content.implicitHeight
 
         HyprlandFocusGrab {
             id: focusGrab
@@ -47,16 +49,11 @@ Scope {
             }
         }
 
-        Loader {
-            id: contentLoader
+        CalendarContent {
+            id: content
             anchors.fill: parent
-            // Stay active while animation is playing (contentOpacity > 0)
-            // so content isn't destroyed before the close animation finishes
-            active: GlobalStates.calendarOpen || (item && item.contentOpacity > 0)
-            sourceComponent: CalendarContent {
-                onClosed: {
-                    GlobalStates.calendarOpen = false;
-                }
+            onClosed: {
+                GlobalStates.calendarOpen = false;
             }
         }
     }
