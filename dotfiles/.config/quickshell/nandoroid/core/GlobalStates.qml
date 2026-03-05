@@ -24,7 +24,7 @@ Singleton {
     property string initialSpotlightQuery: ""
     property bool settingsOpen: false
     property bool quickWallpaperOpen: false
-    property bool calendarOpen: false
+    property bool dashboardOpen: false
     property bool systemMonitorOpen: false
     property bool regionSelectorOpen: false
     property bool overviewOpen: false
@@ -51,7 +51,7 @@ Singleton {
             launcherOpen = false
             spotlightOpen = false
             quickWallpaperOpen = false
-            calendarOpen = false
+            dashboardOpen = false
             sessionOpen = false
         }
     }
@@ -62,7 +62,7 @@ Singleton {
             launcherOpen = false
             spotlightOpen = false
             quickWallpaperOpen = false
-            calendarOpen = false
+            dashboardOpen = false
             sessionOpen = false
         }
     }
@@ -73,7 +73,7 @@ Singleton {
             quickSettingsOpen = false
             spotlightOpen = false
             quickWallpaperOpen = false
-            calendarOpen = false
+            dashboardOpen = false
             sessionOpen = false
         }
     }
@@ -85,7 +85,7 @@ Singleton {
             launcherOpen = false
             spotlightOpen = false
             quickWallpaperOpen = false
-            calendarOpen = false
+            dashboardOpen = false
             sessionOpen = false
         }
     }
@@ -96,13 +96,13 @@ Singleton {
             quickSettingsOpen = false
             launcherOpen = false
             spotlightOpen = false
-            calendarOpen = false
+            dashboardOpen = false
             sessionOpen = false
         }
     }
 
-    onCalendarOpenChanged: {
-        if (calendarOpen) {
+    onDashboardOpenChanged: {
+        if (dashboardOpen) {
             notificationCenterOpen = false
             quickSettingsOpen = false
             launcherOpen = false
@@ -119,7 +119,7 @@ Singleton {
             launcherOpen = false
             spotlightOpen = false
             quickWallpaperOpen = false
-            calendarOpen = false
+            dashboardOpen = false
             sessionOpen = false
         }
     }
@@ -130,7 +130,7 @@ Singleton {
             quickSettingsOpen = false
             launcherOpen = false
             quickWallpaperOpen = false
-            calendarOpen = false
+            dashboardOpen = false
             sessionOpen = false
         }
     }
@@ -142,7 +142,7 @@ Singleton {
             launcherOpen = false
             spotlightOpen = false
             quickWallpaperOpen = false
-            calendarOpen = false
+            dashboardOpen = false
         }
     }
 
@@ -159,7 +159,7 @@ Singleton {
             launcherOpen = false
             spotlightOpen = false
             quickWallpaperOpen = false
-            calendarOpen = false
+            dashboardOpen = false
             sessionOpen = false
             systemMonitorOpen = false
             settingsOpen = false
@@ -173,7 +173,7 @@ Singleton {
         spotlightOpen = false
         settingsOpen = false
         quickWallpaperOpen = false
-        calendarOpen = false
+        dashboardOpen = false
         systemMonitorOpen = false
         sessionOpen = false
         overviewOpen = false

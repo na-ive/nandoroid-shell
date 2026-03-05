@@ -16,7 +16,7 @@ import "panels/OSD"
 import "panels/Lock"
 import "panels/Session"
 import "panels/Launcher"
-import "panels/Calendar"
+import "panels/Dashboard"
 import "panels/SystemMonitor"
 import "panels/Polkit"
 import "panels/RegionSelector"
@@ -91,8 +91,8 @@ ShellRoot {
     // ── Phase 10: Settings ──
     Settings {}
 
-    // ── Phase 11: Calendar ──
-    Calendar {}
+    // ── Phase 11: Dashboard ──
+    Dashboard {}
 
     // ── Phase 12: System Monitor ──
     SystemMonitorPanel {}
@@ -156,10 +156,10 @@ ShellRoot {
     }
 
     IpcHandler {
-        target: "calender"
-        function open() { GlobalStates.calendarOpen = true }
-        function close() { GlobalStates.calendarOpen = false }
-        function toggle() { GlobalStates.calendarOpen = !GlobalStates.calendarOpen }
+        target: "dashboard"
+        function open() { GlobalStates.dashboardOpen = true }
+        function close() { GlobalStates.dashboardOpen = false }
+        function toggle() { GlobalStates.dashboardOpen = !GlobalStates.dashboardOpen }
     }
 
     // ==========================================

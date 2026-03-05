@@ -43,15 +43,67 @@ Item {
     implicitWidth: panelWidth + (shoulderRadius * 2)
     implicitHeight: panelHeight
 
-    // ── Animation state (Caelestia pattern: implicitHeight from 0) ──
-    property real animHeight: active ? panelHeight : 0
+    // ── Animation state (State / Transition pattern) ──
+    property real panelOpacity: panelBg.opacity
 
-    Behavior on animHeight {
-        NumberAnimation {
-            duration: active ? (Appearance.anim.durations.expressiveDefaultSpatial || 400) : (Appearance.anim.durations.emphasized || 250)
-            easing.bezierCurve: active ? (Appearance.anim.curves.expressiveDefaultSpatial || [0.2, 0.0, 0.0, 1.0]) : (Appearance.anim.curves.emphasized || [0.2, 0.0, 0.0, 1.0])
+    states: [
+        State {
+            name: "visible"
+            when: GlobalStates.dashboardOpen
+            PropertyChanges {
+                target: panelBg
+                y: 0
+                opacity: 1
+            }
+            PropertyChanges {
+                target: rightShoulder
+                opacity: 1
+            }
+            PropertyChanges {
+                target: leftShoulder
+                opacity: 1
+            }
         }
-    }
+    ]
+
+    transitions: [
+        Transition {
+            from: ""
+            to: "visible"
+            ParallelAnimation {
+                NumberAnimation {
+                    target: panelBg
+                    property: "y"
+                    duration: Appearance.anim.durations.expressiveDefaultSpatial || 400
+                    easing.bezierCurve: Appearance.anim.curves.expressiveDefaultSpatial || [0.2, 0.0, 0.0, 1.0]
+                }
+                NumberAnimation {
+                    targets: [panelBg, rightShoulder, leftShoulder]
+                    property: "opacity"
+                    duration: 300
+                }
+            }
+        },
+        Transition {
+            from: "visible"
+            to: ""
+            ParallelAnimation {
+                NumberAnimation {
+                    target: panelBg
+                    property: "y"
+                    to: -root.panelHeight
+                    duration: Appearance.anim.durations.emphasized || 500
+                    easing.bezierCurve: Appearance.anim.curves.emphasized || [0.2, 0.0, 0.0, 1.0]
+                }
+                NumberAnimation {
+                    targets: [panelBg, rightShoulder, leftShoulder]
+                    property: "opacity"
+                    to: 0
+                    duration: 400
+                }
+            }
+        }
+    ]
 
     function close() {
         root.closed()
@@ -59,8 +111,8 @@ Item {
 
     Connections {
         target: GlobalStates
-        function onCalendarOpenChanged() {
-            if (GlobalStates.calendarOpen) {
+        function onDashboardOpenChanged() {
+            if (GlobalStates.dashboardOpen) {
                 // Reset tab to default (tab 1 = calendar) when opened
                 currentTab = 0
                 tabHighlight.reset()
@@ -69,17 +121,16 @@ Item {
         }
     }
     Component.onCompleted: {
-        if (GlobalStates.calendarOpen) root.forceActiveFocus()
+        if (GlobalStates.dashboardOpen) root.forceActiveFocus()
     }
 
     // ── Main Panel Rectangle ──
-    // Fixed full-panel size bounds, but actual visibility is height-clipped.
     Rectangle {
         id: clipRect
-        x: root.shoulderRadius
+        anchors.horizontalCenter: parent.horizontalCenter
         y: 0
         width: root.panelWidth
-        height: root.animHeight
+        height: root.panelHeight
         clip: true
         color: "transparent"
 
@@ -87,13 +138,21 @@ Item {
             id: panelBg
             width: root.panelWidth
             height: root.panelHeight
-            anchors.bottom: clipRect.bottom
+            // y starts at -height (hidden above), and opacity 0
+            y: -root.panelHeight
+            opacity: 0
             color: Appearance.m3colors.m3surfaceContainerLow
             topLeftRadius: 0
             topRightRadius: 0
             bottomLeftRadius: Appearance.rounding.large
             bottomRightRadius: Appearance.rounding.large
             border.width: 0
+
+            // Prevent clicks inside the panel from falling through to the background closer
+            MouseArea {
+                anchors.fill: parent
+                hoverEnabled: true
+            }
 
             Row {
                 id: mainLayout
@@ -299,24 +358,22 @@ Item {
 
     // ── Concave shoulder corners (flush with statusbar) ──
     RoundCorner {
-        x: 0
+        id: rightShoulder
+        anchors.right: clipRect.left
         y: 0
         implicitSize: root.shoulderRadius
         corner: RoundCorner.CornerEnum.TopRight
-        color: root.animHeight > 0 ? Appearance.colors.colStatusBarSolid : "transparent"
-        visible: root.animHeight > 0
-        opacity: root.animHeight / root.panelHeight
-        Behavior on color { ColorAnimation { duration: 100 } }
+        color: Appearance.colors.colStatusBarSolid
+        opacity: 0
     }
     RoundCorner {
-        x: root.shoulderRadius + root.panelWidth
+        id: leftShoulder
+        anchors.left: clipRect.right
         y: 0
         implicitSize: root.shoulderRadius
         corner: RoundCorner.CornerEnum.TopLeft
-        color: root.animHeight > 0 ? Appearance.colors.colStatusBarSolid : "transparent"
-        visible: root.animHeight > 0
-        opacity: root.animHeight / root.panelHeight
-        Behavior on color { ColorAnimation { duration: 100 } }
+        color: Appearance.colors.colStatusBarSolid
+        opacity: 0
     }
 
 }

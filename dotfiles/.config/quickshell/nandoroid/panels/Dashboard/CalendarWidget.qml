@@ -142,6 +142,14 @@ Item {
                             Layout.fillWidth: true
                         }
                         StyledText {
+                            text: modelData.description || ""
+                            visible: modelData.description !== undefined && modelData.description.trim().length > 0
+                            font.pixelSize: Appearance.font.pixelSize.smaller
+                            color: Appearance.colors.colSubtext
+                            wrapMode: Text.WordWrap
+                            Layout.fillWidth: true
+                        }
+                        StyledText {
                             text: modelData.time + (modelData.recurrence !== "once" ? " · " + modelData.recurrence : "")
                             font.pixelSize: Appearance.font.pixelSize.smaller
                             color: Appearance.colors.colSubtext

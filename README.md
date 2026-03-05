@@ -2,7 +2,7 @@
 
 A Quickshell-based desktop shell for Hyprland adopting Android 16 design elements.
 
-**Version:** v0.9-alpha
+**Version:** v0.96-alpha
 **License:** AGPL-3.0
 
 ## Key Features
@@ -119,7 +119,7 @@ Manage the visibility of all UI panels.
 | **System Monitor**      | `systemmonitor` | `toggle` | `qs -c nandoroid ipc call systemmonitor toggle` |
 | **Overview Panel**      | `overview`      | `toggle` | `qs -c nandoroid ipc call overview toggle`      |
 | **Session (Power)**     | `session`       | `toggle` | `qs -c nandoroid ipc call session toggle`       |
-| **Calendar**            | `calender`      | `toggle` | `qs -c nandoroid ipc call calender toggle`      |
+| **Dashboard**           | `dashboard`     | `toggle` | `qs -c nandoroid ipc call dashboard toggle`     |
 | **Nandoroid Settings**  | `settings`      | `toggle` | `qs -c nandoroid ipc call settings toggle`      |
 
 ### Region Tools (Screenshots & Recording)

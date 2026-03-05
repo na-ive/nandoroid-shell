@@ -241,6 +241,7 @@ Item {
                         anchors.fill: parent
                         radius: Appearance.rounding.normal
                         visible: false
+                        layer.enabled: true
                     }
 
                     MultiEffect {
@@ -385,7 +386,7 @@ Item {
             visible: root.repos.length > 0
 
             Repeater {
-                model: root.repos.slice(0, 4)
+                model: root.repos.slice(0, 6)
                 delegate: Rectangle {
                     required property var modelData
                     Layout.fillWidth: true; Layout.preferredWidth: 1

@@ -20,36 +20,42 @@ Scope {
 
     PanelWindow {
         id: panelWindow
-        // Toggle visibility directly on the window to prevent grabbing background inputs when closed
-        visible: GlobalStates.calendarOpen
+        // Keep window mapped as long as it's open OR the panel is still visually fading out
+        visible: GlobalStates.dashboardOpen || (content && content.panelOpacity > 0)
         exclusiveZone: 0
-        WlrLayershell.namespace: "nandoroid:calendar"
+        WlrLayershell.namespace: "nandoroid:dashboard"
         WlrLayershell.layer: WlrLayer.Overlay
-        WlrLayershell.keyboardFocus: GlobalStates.calendarOpen ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
+        WlrLayershell.keyboardFocus: GlobalStates.dashboardOpen ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
         color: "transparent"
 
-        // Centered horizontally by wlr-layer-shell when left/right are omitted.
+        // Full desktop overlay bounds
         anchors {
             top: true
+            bottom: true
+            left: true
+            right: true
         }
 
-        // Implicit width must encompass the panel AND the overhanging shoulder pieces
-        implicitWidth: content.implicitWidth
+        // Close when clicking the transparent background outside the actual panel
+        MouseArea {
+            anchors.fill: parent
+            onClicked: GlobalStates.dashboardOpen = false
+        }
 
         HyprlandFocusGrab {
             id: focusGrab
-            active: GlobalStates.calendarOpen
+            active: GlobalStates.dashboardOpen
             windows: [panelWindow]
             onCleared: {
-                GlobalStates.calendarOpen = false
+                GlobalStates.dashboardOpen = false
             }
         }
 
-        CalendarContent {
+        DashboardContent {
             id: content
             anchors.fill: parent
             onClosed: {
-                GlobalStates.calendarOpen = false;
+                GlobalStates.dashboardOpen = false;
             }
         }
     }
