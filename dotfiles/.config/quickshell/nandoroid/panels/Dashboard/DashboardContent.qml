@@ -26,8 +26,12 @@ Item {
         }
     }
 
-    property bool active: GlobalStates.calendarOpen
+    property bool active: GlobalStates.dashboardOpen
     property int currentTab: 0
+    onCurrentTabChanged: {
+        tabHighlight.idx1 = currentTab
+        Qt.callLater(() => { tabHighlight.idx2 = currentTab })
+    }
     readonly property int tabCount: 4
     readonly property int tabButtonSize: 44
     readonly property int tabStripWidth: tabButtonSize + 16 // button + side padding
@@ -152,6 +156,13 @@ Item {
             MouseArea {
                 anchors.fill: parent
                 hoverEnabled: true
+                onWheel: (wheel) => {
+                    if (wheel.angleDelta.y > 0) {
+                        root.currentTab = (root.currentTab - 1 + root.tabCount) % root.tabCount
+                    } else if (wheel.angleDelta.y < 0) {
+                        root.currentTab = (root.currentTab + 1) % root.tabCount
+                    }
+                }
             }
 
             Row {
@@ -196,8 +207,8 @@ Item {
                 radius: Appearance.rounding.small
 
                 // Elastic stretch: idx1 snaps fast, idx2 follows slowly
-                property int idx1: root.currentTab
-                property int idx2: root.currentTab
+                property int idx1: 0
+                property int idx2: 0
                 
                 function reset() {
                     idx1 = 0
@@ -279,8 +290,6 @@ Item {
                             hoverEnabled: true
                             cursorShape: Qt.PointingHandCursor
                             onClicked: {
-                                tabHighlight.idx1 = index
-                                Qt.callLater(() => { tabHighlight.idx2 = index })
                                 root.currentTab = index
                             }
                         }
@@ -364,7 +373,7 @@ Item {
     RoundCorner {
         id: rightShoulder
         anchors.right: clipRect.left
-        y: 0
+        y: panelBg.y
         implicitSize: root.shoulderRadius
         corner: RoundCorner.CornerEnum.TopRight
         color: Appearance.colors.colStatusBarSolid
@@ -373,7 +382,7 @@ Item {
     RoundCorner {
         id: leftShoulder
         anchors.left: clipRect.right
-        y: 0
+        y: panelBg.y
         implicitSize: root.shoulderRadius
         corner: RoundCorner.CornerEnum.TopLeft
         color: Appearance.colors.colStatusBarSolid
