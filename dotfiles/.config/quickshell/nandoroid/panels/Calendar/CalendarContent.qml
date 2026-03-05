@@ -56,7 +56,8 @@ Item {
     Rectangle {
         id: panelBg
         anchors.fill: parent
-        color: Appearance.colors.colLayer0
+        // Same background as the solid statusbar — creates the "fused" look
+        color: Appearance.m3colors.m3surfaceContainerLow
         radius: Appearance.rounding.large
         visible: active
 
@@ -83,6 +84,11 @@ Item {
             width: root.tabStripWidth
             height: parent.height
 
+            // Y-offset where the button group starts (vertically centered)
+            readonly property real buttonsTop: Math.round(
+                (height - root.tabCount * (root.tabButtonSize + 6) + 6) / 2
+            )
+
             // Animated stretch-highlight pill (Ambxst style)
             Rectangle {
                 id: tabHighlight
@@ -95,7 +101,7 @@ Item {
                 property int idx2: root.currentTab
 
                 function getYForIndex(i) {
-                    return 4 + i * (root.tabButtonSize + 6)
+                    return tabStrip.buttonsTop + i * (root.tabButtonSize + 6)
                 }
 
                 property real targetY1: getYForIndex(idx1)
@@ -122,9 +128,10 @@ Item {
                 onIdx2Changed: { targetY2 = getYForIndex(idx2) }
             }
 
-            // Tab buttons (vertically centered)
+            // Tab buttons (vertically centered, matching buttonsTop used by highlight)
             Column {
-                anchors.verticalCenter: parent.verticalCenter
+                anchors.top: parent.top
+                anchors.topMargin: tabStrip.buttonsTop
                 anchors.horizontalCenter: parent.horizontalCenter
                 spacing: 6
 

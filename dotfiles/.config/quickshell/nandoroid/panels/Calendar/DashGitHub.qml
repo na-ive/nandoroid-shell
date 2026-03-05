@@ -32,22 +32,20 @@ Item {
     }
 
     function fetch() {
-        if (!username) return
+        if (!username) { root.loading = false; return }
         root.profile = null; root.contribWeeks = []; root.repos = []
         root.errorMsg = ""; root.loading = true
-        // Kill any in-flight requests before restarting
-        profileProc.running = false
-        Qt.callLater(function() { profileProc.running = true })
+        profileProc.running = true
     }
 
-    // Only fetch once on first load — user can refresh via button
-    Component.onCompleted: Qt.callLater(fetch)
+    // Fetch once when this tab becomes active
+    Component.onCompleted: fetch()
 
     // ── Profile REST fetch ──
     Process {
         id: profileProc
         command: {
-            let args = ["curl", "-s", "-f"]
+            let args = ["curl", "-s", "-f", "--max-time", "10"]
             if (root.token) args = args.concat(["-H", "Authorization: token " + root.token])
             return args.concat(["https://api.github.com/users/" + root.username])
         }
@@ -55,10 +53,20 @@ Item {
         stdout: StdioCollector {
             onStreamFinished: {
                 try {
-                    root.profile = JSON.parse(this.text)
-                    root.errorMsg = ""  // clear any prior error
-                    contribProc.running = false
-                    Qt.callLater(function() { contribProc.running = true })
+                    const parsed = JSON.parse(this.text)
+                    if (parsed && parsed.login) {
+                        root.profile = parsed
+                        root.errorMsg = ""
+                        // Start next step in chain
+                        if (root.token) {
+                            contribProc.running = true
+                        } else {
+                            reposProc.running = true
+                        }
+                    } else {
+                        root.errorMsg = "GitHub API error: " + (parsed.message || "unknown")
+                        root.loading = false
+                    }
                 } catch(e) {
                     root.errorMsg = "Failed to parse profile"
                     root.loading = false
@@ -66,21 +74,20 @@ Item {
             }
         }
         onExited: (code) => {
-            // Ignore SIGTERM (15) / SIGKILL (9) — these are from fetch() killing old requests
-            if (code !== 0 && code !== 15 && code !== 9) {
-                root.errorMsg = "Network error (profile)"
+            // Only handle real errors (not SIGTERM=15/SIGKILL=9)
+            if (code !== 0 && code !== 15 && code !== 9 && root.profile === null) {
+                root.errorMsg = "Network error: curl " + code + (code === 22 ? " (rate limited?)" : "")
                 root.loading = false
             }
         }
     }
 
-    // ── Contributions GraphQL fetch ──
+    // ── Contributions GraphQL fetch (token required) ──
     Process {
         id: contribProc
         command: {
-            if (!root.token || !root.username) return []   // GraphQL requires auth
             const query = '{"query":"{ user(login: \\"' + root.username + '\\") { contributionsCollection { contributionCalendar { totalContributions weeks { contributionDays { date contributionCount } } } } } }"}'
-            return ["curl", "-s", "-f",
+            return ["curl", "-s", "-f", "--max-time", "10",
                     "-H", "Authorization: bearer " + root.token,
                     "-H", "Content-Type: application/json",
                     "-d", query,
@@ -95,17 +102,21 @@ Item {
                     root.totalContribs = cal.totalContributions
                     root.contribWeeks = cal.weeks
                 } catch(e) {}
+                // Always proceed to repos regardless of contrib result
                 reposProc.running = true
             }
         }
-        onExited: (code) => { if (code !== 0) reposProc.running = true }   // not fatal — skip heatmap
+        onExited: (code) => {
+            // If contribProc fails without producing output, still fetch repos
+            if (code !== 0 && !reposProc.running) reposProc.running = true
+        }
     }
 
     // ── Repos REST fetch ──
     Process {
         id: reposProc
         command: {
-            let args = ["curl", "-s", "-f"]
+            let args = ["curl", "-s", "-f", "--max-time", "10"]
             if (root.token) args = args.concat(["-H", "Authorization: token " + root.token])
             return args.concat(["https://api.github.com/users/" + root.username + "/repos?sort=pushed&per_page=6&type=all"])
         }

@@ -28,7 +28,7 @@ Scope {
             left: true
             right: true
         }
-        margins.top: Appearance.sizes.statusBarHeight + 6
+        margins.top: Appearance.sizes.statusBarHeight
 
         implicitHeight: contentLoader.item ? contentLoader.item.implicitHeight : 0
 

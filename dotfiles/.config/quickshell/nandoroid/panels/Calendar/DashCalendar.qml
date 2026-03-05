@@ -16,7 +16,8 @@ RowLayout {
     property var scheduledEvents: []
     FileView {
         id: scheduleView
-        path: StandardPaths.writableLocation(StandardPaths.CacheLocation) + "/nandoroid/schedule.json"
+        // Match the same path as DashSchedule uses
+        path: Directories.home.replace("file://", "") + "/.cache/nandoroid/schedule.json"
         onLoadFailed: root.scheduledEvents = []
         onLoaded: {
             try { root.scheduledEvents = JSON.parse(scheduleView.text()) } catch(e) { root.scheduledEvents = [] }
@@ -57,12 +58,15 @@ RowLayout {
         Layout.fillHeight: true
         Layout.fillWidth: true
         Layout.preferredWidth: 1
-        color: Appearance.colors.colLayer1
+        color: Appearance.m3colors.m3surfaceContainerHigh
         radius: Appearance.rounding.normal
 
+        // Centre the calendar widget - it has a fixed inner size
         CalendarWidget {
-            anchors.fill: parent
-            anchors.margins: 12
+            anchors.centerIn: parent
+            // Cap width so the grid stays centred even in a wide container
+            width: Math.min(parent.width - 24, implicitWidth)
+            height: parent.height - 24
             eventDates: root.eventDates
         }
     }
@@ -86,7 +90,7 @@ RowLayout {
                 Layout.alignment: Qt.AlignHCenter
                 implicitWidth: arcSize
                 implicitHeight: arcSize
-                readonly property int arcSize: Math.min(parent.width ?? 160, 160)
+                readonly property int arcSize: Math.min(parent.width ?? 180, 180)
 
                 // Background ring
                 Canvas {
@@ -146,7 +150,7 @@ RowLayout {
                     StyledText {
                         Layout.alignment: Qt.AlignHCenter
                         text: PomodoroService.timeString
-                        font.pixelSize: 26
+                        font.pixelSize: 32
                         font.weight: Font.Bold
                         color: Appearance.colors.colOnLayer1
                     }
