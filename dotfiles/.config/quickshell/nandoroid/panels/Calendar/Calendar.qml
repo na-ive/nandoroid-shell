@@ -27,14 +27,14 @@ Scope {
         WlrLayershell.keyboardFocus: GlobalStates.calendarOpen ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
         color: "transparent"
 
-        // Full-width, anchored exactly flush to the bottom of the status bar
-        // (same technique as StatusBar.qml itself uses)
+        // Full-width, anchored exactly flush to the bottom of the status bar.
+        // wlr-layer-shell automatically positions top-anchored surfaces AFTER the
+        // StatusBar's exclusiveZone — no explicit margins.top needed.
         anchors {
             top: true
             left: true
             right: true
         }
-        margins.top: Appearance.sizes.statusBarHeight
 
         implicitHeight: contentLoader.item ? contentLoader.item.implicitHeight : Appearance.sizes.dashboardHeight
 

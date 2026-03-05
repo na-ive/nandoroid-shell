@@ -60,7 +60,7 @@ Item {
         if (GlobalStates.calendarOpen) root.forceActiveFocus()
     }
 
-    // ── Main Panel Rectangle (Ambxst-style rounded corners) ──
+    // ── Main Panel Rectangle ──
     Rectangle {
         id: panelBg
         // Centre the panel within the full-width window
@@ -69,18 +69,14 @@ Item {
         width: root.panelWidth
         height: root.panelHeight
         color: Appearance.m3colors.m3surfaceContainerLow
-        radius: Appearance.rounding.large
+        // Top corners are SQUARE — the statusbar sits flush above.
+        // Only bottom corners are rounded (Ambxst-style).
+        topLeftRadius: 0
+        topRightRadius: 0
+        bottomLeftRadius: Appearance.rounding.large
+        bottomRightRadius: Appearance.rounding.large
         visible: active
-
-        // Subtle border
-        Rectangle {
-            anchors.fill: parent
-            color: "transparent"
-            border.color: Appearance.colors.colOutlineVariant
-            border.width: 1
-            radius: parent.radius
-            opacity: 0.5
-        }
+        // No border — keeps the RoundCorner shoulder pieces fused seamlessly
     }
 
     // ── Concave shoulder corners (flush with statusbar) ──
