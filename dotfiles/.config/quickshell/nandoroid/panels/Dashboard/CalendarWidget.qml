@@ -143,7 +143,7 @@ Item {
                         }
                         StyledText {
                             text: modelData.description || ""
-                            visible: modelData.description !== undefined && modelData.description.trim().length > 0
+                            visible: Boolean(modelData.description) && String(modelData.description).trim().length > 0
                             font.pixelSize: Appearance.font.pixelSize.smaller
                             color: Appearance.colors.colSubtext
                             wrapMode: Text.WordWrap

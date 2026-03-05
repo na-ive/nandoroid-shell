@@ -18,6 +18,7 @@ RowLayout {
         id: scheduleView
         // Match the same path as DashSchedule uses
         path: Directories.home.replace("file://", "") + "/.cache/nandoroid/schedule.json"
+        watchChanges: true
         onLoadFailed: root.scheduledEvents = []
         onLoaded: {
             try { root.scheduledEvents = JSON.parse(scheduleView.text()) } catch(e) { root.scheduledEvents = [] }

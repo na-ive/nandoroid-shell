@@ -111,15 +111,16 @@ Item {
 
     function saveEvent() {
         if (!formTitle.trim()) return
+        const descVal = formDescription.trim() ? formDescription.trim() : undefined
         if (selectedId) {
             root.events = root.events.map(function(e) {
                 if (e.id === selectedId) {
-                    return Object.assign({}, e, { title: formTitle, date: formDate, time: formTime, recurrence: formRecurrence, description: formDescription })
+                    return Object.assign({}, e, { title: formTitle, date: formDate, time: formTime, recurrence: formRecurrence, description: descVal })
                 }
                 return e
             })
         } else {
-            const newEv = { id: makeId(), title: formTitle, date: formDate, time: formTime, recurrence: formRecurrence, description: formDescription, lastFired: "" }
+            const newEv = { id: makeId(), title: formTitle, date: formDate, time: formTime, recurrence: formRecurrence, description: descVal, lastFired: "" }
             root.events = root.events.concat([newEv])
         }
         save()
