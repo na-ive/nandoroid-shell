@@ -36,31 +36,11 @@ Item {
     property bool showNightModePanel: false
     property bool showPowerProfilePanel: false
 
-    // ── Animation state (Caelestia pattern: implicitHeight from 0) ──
-    property real animHeight: isActive ? contentColumn.implicitHeight + 20 : 0
-
-    Behavior on animHeight {
-        NumberAnimation {
-            duration: isActive ? (Appearance.anim.durations.expressiveDefaultSpatial || 400) : (Appearance.anim.durations.emphasized || 250)
-            easing.bezierCurve: isActive ? (Appearance.anim.curves.expressiveDefaultSpatial || [0.2, 0.0, 0.0, 1.0]) : (Appearance.anim.curves.emphasized || [0.2, 0.0, 0.0, 1.0])
-        }
-    }
-
     Rectangle {
-        id: clipRect
-        width: parent.width
-        height: root.animHeight
-        clip: true
-        color: "transparent"
-
-        Rectangle {
-            id: backgroundRect
-            width: parent.width
-            height: contentColumn.implicitHeight + 20
-            anchors.bottom: clipRect.bottom
-            color: Appearance.colors.colLayer0
-            radius: Appearance.rounding.panel
-        }
+        id: backgroundRect
+        anchors.fill: parent
+        color: Appearance.colors.colLayer0
+        radius: Appearance.rounding.panel
     }
 
     function close() { root.closed(); }
@@ -351,9 +331,8 @@ Item {
     // ── CONTENT UI ──
     ColumnLayout {
         id: contentColumn
-        // Animate with the background
-        anchors.bottom: clipRect.bottom
         anchors {
+            top: parent.top
             left: parent.left
             right: parent.right
             margins: 10

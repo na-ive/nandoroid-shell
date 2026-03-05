@@ -38,9 +38,12 @@ Item {
         profileProc.running = true
     }
 
-    // Fetch when this tab becomes visible (since we removed the recreating Loader)
+    property bool fetchedOnce: false
+
+    // Fetch when this tab becomes visible for the FIRST time
     onVisibleChanged: {
-        if (visible && !profile && !loading) {
+        if (visible && !fetchedOnce && !loading) {
+            fetchedOnce = true
             fetch()
         }
     }

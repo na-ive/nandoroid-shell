@@ -17,10 +17,8 @@ Scope {
 
     PanelWindow {
         id: panelWindow
-        // Always visible (mapped) to fix Wayland jitter. The internal content toggles opacity.
-        // Wait, if it's always visible as Top layer with OnDemand focus, it might block inputs.
-        // Let's rely on content opacity driving the actual visual rect.
-        visible: true
+        // Toggle visibility directly on the window to prevent grabbing background inputs when closed
+        visible: GlobalStates.quickSettingsOpen
         exclusiveZone: (Config.options?.panels?.keep_right_sidebar_loaded && GlobalStates.quickSettingsOpen) ? content.implicitWidth : 0
         WlrLayershell.namespace: "nandoroid:quicksettings"
         WlrLayershell.layer: WlrLayer.Top

@@ -63,6 +63,7 @@ Item {
             if (GlobalStates.calendarOpen) {
                 // Reset tab to default (tab 1 = calendar) when opened
                 currentTab = 0
+                tabHighlight.reset()
                 root.forceActiveFocus()
             }
         }
@@ -126,6 +127,11 @@ Item {
                 // Elastic stretch: idx1 snaps fast, idx2 follows slowly
                 property int idx1: root.currentTab
                 property int idx2: root.currentTab
+                
+                function reset() {
+                    idx1 = 0
+                    idx2 = 0
+                }
 
                 function getYForIndex(i) {
                     return tabStrip.buttonsTop + i * (root.tabButtonSize + 6)
