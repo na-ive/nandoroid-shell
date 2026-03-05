@@ -102,9 +102,11 @@ Item {
     property string formTime: "09:00"
     property string formRecurrence: "once" // once | daily | weekly | monthly
 
+    property string formDescription: ""
+
     function clearForm() {
         formTitle = ""; formDate = Qt.formatDate(new Date(), "yyyy-MM-dd")
-        formTime = "09:00"; formRecurrence = "once"
+        formTime = "09:00"; formRecurrence = "once"; formDescription = ""
     }
 
     function saveEvent() {
@@ -112,12 +114,12 @@ Item {
         if (selectedId) {
             root.events = root.events.map(function(e) {
                 if (e.id === selectedId) {
-                    return Object.assign({}, e, { title: formTitle, date: formDate, time: formTime, recurrence: formRecurrence })
+                    return Object.assign({}, e, { title: formTitle, date: formDate, time: formTime, recurrence: formRecurrence, description: formDescription })
                 }
                 return e
             })
         } else {
-            const newEv = { id: makeId(), title: formTitle, date: formDate, time: formTime, recurrence: formRecurrence, lastFired: "" }
+            const newEv = { id: makeId(), title: formTitle, date: formDate, time: formTime, recurrence: formRecurrence, description: formDescription, lastFired: "" }
             root.events = root.events.concat([newEv])
         }
         save()
@@ -259,6 +261,7 @@ Item {
                                 root.formDate = modelData.date
                                 root.formTime = modelData.time
                                 root.formRecurrence = modelData.recurrence
+                                root.formDescription = modelData.description || ""
                             }
                         }
                     }
@@ -365,6 +368,38 @@ Item {
                 }
             }
 
+            // Description field — fills all remaining vertical space
+            Rectangle {
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                radius: Appearance.rounding.small
+                color: Appearance.m3colors.m3surfaceContainer
+                border.color: descArea.activeFocus ? Appearance.colors.colPrimary : Appearance.colors.colOutlineVariant
+                border.width: descArea.activeFocus ? 2 : 1
+                clip: true
+
+                TextEdit {
+                    id: descArea
+                    anchors.fill: parent
+                    anchors.margins: 12
+                    text: root.formDescription
+                    font.family: Appearance.font.family.main
+                    font.pixelSize: Appearance.font.pixelSize.small
+                    color: Appearance.colors.colOnLayer1
+                    wrapMode: TextEdit.Wrap
+                    onTextChanged: root.formDescription = text
+
+                    StyledText {
+                        anchors.fill: parent
+                        text: "Description (optional)..."
+                        color: Appearance.colors.colSubtext
+                        visible: !descArea.text && !descArea.activeFocus
+                        font.pixelSize: Appearance.font.pixelSize.small
+                        verticalAlignment: Text.AlignTop
+                    }
+                }
+            }
+
             // Recurrence selector
             ColumnLayout {
                 Layout.fillWidth: true
@@ -395,8 +430,6 @@ Item {
                     }
                 }
             }
-
-            Item { Layout.fillHeight: true }
 
             // Save button
             RippleButton {

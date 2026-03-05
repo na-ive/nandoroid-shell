@@ -20,7 +20,7 @@ Scope {
 
     PanelWindow {
         id: panelWindow
-        visible: GlobalStates.calendarOpen
+        visible: GlobalStates.calendarOpen || (contentLoader.item && contentLoader.item.contentOpacity > 0)
         exclusiveZone: 0
         WlrLayershell.namespace: "nandoroid:calendar"
         WlrLayershell.layer: WlrLayer.Overlay
@@ -50,7 +50,9 @@ Scope {
         Loader {
             id: contentLoader
             anchors.fill: parent
-            active: GlobalStates.calendarOpen
+            // Stay active while animation is playing (contentOpacity > 0)
+            // so content isn't destroyed before the close animation finishes
+            active: GlobalStates.calendarOpen || (item && item.contentOpacity > 0)
             sourceComponent: CalendarContent {
                 onClosed: {
                     GlobalStates.calendarOpen = false;

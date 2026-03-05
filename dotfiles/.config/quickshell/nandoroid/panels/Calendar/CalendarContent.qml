@@ -39,14 +39,55 @@ Item {
     readonly property int shoulderRadius: Config.ready && Config.options.statusBar
         ? (Config.options.statusBar.backgroundCornerRadius ?? 20) : 20
 
-    // Fill the full-width PanelWindow — content is centred within
+    // Window is fixed size — no resizing = no jitter
     implicitWidth: panelWidth
     implicitHeight: panelHeight
 
-    opacity: active ? 1 : 0
-    Behavior on opacity {
-        NumberAnimation { duration: 200; easing.type: Easing.OutQuad }
+    // ── Animation state (launcher pattern, mirrored top-to-down) ──
+    // contentY: 0 = fully visible, -panelHeight = hidden above (behind statusbar)
+    property real contentY: -panelHeight
+    property real contentOpacity: 0
+
+    states: State {
+        name: "open"
+        when: active
+        PropertyChanges {
+            root.contentY: 0
+            root.contentOpacity: 1
+        }
     }
+
+    transitions: [
+        Transition {
+            from: ""
+            to: "open"
+            ParallelAnimation {
+                NumberAnimation {
+                    target: root; property: "contentY"
+                    duration: 300; easing.type: Easing.OutCubic
+                }
+                NumberAnimation {
+                    target: root; property: "contentOpacity"
+                    duration: 200
+                }
+            }
+        },
+        Transition {
+            from: "open"
+            to: ""
+            ParallelAnimation {
+                NumberAnimation {
+                    target: root; property: "contentY"
+                    to: -root.panelHeight
+                    duration: 300; easing.type: Easing.InCubic
+                }
+                NumberAnimation {
+                    target: root; property: "contentOpacity"
+                    to: 0; duration: 250
+                }
+            }
+        }
+    ]
 
     function close() { root.closed() }
 
@@ -61,6 +102,8 @@ Item {
     }
 
     // ── Main Panel Rectangle ──
+    // Fixed full-panel size; clips content sliding in from above.
+    // The window itself never resizes → zero jitter.
     Rectangle {
         id: panelBg
         // Centre the panel within the full-width window
@@ -69,43 +112,43 @@ Item {
         width: root.panelWidth
         height: root.panelHeight
         color: Appearance.m3colors.m3surfaceContainerLow
-        // Top corners are SQUARE — the statusbar sits flush above.
-        // Only bottom corners are rounded (Ambxst-style).
         topLeftRadius: 0
         topRightRadius: 0
         bottomLeftRadius: Appearance.rounding.large
         bottomRightRadius: Appearance.rounding.large
-        visible: active
-        // No border — keeps the RoundCorner shoulder pieces fused seamlessly
+        visible: root.contentOpacity > 0
+        opacity: root.contentOpacity
+        clip: true  // clips content while it slides in from above
     }
 
     // ── Concave shoulder corners (flush with statusbar) ──
-    // TopLeft corner piece: fills the "gap" between statusbar and panel top-left
     RoundCorner {
         x: panelBg.x - implicitSize
         y: 0
         implicitSize: root.shoulderRadius
         corner: RoundCorner.CornerEnum.TopRight
-        color: active ? Appearance.colors.colStatusBarSolid : "transparent"
-        visible: active
-        Behavior on color { ColorAnimation { duration: 150 } }
+        color: root.contentOpacity > 0 ? Appearance.colors.colStatusBarSolid : "transparent"
+        visible: root.contentOpacity > 0
+        opacity: root.contentOpacity
+        Behavior on color { ColorAnimation { duration: 100 } }
     }
-    // TopRight corner piece: fills the gap at the panel's top-right
     RoundCorner {
         x: panelBg.x + root.panelWidth
         y: 0
         implicitSize: root.shoulderRadius
         corner: RoundCorner.CornerEnum.TopLeft
-        color: active ? Appearance.colors.colStatusBarSolid : "transparent"
-        visible: active
-        Behavior on color { ColorAnimation { duration: 150 } }
+        color: root.contentOpacity > 0 ? Appearance.colors.colStatusBarSolid : "transparent"
+        visible: root.contentOpacity > 0
+        opacity: root.contentOpacity
+        Behavior on color { ColorAnimation { duration: 100 } }
     }
 
     Row {
         id: mainLayout
-        // Fill the panelBg rectangle (centred within the full-width window)
+        // Centred within the full-width window, slides vertically
         x: panelBg.x
-        y: panelBg.y
+        // contentY: 0 when open, -panelHeight when closed (hidden above panelBg clip)
+        y: root.contentY
         width: root.panelWidth
         height: root.panelHeight
         // Inner padding
