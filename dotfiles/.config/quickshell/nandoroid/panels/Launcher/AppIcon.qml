@@ -71,6 +71,7 @@ RippleButton {
                     text: (app && app.emoji) ? app.emoji : ""
                     visible: app && app.emoji !== ""
                     font.pixelSize: 32
+                    font.family: "Noto Color Emoji"
                     anchors.centerIn: parent
                 }
             }

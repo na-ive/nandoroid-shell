@@ -58,6 +58,7 @@ RippleButton {
                     visible: result && result.emoji !== ""
                     anchors.centerIn: parent
                     font.pixelSize: 20
+                    font.family: "Noto Color Emoji"
                 }
                 
                 MaterialSymbol {
