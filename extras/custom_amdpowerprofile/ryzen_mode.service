@@ -1,0 +1,12 @@
+[Unit]
+Description=RyzenAdj Dynamic Power Watcher
+After=network.target
+
+[Service]
+User=root
+ExecStart=/usr/bin/bash /your_ryzen_mode_path/ryzen_mode.sh
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

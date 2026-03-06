@@ -81,6 +81,16 @@ Singleton {
         usageFile.reload()
     }
 
+    Connections {
+        target: GlobalStates
+        function onLauncherOpenChanged() {
+            if (GlobalStates.launcherOpen) root.updateAppModel()
+        }
+        function onSpotlightOpenChanged() {
+            if (GlobalStates.spotlightOpen) root.updateAppModel()
+        }
+    }
+
     function updateAppModel() {
         const apps = Array.from(DesktopEntries.applications.values);
         const uniqueApps = new Map();
