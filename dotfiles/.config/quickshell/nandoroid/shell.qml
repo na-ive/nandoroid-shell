@@ -34,6 +34,38 @@ ShellRoot {
     Component.onCompleted: {
         MaterialThemeLoader.reapplyTheme()
         if (Caffeine.active) console.log("Caffeine active on startup")
+        startupUpdateCheckProc.running = true
+    }
+
+    Process {
+        id: startupUpdateCheckProc
+        command: ["bash", "-c", `
+            STATE_FILE="$HOME/.config/nandoroid/install_state.json"
+            if [ ! -f "$STATE_FILE" ]; then exit 0; fi
+            DIR=$(python -c 'import json,sys; print(json.load(open(sys.argv[1])).get("install_dir",""))' "$STATE_FILE" 2>/dev/null)
+            CHANNEL=$(python -c 'import json,sys; print(json.load(open(sys.argv[1])).get("channel","stable"))' "$STATE_FILE" 2>/dev/null)
+            if [ -z "$DIR" ]; then exit 0; fi
+            
+            cd "$DIR" || exit 0
+            
+            if [ "$CHANNEL" = "stable" ]; then
+                git fetch --tags >/dev/null 2>&1
+                LATEST=$(git describe --tags $(git rev-list --tags --max-count=1 2>/dev/null) 2>/dev/null)
+                if [ -z "$LATEST" ]; then exit 0; fi
+                LOCAL_COMMIT=$(git rev-parse HEAD 2>/dev/null)
+                TAG_COMMIT=$(git rev-list -n 1 "$LATEST" 2>/dev/null)
+                if [ "$LOCAL_COMMIT" != "$TAG_COMMIT" ]; then
+                    notify-send -t 10000 -i system-software-update "Nandoroid Shell" "An update is available ($LATEST)! Check Settings."
+                fi
+            else
+                git fetch origin main >/dev/null 2>&1
+                LOCAL=$(git rev-parse HEAD 2>/dev/null)
+                REMOTE=$(git rev-parse origin/main 2>/dev/null)
+                if [ "$LOCAL" != "$REMOTE" ] && [ -n "$LOCAL" ] && [ -n "$REMOTE" ]; then
+                    notify-send -t 10000 -i system-software-update "Nandoroid Shell" "An update is available (New Commits)! Check Settings."
+                fi
+            fi
+        `]
     }
 
     // ── Phase 0: Lock Screen ──

@@ -109,6 +109,24 @@ Item {
         formTime = "09:00"; formRecurrence = "once"; formDescription = ""
     }
 
+    // Auto-save debounce for existing events
+    Timer {
+        id: autoSaveTimer
+        interval: 500
+        repeat: false
+        onTriggered: {
+            if (!root.selectedId || !root.formTitle.trim()) return
+            const descVal = root.formDescription.trim() ? root.formDescription.trim() : undefined
+            root.events = root.events.map(function(e) {
+                if (e.id === root.selectedId) {
+                    return Object.assign({}, e, { title: root.formTitle, date: root.formDate, time: root.formTime, recurrence: root.formRecurrence, description: descVal })
+                }
+                return e
+            })
+            root.save()
+        }
+    }
+
     function saveEvent() {
         if (!formTitle.trim()) return
         const descVal = formDescription.trim() ? formDescription.trim() : undefined
@@ -257,12 +275,15 @@ Item {
                             cursorShape: Qt.PointingHandCursor
                             onClicked: {
                                 if (modelData._sentinel) return
-                                root.selectedId = modelData.id
+                                // Temporarily disable autosave triggers while populating fields
+                                let oldSelectedId = root.selectedId
+                                root.selectedId = ""
                                 root.formTitle = modelData.title
                                 root.formDate = modelData.date
                                 root.formTime = modelData.time
                                 root.formRecurrence = modelData.recurrence
                                 root.formDescription = modelData.description || ""
+                                root.selectedId = modelData.id
                             }
                         }
                     }
@@ -304,7 +325,7 @@ Item {
                     font.pixelSize: Appearance.font.pixelSize.normal
                     color: Appearance.colors.colOnLayer1
                     verticalAlignment: TextInput.AlignVCenter
-                    onTextChanged: root.formTitle = text
+                    onTextChanged: { root.formTitle = text; if(root.selectedId && titleField.activeFocus) autoSaveTimer.restart() }
 
                     StyledText {
                         anchors.fill: parent
@@ -340,7 +361,7 @@ Item {
                             font.pixelSize: Appearance.font.pixelSize.small
                             color: Appearance.colors.colOnLayer1
                             inputMask: "9999-99-99"
-                            onTextChanged: root.formDate = text
+                            onTextChanged: { root.formDate = text; if(root.selectedId && dateField.activeFocus) autoSaveTimer.restart() }
                         }
                     }
                 }
@@ -363,7 +384,7 @@ Item {
                             font.pixelSize: Appearance.font.pixelSize.small
                             color: Appearance.colors.colOnLayer1
                             inputMask: "99:99"
-                            onTextChanged: root.formTime = text
+                            onTextChanged: { root.formTime = text; if(root.selectedId && timeField.activeFocus) autoSaveTimer.restart() }
                         }
                     }
                 }
@@ -388,7 +409,7 @@ Item {
                     font.pixelSize: Appearance.font.pixelSize.small
                     color: Appearance.colors.colOnLayer1
                     wrapMode: TextEdit.Wrap
-                    onTextChanged: root.formDescription = text
+                    onTextChanged: { root.formDescription = text; if(root.selectedId && descArea.activeFocus) autoSaveTimer.restart() }
 
                     StyledText {
                         anchors.fill: parent
@@ -418,7 +439,10 @@ Item {
                             colBackground: root.formRecurrence === modelData
                                 ? Appearance.colors.colPrimary
                                 : Appearance.m3colors.m3surfaceContainer
-                            onClicked: root.formRecurrence = modelData
+                            onClicked: {
+                                root.formRecurrence = modelData
+                                if (root.selectedId) autoSaveTimer.restart()
+                            }
                             StyledText {
                                 anchors.centerIn: parent
                                 text: modelData.charAt(0).toUpperCase() + modelData.slice(1)

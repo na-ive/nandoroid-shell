@@ -2,7 +2,9 @@
 
 A Quickshell-based desktop shell for Hyprland adopting Android 16 design elements.
 
-**Version:** v0.96-alpha
+> **Note**: This shell and its dependencies are designed strictly for **Arch Linux based distributions** (Arch, CachyOS, EndeavourOS, etc.).
+
+**Version:** v1.0
 **License:** AGPL-3.0
 
 ## Key Features
@@ -19,7 +21,7 @@ A Quickshell-based desktop shell for Hyprland adopting Android 16 design element
 |                                      **Quick Settings**                                       |                                    **Notification Center**                                    |
 | <img src="https://github.com/user-attachments/assets/35d98451-e5d3-44ad-9872-8efc4394ff1c" /> | <img src="https://github.com/user-attachments/assets/b968526c-f6e8-4220-8dd9-0acb86a3dc0c" /> |
 
-## Installation (Alpha Stage)
+## Installation
 
 > **Nandoroid Shell is a _shell_, not a full dotfiles package.** It replaces your desktop panels, notifications, and system controls, but does not provide file pickers, screen sharing dialogs, or a file manager. See the guides below for details.
 
