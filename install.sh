@@ -210,10 +210,11 @@ if [[ "$DEP_CHOICE" =~ ^[Yy] ]]; then
             substep "Google Sans Flex already installed."
         fi
 
-        # AUR fonts
+        # Official & AUR fonts
         FONT_DEPS=(
             "ttf-material-symbols-variable-git"
             "ttf-jetbrains-mono-nerd"
+            "noto-fonts-emoji"
         )
         paru -S --needed $CONFIRM_FLAG "${FONT_DEPS[@]}" < /dev/tty
         success "All fonts installed."
