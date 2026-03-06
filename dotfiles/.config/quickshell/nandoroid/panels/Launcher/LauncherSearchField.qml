@@ -50,6 +50,8 @@ Rectangle {
                     if (GlobalStates.launcherOpen) {
                         if (input) input.text = "";
                         focusTimer.start();
+                    } else {
+                        if (input) input.text = "";
                     }
                 }
             }
@@ -58,8 +60,13 @@ Rectangle {
                 target: GlobalStates
                 function onSpotlightOpenChanged() {
                     if (GlobalStates.spotlightOpen) {
-                        if (input) input.text = GlobalStates.initialSpotlightQuery;
+                        if (input) {
+                            input.text = ""; // Force text change signal
+                            input.text = GlobalStates.initialSpotlightQuery;
+                        }
                         focusTimer.start();
+                    } else {
+                        if (input) input.text = "";
                     }
                 }
             }
