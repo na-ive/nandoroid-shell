@@ -82,7 +82,7 @@ banner
 info "Installation path..."
 ask "Where to clone? (default: ~/.local/src/nandoroid)"
 echo ""
-read -rp "     > " INSTALL_DIR
+read -rp "     > " INSTALL_DIR < /dev/tty
 INSTALL_DIR="${INSTALL_DIR:-$HOME/.local/src/nandoroid}"
 INSTALL_DIR="${INSTALL_DIR/#\~/$HOME}"
 substep "Target: ${C_ACCENT}$INSTALL_DIR${C_RST}"
@@ -91,7 +91,7 @@ substep "Target: ${C_ACCENT}$INSTALL_DIR${C_RST}"
 if [ -d "$INSTALL_DIR" ]; then
     info "Repository already exists."
     ask "Update it now? (Y/n)"
-    read -r UPDATE_CHOICE
+    read -r UPDATE_CHOICE < /dev/tty
     UPDATE_CHOICE="${UPDATE_CHOICE:-y}"
     if [[ "$UPDATE_CHOICE" =~ ^[Yy] ]]; then
         substep "Pulling latest changes..."
@@ -112,7 +112,7 @@ cd "$INSTALL_DIR" || exit 1
 # 3. Dependencies
 info "Dependency installation..."
 ask "Install required dependencies? (y/N)"
-read -r DEP_CHOICE
+read -r DEP_CHOICE < /dev/tty
 if [[ "$DEP_CHOICE" =~ ^[Yy] ]]; then
 
     # paru check
@@ -177,7 +177,7 @@ if [[ "$DEP_CHOICE" =~ ^[Yy] ]]; then
     choice "2" "Material Symbols   ${C_DIM}(icon font, from AUR)${C_RST}"
     choice "3" "JetBrains Mono NF  ${C_DIM}(monospace, from AUR)${C_RST}"
     ask "Install required fonts? (Y/n)"
-    read -r FONT_CHOICE
+    read -r FONT_CHOICE < /dev/tty
     FONT_CHOICE="${FONT_CHOICE:-y}"
     if [[ "$FONT_CHOICE" =~ ^[Yy] ]]; then
         # Google Sans Flex from GitHub
@@ -212,7 +212,7 @@ if [[ "$DEP_CHOICE" =~ ^[Yy] ]]; then
     choice "2" "fish      ${C_DIM}- interactive shell${C_RST}"
     choice "3" "starship  ${C_DIM}- cross-shell prompt${C_RST}"
     ask "Install optional terminal tools? (y/N)"
-    read -r TERM_CHOICE
+    read -r TERM_CHOICE < /dev/tty
     if [[ "$TERM_CHOICE" =~ ^[Yy] ]]; then
         TERM_DEPS=(
             "kitty"
@@ -240,7 +240,7 @@ info "Configuration injection..."
 substep "Appends settings into your existing configs."
 substep "Will ${C_WHITE}${C_BOLD}NOT${C_RST} overwrite existing configurations."
 ask "Inject Nandoroid into existing configs? (y/N)"
-read -r INJECT_CHOICE
+read -r INJECT_CHOICE < /dev/tty
 INJECT=false
 if [[ "$INJECT_CHOICE" =~ ^[Yy] ]]; then
     INJECT=true
@@ -285,7 +285,7 @@ info "Update channel..."
 choice "1" "stable ${C_DIM}- follows git tags (release versions)${C_RST}"
 choice "2" "canary ${C_DIM}- follows latest commit on main${C_RST}"
 ask "Preferred channel? [stable/canary] (default: stable)"
-read -r CHANNEL_CHOICE
+read -r CHANNEL_CHOICE < /dev/tty
 CHANNEL="stable"
 if [[ "$CHANNEL_CHOICE" =~ ^[Cc] ]]; then
     CHANNEL="canary"
