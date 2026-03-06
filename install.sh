@@ -263,6 +263,7 @@ if [[ "$INJECT_CHOICE" =~ ^[Yy] ]]; then
     # Kitty
     if [ -f "$HOME/.config/kitty/kitty.conf" ]; then
         if ! grep -q "include current-theme.conf" "$HOME/.config/kitty/kitty.conf"; then
+            echo "" >> "$HOME/.config/kitty/kitty.conf"
             echo "include current-theme.conf" >> "$HOME/.config/kitty/kitty.conf"
             substep "Injected kitty theme include."
         else
@@ -273,6 +274,7 @@ if [[ "$INJECT_CHOICE" =~ ^[Yy] ]]; then
     # Fish
     if [ -f "$HOME/.config/fish/config.fish" ]; then
         if ! grep -q "starship init fish" "$HOME/.config/fish/config.fish"; then
+            echo "" >> "$HOME/.config/fish/config.fish"
             echo 'starship init fish | source' >> "$HOME/.config/fish/config.fish"
             substep "Injected starship prompt into fish."
         else
@@ -283,6 +285,7 @@ if [[ "$INJECT_CHOICE" =~ ^[Yy] ]]; then
     # Hyprland
     if [ -f "$HOME/.config/hypr/hyprland.conf" ]; then
         if ! grep -q "nandoroid" "$HOME/.config/hypr/hyprland.conf"; then
+            echo "" >> "$HOME/.config/hypr/hyprland.conf"
             echo 'source = ~/.config/hypr/nandoroid/nandoroid.conf' >> "$HOME/.config/hypr/hyprland.conf"
             substep "Injected nandoroid config into hyprland."
         else
