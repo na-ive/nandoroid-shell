@@ -124,7 +124,40 @@ Item {
             }
         }
     }
+    // ── Statusbar Background Detection ──
+    readonly property int bgStyle: Config.ready && Config.options.statusBar
+        ? (Config.options.statusBar.backgroundStyle ?? 0) : 0
+    property bool hasActiveWindows: false
+
+    Connections {
+        enabled: root.bgStyle === 2
+        target: HyprlandData
+        function onWindowListChanged() {
+            root.updateActiveWindows()
+        }
+        function onActiveWorkspaceChanged() {
+            root.updateActiveWindows()
+        }
+    }
+    
+    function updateActiveWindows() {
+        if (!HyprlandData) return;
+        // Check current workspace based on HyprlandData.activeWorkspace
+        // Since Dashboard is a global window, assume we care about the currently focused monitor's workspace
+        const activeWsId = HyprlandData.activeWorkspace?.id;
+        root.hasActiveWindows = activeWsId
+            ? HyprlandData.windowList.some(w => w.workspace.id === activeWsId && !w.floating)
+            : false;
+    }
+
+    readonly property bool showShoulders: {
+        if (bgStyle === 1) return true;
+        if (bgStyle === 2) return hasActiveWindows;
+        return false;
+    }
+
     Component.onCompleted: {
+        updateActiveWindows()
         if (GlobalStates.dashboardOpen) root.forceActiveFocus()
     }
 
@@ -146,8 +179,8 @@ Item {
             y: -root.panelHeight
             opacity: 0
             color: Appearance.m3colors.m3surfaceContainerLow
-            topLeftRadius: 0
-            topRightRadius: 0
+            topLeftRadius: root.showShoulders ? 0 : Appearance.rounding.large
+            topRightRadius: root.showShoulders ? 0 : Appearance.rounding.large
             bottomLeftRadius: Appearance.rounding.large
             bottomRightRadius: Appearance.rounding.large
             border.width: 0
@@ -378,6 +411,7 @@ Item {
         corner: RoundCorner.CornerEnum.TopRight
         color: Appearance.colors.colStatusBarSolid
         opacity: 0
+        visible: root.showShoulders
     }
     RoundCorner {
         id: leftShoulder
@@ -387,6 +421,7 @@ Item {
         corner: RoundCorner.CornerEnum.TopLeft
         color: Appearance.colors.colStatusBarSolid
         opacity: 0
+        visible: root.showShoulders
     }
 
 }
