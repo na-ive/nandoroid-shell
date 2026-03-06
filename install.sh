@@ -261,36 +261,36 @@ if [[ "$INJECT_CHOICE" =~ ^[Yy] ]]; then
     INJECT=true
 
     # Kitty
-    if [ -f "$HOME/.config/kitty/kitty.conf" ]; then
-        if ! grep -q "include current-theme.conf" "$HOME/.config/kitty/kitty.conf"; then
-            echo "" >> "$HOME/.config/kitty/kitty.conf"
-            echo "include current-theme.conf" >> "$HOME/.config/kitty/kitty.conf"
-            substep "Injected kitty theme include."
-        else
-            substep "Kitty already injected."
-        fi
+    mkdir -p "$HOME/.config/kitty"
+    touch "$HOME/.config/kitty/kitty.conf"
+    if ! grep -q "include current-theme.conf" "$HOME/.config/kitty/kitty.conf"; then
+        echo "" >> "$HOME/.config/kitty/kitty.conf"
+        echo "include current-theme.conf" >> "$HOME/.config/kitty/kitty.conf"
+        substep "Injected kitty theme include."
+    else
+        substep "Kitty already injected."
     fi
 
     # Fish
-    if [ -f "$HOME/.config/fish/config.fish" ]; then
-        if ! grep -q "starship init fish" "$HOME/.config/fish/config.fish"; then
-            echo "" >> "$HOME/.config/fish/config.fish"
-            echo 'starship init fish | source' >> "$HOME/.config/fish/config.fish"
-            substep "Injected starship prompt into fish."
-        else
-            substep "Fish already injected."
-        fi
+    mkdir -p "$HOME/.config/fish"
+    touch "$HOME/.config/fish/config.fish"
+    if ! grep -q "starship init fish" "$HOME/.config/fish/config.fish"; then
+        echo "" >> "$HOME/.config/fish/config.fish"
+        echo 'starship init fish | source' >> "$HOME/.config/fish/config.fish"
+        substep "Injected starship prompt into fish."
+    else
+        substep "Fish already injected."
     fi
 
     # Hyprland
-    if [ -f "$HOME/.config/hypr/hyprland.conf" ]; then
-        if ! grep -q "nandoroid" "$HOME/.config/hypr/hyprland.conf"; then
-            echo "" >> "$HOME/.config/hypr/hyprland.conf"
-            echo 'source = ~/.config/hypr/nandoroid/nandoroid.conf' >> "$HOME/.config/hypr/hyprland.conf"
-            substep "Injected nandoroid config into hyprland."
-        else
-            substep "Hyprland already injected."
-        fi
+    mkdir -p "$HOME/.config/hypr"
+    touch "$HOME/.config/hypr/hyprland.conf"
+    if ! grep -q "nandoroid" "$HOME/.config/hypr/hyprland.conf"; then
+        echo "" >> "$HOME/.config/hypr/hyprland.conf"
+        echo 'source = ~/.config/hypr/nandoroid/nandoroid.conf' >> "$HOME/.config/hypr/hyprland.conf"
+        substep "Injected nandoroid config into hyprland."
+    else
+        substep "Hyprland already injected."
     fi
 
     success "Injection complete."
