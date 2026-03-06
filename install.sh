@@ -115,13 +115,28 @@ ask "Install required dependencies? (y/N)"
 read -r DEP_CHOICE < /dev/tty
 if [[ "$DEP_CHOICE" =~ ^[Yy] ]]; then
 
+    # Confirm mode
+    CONFIRM_FLAG=""
+    info "Installation mode..."
+    choice "1" "Manual confirm  ${C_DIM}(review each package, resolve conflicts)${C_RST}"
+    choice "2" "Auto confirm    ${C_DIM}(faster, no prompts)${C_RST}"
+    ask "Choose mode (1/2, default: 1)"
+    read -r CONFIRM_MODE < /dev/tty
+    CONFIRM_MODE="${CONFIRM_MODE:-1}"
+    if [[ "$CONFIRM_MODE" == "2" ]]; then
+        CONFIRM_FLAG="--noconfirm"
+        substep "${C_YELLOW}Auto confirm enabled. Conflicts will be skipped automatically.${C_RST}"
+    else
+        substep "Manual confirm. You will be prompted for each action."
+    fi
+
     # paru check
     if ! command -v paru >/dev/null 2>&1; then
         info "Installing paru (AUR helper)..."
-        sudo pacman -S --needed --noconfirm base-devel git
+        sudo pacman -S --needed $CONFIRM_FLAG base-devel git < /dev/tty
         git clone https://aur.archlinux.org/paru.git /tmp/paru
         cd /tmp/paru
-        makepkg -si --noconfirm
+        makepkg -si $CONFIRM_FLAG < /dev/tty
         cd "$INSTALL_DIR"
         rm -rf /tmp/paru
         success "paru installed."
@@ -168,7 +183,7 @@ if [[ "$DEP_CHOICE" =~ ^[Yy] ]]; then
         "xdg-utils"
         "wl-clipboard"
     )
-    paru -S --needed --noconfirm "${CORE_DEPS[@]}"
+    paru -S --needed $CONFIRM_FLAG "${CORE_DEPS[@]}" < /dev/tty
     success "Core dependencies installed."
 
     # 3b. Fonts
@@ -200,7 +215,7 @@ if [[ "$DEP_CHOICE" =~ ^[Yy] ]]; then
             "ttf-material-symbols-variable-git"
             "ttf-jetbrains-mono-nerd"
         )
-        paru -S --needed --noconfirm "${FONT_DEPS[@]}"
+        paru -S --needed $CONFIRM_FLAG "${FONT_DEPS[@]}" < /dev/tty
         success "All fonts installed."
     else
         success "Skipped."
@@ -219,7 +234,7 @@ if [[ "$DEP_CHOICE" =~ ^[Yy] ]]; then
             "fish"
             "starship"
         )
-        paru -S --needed --noconfirm "${TERM_DEPS[@]}"
+        paru -S --needed $CONFIRM_FLAG "${TERM_DEPS[@]}" < /dev/tty
         success "Terminal tools installed."
     else
         success "Skipped."
