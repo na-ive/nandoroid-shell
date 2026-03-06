@@ -21,16 +21,18 @@ A Quickshell-based desktop shell for Hyprland adopting Android 16 design element
 
 ## Installation (Alpha Stage)
 
-You can easily install Nandoroid Shell by running the following command in your terminal. The script will guide you through cloning the repository, copying the required configuration files, and optionally injecting themes into your existing setups (e.g., Kitty, Fish, Hyprland).
+> **Nandoroid Shell is a _shell_, not a full dotfiles package.** It replaces your desktop panels, notifications, and system controls, but does not provide file pickers, screen sharing dialogs, or a file manager. See the guides below for details.
+
+### Quick Install
 
 ```bash
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/na-ive/nandoroid-shell/main/install.sh)"
 ```
 
-3.  Ensure primary dependencies are installed on your system:
-    - `quickshell`
-    - `matugen`
-    - `hyprland`
+The interactive installer guides you through dependency installation, config copying, and optional injection into your existing Hyprland/Kitty/Fish setup.
+
+- **[Installation Guide (Clean Arch/CachyOS)](docs/INSTALL.md)**: Step-by-step from a fresh system
+- **[Migration Guide (from KDE/GNOME)](docs/MIGRATION.md)**: What gets replaced, portal setup, keybind migration
 
 ## Requirements & Dependencies
 
@@ -42,6 +44,7 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/na-ive/nandoroid-shell/m
 - **Hyprland**: The tiling Wayland compositor that hosts the shell.
 - **Quickshell (0.5.0+)**: The engine used to build and run the shell.
 - **Qt 6**: The base framework for the UI (QtQuick, Qt Background, etc.).
+- **Python 3**: Used by the terminal color application script.
 
 ### System Services & Protocols
 
@@ -51,6 +54,8 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/na-ive/nandoroid-shell/m
 - **libnotify (`notify-send`)**: For system notifications and temporary popups.
 - **Polkit (`pkexec`)**: For privileged actions (like password recovery).
 - **Systemd (`systemctl`)**: For power management (suspend, etc.).
+- **xdg-desktop-portal-hyprland**: For screen sharing dialogs.
+- **xdg-desktop-portal-gtk**: For file picker dialogs.
 
 ### CLI Utilities (Functional)
 
@@ -64,6 +69,7 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/na-ive/nandoroid-shell/m
 - **wf-recorder**: For screen recording functionality.
 - **ImageMagick (`magick`)**: Used for color detection, resizing, and image processing.
 - **ffmpeg (`ffplay`)**: Used for system sounds.
+- **wl-clipboard**: For Wayland clipboard operations.
 - **songrec**: Required for the Shazam-like music recognition feature.
 - **cava**: Used for audio visualization in the shell.
 - **easyeffects**: For audio effects and equalization management.
@@ -72,26 +78,33 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/na-ive/nandoroid-shell/m
 - **hyprsunset**: For the blue light filter (night light) functionality.
 - **jq**: For parsing and generating JSON (configs and state files).
 - **xdg-utils (`xdg-open`)**: For opening URLs and files in external apps.
-- **warp-cli** (Optional): Cloudflare WARP client for VPN integration.
-
-### Shell & Terminal
-
-- **fish**: The user's primary interactive shell.
-- **kitty**: The terminal emulator used for the shell experience.
-- **starship**: Cross-shell prompt often used for the terminal experience.
-- **bash / awk / grep / cut / sed**: Standard Unix utilities utilized by core scripts.
+- **warp-cli** _(Optional)_: Cloudflare WARP client for VPN integration.
 
 ### Fonts
 
-- **Google Sans Flex**: The primary variable font used for the interface, numbers, and titles.
-- **Material Symbols Rounded**: The icon font for all system symbols.
-- **JetBrains Mono NF**: The default monospace font (Nerd Font variation).
+- **Google Sans Flex** (from [GitHub](https://github.com/end-4/google-sans-flex)): The primary variable font for the interface.
+- **Material Symbols Rounded** (`ttf-material-symbols-variable-git`): The icon font for all system symbols.
+- **JetBrains Mono NF** (`ttf-jetbrains-mono-nerd`): The default monospace font.
+
+### Shell & Terminal _(Optional)_
+
+These are not required for the shell to function, but enhance the terminal experience with dynamic Matugen colors:
+
+- **kitty**: Terminal emulator with theme injection support.
+- **fish**: Interactive shell.
+- **starship**: Cross-shell prompt.
+- **bash / awk / grep / cut / sed**: Standard Unix utilities utilized by core scripts _(required)_.
 
 </details>
 
 ## Configuration
 
-The `.config/` directory distributed with this repository contains necessary supplementary configurations. It includes the required `matugen` configuration files and the `starship.toml` prompt configuration to run correctly alongside this shell environment.
+The `.config/` directory distributed with this repository contains necessary supplementary configurations:
+
+- **`quickshell/nandoroid/`**: The shell itself
+- **`matugen/`**: Template configs for Material 3 theme generation
+- **`starship.toml`**: Prompt configuration (requires starship)
+- **`fish/completions/nandoroid.fish`**: Tab-completion for IPC commands in fish shell
 
 ## IPC Commands
 

@@ -22,23 +22,33 @@ ColumnLayout {
 
     Process {
         id: pacmanCheckProc
-        command: ["bash", "-c", "pacman -Qq"]
+        command: ["bash", "-c", "pacman -Qq; echo '---FONTCHECK---'; fc-list : family"]
         running: false
         stdout: StdioCollector {
             id: pacmanCollector
             onTextChanged: {
                 if (!text) return;
-                let pkgs = text.split('\n');
+                let sections = text.split('---FONTCHECK---');
+                let pkgs = (sections[0] || '').split('\n');
                 let pkgSet = new Set(pkgs);
+                let fonts = (sections[1] || '').toLowerCase();
                 for (let i = 0; i < depModel.count; i++) {
                     let p = depModel.get(i).packageName;
-                    let isInst = pkgSet.has(p) || pkgSet.has(p + "-git") || pkgSet.has(p + "-bin");
+                    let isInst = false;
+
+                    // Font-based checks (installed via git clone, not pacman)
+                    if (p === "__font_google_sans") {
+                        isInst = fonts.indexOf("google sans flex") >= 0;
+                    } else {
+                        isInst = pkgSet.has(p) || pkgSet.has(p + "-git") || pkgSet.has(p + "-bin");
+                    }
                     
                     // Specific Overrides for AUR/Alternate names
                     if (p === "matugen") isInst = pkgSet.has("matugen") || pkgSet.has("matugen-bin");
                     if (p === "bluez-utils") isInst = pkgSet.has("bluez-utils") || pkgSet.has("bluez-utils-git");
                     if (p === "quickshell") isInst = pkgSet.has("quickshell") || pkgSet.has("quickshell-git");
                     if (p === "dgop") isInst = pkgSet.has("dgop") || pkgSet.has("dgop-bin") || pkgSet.has("dgop-git");
+                    if (p === "ttf-material-symbols-variable-git") isInst = pkgSet.has("ttf-material-symbols-variable-git") || pkgSet.has("ttf-material-symbols-variable") || pkgSet.has("material-symbols-git");
 
                     depModel.setProperty(i, "installed", isInst);
                 }
@@ -50,6 +60,7 @@ ColumnLayout {
         id: depModel
         ListElement { displayName: "Hyprland"; packageName: "hyprland"; installed: false; desc: "Wayland compositor" }
         ListElement { displayName: "Quickshell"; packageName: "quickshell"; installed: false; desc: "Desktop shell framework" }
+        ListElement { displayName: "Python 3"; packageName: "python"; installed: false; desc: "Terminal color application" }
         ListElement { displayName: "Pipewire"; packageName: "pipewire"; installed: false; desc: "Audio server" }
         ListElement { displayName: "NetworkManager"; packageName: "networkmanager"; installed: false; desc: "Network connection manager" }
         ListElement { displayName: "BlueZ Utils"; packageName: "bluez-utils"; installed: false; desc: "Bluetooth utilities" }
@@ -76,9 +87,12 @@ ColumnLayout {
         ListElement { displayName: "jq"; packageName: "jq"; installed: false; desc: "Command-line JSON processor" }
         ListElement { displayName: "XDG Utils"; packageName: "xdg-utils"; installed: false; desc: "Desktop integration utilities" }
         ListElement { displayName: "Wl-Clipboard"; packageName: "wl-clipboard"; installed: false; desc: "Wayland clipboard" }
-        ListElement { displayName: "Kitty"; packageName: "kitty"; installed: false; desc: "Terminal emulator" }
-        ListElement { displayName: "Fish"; packageName: "fish"; installed: false; desc: "Interactive shell" }
-        ListElement { displayName: "Starship"; packageName: "starship"; installed: false; desc: "Cross-shell prompt" }
+        ListElement { displayName: "Google Sans Flex"; packageName: "__font_google_sans"; installed: false; desc: "UI font (from GitHub)" }
+        ListElement { displayName: "Material Symbols"; packageName: "ttf-material-symbols-variable-git"; installed: false; desc: "Icon font" }
+        ListElement { displayName: "JetBrains Mono NF"; packageName: "ttf-jetbrains-mono-nerd"; installed: false; desc: "Monospace font" }
+        ListElement { displayName: "Kitty"; packageName: "kitty"; installed: false; desc: "Terminal emulator (optional)" }
+        ListElement { displayName: "Fish"; packageName: "fish"; installed: false; desc: "Interactive shell (optional)" }
+        ListElement { displayName: "Starship"; packageName: "starship"; installed: false; desc: "Cross-shell prompt (optional)" }
     }
 
     Rectangle {
