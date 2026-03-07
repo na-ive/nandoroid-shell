@@ -800,50 +800,39 @@ Item {
             Behavior on opacity { NumberAnimation { duration: 250 } }
 
             RowLayout {
-                anchors.fill: parent
-                anchors.leftMargin: 12
-                anchors.rightMargin: 12
+                anchors.centerIn: parent
                 spacing: 12
 
-                StyledText {
-                    text: "Edit Mode Hints"
-                    font.pixelSize: 11
-                    font.weight: Font.DemiBold
-                    color: Appearance.colors.colOnLayer1
-                    opacity: 0.6
-                }
-
-                Item { Layout.fillWidth: true }
-
                 RowLayout {
-                    spacing: 14
+                    spacing: 20
                     opacity: 0.8
 
                     // Add/Remove
                     RowLayout {
-                        spacing: 6
+                        spacing: 8
                         StyledText { text: "Add/Remove"; font.pixelSize: 10; color: Appearance.colors.colOnLayer1 }
                         Rectangle {
-                            width: 18; height: 18; radius: 4
+                            width: 44; height: 18; radius: 4
                             color: Appearance.m3colors.m3surfaceVariant
-                            StyledText { anchors.centerIn: parent; text: "L"; font.pixelSize: 10; font.weight: Font.Bold }
+                            StyledText { anchors.centerIn: parent; text: "LClick"; font.pixelSize: 9; font.weight: Font.Bold }
                         }
                     }
 
                     // Resize
                     RowLayout {
-                        spacing: 6
+                        spacing: 8
                         StyledText { text: "Resize"; font.pixelSize: 10; color: Appearance.colors.colOnLayer1 }
                         Rectangle {
-                            width: 18; height: 18; radius: 4
+                            width: 44; height: 18; radius: 4
                             color: Appearance.m3colors.m3surfaceVariant
-                            StyledText { anchors.centerIn: parent; text: "R"; font.pixelSize: 10; font.weight: Font.Bold }
+                            StyledText { anchors.centerIn: parent; text: "RClick"; font.pixelSize: 9; font.weight: Font.Bold }
                         }
                     }
 
+
                     // Move
                     RowLayout {
-                        spacing: 6
+                        spacing: 8
                         StyledText { text: "Move"; font.pixelSize: 10; color: Appearance.colors.colOnLayer1 }
                         Rectangle {
                             width: 38; height: 18; radius: 4
@@ -853,6 +842,7 @@ Item {
                     }
                 }
             }
+
         }
 
     }
