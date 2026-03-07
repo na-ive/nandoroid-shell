@@ -17,10 +17,11 @@ Scope {
 
     PanelWindow {
         id: panelWindow
-        visible: GlobalStates.notificationCenterOpen
-        exclusiveZone: (Config.options?.panels?.keep_left_sidebar_loaded && GlobalStates.notificationCenterOpen && contentLoader.item) ? contentLoader.item.implicitWidth : 0
+        visible: true 
+        
+        exclusiveZone: GlobalStates.notificationCenterOpen && contentLoader.item ? contentLoader.item.implicitWidth : 0
         WlrLayershell.namespace: "nandoroid:notificationCenter"
-        WlrLayershell.layer: WlrLayer.Top
+        WlrLayershell.layer: (GlobalStates.notificationCenterOpen || contentLoader.opacity > 0) ? WlrLayer.Top : WlrLayer.Background
         WlrLayershell.keyboardFocus: GlobalStates.notificationCenterOpen ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
         color: "transparent"
 
@@ -34,7 +35,7 @@ Scope {
 
         HyprlandFocusGrab {
             id: focusGrab
-            active: panelWindow.visible
+            active: GlobalStates.notificationCenterOpen
             windows: [panelWindow]
             onCleared: {
                 if (contentLoader.item) contentLoader.item.close();
@@ -52,7 +53,66 @@ Scope {
         Loader {
             id: contentLoader
             anchors.fill: parent
-            active: GlobalStates.notificationCenterOpen || Config.options?.panels?.keep_left_sidebar_loaded
+            active: true 
+            visible: opacity > 0 // Only visible (and animating) when actually opening/open
+            enabled: GlobalStates.notificationCenterOpen
+            
+            transform: Translate {
+                id: contentTransform
+            }
+
+            states: [
+                State {
+                    name: "open"
+                    when: GlobalStates.notificationCenterOpen
+                    PropertyChanges { target: contentLoader; opacity: 1 }
+                    PropertyChanges { target: contentTransform; x: 0 }
+                },
+                State {
+                    name: "closed"
+                    when: !GlobalStates.notificationCenterOpen
+                    PropertyChanges { target: contentLoader; opacity: 0 }
+                    PropertyChanges { target: contentTransform; x: -contentLoader.width - 40 }
+                }
+            ]
+
+            transitions: [
+                Transition {
+                    from: "closed"; to: "open"
+                    ParallelAnimation {
+                        NumberAnimation {
+                            target: contentTransform
+                            property: "x"
+                            duration: Appearance.animation.elementMove.duration
+                            easing.bezierCurve: Appearance.animationCurves.expressiveDefaultSpatial
+                        }
+                        NumberAnimation {
+                            target: contentLoader
+                            property: "opacity"
+                            duration: Appearance.animation.elementMove.duration
+                            easing.bezierCurve: Appearance.animationCurves.standard
+                        }
+                    }
+                },
+                Transition {
+                    from: "open"; to: "closed"
+                    ParallelAnimation {
+                        NumberAnimation {
+                            target: contentTransform
+                            property: "x"
+                            duration: Appearance.animation.elementMoveExit.duration
+                            easing.bezierCurve: Appearance.animationCurves.emphasized
+                        }
+                        NumberAnimation {
+                            target: contentLoader
+                            property: "opacity"
+                            duration: Appearance.animation.elementMoveExit.duration
+                            easing.bezierCurve: Appearance.animationCurves.emphasized
+                        }
+                    }
+                }
+            ]
+
             sourceComponent: NotificationCenterContent {
                 onClosed: {
                     GlobalStates.notificationCenterOpen = false;

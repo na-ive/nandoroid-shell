@@ -66,7 +66,7 @@ Item {
         // ── Weather Card ──
         WeatherCard {
             Layout.fillWidth: true
-            visible: Config.ready && (Config.options.weather?.enable ?? true)
+            visible: Config.options.weather?.enable ?? true
         }
 
         // ── Notification Island ──

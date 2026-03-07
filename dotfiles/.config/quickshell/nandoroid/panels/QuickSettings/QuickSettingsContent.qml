@@ -282,7 +282,7 @@ Item {
         "gameMode", "colorPicker", "screenSnip", "screenRecord",
         "musicRecognition", "easyEffects", "conservationMode"
     ]
-    readonly property list<var> toggles: Config.ready ? Config.options.quickSettings.toggles : []
+    readonly property list<var> toggles: Config.options.quickSettings.toggles
     readonly property list<var> toggleRows: toggleRowsForList(toggles)
     readonly property list<var> unusedToggles: {
         const types = availableToggleTypes.filter(type => {
@@ -502,7 +502,7 @@ Item {
 
         // ── Performance Stats Island ──
         PerformanceStats {
-            visible: Config.ready && (Config.options.quickSettings?.showPerformanceStats ?? true)
+            visible: Config.options.quickSettings?.showPerformanceStats ?? true
             Layout.preferredHeight: visible ? implicitHeight : 0
             clip: !visible
         }

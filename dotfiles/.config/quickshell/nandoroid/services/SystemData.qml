@@ -70,7 +70,7 @@ Singleton {
     readonly property bool isFullscreen: HyprlandData.fullscreenActive
     
     // showSpeed determines if the status bar needs network stats
-    readonly property bool showSpeed: Config.ready && Config.options.bar ? Config.options.bar.show_network_speed : false
+    readonly property bool showSpeed: Config.options.bar ? Config.options.bar.show_network_speed : false
     
     // We pause polling when no panel consuming the metrics is open
     readonly property bool isAnyPanelOpen: isMonitorActive || isQuickSettingsOpen || isOverviewOpen || (!isFullscreen && showSpeed)
@@ -205,7 +205,7 @@ Singleton {
 
                         if (data.diskmounts && Array.isArray(data.diskmounts)) {
                             let monitored = [{ "path": "/", "alias": "System" }];
-                            if (Config.ready && Config.options.system && Config.options.system.monitoredDisks) {
+                            if (Config.options.system && Config.options.system.monitoredDisks) {
                                 monitored = Config.options.system.monitoredDisks;
                             }
                             let newStats = [];
@@ -261,5 +261,23 @@ Singleton {
         }
     }
 
-    Component.onCompleted: Qt.callLater(() => root.update())
+    function prePopulateDisks() {
+        let monitored = [{ "path": "/", "alias": "System" }];
+        if (Config.options.system && Config.options.system.monitoredDisks) {
+            monitored = Config.options.system.monitoredDisks;
+        }
+        root.diskStats = monitored.map(d => ({
+            path: d.path || "/",
+            label: (d.alias || d.path || "/").toUpperCase(),
+            hasAlias: !!d.alias,
+            usage: 0,
+            total: 0,
+            used: 0
+        }));
+    }
+
+    Component.onCompleted: {
+        root.prePopulateDisks();
+        Qt.callLater(() => root.update());
+    }
 }

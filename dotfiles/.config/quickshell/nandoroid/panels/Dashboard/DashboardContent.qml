@@ -78,8 +78,8 @@ Item {
                 NumberAnimation {
                     target: panelBg
                     property: "y"
-                    duration: Appearance.anim.durations.expressiveDefaultSpatial || 400
-                    easing.bezierCurve: Appearance.anim.curves.expressiveDefaultSpatial || [0.2, 0.0, 0.0, 1.0]
+                    duration: Appearance.animation.elementMove.duration || 400
+                    easing.bezierCurve: Appearance.animationCurves.expressiveDefaultSpatial || [0.2, 0.0, 0.0, 1.0]
                 }
                 NumberAnimation {
                     targets: [panelBg, rightShoulder, leftShoulder]
@@ -96,8 +96,8 @@ Item {
                     target: panelBg
                     property: "y"
                     to: -root.panelHeight
-                    duration: Appearance.anim.durations.emphasized || 500
-                    easing.bezierCurve: Appearance.anim.curves.emphasized || [0.2, 0.0, 0.0, 1.0]
+                    duration: Appearance.animation.elementMoveExit.duration || 500
+                    easing.bezierCurve: Appearance.animationCurves.emphasized || [0.2, 0.0, 0.0, 1.0]
                 }
                 NumberAnimation {
                     targets: [panelBg, rightShoulder, leftShoulder]
