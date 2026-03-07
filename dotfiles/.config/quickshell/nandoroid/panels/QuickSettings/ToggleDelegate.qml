@@ -55,7 +55,7 @@ RippleButton {
     colBackgroundToggled: (hasMenu) ? Appearance.colors.colLayer2 : Appearance.colors.colPrimary
     colBackgroundToggledHover: (hasMenu) ? Appearance.colors.colLayer2Hover : Appearance.colors.colPrimary
     
-    buttonRadius: isToggled ? Appearance.rounding.large : height / 2
+    buttonRadius: isToggled ? 16 : height / 2
 
     property color colText: (isToggled && !hasMenu && enabled) ? Appearance.colors.colOnPrimary : Functions.ColorUtils.transparentize(Appearance.colors.colOnLayer2, enabled ? 0 : 0.7)
     property color colIcon: expandedSize ? (isToggled ? Appearance.colors.colOnPrimary : Appearance.colors.colOnLayer3) : colText
@@ -110,8 +110,9 @@ RippleButton {
                     height: parent.height
                     radius: (root.hasMenu && root.isToggled) ? 12 : width / 2
                     color: {
-                        const baseColor = root.isToggled ? Appearance.colors.colPrimary : Appearance.colors.colLayer3
-                        const transparentizeAmount = (root.hasMenu) ? 0 : 1
+                        const isActive = root.isToggled
+                        const baseColor = isActive ? Appearance.colors.colPrimary : Appearance.colors.colLayer3
+                        const transparentizeAmount = (root.hasMenu && isActive) ? 0 : 1
                         return Functions.ColorUtils.transparentize(baseColor, transparentizeAmount)
                     }
 

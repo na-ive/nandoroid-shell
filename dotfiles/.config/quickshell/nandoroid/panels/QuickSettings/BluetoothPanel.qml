@@ -27,8 +27,8 @@ Rectangle {
 
     ColumnLayout {
         anchors.fill: parent
-        anchors.margins: 12
-        spacing: 8
+        anchors.margins: 14
+        spacing: 12
 
         // Header
         RowLayout {
@@ -117,7 +117,7 @@ Rectangle {
                         RippleButton {
                             Layout.fillWidth: true
                             implicitHeight: 56
-                            buttonRadius: 12
+                            buttonRadius: 16
                             colBackground: deviceItem.modelData.connected ? Functions.ColorUtils.mix(Appearance.colors.colLayer0, Appearance.colors.colPrimary, 0.92) : "transparent"
                             colBackgroundHover: deviceItem.modelData.connected ? colBackground : Appearance.colors.colLayer0Hover
                             onClicked: deviceItem.expanded = !deviceItem.expanded
@@ -247,8 +247,9 @@ Rectangle {
                 visible: BluetoothStatus.enabled
                 implicitWidth: btPairText.implicitWidth + 24
                 implicitHeight: 36
-                buttonRadius: 18
-                colBackground: Appearance.colors.colLayer2
+                buttonRadius: height / 2
+                colBackground: Appearance.colors.colLayer1
+                colBackgroundHover: Appearance.colors.colLayer1Hover
                 onClicked: {
                     GlobalStates.settingsPageIndex = 1;
                     GlobalStates.settingsBluetoothPairMode = true;
@@ -268,9 +269,9 @@ Rectangle {
             RippleButton {
                 implicitWidth: btDoneText.implicitWidth + 24
                 implicitHeight: 36
-                buttonRadius: 18
+                buttonRadius: height / 2
                 colBackground: Appearance.colors.colPrimary
-                colBackgroundHover: Qt.darker(Appearance.colors.colPrimary, 1.12)
+                colBackgroundHover: Qt.darker(Appearance.colors.colPrimary, 1.1)
                 onClicked: root.dismiss()
                 StyledText {
                     id: btDoneText
