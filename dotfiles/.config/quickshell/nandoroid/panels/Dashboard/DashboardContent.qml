@@ -237,7 +237,7 @@ Item {
                 // Centered within the strip, same as the Column's horizontalCenter
                 x: Math.round((tabStrip.width - root.tabButtonSize) / 2)
                 width: root.tabButtonSize
-                radius: Appearance.rounding.small
+                radius: 16
 
                 // Elastic stretch: idx1 snaps fast, idx2 follows slowly
                 property int idx1: 0

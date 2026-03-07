@@ -143,24 +143,36 @@ Item {
         }
         save()
         selectedId = ""
-        clearForm()
-    }
-
-    // ── Layout ──
+       // ── Layout ──
     Row {
         id: schedRow
         anchors.fill: parent
         spacing: 12
 
         // ── Event List (fixed width) ──
-        Item {
+        ColumnLayout {
             id: schedSidebar
-            width: 210
+            width: 200
             height: parent.height
+            spacing: 8
 
-            // List (full height - “+ New Event” card is now first item in the list)
+            // New event button
+            RippleButton {
+                Layout.fillWidth: true
+                implicitHeight: 40
+                buttonRadius: 20
+                colBackground: Appearance.colors.colPrimary
+                onClicked: { root.selectedId = ""; root.clearForm() }
+                RowLayout {
+                    anchors.centerIn: parent; spacing: 6
+                    MaterialSymbol { text: "add"; iconSize: 18; color: Appearance.colors.colOnPrimary }
+                    StyledText { text: "New Event"; color: Appearance.colors.colOnPrimary; font.weight: Font.Medium }
+                }
+            }
+
             Rectangle {
-                anchors.fill: parent
+                Layout.fillWidth: true
+                Layout.fillHeight: true
                 color: Appearance.m3colors.m3surfaceContainer
                 radius: Appearance.rounding.normal
                 clip: true
@@ -170,48 +182,24 @@ Item {
                     anchors.fill: parent
                     anchors.margins: 6
                     spacing: 4
-                    // Prepend a sentinel {id:"__new__"} as the first item
-                    model: {
-                        let sorted = root.events.slice().sort((a, b) =>
+                    model: root.events.slice().sort((a, b) =>
                             (a.date + a.time).localeCompare(b.date + b.time))
-                        return [{id: "__new__", title: "+ New Event", _sentinel: true}].concat(sorted)
-                    }
 
                     delegate: Rectangle {
                         required property var modelData
-                        required property int index
                         width: eventList.width
-                        height: modelData._sentinel ? 44 : (itemCol.implicitHeight + 16)
+                        height: (itemCol.implicitHeight + 16)
                         radius: Appearance.rounding.small
 
-                        // Sentinel: “+ New Event” card
-                        visible: true
-                        color: modelData._sentinel
-                            ? (newEvMouse.containsMouse
-                                ? Qt.rgba(Appearance.colors.colPrimary.r, Appearance.colors.colPrimary.g, Appearance.colors.colPrimary.b, 0.18)
-                                : Qt.rgba(Appearance.colors.colPrimary.r, Appearance.colors.colPrimary.g, Appearance.colors.colPrimary.b, 0.10))
-                            : (root.selectedId === modelData.id
+                        color: root.selectedId === modelData.id
                                 ? Appearance.colors.colPrimaryContainer
-                                : (evMouse.containsMouse ? Appearance.colors.colLayer2 : "transparent"))
-
-                        border.color: modelData._sentinel ? Qt.rgba(Appearance.colors.colPrimary.r, Appearance.colors.colPrimary.g, Appearance.colors.colPrimary.b, 0.4) : "transparent"
-                        border.width: modelData._sentinel ? 1 : 0
+                                : (evMouse.containsMouse ? Appearance.colors.colLayer2 : "transparent")
 
                         Behavior on color { ColorAnimation { duration: 150 } }
-
-                        // “+ New Event” sentinel content
-                        RowLayout {
-                            visible: modelData._sentinel === true
-                            anchors.centerIn: parent
-                            spacing: 6
-                            MaterialSymbol { text: "add"; iconSize: 16; color: Appearance.colors.colPrimary }
-                            StyledText { text: "New Event"; color: Appearance.colors.colPrimary; font.weight: Font.Medium; font.pixelSize: Appearance.font.pixelSize.small }
-                        }
 
                         // Normal event content
                         ColumnLayout {
                             id: itemCol
-                            visible: !modelData._sentinel
                             anchors.left: parent.left
                             anchors.right: parent.right
                             anchors.verticalCenter: parent.verticalCenter
@@ -220,7 +208,7 @@ Item {
                             spacing: 2
 
                             StyledText {
-                                text: modelData._sentinel ? "" : modelData.title
+                                text: modelData.title
                                 font.pixelSize: Appearance.font.pixelSize.normal
                                 font.weight: Font.Medium
                                 color: root.selectedId === modelData.id
@@ -230,9 +218,7 @@ Item {
                                 Layout.fillWidth: true
                             }
                             StyledText {
-                                visible: !modelData._sentinel
                                 text: {
-                                    if (modelData._sentinel) return ""
                                     let d = modelData.date + " " + modelData.time
                                     if (modelData.recurrence !== "once") d += " · " + modelData.recurrence
                                     return d
@@ -243,9 +229,8 @@ Item {
                             }
                         }
 
-                        // Delete button (not for sentinel)
+                        // Delete button
                         RippleButton {
-                            visible: !modelData._sentinel
                             anchors.right: parent.right
                             anchors.rightMargin: 6
                             anchors.verticalCenter: parent.verticalCenter
@@ -255,26 +240,14 @@ Item {
                             MaterialSymbol { anchors.centerIn: parent; text: "delete"; iconSize: 16; color: Appearance.colors.colSubtext }
                         }
 
-                        // Sentinel mouse
-                        MouseArea {
-                            id: newEvMouse
-                            anchors.fill: parent
-                            visible: modelData._sentinel === true
-                            hoverEnabled: true
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: { root.selectedId = ""; root.clearForm() }
-                        }
-
                         // Event mouse
                         MouseArea {
                             id: evMouse
                             anchors.fill: parent
                             anchors.rightMargin: 36
-                            visible: !modelData._sentinel
                             hoverEnabled: true
                             cursorShape: Qt.PointingHandCursor
                             onClicked: {
-                                if (modelData._sentinel) return
                                 // Temporarily disable autosave triggers while populating fields
                                 let oldSelectedId = root.selectedId
                                 root.selectedId = ""
@@ -295,7 +268,7 @@ Item {
 
         // ── Event Editor ──
         ColumnLayout {
-            width: schedRow.width - schedSidebar.width - schedRow.spacing
+            Layout.fillWidth: true
             height: parent.height
             spacing: 12
 
@@ -313,8 +286,8 @@ Item {
                 implicitHeight: 44
                 radius: Appearance.rounding.small
                 color: Appearance.m3colors.m3surfaceContainer
-                border.color: titleField.activeFocus ? Appearance.colors.colPrimary : Appearance.colors.colOutlineVariant
-                border.width: titleField.activeFocus ? 2 : 1
+                border.color: titleField.activeFocus ? Appearance.colors.colPrimary : "transparent"
+                border.width: 2
 
                 TextInput {
                     id: titleField
@@ -348,8 +321,8 @@ Item {
                     Layout.fillWidth: true; implicitHeight: 44
                     radius: Appearance.rounding.small
                     color: Appearance.m3colors.m3surfaceContainer
-                    border.color: dateField.activeFocus ? Appearance.colors.colPrimary : Appearance.colors.colOutlineVariant
-                    border.width: dateField.activeFocus ? 2 : 1
+                    border.color: dateField.activeFocus ? Appearance.colors.colPrimary : "transparent"
+                    border.width: 2
                     RowLayout {
                         anchors.fill: parent; anchors.margins: 10; spacing: 6
                         MaterialSymbol { text: "calendar_today"; iconSize: 16; color: Appearance.colors.colSubtext }
@@ -371,8 +344,8 @@ Item {
                     Layout.preferredWidth: 110; implicitHeight: 44
                     radius: Appearance.rounding.small
                     color: Appearance.m3colors.m3surfaceContainer
-                    border.color: timeField.activeFocus ? Appearance.colors.colPrimary : Appearance.colors.colOutlineVariant
-                    border.width: timeField.activeFocus ? 2 : 1
+                    border.color: timeField.activeFocus ? Appearance.colors.colPrimary : "transparent"
+                    border.width: 2
                     RowLayout {
                         anchors.fill: parent; anchors.margins: 10; spacing: 6
                         MaterialSymbol { text: "schedule"; iconSize: 16; color: Appearance.colors.colSubtext }
@@ -394,10 +367,10 @@ Item {
             Rectangle {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                radius: Appearance.rounding.small
+                radius: Appearance.rounding.normal
                 color: Appearance.m3colors.m3surfaceContainer
-                border.color: descArea.activeFocus ? Appearance.colors.colPrimary : Appearance.colors.colOutlineVariant
-                border.width: descArea.activeFocus ? 2 : 1
+                border.color: descArea.activeFocus ? Appearance.colors.colPrimary : "transparent"
+                border.width: 2
                 clip: true
 
                 TextEdit {
@@ -439,6 +412,9 @@ Item {
                             colBackground: root.formRecurrence === modelData
                                 ? Appearance.colors.colPrimary
                                 : Appearance.m3colors.m3surfaceContainer
+                            colBackgroundHover: root.formRecurrence === modelData
+                                ? Appearance.colors.colPrimary
+                                : Appearance.colors.colLayer2
                             onClicked: {
                                 root.formRecurrence = modelData
                                 if (root.selectedId) autoSaveTimer.restart()
@@ -471,6 +447,7 @@ Item {
                     StyledText { text: root.selectedId ? "Update Event" : "Add Event"; font.weight: Font.Medium; color: Appearance.colors.colOnPrimary }
                 }
             }
+        }
         }
     }
 }
