@@ -68,16 +68,18 @@ Singleton {
         running: false
         stdout: StdioCollector {
             onStreamFinished: {
-                try {
-                    const trimmed = this.text.trim();
-                    if (trimmed !== "" && trimmed.indexOf("{") === 0) {
-                        const data = JSON.parse(trimmed);
-                        processWeatherData(data);
-                        console.log("[Weather] Cache loaded successfully");
+                const trimmed = this.text.trim();
+                Qt.callLater(() => {
+                    try {
+                        if (trimmed !== "" && trimmed.indexOf("{") === 0) {
+                            const data = JSON.parse(trimmed);
+                            processWeatherData(data);
+                            console.log("[Weather] Cache loaded successfully");
+                        }
+                    } catch (e) {
+                        console.error("[Weather] Cache parse error:", e);
                     }
-                } catch (e) {
-                    console.error("[Weather] Cache parse error:", e);
-                }
+                });
             }
         }
     }
@@ -185,6 +187,14 @@ Singleton {
         startupFetchTimer.start();
     }
 
+    Component.onDestruction: {
+        readCacheProc.terminate();
+        weatherProc.terminate();
+        ipLocProc.terminate();
+        geocodingProc.terminate();
+        openMeteoProc.terminate();
+    }
+
     Timer {
         id: startupFetchTimer
         interval: 100 
@@ -221,14 +231,16 @@ Singleton {
         
         stdout: StdioCollector {
             onStreamFinished: {
-                try {
-                    const trimmed = this.text.trim();
-                    if (trimmed === "") return;
-                    const data = JSON.parse(trimmed);
-                    processWeatherData(data);
-                } catch (e) {
-                    console.error("[Weather] JSON Parse Error:", e);
-                }
+                const results = this.text.trim();
+                Qt.callLater(() => {
+                    try {
+                        if (results === "") return;
+                        const data = JSON.parse(results);
+                        processWeatherData(data);
+                    } catch (e) {
+                        console.error("[Weather] JSON Parse Error:", e);
+                    }
+                });
             }
         }
     }
@@ -244,21 +256,23 @@ Singleton {
         command: ["bash", "-c", "curl -sfL -m 8 http://ip-api.com/json/"]
         stdout: StdioCollector {
             onStreamFinished: {
-                try {
-                    const trimmed = this.text.trim();
-                    if (!trimmed) throw "Empty response";
-                    const data = JSON.parse(trimmed);
-                    if (data.status === "success") {
-                        console.log("[Weather] Step: IP Loc successful ->", data.city);
-                        root.fetchOpenMeteo(data.lat.toString(), data.lon.toString(), data.city);
-                    } else {
-                        throw data.message || "Unknown error";
+                const results = this.text.trim();
+                Qt.callLater(() => {
+                    try {
+                        if (!results) throw "Empty response";
+                        const data = JSON.parse(results);
+                        if (data.status === "success") {
+                            console.log("[Weather] Step: IP Loc successful ->", data.city);
+                            root.fetchOpenMeteo(data.lat.toString(), data.lon.toString(), data.city);
+                        } else {
+                            throw data.message || "Unknown error";
+                        }
+                    } catch(e) { 
+                        console.error("[Weather] Step: IP Loc failed:", e);
+                        root.status = "Location Error";
+                        root.loading = false;
                     }
-                } catch(e) { 
-                    console.error("[Weather] Step: IP Loc failed:", e);
-                    root.status = "Location Error";
-                    root.loading = false;
-                }
+                });
             }
         }
         onExited: (exitCode) => {
@@ -281,24 +295,26 @@ Singleton {
         }
         stdout: StdioCollector {
             onStreamFinished: {
-                try {
-                    const trimmed = this.text.trim();
-                    const data = trimmed ? JSON.parse(trimmed) : null;
-                    if (data && data.results && data.results.length > 0) {
-                        const res = data.results[0];
-                        const displayName = res.admin1 ? (res.name + ", " + res.admin1) : res.name;
-                        console.log("[Weather] Step: Geocoding successful ->", displayName);
-                        root.fetchOpenMeteo(res.latitude.toString(), res.longitude.toString(), displayName);
-                    } else {
-                        console.warn("[Weather] Step: Geocoding no results, trying IP fallback");
+                const results = this.text.trim();
+                Qt.callLater(() => {
+                    try {
+                        const data = results ? JSON.parse(results) : null;
+                        if (data && data.results && data.results.length > 0) {
+                            const res = data.results[0];
+                            const displayName = res.admin1 ? (res.name + ", " + res.admin1) : res.name;
+                            console.log("[Weather] Step: Geocoding successful ->", displayName);
+                            root.fetchOpenMeteo(res.latitude.toString(), res.longitude.toString(), displayName);
+                        } else {
+                            console.warn("[Weather] Step: Geocoding no results, trying IP fallback");
+                            ipLocProc.running = false;
+                            ipLocProc.running = true;
+                        }
+                    } catch(e) { 
+                        console.error("[Weather] Step: Geocoding parse error, trying IP fallback");
                         ipLocProc.running = false;
                         ipLocProc.running = true;
                     }
-                } catch(e) { 
-                    console.error("[Weather] Step: Geocoding parse error, trying IP fallback");
-                    ipLocProc.running = false;
-                    ipLocProc.running = true;
-                }
+                });
             }
         }
         onExited: (exitCode) => {
@@ -345,19 +361,21 @@ Singleton {
 
         stdout: StdioCollector {
             onStreamFinished: {
-                try {
-                    const trimmed = this.text.trim();
-                    if (!trimmed) {
-                        console.warn("[Weather] Step: Open-Meteo returned empty stdout");
-                        return;
+                const results = this.text.trim();
+                Qt.callLater(() => {
+                    try {
+                        if (!results) {
+                            console.warn("[Weather] Step: Open-Meteo returned empty stdout");
+                            return;
+                        }
+                        const data = JSON.parse(results);
+                        processWeatherData(data); // Using the central processor that saves cache
+                        console.log("[Weather] Step: UI and Cache update triggered");
+                        root.status = "Updated via fallback";
+                    } catch(e) {
+                        console.error("[Weather] Step: Open-Meteo Parse Error:", e);
                     }
-                    const data = JSON.parse(trimmed);
-                    processWeatherData(data); // Using the central processor that saves cache
-                    console.log("[Weather] Step: UI and Cache update triggered");
-                    root.status = "Updated via fallback";
-                } catch(e) {
-                    console.error("[Weather] Step: Open-Meteo Parse Error:", e);
-                }
+                });
             }
         }
     }

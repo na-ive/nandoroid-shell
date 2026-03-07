@@ -70,6 +70,13 @@ Singleton {
     }
     
     Component.onCompleted: updateAll()
+    Component.onDestruction: {
+        getClients.terminate();
+        getMonitors.terminate();
+        getWorkspaces.terminate();
+        getActiveWorkspace.terminate();
+        getActiveWindow.window = null;
+    }
 
     Connections {
         target: Hyprland
@@ -93,20 +100,22 @@ Singleton {
         stdout: StdioCollector {
             id: clientsCollector
             onStreamFinished: {
-                try {
-                    const data = clientsCollector.text.toString().trim();
-                    if (data && data !== "null") {
-                        root.windowList = JSON.parse(data);
-                        let temp = {};
-                        for (let i = 0; i < root.windowList.length; ++i) {
-                            let win = root.windowList[i];
-                            temp[win.address] = win;
+                const results = clientsCollector.text.toString().trim();
+                Qt.callLater(() => {
+                    try {
+                        if (results && results !== "null") {
+                            root.windowList = JSON.parse(results);
+                            let temp = {};
+                            for (let i = 0; i < root.windowList.length; ++i) {
+                                let win = root.windowList[i];
+                                temp[win.address] = win;
+                            }
+                            root.windowByAddress = temp;
                         }
-                        root.windowByAddress = temp;
+                    } catch (e) {
+                        console.error("HyprlandData: JSON Parse error for clients: " + e);
                     }
-                } catch (e) {
-                    console.error("HyprlandData: JSON Parse error for clients: " + e);
-                }
+                });
             }
         }
         stderr: StdioCollector {
@@ -124,7 +133,12 @@ Singleton {
         stdout: StdioCollector {
             id: monitorsCollector
             onStreamFinished: {
-                root.monitors = JSON.parse(monitorsCollector.text);
+                const results = monitorsCollector.text.trim();
+                Qt.callLater(() => {
+                    try {
+                        if (results) root.monitors = JSON.parse(results);
+                    } catch(e) { console.error("HyprlandData: JSON Parse error for monitors", e) }
+                });
             }
         }
     }
@@ -135,14 +149,21 @@ Singleton {
         stdout: StdioCollector {
             id: workspacesCollector
             onStreamFinished: {
-                var raw = JSON.parse(workspacesCollector.text);
-                root.workspaces = raw.filter(ws => ws.id >= 1 && ws.id <= 100);
-                let temp = {};
-                for (var i = 0; i < root.workspaces.length; ++i) {
-                    var ws = root.workspaces[i];
-                    temp[ws.id] = ws;
-                }
-                root.workspaceById = temp;
+                const results = workspacesCollector.text.trim();
+                Qt.callLater(() => {
+                    try {
+                        if (results) {
+                            var raw = JSON.parse(results);
+                            root.workspaces = raw.filter(ws => ws.id >= 1 && ws.id <= 100);
+                            let temp = {};
+                            for (var i = 0; i < root.workspaces.length; ++i) {
+                                var ws = root.workspaces[i];
+                                temp[ws.id] = ws;
+                            }
+                            root.workspaceById = temp;
+                        }
+                    } catch(e) { console.error("HyprlandData: JSON Parse error for workspaces", e) }
+                });
             }
         }
     }
@@ -153,7 +174,12 @@ Singleton {
         stdout: StdioCollector {
             id: activeWorkspaceCollector
             onStreamFinished: {
-                root.activeWorkspace = JSON.parse(activeWorkspaceCollector.text);
+                const results = activeWorkspaceCollector.text.trim();
+                Qt.callLater(() => {
+                    try {
+                        if (results) root.activeWorkspace = JSON.parse(results);
+                    } catch(e) { console.error("HyprlandData: JSON Parse error for active workspace", e) }
+                });
             }
         }
     }
@@ -165,11 +191,15 @@ Singleton {
             id: activeWindowCollector
             onStreamFinished: {
                 var raw = activeWindowCollector.text.trim();
-                if (raw === "{}" || raw === "" || raw === "null") {
-                    root.activeWindow = null;
-                } else {
-                    root.activeWindow = JSON.parse(raw);
-                }
+                Qt.callLater(() => {
+                    try {
+                        if (raw === "{}" || raw === "" || raw === "null") {
+                            root.activeWindow = null;
+                        } else {
+                            root.activeWindow = JSON.parse(raw);
+                        }
+                    } catch(e) { console.error("HyprlandData: JSON Parse error for active window", e) }
+                });
             }
         }
     }

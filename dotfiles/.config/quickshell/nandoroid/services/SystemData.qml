@@ -280,4 +280,8 @@ Singleton {
         root.prePopulateDisks();
         Qt.callLater(() => root.update());
     }
+
+    Component.onDestruction: {
+        dgopProcess.terminate();
+    }
 }
