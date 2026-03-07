@@ -4,6 +4,10 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell
 
+/**
+ * Refactored OSD Value Indicator (Volume/Brightness)
+ * Scaled down to be less "fat" and more aligned with Android 16 proportions.
+ */
 Item {
     id: root
     required property real value
@@ -13,97 +17,100 @@ Item {
     property bool rotateIcon: false
     property bool scaleIcon: false
 
-    property real valueIndicatorVerticalPadding: 9
-    property real valueIndicatorLeftPadding: 15
-    property real valueIndicatorRightPadding: 15 // An icon is circle ish, a column isn't, hence the extra padding
-
-    // Use default osdWidth if not defined in Appearance, or hardcode/fallback
-    readonly property real osdWidth: (Appearance.sizes && Appearance.sizes.osdWidth) ? Appearance.sizes.osdWidth : 220 
-    
-    // Fallback for elevationMargin
-    readonly property real elevationMargin: (Appearance.sizes && Appearance.sizes.elevationMargin) ? Appearance.sizes.elevationMargin : 10
+    // More compact dimensions
+    readonly property real osdWidth: 340
+    readonly property real osdHeight: 48 // Reduced from 64
+    readonly property real elevationMargin: 10
 
     implicitWidth: osdWidth + 2 * elevationMargin
-    implicitHeight: valueIndicator.implicitHeight + 2 * elevationMargin
+    implicitHeight: osdHeight + 2 * elevationMargin
 
-    // Removed solid shadow per user request to fix light mode visual bugs
-    // StyledRectangularShadow {
-    //     target: valueIndicator
-    // }
     Rectangle {
         id: valueIndicator
-        anchors {
-            fill: parent
-            margins: root.elevationMargin
-        }
+        anchors.fill: parent
+        anchors.margins: root.elevationMargin
         radius: Appearance.rounding.full
         color: Appearance.m3colors.m3surfaceContainer
 
-        implicitWidth: valueRow.implicitWidth
-        implicitHeight: valueRow.implicitHeight
-
-        RowLayout { // Icon on the left, stuff on the right
+        RowLayout {
             id: valueRow
-            Layout.margins: 10
             anchors.fill: parent
-            spacing: 15
+            anchors.leftMargin: 12
+            anchors.rightMargin: 12
+            spacing: 12
 
+            // ── Slot Kiri: Icon Wrapper ──
             Item {
-                implicitWidth: 30
-                implicitHeight: 35
+                Layout.preferredWidth: 32
+                Layout.preferredHeight: 32
                 Layout.alignment: Qt.AlignVCenter
-                Layout.leftMargin: valueIndicatorLeftPadding
-                Layout.topMargin: valueIndicatorVerticalPadding
-                Layout.bottomMargin: valueIndicatorVerticalPadding
 
                 MaterialShapeWrappedMaterialSymbol {
+                    id: iconMain
+                    anchors.centerIn: parent
+                    width: parent.width
+                    height: parent.height
+                    
                     rotation: root.rotateIcon ? root.value * 360 : 0
                     scale: root.scaleIcon ? (0.85 + root.value * 0.3) : 1.0
-                    anchors {
-                        fill: parent
-                        margins: -5
-                    }
-                    iconSize: Appearance.font.pixelSize.huge
-                    // shape: root.shape // shape property expects int/enum in MaterialShape
-                    // Use shapeString if root.shape is a string, otherwise assume it's an enum (but we moved to strings)
-                    shapeString: (typeof root.shape === "string") ? root.shape : ""
-                    shape: (typeof root.shape !== "string") ? root.shape : undefined
+                    
+                    shapeString: (typeof root.shape === "string") ? root.shape : "Circle"
                     text: root.icon
+                    iconSize: 18 // Smaller icon
+                    
+                    color: Appearance.m3colors.m3primaryContainer
+                    colSymbol: Appearance.m3colors.m3onPrimaryContainer
                 }
             }
-            ColumnLayout { // Stuff
+
+            // ── Slot Tengah: Main Content (Sleeker StyledSlider) ──
+            Item {
+                Layout.fillWidth: true
+                Layout.preferredHeight: 32 // Matches icon wrapper height
                 Layout.alignment: Qt.AlignVCenter
-                Layout.rightMargin: valueIndicatorRightPadding
-                spacing: 5
-
-                RowLayout { // Name fill left, value on the right end
-                    Layout.leftMargin: (valueProgressBar.height / 2) || 0 // Align text with progressbar radius curve's left end
-                    Layout.rightMargin: (valueProgressBar.height / 2) || 0 // Align text with progressbar radius curve's left end
-
-                    StyledText {
-                        color: Appearance.colors.colOnLayer0
-                        font.pixelSize: Appearance.font.pixelSize.small
-                        Layout.fillWidth: true
-                        text: root.name
-                    }
-
-                    StyledText {
-                        color: Appearance.colors.colOnLayer0
-                        font.pixelSize: Appearance.font.pixelSize.small
-                        Layout.fillWidth: false
-                        Layout.preferredWidth: 30
-                        horizontalAlignment: Text.AlignRight
-                        text: Math.round(root.value * 100)
-                        // animateChange: true // Not supported in basic StyledText?
-                    }
-                }
                 
-                StyledProgressBar {
-                    id: valueProgressBar
-                    Layout.fillWidth: true
+                StyledSlider {
+                    id: portedSlider
+                    anchors.centerIn: parent
+                    width: parent.width
+                    
                     value: root.value
-                    showStopIndicator: false
-                    valueBarGap: 0
+                    from: 0
+                    to: 1
+                    enabled: false
+                    
+                    // Use M configuration (Medium) for a sleeker look
+                    configuration: StyledSlider.Configuration.M
+                    animateValue: true
+                    
+                    handleMargins: 4
+                    highlightColor: Appearance.m3colors.m3primary
+                    trackColor: Appearance.m3colors.m3surfaceContainerHighest
+                    handleColor: Appearance.m3colors.m3primary
+                }
+            }
+
+            // ── Slot Kanan: Value Indicator (Compact Centered Square) ──
+            Rectangle {
+                id: valueSlot
+                Layout.preferredWidth: 44
+                Layout.preferredHeight: 32 // Matches slider/icon height
+                Layout.alignment: Qt.AlignVCenter
+                
+                radius: 12
+                color: Appearance.m3colors.m3secondaryContainer
+
+                Text {
+                    anchors.centerIn: parent
+                    text: Math.round(root.value * 100)
+                    font.pixelSize: 13 // Slightly smaller font
+                    font.family: Appearance.font.family.numbers
+                    font.weight: Font.Bold
+                    color: Appearance.m3colors.m3onSecondaryContainer
+                    
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    renderType: Text.NativeRendering
                 }
             }
         }
