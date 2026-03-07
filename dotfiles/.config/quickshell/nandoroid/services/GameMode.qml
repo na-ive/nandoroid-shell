@@ -5,6 +5,8 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 
+import "." 
+
 Singleton {
     id: root
 
@@ -12,6 +14,9 @@ Singleton {
 
     function toggle() {
         root.active = !root.active
+        // Synchronize with Do Not Disturb
+        Notifications.silent = root.active
+        
         if (root.active) {
             Quickshell.execDetached(["bash", "-c", `hyprctl --batch "keyword animations:enabled 0; keyword decoration:shadow:enabled 0; keyword decoration:blur:enabled 0; keyword general:gaps_in 0; keyword general:gaps_out 0; keyword general:border_size 1; keyword decoration:rounding 0; keyword general:allow_tearing 1"`])
         } else {
