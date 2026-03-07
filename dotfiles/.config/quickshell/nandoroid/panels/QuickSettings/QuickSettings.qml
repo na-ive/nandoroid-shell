@@ -17,11 +17,11 @@ Scope {
 
     PanelWindow {
         id: panelWindow
-        // Toggle visibility directly on the window to prevent grabbing background inputs when closed
-        visible: GlobalStates.quickSettingsOpen
-        exclusiveZone: (Config.options?.panels?.keep_right_sidebar_loaded && GlobalStates.quickSettingsOpen) ? content.implicitWidth : 0
+        visible: true 
+        
+        exclusiveZone: GlobalStates.quickSettingsOpen ? content.implicitWidth : 0
         WlrLayershell.namespace: "nandoroid:quicksettings"
-        WlrLayershell.layer: WlrLayer.Top
+        WlrLayershell.layer: (GlobalStates.quickSettingsOpen || content.opacity > 0) ? WlrLayer.Top : WlrLayer.Background
         WlrLayershell.keyboardFocus: GlobalStates.quickSettingsOpen ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
         color: "transparent"
 
@@ -54,7 +54,65 @@ Scope {
         QuickSettingsContent {
             id: content
             anchors.fill: parent
-            visible: GlobalStates.quickSettingsOpen || Config.options?.panels?.keep_right_sidebar_loaded
+            visible: opacity > 0 // Only visible (and animating) when actually opening/open
+            enabled: GlobalStates.quickSettingsOpen
+            
+            transform: Translate {
+                id: contentTransform
+            }
+
+            states: [
+                State {
+                    name: "open"
+                    when: GlobalStates.quickSettingsOpen
+                    PropertyChanges { target: content; opacity: 1 }
+                    PropertyChanges { target: contentTransform; x: 0 }
+                },
+                State {
+                    name: "closed"
+                    when: !GlobalStates.quickSettingsOpen
+                    PropertyChanges { target: content; opacity: 0 }
+                    PropertyChanges { target: contentTransform; x: content.width + 40 }
+                }
+            ]
+
+            transitions: [
+                Transition {
+                    from: "closed"; to: "open"
+                    ParallelAnimation {
+                        NumberAnimation {
+                            target: contentTransform
+                            property: "x"
+                            duration: Appearance.animation.elementMove.duration
+                            easing.bezierCurve: Appearance.animationCurves.expressiveDefaultSpatial
+                        }
+                        NumberAnimation {
+                            target: content
+                            property: "opacity"
+                            duration: Appearance.animation.elementMove.duration
+                            easing.bezierCurve: Appearance.animationCurves.standard
+                        }
+                    }
+                },
+                Transition {
+                    from: "open"; to: "closed"
+                    ParallelAnimation {
+                        NumberAnimation {
+                            target: contentTransform
+                            property: "x"
+                            duration: Appearance.animation.elementMoveExit.duration
+                            easing.bezierCurve: Appearance.animationCurves.emphasized
+                        }
+                        NumberAnimation {
+                            target: content
+                            property: "opacity"
+                            duration: Appearance.animation.elementMoveExit.duration
+                            easing.bezierCurve: Appearance.animationCurves.emphasized
+                        }
+                    }
+                }
+            ]
+
             onClosed: {
                 GlobalStates.quickSettingsOpen = false;
                 GlobalStates.quickSettingsEditMode = false;

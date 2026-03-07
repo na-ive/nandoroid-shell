@@ -166,14 +166,20 @@ Singleton {
     }
 
     Component.onCompleted: {
-        const p = root.cachePath;
-        const i = root.updateInterval;
         console.log("[Weather] Service started.");
-        console.log("[Weather] Target Path: " + p);
-        console.log("[Weather] Target Interval: " + i + " min (" + (Math.max(1, i) * 60000) + " ms)");
         
-        // 1. Immediately read cache
-        readCacheProc.running = true;
+        // 1. Synchronously read cache via FileView
+        try {
+            const cacheData = cacheFileWriter.text;
+            if (cacheData && cacheData.trim() !== "" && cacheData.indexOf("{") === 0) {
+                const data = JSON.parse(cacheData);
+                root.processWeatherData(data);
+                console.log("[Weather] Cache loaded synchronously");
+            }
+        } catch (e) {
+            console.warn("[Weather] Sync cache read failed, falling back to process");
+            readCacheProc.running = true;
+        }
         
         // 2. Schedule first network update (silent)
         startupFetchTimer.start();

@@ -29,7 +29,7 @@ Rectangle {
     }
     
     readonly property string weatherIconsDir: "assets/icons/google-weather"
-    readonly property bool showDailyForecast: (Config.ready && Config.options.weather) ? Config.options.weather.showDailyForecast : true
+    readonly property bool showDailyForecast: Config.options.weather ? Config.options.weather.showDailyForecast : true
     
     readonly property color contentColor: Appearance.m3colors.m3onSurface
     readonly property real midOpacity: 0.8
