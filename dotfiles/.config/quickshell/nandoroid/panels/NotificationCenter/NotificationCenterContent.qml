@@ -126,6 +126,16 @@ Item {
                                     NumberAnimation { target: bellRotation; property: "angle"; from: 15; to: -10; duration: 250; easing.type: Easing.InOutSine }
                                     NumberAnimation { target: bellRotation; property: "angle"; from: -10; to: 0; duration: 200; easing.type: Easing.OutSine }
                                 }
+
+                                Connections {
+                                    target: Notifications
+                                    function onListChanged() {
+                                        // Only trigger if empty and not from the Clear All button (which handles its own animation timing)
+                                        if (Notifications.list.length === 0 && !root._triggeredByClear) {
+                                            bellSwingAnim.restart()
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
