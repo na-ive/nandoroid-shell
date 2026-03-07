@@ -40,8 +40,8 @@ Scope {
 
         Item {
             id: maskItem
-            anchors.left: parent.left
-            anchors.right: parent.right
+            anchors.horizontalCenter: parent.horizontalCenter
+            width: listview.width
             anchors.top: parent.top
             anchors.topMargin: (Config.options?.statusBar?.height ?? 40) - 20
             height: listview.contentHeight + 100
