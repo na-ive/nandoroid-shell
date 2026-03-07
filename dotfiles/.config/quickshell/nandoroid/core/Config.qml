@@ -225,6 +225,7 @@ Singleton {
             property JsonObject bar: JsonObject {
                 property bool show_distro_icon: true
                 property string distroIcon: "" // manual override, e.g. "cachyos-symbolic"
+                property string avatar_path: ""
                 property bool show_network_speed: false
                 property string network_speed_unit: "KB" // B, KB, MB
             }
