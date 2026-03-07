@@ -44,7 +44,6 @@ Singleton {
     FileView {
         id: stateFileView
         path: root.stateFile
-        watchChanges: true
         onLoaded: {
             try {
                 const trimmed = stateFileView.text().trim();
@@ -58,6 +57,13 @@ Singleton {
                 console.error("[ScreenRecord] Failed to parse state:", e);
             }
         }
+    }
+
+    Timer {
+        interval: 1000
+        running: true
+        repeat: true
+        onTriggered: stateFileView.reload()
     }
 
     Component.onCompleted: {

@@ -3,6 +3,7 @@ import QtQuick.Layouts
 import Quickshell
 import Quickshell.Widgets
 import "../../core"
+import "../../core/functions" as Functions
 import "../../services"
 import "../../widgets"
 import Quickshell.Hyprland
@@ -48,6 +49,7 @@ Item {
 
     readonly property string islandState: {
         if (Notifications.activePopup) return "notification"
+        if (ScreenRecord.active) return "recording"
         if (mediaShowing && MprisController.activePlayer) return "media"
         if (pomodoroActive) return "pomodoro"
         return "idle"
@@ -72,6 +74,7 @@ Item {
                 if (notifAppNameLabel.visible) w += Math.min(notifAppNameLabel.implicitWidth, 100) + 4
                 return w > 0 ? w + 4 : 0
             }
+            if (islandState === "recording") return 24
             if (islandState === "media") {
                 let w = 0
                 if (mediaLogo.visible) w += 20 + 6 // Icon + margin
@@ -118,6 +121,34 @@ Item {
             width: Math.min(implicitWidth, 100)
             elide: Text.ElideRight
             horizontalAlignment: Text.AlignRight
+        }
+
+        Item {
+            anchors.right: parent.right
+            anchors.rightMargin: 4
+            anchors.verticalCenter: parent.verticalCenter
+            visible: islandState === "recording"
+            opacity: parent.width > 12 ? 1 : 0
+            width: 16
+            height: 16
+            Behavior on opacity { NumberAnimation { duration: 200 } }
+
+            MaterialSymbol {
+                id: recordIcon
+                anchors.centerIn: parent
+                text: "screen_record"
+                iconSize: 16
+                color: Appearance.m3colors.m3error
+                fill: 1
+                
+                SequentialAnimation on opacity {
+                    id: recordAnim
+                    running: recordIcon.visible
+                    loops: Animation.Infinite
+                    NumberAnimation { from: 1; to: 0.3; duration: 800; easing.type: Easing.InOutSine }
+                    NumberAnimation { from: 0.3; to: 1; duration: 800; easing.type: Easing.InOutSine }
+                }
+            }
         }
 
         // Application Icon with Fallback
@@ -207,6 +238,7 @@ Item {
 
         MouseArea {
             anchors.fill: parent
+            enabled: islandState === "notification"
             onClicked: {
                 if (islandState === "notification" && Notifications.activePopup) {
                     Notifications.attemptInvokeAction(Notifications.activePopup.notificationId, "default")
@@ -226,6 +258,7 @@ Item {
         
         width: {
             if (islandState === "notification") return notifSummaryLabel.visible ? Math.min(notifSummaryLabel.implicitWidth, 200) + 8 : 0
+            if (islandState === "recording") return recordTimeLabel.implicitWidth + 8
             if (islandState === "media") return mediaTitleLabel.visible ? Math.min(mediaTitleLabel.implicitWidth, 150) + 8 : 0
             if (islandState === "pomodoro") return pomoTimeLabel.implicitWidth + 8
             return 0
@@ -247,6 +280,20 @@ Item {
             color: Appearance.colors.colNotchText
             width: Math.min(implicitWidth, 200)
             elide: Text.ElideRight
+        }
+
+        StyledText {
+            id: recordTimeLabel
+            anchors.left: parent.left
+            anchors.leftMargin: 4
+            anchors.verticalCenter: parent.verticalCenter
+            text: Functions.General.formatDuration(ScreenRecord.seconds)
+            opacity: parent.width > 10 ? 1 : 0
+            Behavior on opacity { NumberAnimation { duration: 200 } }
+            font.pixelSize: 12; font.weight: Font.DemiBold
+            color: Appearance.colors.colNotchText
+            font.family: Appearance.font.family.numbers
+            visible: islandState === "recording"
         }
 
         StyledText {
@@ -281,6 +328,7 @@ Item {
 
         MouseArea {
             anchors.fill: parent
+            enabled: islandState === "notification"
             onClicked: {
                 if (islandState === "notification" && Notifications.activePopup) {
                     Notifications.discardNotification(Notifications.activePopup.notificationId)
@@ -316,10 +364,19 @@ Item {
                     HyprlandData.cycleLayout();
                     return;
                 }
+                
+                if (islandState === "recording") {
+                    if (mouse.button === Qt.LeftButton) {
+                        ScreenRecord.stop()
+                    }
+                    return;
+                }
+
                 if (mouse.button === Qt.RightButton) {
                     GlobalStates.overviewOpen = !GlobalStates.overviewOpen;
                     return;
                 }
+
                 if (islandState === "notification" && Notifications.activePopup) {
                     Notifications.activePopup.expanded = !Notifications.activePopup.expanded
                 } else if (islandState === "media") {

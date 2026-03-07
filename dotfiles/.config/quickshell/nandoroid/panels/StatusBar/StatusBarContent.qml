@@ -284,10 +284,7 @@ Item {
                 }
             }
 
-            // Screen Recording Indicator
-            RecordIndicator {
-                Layout.alignment: Qt.AlignVCenter
-            }
+
         }
     }
 
