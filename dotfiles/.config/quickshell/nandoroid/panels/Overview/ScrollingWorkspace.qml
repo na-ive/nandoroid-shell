@@ -7,10 +7,8 @@ import Quickshell.Widgets
 import Quickshell.Wayland
 import Quickshell.Hyprland
 import "../../core"
-import "../../core"
 import "../../services"
 import "../../widgets"
-import "../../core"
 
 Item {
     id: root
@@ -696,26 +694,28 @@ Item {
                     }
 
                     // Tooltip
-                    Rectangle {
+                    ToolTip {
+                        id: scrollWindowTooltip
                         visible: dragArea.containsMouse && !windowDelegate.dragging && windowDelegate.windowData
-                        anchors.bottom: parent.top
-                        anchors.bottomMargin: 8
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        width: tooltipText.implicitWidth + 16
-                        height: tooltipText.implicitHeight + 8
-                        color: Appearance && Appearance.m3colors && Appearance.m3colors.m3inverseSurface ? Appearance.m3colors.m3inverseSurface : "black"
-                        radius: (0) / 2
-                        opacity: 0.9
-                        z: 1000
+                        delay: 300
+                        padding: 8
+                        y: -height - 8
+                        x: (parent.width - width) / 2
+                        text: `${windowDelegate.windowData?.title || ""}\n[${windowDelegate.windowData?.class || ""}]${windowDelegate.windowData?.xwayland ? " [XWayland]" : ""}`
 
-                        Text {
-                            id: tooltipText
-                            anchors.centerIn: parent
-                            text: `${windowDelegate.windowData?.title || ""}\n[${windowDelegate.windowData?.class || ""}]${windowDelegate.windowData?.xwayland ? " [XWayland]" : ""}`
-                            font.family: Appearance && Appearance.font && Appearance.font.family && Appearance.font.family.main ? Appearance.font.family.main : "sans-serif"
-                            font.pixelSize: 10
-                            color: Appearance && Appearance.m3colors && Appearance.m3colors.m3inverseOnSurface ? Appearance.m3colors.m3inverseOnSurface : "white"
+                        contentItem: StyledText {
+                            text: scrollWindowTooltip.text
+                            color: Appearance.m3colors.m3onSurface
+                            font.pixelSize: Appearance.font.pixelSize.smaller
                             horizontalAlignment: Text.AlignHCenter
+                            wrapMode: Text.NoWrap
+                        }
+
+                        background: Rectangle {
+                            color: Appearance.m3colors.m3surfaceContainerHigh
+                            radius: 8
+                            border.color: Appearance.m3colors.m3outlineVariant
+                            border.width: 1
                         }
                     }
                 }
