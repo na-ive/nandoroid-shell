@@ -135,7 +135,7 @@ Item {
         ScreencopyView {
             id: windowPreview
             anchors.fill: parent
-            captureSource: GlobalStates.overviewOpen ? root.toplevel : null
+            captureSource: (GlobalStates.overviewOpen && root.toplevel && root.toplevel.HyprlandToplevel) ? root.toplevel : null
             live: GlobalStates.overviewOpen
             visible: true
         }

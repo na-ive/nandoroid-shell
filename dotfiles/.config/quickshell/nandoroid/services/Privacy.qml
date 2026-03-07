@@ -36,7 +36,7 @@ Singleton {
             return (src.type & PwNodeType.VideoSource) === PwNodeType.VideoSource && looksLikeScreencast(src);
         });
 
-        if (activeLink && activeLink.target) {
+        if (activeLink && activeLink.target && activeLink.target.properties) {
             return activeLink.target.properties["application.name"] || activeLink.target.name || "Unknown App";
         }
         return "";
