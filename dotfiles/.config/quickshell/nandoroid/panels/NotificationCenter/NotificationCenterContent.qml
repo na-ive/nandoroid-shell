@@ -153,7 +153,8 @@ Item {
 
                     SegmentedButton {
                         isHighlighted: Notifications.silent
-                        implicitWidth: 40
+                        forcePill: true
+                        implicitWidth: 56
                         implicitHeight: 40
                         iconName: Notifications.silent ? "notifications_off" : "notifications_active"
                         iconSize: 20
@@ -170,6 +171,7 @@ Item {
                     SegmentedWrapper {
                         Layout.fillWidth: true
                         Layout.preferredHeight: 40
+                        forcePill: true
                         smallRadius: 4
                         color: Appearance.m3colors.m3surfaceContainerHigh
                         
@@ -182,8 +184,9 @@ Item {
                     }
 
                     SegmentedButton {
-                        implicitWidth: 40
+                        implicitWidth: 56
                         implicitHeight: 40
+                        forcePill: true
                         iconName: "delete_sweep"
                         iconSize: 20
                         enabled: Notifications.list.length > 0
