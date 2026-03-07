@@ -314,6 +314,10 @@ Item {
                             StyledToolTip {
                                 visible: hasEvent && !eventPopup.visible
                                 text: {
+                                    const m = root.viewingDate.getMonth() + 1
+                                    const y = root.viewingDate.getFullYear()
+                                    const mm = String(m).padStart(2, '0')
+                                    const dd = String(cell.day).padStart(2, '0')
                                     const evs = root.getEventsForDate(y + "-" + mm + "-" + dd)
                                     return evs.map(e => {
                                         let s = e.title + (e.time ? " (" + e.time + (e.endTime ? " - " + e.endTime : "") + ")" : "")
