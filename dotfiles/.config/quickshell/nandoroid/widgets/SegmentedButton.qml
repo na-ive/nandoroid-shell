@@ -20,6 +20,7 @@ SegmentedWrapper {
     property bool isHighlighted: false
     property real leftPadding: 16
     property real rightPadding: 16
+    property real spacing: 8
     readonly property bool hovered: button.realHovered
     
     property color colActive: Appearance.m3colors.m3primary
@@ -65,7 +66,7 @@ SegmentedWrapper {
             Row {
                 id: contentRow
                 anchors.centerIn: parent
-                spacing: 8
+                spacing: root.spacing
                 
                 MaterialSymbol {
                     visible: root.iconName !== ""

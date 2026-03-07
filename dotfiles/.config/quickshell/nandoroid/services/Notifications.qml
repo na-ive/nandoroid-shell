@@ -24,6 +24,8 @@ Singleton {
     property bool silent: false
     property int idOffset: 0
 
+    onListChanged: if (list.length === 0) activePopup = null;
+
     // ── Grouping Logic ──
     property var groupsByAppName: {
         const groups = {};
@@ -212,6 +214,7 @@ Singleton {
     }
 
     function discardAllNotifications() {
+        root.activePopup = null;
         root.list.forEach(n => { if (n.timer) n.timer.stop(); });
         root.list = [];
         notifFileView.setText(stringifyList(root.list));

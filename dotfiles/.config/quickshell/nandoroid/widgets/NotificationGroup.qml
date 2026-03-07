@@ -20,6 +20,10 @@ MouseArea { // Notification group area
     property bool expanded: false
     property bool popup: false
     property real padding: 10
+    
+    property bool isFirst: false
+    property bool isLast: false
+    
     implicitHeight: background.implicitHeight
 
     property real dragConfirmThreshold: 70 // Drag further to discard notification
@@ -115,17 +119,24 @@ MouseArea { // Notification group area
         }
     }
 
+
     StyledRectangularShadow {
         target: background
         visible: popup
+        opacity: 0.3 // Significantly reduced opacity for a subtle look
     }
 
-    Rectangle { // Background of the notification
+    SegmentedWrapper { // Background of the notification
         id: background
         anchors.left: parent.left
         width: parent.width
         color: popup ? Appearance.m3colors.m3surfaceContainer : Appearance.colors.colLayer2
-        radius: Appearance.rounding.normal
+        orientation: Qt.Vertical
+        maxRadius: 24
+        
+        forceFirst: root.isFirst
+        forceLast: root.isLast
+        
         anchors.leftMargin: root.xOffset
 
         Behavior on anchors.leftMargin {
@@ -137,7 +148,6 @@ MouseArea { // Notification group area
             }
         }
         
-        clip: true
         implicitHeight: root.expanded ? 
             row.implicitHeight + padding * 2 :
             Math.min(80, row.implicitHeight + padding * 2)
@@ -245,6 +255,7 @@ MouseArea { // Notification group area
                         required property var modelData
                         notificationObject: modelData
                         expanded: root.expanded
+                        
                         onlyNotification: (root.notificationCount === 1)
                         opacity: (!root.expanded && index == 1 && root.notificationCount > 2) ? 0.5 : 1
                         visible: root.expanded || (index < 2)

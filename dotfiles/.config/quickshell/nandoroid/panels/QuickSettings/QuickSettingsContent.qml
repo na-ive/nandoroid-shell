@@ -585,7 +585,7 @@ Item {
             anchors {
                 verticalCenter: parent.verticalCenter
                 right: nearFull ? quickSlider.handle.right : parent.right
-                rightMargin: icon.nearFull ? 14 : 8
+                rightMargin: icon.nearFull ? 16 : 10
             }
             iconSize: 20
             color: nearFull ? Appearance.colors.colOnPrimary : Appearance.colors.colOnSecondaryContainer
@@ -784,6 +784,72 @@ Item {
                         font.pixelSize: Appearance.font.pixelSize.small
                         color: Appearance.m3colors.m3onSurface
                         Layout.fillWidth: true
+                    }
+                }
+            }
+        }
+
+        // ── Interactive Key Helpers (Edit Mode) ──
+        Rectangle {
+            Layout.fillWidth: true
+            implicitHeight: 40
+            radius: Appearance.rounding.normal
+            color: Appearance.colors.colLayer1
+            visible: root.editMode
+            opacity: root.editMode ? 1 : 0
+            Behavior on opacity { NumberAnimation { duration: 250 } }
+
+            RowLayout {
+                anchors.fill: parent
+                anchors.leftMargin: 12
+                anchors.rightMargin: 12
+                spacing: 12
+
+                StyledText {
+                    text: "Edit Mode Hints"
+                    font.pixelSize: 11
+                    font.weight: Font.DemiBold
+                    color: Appearance.colors.colOnLayer1
+                    opacity: 0.6
+                }
+
+                Item { Layout.fillWidth: true }
+
+                RowLayout {
+                    spacing: 14
+                    opacity: 0.8
+
+                    // Add/Remove
+                    RowLayout {
+                        spacing: 6
+                        StyledText { text: "Add/Remove"; font.pixelSize: 10; color: Appearance.colors.colOnLayer1 }
+                        Rectangle {
+                            width: 18; height: 18; radius: 4
+                            color: Appearance.m3colors.m3surfaceVariant
+                            StyledText { anchors.centerIn: parent; text: "L"; font.pixelSize: 10; font.weight: Font.Bold }
+                        }
+                    }
+
+                    // Resize
+                    RowLayout {
+                        spacing: 6
+                        StyledText { text: "Resize"; font.pixelSize: 10; color: Appearance.colors.colOnLayer1 }
+                        Rectangle {
+                            width: 18; height: 18; radius: 4
+                            color: Appearance.m3colors.m3surfaceVariant
+                            StyledText { anchors.centerIn: parent; text: "R"; font.pixelSize: 10; font.weight: Font.Bold }
+                        }
+                    }
+
+                    // Move
+                    RowLayout {
+                        spacing: 6
+                        StyledText { text: "Move"; font.pixelSize: 10; color: Appearance.colors.colOnLayer1 }
+                        Rectangle {
+                            width: 38; height: 18; radius: 4
+                            color: Appearance.m3colors.m3surfaceVariant
+                            StyledText { anchors.centerIn: parent; text: "Scroll"; font.pixelSize: 10; font.weight: Font.Bold }
+                        }
                     }
                 }
             }

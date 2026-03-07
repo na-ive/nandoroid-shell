@@ -27,8 +27,8 @@ Rectangle {
 
     ColumnLayout {
         anchors.fill: parent
-        anchors.margins: 12
-        spacing: 8
+        anchors.margins: 14
+        spacing: 12
 
         // Header
         RowLayout {
@@ -109,8 +109,8 @@ Rectangle {
         Rectangle {
             Layout.fillWidth: true
             Layout.fillHeight: true
-            radius: 16
-            color: Appearance.colors.colLayer0
+            radius: 12
+            color: "transparent"
             clip: true
 
             ListView {
@@ -125,7 +125,7 @@ Rectangle {
                     id: delegateRoot
                     required property var modelData
                     required property int index
-                    width: wifiList.width - 8
+                    width: wifiList.width
                     height: delegateCol.implicitHeight
 
                     ColumnLayout {
@@ -137,7 +137,7 @@ Rectangle {
                             id: networkItem
                             Layout.fillWidth: true
                             implicitHeight: 56
-                            buttonRadius: 12
+                            buttonRadius: 16
                             colBackground: {
                                 if (delegateRoot.modelData.active) return Functions.ColorUtils.mix(Appearance.colors.colLayer0, Appearance.colors.colPrimary, 0.85);
                                 if (delegateRoot.modelData.askingPassword) return Appearance.colors.colLayer2;
@@ -167,7 +167,7 @@ Rectangle {
                                 visible: delegateRoot.modelData.askingPassword
                                 color: parent.colBackground
                                 z: -1
-                                radius: 12
+                                radius: 16
                                 
                                 // Make bottom square
                                 Rectangle {
@@ -239,7 +239,7 @@ Rectangle {
                             visible: Layout.preferredHeight > 0
                             clip: true
                             color: Appearance.colors.colLayer2
-                            radius: 12
+                            radius: 16
                             opacity: delegateRoot.modelData.askingPassword ? 1 : 0
                             Behavior on Layout.preferredHeight { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
                             Behavior on opacity { NumberAnimation { duration: 200 } }
@@ -368,8 +368,9 @@ Rectangle {
             RippleButton {
                 implicitWidth: detailsText.implicitWidth + 24
                 implicitHeight: 36
-                buttonRadius: 18
-                colBackground: Appearance.colors.colLayer2
+                buttonRadius: height / 2
+                colBackground: Appearance.colors.colLayer1
+                colBackgroundHover: Appearance.colors.colLayer1Hover
                 onClicked: {
                     GlobalStates.settingsPageIndex = 0;
                     GlobalStates.settingsOpen = true;
@@ -388,9 +389,9 @@ Rectangle {
             RippleButton {
                 implicitWidth: doneText.implicitWidth + 24
                 implicitHeight: 36
-                buttonRadius: 18
+                buttonRadius: height / 2
                 colBackground: Appearance.colors.colPrimary
-                colBackgroundHover: Qt.darker(Appearance.colors.colPrimary, 1.12)
+                colBackgroundHover: Qt.darker(Appearance.colors.colPrimary, 1.1)
                 onClicked: root.dismiss()
                 StyledText {
                     id: doneText

@@ -150,7 +150,12 @@ Item {
                             Layout.fillWidth: true
                         }
                         StyledText {
-                            text: modelData.time + (modelData.recurrence !== "once" ? " · " + modelData.recurrence : "")
+                            text: {
+                                let t = modelData.time
+                                if (modelData.endTime) t += " - " + modelData.endTime
+                                if (modelData.recurrence !== "once") t += " · " + modelData.recurrence
+                                return t
+                            }
                             font.pixelSize: Appearance.font.pixelSize.smaller
                             color: Appearance.colors.colSubtext
                         }
@@ -304,6 +309,21 @@ Item {
                                 eventPopup.dateStr = dateStr
                                 eventPopup.events = root.getEventsForDate(dateStr)
                                 eventPopup.visible = !eventPopup.visible
+                            }
+
+                            StyledToolTip {
+                                visible: hasEvent && !eventPopup.visible
+                                text: {
+                                    const m = root.viewingDate.getMonth() + 1
+                                    const y = root.viewingDate.getFullYear()
+                                    const mm = String(m).padStart(2, '0')
+                                    const dd = String(cell.day).padStart(2, '0')
+                                    const evs = root.getEventsForDate(y + "-" + mm + "-" + dd)
+                                    return evs.map(e => {
+                                        let s = e.title + (e.time ? " (" + e.time + (e.endTime ? " - " + e.endTime : "") + ")" : "")
+                                        return s
+                                    }).join("\n")
+                                }
                             }
                         }
                     }

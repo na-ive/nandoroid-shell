@@ -229,9 +229,12 @@ Item { // Notification item area
                         }
                     }
 
+
                     ScrollEdgeFade {
                         target: actionsFlickable
                         vertical: false
+                        fadeSize: 20
+                        color: Functions.ColorUtils.transparentize(Appearance.m3colors.m3shadow, 0.96) // Super subtle
                     }
 
                     StyledFlickable { // Notification actions

@@ -51,8 +51,8 @@ Rectangle {
 
     ColumnLayout {
         anchors.fill: parent
-        anchors.margins: 12
-        spacing: 8
+        anchors.margins: 14
+        spacing: 12
 
         // ── Header ──
         RowLayout {
@@ -106,7 +106,7 @@ Rectangle {
 
                 Layout.fillWidth: true
                 implicitHeight: 64
-                buttonRadius: Appearance.rounding.normal
+                buttonRadius: 16
                 colBackground: isActive
                     ? Functions.ColorUtils.transparentize(Appearance.colors.colPrimary, 0.82)
                     : Appearance.colors.colLayer2
@@ -194,9 +194,9 @@ Rectangle {
             RippleButton {
                 implicitWidth: ppDoneText.implicitWidth + 24
                 implicitHeight: 36
-                buttonRadius: 18
+                buttonRadius: height / 2
                 colBackground: Appearance.colors.colPrimary
-                colBackgroundHover: Qt.darker(Appearance.colors.colPrimary, 1.12)
+                colBackgroundHover: Qt.darker(Appearance.colors.colPrimary, 1.1)
                 onClicked: root.dismiss()
                 StyledText {
                     id: ppDoneText

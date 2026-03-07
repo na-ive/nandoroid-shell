@@ -14,24 +14,28 @@ RowLayout {
 
     // Load schedule to mark days on the calendar
     property var scheduledEvents: []
+    readonly property string storagePath: Directories.home.replace("file://", "") + "/.cache/nandoroid/schedule.json"
+
+    function reloadSchedule() {
+        scheduleFile.reload()
+    }
+
     FileView {
-        id: scheduleView
-        // Match the same path as DashSchedule uses
-        path: Directories.home.replace("file://", "") + "/.cache/nandoroid/schedule.json"
-        watchChanges: true
-        onLoadFailed: root.scheduledEvents = []
+        id: scheduleFile
+        path: root.storagePath
         onLoaded: {
-            try { root.scheduledEvents = JSON.parse(scheduleView.text()) } catch(e) { root.scheduledEvents = [] }
+            try {
+                let parsed = JSON.parse(scheduleFile.text())
+                if (Array.isArray(parsed)) root.scheduledEvents = parsed
+            } catch(e) {}
         }
     }
 
-    function reloadSchedule() {
-        scheduleView.reload()
-    }
+    Component.onCompleted: scheduleFile.reload()
+
     // Build a flat list of all dates this event applies to (expand recurring)
     readonly property var eventDates: {
         let dates = []
-        const today = new Date()
         for (let ev of root.scheduledEvents) {
             if (!ev.date) continue
             dates.push(ev.date)
@@ -66,7 +70,6 @@ RowLayout {
         color: Appearance.m3colors.m3surfaceContainerHigh
         radius: Appearance.rounding.normal
 
-        // Centre the calendar widget - it has a fixed inner size
         CalendarWidget {
             anchors.centerIn: parent
             width: Math.min(parent.width - 24, implicitWidth)
@@ -88,7 +91,7 @@ RowLayout {
         ColumnLayout {
             anchors.fill: parent
             anchors.margins: 16
-            spacing: 10
+            spacing: 14
 
             // ── Circular Arc Timer ──
             Item {
@@ -198,6 +201,8 @@ RowLayout {
                         implicitHeight: 32
                         isHighlighted: PomodoroService.mode === modelData.mode
                         iconName: modelData.icon
+                        iconSize: 18
+                        spacing: 5
                         buttonText: modelData.name
                         colInactive: Appearance.m3colors.m3surfaceContainerHigh
                         onClicked: PomodoroService.setMode(modelData.mode)
@@ -219,11 +224,11 @@ RowLayout {
 
                 RippleButton {
                     id: startPill
-                    implicitWidth: 110; implicitHeight: 44; buttonRadius: 22
+                    implicitWidth: 140; implicitHeight: 44; buttonRadius: 22
                     colBackground: Appearance.m3colors.m3primary
                     onClicked: PomodoroService.active ? PomodoroService.pause() : PomodoroService.start()
                     contentItem: RowLayout {
-                        spacing: 6; Layout.alignment: Qt.AlignHCenter
+                        spacing: 8; Layout.alignment: Qt.AlignHCenter
                         MaterialSymbol {
                             text: PomodoroService.active ? "pause" : "play_arrow"
                             iconSize: 20; color: Appearance.m3colors.m3onPrimary
@@ -292,7 +297,7 @@ RowLayout {
                                 { icon: "self_improvement", name: "Long", mode: 2 }
                             ]
                             delegate: SegmentedButton {
-                                implicitWidth: 58; implicitHeight: 24
+                                implicitWidth: 72; implicitHeight: 24
                                 isHighlighted: PomodoroService.nextBreakMode === modelData.mode
                                 iconName: modelData.icon; buttonText: modelData.name; iconSize: 11
                                 colInactive: Appearance.m3colors.m3surfaceContainerHigh

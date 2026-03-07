@@ -40,7 +40,7 @@ start_timer() {
     ( 
         while true; do
             SECONDS_ELAPSED=$((SECONDS_ELAPSED + 1))
-            jq ".screenRecord.seconds = $SECONDS_ELAPSED" "$STATE_FILE" > "${STATE_FILE}.tmp" && mv "${STATE_FILE}.tmp" "$STATE_FILE"
+            jq ".screenRecord.seconds = $SECONDS_ELAPSED" "$STATE_FILE" > "${STATE_FILE}.tmp" && cat "${STATE_FILE}.tmp" > "$STATE_FILE"
             sleep 1
         done
     ) &
@@ -52,7 +52,7 @@ stop_timer() {
         kill "$TIMER_PID" 2>/dev/null
         wait "$TIMER_PID" 2>/dev/null
         TIMER_PID=""
-        jq ".screenRecord.seconds = 0" "$STATE_FILE" > "${STATE_FILE}.tmp" && mv "${STATE_FILE}.tmp" "$STATE_FILE" # setting it to 0 after killing the timer
+        jq ".screenRecord.seconds = 0" "$STATE_FILE" > "${STATE_FILE}.tmp" && cat "${STATE_FILE}.tmp" > "$STATE_FILE" # setting it to 0 after killing the timer
     fi
 }
 
@@ -72,7 +72,7 @@ getactivemonitor() {
 
 updatestate() {
     local state_value=$1
-    jq ".screenRecord.active = $state_value" "$STATE_FILE" > "${STATE_FILE}.tmp" && mv "${STATE_FILE}.tmp" "$STATE_FILE"
+    jq ".screenRecord.active = $state_value" "$STATE_FILE" > "${STATE_FILE}.tmp" && cat "${STATE_FILE}.tmp" > "$STATE_FILE"
     if [[ "$state_value" == "true" ]]; then
         start_timer
     else
@@ -94,7 +94,7 @@ for ((i=0;i<${#ARGS[@]};i++)); do
         if (( i+1 < ${#ARGS[@]} )); then
             MANUAL_REGION="${ARGS[i+1]}"
         else
-            notify-send "Recording cancelled" "No region specified for --region" -a 'Recorder' -t 3000 & disown
+            notify-send "Recording cancelled" "No region specified for --region" -a 'Recorder' -i media-record -t 3000 & disown
             updatestate false
             exit 1
         fi
@@ -106,13 +106,13 @@ for ((i=0;i<${#ARGS[@]};i++)); do
 done
 
 if pgrep wf-recorder > /dev/null; then
-    notify-send "Recording Stopped" "Video saved to $RECORDING_DIR" -a 'Recorder' -t 5000 &
+    notify-send "Recording Stopped" "Video saved to $RECORDING_DIR" -a 'Recorder' -i media-record -t 5000 &
     updatestate false
     pkill wf-recorder &
 else
     filename="recording_$(getdate).mp4"
     if [[ $FULLSCREEN_FLAG -eq 1 ]]; then
-        notify-send "Starting recording" "$filename" -a 'Recorder' -t 3000 & disown
+        notify-send "Starting recording" "$filename" -a 'Recorder' -i media-record -t 3000 & disown
         updatestate true
         if [[ $SOUND_FLAG -eq 1 ]]; then
             wf-recorder -o "$(getactivemonitor)" --pixel-format yuv420p -f "$filename" --audio="$(getaudiooutput)"
@@ -125,7 +125,7 @@ else
             region="$MANUAL_REGION"
         else
             if ! region="$(slurp 2>&1)"; then
-                notify-send "Recording cancelled" "Selection was cancelled" -a 'Recorder' -t 3000 & disown
+                notify-send "Recording cancelled" "Selection was cancelled" -a 'Recorder' -i media-record -t 3000 & disown
                 updatestate false
                 exit 1
             fi
@@ -137,7 +137,7 @@ else
         y="${pos#*,}"
         geometry="${x},${y} ${size}"
 
-        notify-send "Starting recording" "$filename" -a 'Recorder' -t 3000 & disown
+        notify-send "Starting recording" "$filename" -a 'Recorder' -i media-record -t 3000 & disown
         updatestate true
         if [[ $SOUND_FLAG -eq 1 ]]; then
             wf-recorder -o "$(getactivemonitor)" --pixel-format yuv420p -f "$filename" --geometry "$geometry" --audio="$(getaudiooutput)"

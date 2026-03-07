@@ -284,10 +284,17 @@ Item {
                 }
             }
 
-            // Screen Recording Indicator
-            RecordIndicator {
+            // DND Indicator
+            MaterialSymbol {
+                visible: Notifications.silent
+                text: "notifications_paused"
+                iconSize: 16
+                fill: 1
+                color: Appearance.colors.colStatusBarText
                 Layout.alignment: Qt.AlignVCenter
             }
+
+
         }
     }
 

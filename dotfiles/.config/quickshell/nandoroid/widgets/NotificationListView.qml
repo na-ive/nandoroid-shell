@@ -13,7 +13,7 @@ StyledListView {
     id: root
     property bool popup: false
 
-    spacing: 12
+    spacing: 4
 
     model: ScriptModel {
         values: root.popup ? Notifications.popupAppNameList : Notifications.appNameList
@@ -23,6 +23,10 @@ StyledListView {
         required property var modelData
         popup: root.popup
         width: ListView.view.width
+        
+        isFirst: index === 0
+        isLast: index === ListView.view.count - 1
+        
         notificationGroup: popup ? 
             Notifications.popupGroupsByAppName[modelData] :
             Notifications.groupsByAppName[modelData]
