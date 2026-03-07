@@ -65,6 +65,7 @@ Singleton {
 
     function applyScheme(scheme, source = "") {
         if (source === "") source = Config.options.appearance.background.matugenSource || "desktop"
+        Config.options.appearance.background.matugen = true
         Config.options.appearance.background.matugenScheme = scheme
         Config.options.appearance.background.matugenSource = source
         
@@ -152,8 +153,9 @@ Singleton {
         }
         
         if (Config.options.appearance.background.matugen) {
-            console.log("[Wallpapers] Triggering initial theme generation from default wallpaper...");
-            const path = Config.options.appearance.background.wallpaperPath;
+            console.log("[Wallpapers] Triggering initial theme generation from current wallpaper...");
+            const source = Config.options.appearance.background.matugenSource || "desktop"
+            const path = (source === "lockscreen" && Config.options.lock) ? Config.options.lock.wallpaperPath : Config.options.appearance.background.wallpaperPath;
             const cleanPath = path.toString().startsWith("file://") ? path.toString().substring(7) : path.toString();
             if (cleanPath !== "") {
                 matugenProc.filePath = cleanPath;
@@ -222,5 +224,23 @@ Singleton {
         showDirs: false
         showDotAndDotDot: false
         sortField: FolderListModel.Name
+    }
+    Connections {
+        target: Config.ready ? Config.options.appearance.background : null
+        function onMatugenChanged() {
+            if (!Config.ready) return;
+            if (Config.options.appearance.background.matugen) {
+                root.initializeMatugen();
+            } else {
+                const theme = Config.options.appearance.background.matugenThemeFile;
+                if (theme && theme !== "") {
+                    root.applyTheme(theme);
+                } else {
+                    // If no basic theme selected, we don't force one yet, 
+                    // or we could apply a default. Let's apply a default to avoid "limbo".
+                    root.applyTheme("mocha.json");
+                }
+            }
+        }
     }
 }

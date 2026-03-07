@@ -407,30 +407,32 @@ Item {
                         Layout.fillWidth: true; spacing: 20
 
                         RowLayout {
+                            id: colorSwitcherRow
                             Layout.fillWidth: true; Layout.preferredHeight: 52; spacing: 4
+                            property string currentTab: Config.ready && Config.options.appearance.background && Config.options.appearance.background.matugen ? "wallpaper" : "basic"
 
                             SegmentedButton {
                                 Layout.fillWidth: true; Layout.preferredWidth: 1; Layout.fillHeight: true;
-                                isHighlighted: Config.options.appearance.background.matugen
+                                isHighlighted: parent.currentTab === "wallpaper"
                                 buttonText: "Wallpaper color"
                                 font.pixelSize: 14
                                 colActive: Appearance.m3colors.m3primary
                                 colActiveText: Appearance.m3colors.m3onPrimary
                                 colInactive: Appearance.m3colors.m3surfaceContainerHigh
                                 colInactiveText: Appearance.m3colors.m3onSurfaceVariant
-                                onClicked: Config.options.appearance.background.matugen = true
+                                onClicked: parent.currentTab = "wallpaper"
                             }
 
                             SegmentedButton {
                                 Layout.fillWidth: true; Layout.preferredWidth: 1; Layout.fillHeight: true;
-                                isHighlighted: !Config.options.appearance.background.matugen
+                                isHighlighted: parent.currentTab === "basic"
                                 buttonText: "Basic color"
                                 font.pixelSize: 14
                                 colActive: Appearance.m3colors.m3primary
                                 colActiveText: Appearance.m3colors.m3onPrimary
                                 colInactive: Appearance.m3colors.m3surfaceContainerHigh
                                 colInactiveText: Appearance.m3colors.m3onSurfaceVariant
-                                onClicked: Config.options.appearance.background.matugen = false
+                                onClicked: parent.currentTab = "basic"
                             }
                         }
 
@@ -438,7 +440,7 @@ Item {
                         ColumnLayout {
                             Layout.fillWidth: true
                             spacing: 16
-                            visible: Config.options.appearance.background.matugen
+                            visible: colorSwitcherRow.currentTab === "wallpaper"
 
                             GridLayout {
                                 Layout.fillWidth: true; columns: 5; rowSpacing: 16; columnSpacing: 16
@@ -500,7 +502,7 @@ Item {
                         ColumnLayout {
                             Layout.fillWidth: true
                             spacing: 16
-                            visible: !Config.options.appearance.background.matugen
+                            visible: colorSwitcherRow.currentTab === "basic"
 
                             GridLayout {
                                 Layout.fillWidth: true; columns: 5; rowSpacing: 16; columnSpacing: 16

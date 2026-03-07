@@ -57,15 +57,17 @@ ColumnLayout {
     
                 // Custom Segmented Style Switcher
                 Row {
+                    id: colorSwitcherRow
                     Layout.fillWidth: true
                     Layout.preferredHeight: 52
                     spacing: 4
+                    property string currentTab: Config.ready && Config.options.appearance.background && Config.options.appearance.background.matugen ? "wallpaper" : "basic"
                     
                     SegmentedButton {
                         width: (parent.width - 4) / 2
                         height: parent.height
                         
-                        isHighlighted: Config.ready && (Config.options.appearance && Config.options.appearance.background) ? Config.options.appearance.background.matugen : true
+                        isHighlighted: parent.currentTab === "wallpaper"
                         buttonText: "Wallpaper color"
                         font.pixelSize: 14 // Increased font size
                         colActive: Appearance.m3colors.m3primary
@@ -73,18 +75,14 @@ ColumnLayout {
                         colInactive: Appearance.m3colors.m3surfaceContainerHigh
                         colInactiveText: Appearance.m3colors.m3onSurfaceVariant
                         
-                        onClicked: {
-                            if (Config.ready && Config.options.appearance && Config.options.appearance.background) {
-                                Config.options.appearance.background.matugen = true
-                            }
-                        }
+                        onClicked: parent.currentTab = "wallpaper"
                     }
     
                     SegmentedButton {
                         width: (parent.width - 4) / 2
                         height: parent.height
                         
-                        isHighlighted: Config.ready && (Config.options.appearance && Config.options.appearance.background) ? !Config.options.appearance.background.matugen : false
+                        isHighlighted: parent.currentTab === "basic"
                         buttonText: "Basic color"
                         font.pixelSize: 14 // Increased font size
                         colActive: Appearance.m3colors.m3primary
@@ -92,11 +90,7 @@ ColumnLayout {
                         colInactive: Appearance.m3colors.m3surfaceContainerHigh
                         colInactiveText: Appearance.m3colors.m3onSurfaceVariant
                         
-                        onClicked: {
-                            if (Config.ready && Config.options.appearance && Config.options.appearance.background) {
-                                Config.options.appearance.background.matugen = false
-                            }
-                        }
+                        onClicked: parent.currentTab = "basic"
                     }
                 }
     
@@ -104,7 +98,7 @@ ColumnLayout {
                 ColumnLayout {
                     Layout.fillWidth: true
                     spacing: 16
-                    visible: Config.ready && (Config.options.appearance && Config.options.appearance.background) && Config.options.appearance.background.matugen
+                    visible: colorSwitcherRow.currentTab === "wallpaper"
                     
                     GridLayout {
                         Layout.fillWidth: true
@@ -126,6 +120,7 @@ ColumnLayout {
                                 }
                                 isSelected: Config.ready && (Config.options.appearance && Config.options.appearance.background) && Config.options.appearance.background.matugen && Config.options.appearance.background.matugenScheme === modelData.id && Config.options.appearance.background.matugenSource === "desktop"
                                 onClicked: {
+                                    Config.options.appearance.background.matugen = true
                                     Config.options.appearance.background.matugenCustomColor = ""
                                     Config.options.appearance.background.matugenThemeFile = ""
                                     Wallpapers.applyScheme(modelData.id, "desktop")
@@ -151,6 +146,7 @@ ColumnLayout {
                                 }
                                 isSelected: Config.ready && (Config.options.appearance && Config.options.appearance.background) && Config.options.appearance.background.matugen && Config.options.appearance.background.matugenScheme === modelData.id && Config.options.appearance.background.matugenSource === "lockscreen"
                                 onClicked: {
+                                    Config.options.appearance.background.matugen = true
                                     Config.options.appearance.background.matugenCustomColor = ""
                                     Config.options.appearance.background.matugenThemeFile = ""
                                     Wallpapers.applyScheme(modelData.id, "lockscreen")
@@ -188,7 +184,7 @@ ColumnLayout {
                 ColumnLayout {
                     Layout.fillWidth: true
                     spacing: 16
-                    visible: Config.ready && (Config.options.appearance && Config.options.appearance.background) && !Config.options.appearance.background.matugen
+                    visible: colorSwitcherRow.currentTab === "basic"
                     
                     GridLayout {
                         Layout.fillWidth: true
@@ -204,6 +200,7 @@ ColumnLayout {
                                 cardColors: modelData.colors
                                 isSelected: Config.ready && (Config.options.appearance && Config.options.appearance.background) && !Config.options.appearance.background.matugen && Config.options.appearance.background.matugenThemeFile === modelData.file
                                 onClicked: {
+                                    Config.options.appearance.background.matugen = false
                                     Config.options.appearance.background.matugenScheme = ""
                                     Config.options.appearance.background.matugenSource = ""
                                     Wallpapers.applyTheme(modelData.file)
