@@ -55,14 +55,14 @@ ShellRoot {
                 LOCAL_COMMIT=$(git rev-parse HEAD 2>/dev/null)
                 TAG_COMMIT=$(git rev-list -n 1 "$LATEST" 2>/dev/null)
                 if [ "$LOCAL_COMMIT" != "$TAG_COMMIT" ]; then
-                    notify-send -a "NAnDoroid" -i "$DIR/dotfiles/.config/quickshell/nandoroid/assets/icons/NAnDoroid.svg" "Update available" "An update is available ($LATEST)! Check Settings."
+                    notify-send -a "NAnDoroid" -i "$HOME/.config/quickshell/nandoroid/assets/icons/NAnDoroid.svg" "Update available" "An update is available ($LATEST)! Check Settings."
                 fi
             else
                 git fetch origin main >/dev/null 2>&1
                 LOCAL=$(git rev-parse HEAD 2>/dev/null)
                 REMOTE=$(git rev-parse origin/main 2>/dev/null)
                 if [ "$LOCAL" != "$REMOTE" ] && [ -n "$LOCAL" ] && [ -n "$REMOTE" ]; then
-                    notify-send -a "NAnDoroid" -i "$DIR/dotfiles/.config/quickshell/nandoroid/assets/icons/NAnDoroid.svg" "Update available" "An update is available (New Commits)! Check Settings."
+                    notify-send -a "NAnDoroid" -i "$HOME/.config/quickshell/nandoroid/assets/icons/NAnDoroid.svg" "Update available" "An update is available (New Commits)! Check Settings."
                 fi
             fi
         `]
