@@ -14,24 +14,28 @@ RowLayout {
 
     // Load schedule to mark days on the calendar
     property var scheduledEvents: []
+    readonly property string storagePath: Directories.home.replace("file://", "") + "/.cache/nandoroid/schedule.json"
+
+    function reloadSchedule() {
+        scheduleFile.reload()
+    }
+
     FileView {
-        id: scheduleView
-        // Match the same path as DashSchedule uses
-        path: Directories.home.replace("file://", "") + "/.cache/nandoroid/schedule.json"
-        watchChanges: true
-        onLoadFailed: root.scheduledEvents = []
+        id: scheduleFile
+        path: root.storagePath
         onLoaded: {
-            try { root.scheduledEvents = JSON.parse(scheduleView.text()) } catch(e) { root.scheduledEvents = [] }
+            try {
+                let parsed = JSON.parse(scheduleFile.text())
+                if (Array.isArray(parsed)) root.scheduledEvents = parsed
+            } catch(e) {}
         }
     }
 
-    function reloadSchedule() {
-        scheduleView.reload()
-    }
+    Component.onCompleted: scheduleFile.reload()
+
     // Build a flat list of all dates this event applies to (expand recurring)
     readonly property var eventDates: {
         let dates = []
-        const today = new Date()
         for (let ev of root.scheduledEvents) {
             if (!ev.date) continue
             dates.push(ev.date)
@@ -66,7 +70,6 @@ RowLayout {
         color: Appearance.m3colors.m3surfaceContainerHigh
         radius: Appearance.rounding.normal
 
-        // Centre the calendar widget - it has a fixed inner size
         CalendarWidget {
             anchors.centerIn: parent
             width: Math.min(parent.width - 24, implicitWidth)

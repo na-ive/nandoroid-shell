@@ -9,36 +9,16 @@ import Quickshell.Io
 
 /**
  * Dashboard Tab 2: Schedule / Calendar Maker
- * Local JSON storage, recurring events, desktop reminders via notify-send.
+ * Local JSON storage, recurring events.
  */
 Item {
     id: root
 
-    // ── Persistence ──
     property var events: []
-    property bool loaded: false
-
     readonly property string storagePath: Directories.home.replace("file://", "") + "/.cache/nandoroid/schedule.json"
-
-    FileView {
-        id: scheduleFile
-        path: root.storagePath
-        watchChanges: false
-        onLoaded: {
-            try {
-                let parsed = JSON.parse(scheduleFile.text())
-                if (Array.isArray(parsed)) root.events = parsed
-            } catch(e) {}
-            root.loaded = true
-        }
-    }
 
     function save() {
         scheduleFile.setText(JSON.stringify(root.events, null, 2))
-    }
-
-    function makeId() {
-        return Date.now().toString(36) + Math.random().toString(36).substr(2, 5)
     }
 
     function deleteEvent(id) {
@@ -47,66 +27,31 @@ Item {
         if (selectedId === id) { selectedId = ""; clearForm() }
     }
 
-    Component.onCompleted: {
-        scheduleFile.reload()
-        reminderTimer.start()
+    FileView {
+        id: scheduleFile
+        path: root.storagePath
+        onLoaded: {
+            try {
+                let parsed = JSON.parse(scheduleFile.text())
+                if (Array.isArray(parsed)) root.events = parsed
+            } catch(e) {}
+        }
     }
 
-    // ── Reminder Timer (checks every 60s) ──
-    Timer {
-        id: reminderTimer
-        interval: 60000
-        repeat: true
-        running: false
-        onTriggered: root.checkReminders()
-    }
-
-    function checkReminders() {
-        const now = new Date()
-        const todayStr = Qt.formatDate(now, "yyyy-MM-dd")
-        const timeStr  = Qt.formatTime(now, "HH:mm")
-        let changed = false
-
-        root.events.forEach((ev, i) => {
-            // Determine effective date for today
-            let matches = false
-            if (ev.recurrence === "daily") {
-                matches = ev.time === timeStr
-            } else if (ev.recurrence === "weekly") {
-                const evDay = new Date(ev.date).getDay()
-                matches = now.getDay() === evDay && ev.time === timeStr
-            } else if (ev.recurrence === "monthly") {
-                const evDayOfMonth = new Date(ev.date).getDate()
-                matches = now.getDate() === evDayOfMonth && ev.time === timeStr
-            } else {
-                matches = ev.date === todayStr && ev.time === timeStr
-            }
-
-            if (matches && ev.lastFired !== `${todayStr}T${timeStr}`) {
-                notifyProc.command = ["notify-send", "-a", "Nandoroid", "-i", "calendar", ev.title, ev.date + " " + ev.time]
-                notifyProc.running = true
-                root.events[i] = Object.assign({}, ev, { lastFired: `${todayStr}T${timeStr}` })
-                changed = true
-            }
-        })
-
-        if (changed) { root.events = root.events.slice(); save() }
-    }
-
-    Process { id: notifyProc; running: false }
+    Component.onCompleted: scheduleFile.reload()
 
     // ── State ──
     property string selectedId: ""
     property string formTitle: ""
     property string formDate: Qt.formatDate(new Date(), "yyyy-MM-dd")
     property string formTime: "09:00"
+    property string formEndTime: "10:00"
     property string formRecurrence: "once" // once | daily | weekly | monthly
-
     property string formDescription: ""
 
     function clearForm() {
         formTitle = ""; formDate = Qt.formatDate(new Date(), "yyyy-MM-dd")
-        formTime = "09:00"; formRecurrence = "once"; formDescription = ""
+        formTime = "09:00"; formEndTime = "10:00"; formRecurrence = "once"; formDescription = ""
     }
 
     // Auto-save debounce for existing events
@@ -117,12 +62,14 @@ Item {
         onTriggered: {
             if (!root.selectedId || !root.formTitle.trim()) return
             const descVal = root.formDescription.trim() ? root.formDescription.trim() : undefined
-            root.events = root.events.map(function(e) {
-                if (e.id === root.selectedId) {
-                    return Object.assign({}, e, { title: root.formTitle, date: root.formDate, time: root.formTime, recurrence: root.formRecurrence, description: descVal })
-                }
-                return e
-            })
+            root.events = root.events.map(e => e.id === root.selectedId ? Object.assign({}, e, {
+                title: root.formTitle, 
+                date: root.formDate, 
+                time: root.formTime, 
+                endTime: root.formEndTime,
+                recurrence: root.formRecurrence, 
+                description: descVal 
+            }) : e)
             root.save()
         }
     }
@@ -131,17 +78,28 @@ Item {
         if (!formTitle.trim()) return
         const descVal = formDescription.trim() ? formDescription.trim() : undefined
         if (selectedId) {
-            root.events = root.events.map(function(e) {
-                if (e.id === selectedId) {
-                    return Object.assign({}, e, { title: formTitle, date: formDate, time: formTime, recurrence: formRecurrence, description: descVal })
-                }
-                return e
-            })
+            root.events = root.events.map(e => e.id === selectedId ? Object.assign({}, e, { 
+                title: formTitle, 
+                date: formDate, 
+                time: formTime, 
+                endTime: formEndTime,
+                recurrence: formRecurrence, 
+                description: descVal 
+            }) : e)
         } else {
-            const newEv = { id: makeId(), title: formTitle, date: formDate, time: formTime, recurrence: formRecurrence, description: descVal, lastFired: "" }
+            const newEv = { 
+                id: Date.now().toString(36), 
+                title: formTitle, 
+                date: formDate, 
+                time: formTime, 
+                endTime: formEndTime,
+                recurrence: formRecurrence, 
+                description: descVal, 
+                lastFired: "" 
+            }
             root.events = root.events.concat([newEv])
         }
-        save()
+        root.save()
         selectedId = ""
         clearForm()
     }
@@ -223,6 +181,7 @@ Item {
                             StyledText {
                                 text: {
                                     let d = modelData.date + " " + modelData.time
+                                    if (modelData.endTime) d += " - " + modelData.endTime
                                     if (modelData.recurrence !== "once") d += " · " + modelData.recurrence
                                     return d
                                 }
@@ -257,6 +216,7 @@ Item {
                                 root.formTitle = modelData.title
                                 root.formDate = modelData.date
                                 root.formTime = modelData.time
+                                root.formEndTime = modelData.endTime || ""
                                 root.formRecurrence = modelData.recurrence
                                 root.formDescription = modelData.description || ""
                                 root.selectedId = modelData.id
@@ -342,9 +302,9 @@ Item {
                     }
                 }
 
-                // Time
+                // Start Time
                 Rectangle {
-                    Layout.preferredWidth: 110; implicitHeight: 44
+                    Layout.fillWidth: true; implicitHeight: 44
                     radius: Appearance.rounding.small
                     color: Appearance.m3colors.m3surfaceContainer
                     border.color: timeField.activeFocus ? Appearance.colors.colPrimary : "transparent"
@@ -361,6 +321,29 @@ Item {
                             color: Appearance.colors.colOnLayer1
                             inputMask: "99:99"
                             onTextChanged: { root.formTime = text; if(root.selectedId && timeField.activeFocus) autoSaveTimer.restart() }
+                        }
+                    }
+                }
+
+                // End Time
+                Rectangle {
+                    Layout.fillWidth: true; implicitHeight: 44
+                    radius: Appearance.rounding.small
+                    color: Appearance.m3colors.m3surfaceContainer
+                    border.color: endTimeField.activeFocus ? Appearance.colors.colPrimary : "transparent"
+                    border.width: 2
+                    RowLayout {
+                        anchors.fill: parent; anchors.margins: 10; spacing: 6
+                        MaterialSymbol { text: "event_busy"; iconSize: 16; color: Appearance.colors.colSubtext }
+                        TextInput {
+                            id: endTimeField
+                            Layout.fillWidth: true
+                            text: root.formEndTime
+                            font.family: Appearance.font.family.main
+                            font.pixelSize: Appearance.font.pixelSize.small
+                            color: Appearance.colors.colOnLayer1
+                            inputMask: "99:99"
+                            onTextChanged: { root.formEndTime = text; if(root.selectedId && endTimeField.activeFocus) autoSaveTimer.restart() }
                         }
                     }
                 }
