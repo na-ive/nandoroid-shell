@@ -7,6 +7,11 @@ import Quickshell.Hyprland
 import "../../core"
 import "../../services"
 
+/**
+ * Refactored OSD (On-Screen Display) for v1.1
+ * Horizontal Mode inspired by Android 16 (Material 3 Expressive).
+ * Positioned bottom-center of the screen.
+ */
 Scope {
     id: root
     property string protectionMessage: ""
@@ -21,35 +26,15 @@ Scope {
         repeat: false
         onTriggered: root.ready = true
     }
+
     property var indicators: [
-        {
-            id: "volume",
-            sourceUrl: "indicators/VolumeIndicator.qml"
-        },
-        {
-            id: "brightness",
-            sourceUrl: "indicators/BrightnessIndicator.qml"
-        },
-        {
-            id: "playerVolume",
-            sourceUrl: "indicators/PlayerVolumeIndicator.qml"
-        },
-        {
-            id: "charging",
-            sourceUrl: "indicators/ChargingIndicator.qml"
-        },
-        {
-            id: "powerMode",
-            sourceUrl: "indicators/PowerModeIndicator.qml"
-        },
-        {
-            id: "conservation",
-            sourceUrl: "indicators/ConservationIndicator.qml"
-        },
-        {
-            id: "layout",
-            sourceUrl: "indicators/LayoutIndicator.qml"
-        },
+        { id: "volume",         sourceUrl: "indicators/VolumeIndicator.qml" },
+        { id: "brightness",     sourceUrl: "indicators/BrightnessIndicator.qml" },
+        { id: "playerVolume",   sourceUrl: "indicators/PlayerVolumeIndicator.qml" },
+        { id: "charging",       sourceUrl: "indicators/ChargingIndicator.qml" },
+        { id: "powerMode",      sourceUrl: "indicators/PowerModeIndicator.qml" },
+        { id: "conservation",   sourceUrl: "indicators/ConservationIndicator.qml" },
+        { id: "layout",         sourceUrl: "indicators/LayoutIndicator.qml" },
     ]
 
     function triggerOsd() {
@@ -69,20 +54,18 @@ Scope {
         }
     }
 
+    // ── Signal Connections ──
     Connections {
         target: Brightness
         function onBrightnessUpdated() {
-            root.protectionMessage = "";
             root.currentIndicator = "brightness";
             root.triggerOsd();
         }
     }
 
     Connections {
-        // Listen to volume changes
         target: Audio.sink && Audio.sink.audio ? Audio.sink.audio : null
         function onVolumeChanged() {
-            // console.log("DEBUG: Volume " + Audio.sink.audio.volume)
             root.currentIndicator = "volume";
             root.triggerOsd();
         }
@@ -95,7 +78,6 @@ Scope {
     Connections {
         target: Battery
         function onIsPluggedInChanged() {
-            root.protectionMessage = "";
             root.currentIndicator = "charging";
             root.triggerOsd();
         }
@@ -104,7 +86,6 @@ Scope {
     Connections {
         target: PowerProfileService
         function onCurrentProfileChanged() {
-            root.protectionMessage = "";
             root.currentIndicator = "powerMode";
             root.triggerOsd();
         }
@@ -114,7 +95,6 @@ Scope {
         target: ConservationMode
         enabled: ConservationMode.available
         function onActiveChanged() {
-            root.protectionMessage = "";
             root.currentIndicator = "conservation";
             root.triggerOsd();
         }
@@ -123,86 +103,88 @@ Scope {
     Connections {
         target: HyprlandData
         function onLayoutChanged() {
-            root.protectionMessage = "";
             root.currentIndicator = "layout";
             root.triggerOsd();
         }
     }
 
+    // ── OSD Visual Layer ──
     Loader {
         id: osdLoader
-        active: false // Default hidden
+        active: false
 
         sourceComponent: PanelWindow {
             id: osdRoot
             color: "transparent"
 
+            anchors {
+                bottom: true
+                // Layer shell will center horizontally by default if only bottom is anchored
+                // and a fixed width is matched by content.
+            }
+            
+            margins {
+                bottom: 80 // Android 16 style bottom margin (elevated)
+            }
+
+            // Sync screen with Hyprland focus
+            screen: root.focusedScreen
             Connections {
                 target: root
-                function onFocusedScreenChanged() {
-                    osdRoot.screen = root.focusedScreen;
-                }
+                function onFocusedScreenChanged() { osdRoot.screen = root.focusedScreen; }
             }
 
             WlrLayershell.namespace: "quickshell:osd"
             WlrLayershell.layer: WlrLayer.Overlay
-            exclusiveZone: -1 // Explicitly floating
-            
-            // Ensure no full-width anchoring
-            anchors {
-                bottom: true
-            }
-            margins {
-                bottom: 60 // Closer to bottom
-            }
+            exclusiveZone: -1 // Floating
 
-            // Implicit width/height from content
-            implicitWidth: columnLayout.implicitWidth
-            implicitHeight: columnLayout.implicitHeight
+            implicitWidth: contentWrapper.implicitWidth
+            implicitHeight: contentWrapper.implicitHeight
             visible: osdLoader.active
 
-            ColumnLayout {
-                id: columnLayout
+            // Animation for appearance
+            onVisibleChanged: {
+                if (visible) {
+                    contentWrapper.opacity = 0;
+                    contentWrapper.scale = 0.95;
+                    contentAnim.restart();
+                }
+            }
+
+            ParallelAnimation {
+                id: contentAnim
+                NumberAnimation { target: contentWrapper; property: "opacity"; from: 0; to: 1; duration: 250; easing.type: Easing.OutQuint }
+                NumberAnimation { target: contentWrapper; property: "scale"; from: 0.95; to: 1; duration: 350; easing.type: Easing.OutQuint }
+            }
+
+            Item {
+                id: contentWrapper
                 anchors.centerIn: parent
+                implicitWidth: osdIndicatorLoader.implicitWidth
+                implicitHeight: osdIndicatorLoader.implicitHeight
+                
+                // OpacityMask or Shadow could be added here if needed,
+                // but the Indicator already provides its own background.
+                
+                MouseArea {
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    onEntered: osdLoader.active = false // Quick hide on hover
+                }
 
-                Item {
-                    id: osdValuesWrapper
-                    // Extra space for shadow
-                    implicitHeight: contentColumnLayout.implicitHeight
-                    implicitWidth: contentColumnLayout.implicitWidth
-                    
-                    MouseArea {
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        onEntered: osdLoader.active = false
-                    }
-
-                    Column {
-                        id: contentColumnLayout
-                        anchors.centerIn: parent
-                        spacing: 0
-
-                        Loader {
-                            id: osdIndicatorLoader
-                            source: root.indicators.find(i => i.id === root.currentIndicator)?.sourceUrl
-                        }
-                    }
+                Loader {
+                    id: osdIndicatorLoader
+                    anchors.centerIn: parent
+                    source: root.indicators.find(i => i.id === root.currentIndicator)?.sourceUrl
                 }
             }
         }
     }
 
+    // ── IPC Handlers ──
     IpcHandler {
         target: "osd"
-
-        function showBrightness() {
-            root.currentIndicator = "brightness";
-            root.triggerOsd();
-        }
-
-        function showVolume() {
-            root.currentIndicator = "volume";
-            root.triggerOsd();
-        }
+        function showBrightness() { root.currentIndicator = "brightness"; root.triggerOsd(); }
+        function showVolume() { root.currentIndicator = "volume"; root.triggerOsd(); }
     }
 }

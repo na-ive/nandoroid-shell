@@ -37,33 +37,8 @@ Scope {
 
             color: "transparent"
 
-            // ── Blurred wallpaper ──────────────────────────────────────────
-            Image {
-                id: wallpaperSource
-                anchors.fill: parent
-                source: (Config.ready && Config.options.appearance?.background?.wallpaperPath)
-                    ? Config.options.appearance.background.wallpaperPath
-                    : ""
-                fillMode: Image.PreserveAspectCrop
-                visible: false
-                smooth: true
-                cache: false
-            }
+            // Background removed for cleaner look, handled by SessionContent island
 
-            GaussianBlur {
-                id: blurredWallpaper
-                anchors.fill: wallpaperSource
-                source: wallpaperSource
-                radius: 72
-                samples: 145  // radius * 2 + 1
-                deviation: 36
-            }
-
-            // Dark scrim on top of blur — no animation, instant appearance
-            Rectangle {
-                anchors.fill: parent
-                color: Qt.rgba(0, 0, 0, 0.65)
-            }
 
             // Click outside to close
             MouseArea {
