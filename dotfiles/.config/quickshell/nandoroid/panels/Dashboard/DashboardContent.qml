@@ -78,8 +78,8 @@ Item {
                 NumberAnimation {
                     target: panelBg
                     property: "y"
-                    duration: Appearance.animation.elementMove.duration || 400
-                    easing.bezierCurve: Appearance.animationCurves.expressiveDefaultSpatial || [0.2, 0.0, 0.0, 1.0]
+                    duration: root.showShoulders ? 300 : (Appearance.animation.elementMove.duration || 400)
+                    easing.bezierCurve: root.showShoulders ? Appearance.animationCurves.emphasizedDecel : (Appearance.animationCurves.expressiveDefaultSpatial || [0.38, 1.21, 0.22, 1])
                 }
                 NumberAnimation {
                     targets: [panelBg, rightShoulder, leftShoulder]

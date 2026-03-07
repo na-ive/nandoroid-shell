@@ -76,13 +76,14 @@ PanelWindow {
                     NumberAnimation {
                         target: content
                         property: "y"
-                        duration: 300
-                        easing.type: Easing.OutCubic
+                        duration: 350
+                        easing.type: Easing.BezierSpline
+                        easing.bezierCurve: Appearance.animationCurves.emphasizedDecel
                     }
                     NumberAnimation {
                         target: content
                         property: "opacity"
-                        duration: 200
+                        duration: 250
                     }
                 }
             },
@@ -95,13 +96,14 @@ PanelWindow {
                         property: "y"
                         to: screen.height
                         duration: 300
-                        easing.type: Easing.InCubic // Smooth slide out
+                        easing.type: Easing.BezierSpline
+                        easing.bezierCurve: Appearance.animationCurves.emphasized
                     }
                     NumberAnimation {
                         target: content
                         property: "opacity"
                         to: 0
-                        duration: 250
+                        duration: 200
                     }
                 }
             }

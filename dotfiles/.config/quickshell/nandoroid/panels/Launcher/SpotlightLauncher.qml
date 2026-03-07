@@ -64,14 +64,28 @@ PanelWindow {
         
         transitions: [
             Transition {
-                from: "*"
+                from: ""
                 to: "visible"
-                NumberAnimation { properties: "opacity,scale"; duration: 200; easing.type: Easing.OutCubic }
+                ParallelAnimation {
+                    NumberAnimation {
+                        properties: "opacity,scale"
+                        duration: 300
+                        easing.type: Easing.BezierSpline
+                        easing.bezierCurve: Appearance.animationCurves.emphasizedDecel
+                    }
+                }
             },
             Transition {
                 from: "visible"
-                to: "*"
-                NumberAnimation { properties: "opacity,scale"; duration: 200; easing.type: Easing.InCubic }
+                to: ""
+                ParallelAnimation {
+                    NumberAnimation {
+                        properties: "opacity,scale"
+                        duration: 250
+                        easing.type: Easing.BezierSpline
+                        easing.bezierCurve: Appearance.animationCurves.emphasized
+                    }
+                }
             }
         ]
         

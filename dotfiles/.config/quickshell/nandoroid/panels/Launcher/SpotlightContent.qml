@@ -68,6 +68,7 @@ Rectangle {
             delegate: LauncherListView {
                 result: modelData
                 selected: root.selectedIndex === index
+                onHoveredChanged: if (hovered) root.selectedIndex = index
             }
             currentIndex: root.selectedIndex
             onCurrentIndexChanged: {
