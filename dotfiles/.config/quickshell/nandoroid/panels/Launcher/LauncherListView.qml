@@ -42,7 +42,9 @@ RippleButton {
                 id: iconBg
                 anchors.fill: parent
                 shapeString: Config.ready ? Config.options.search.iconShape : "Square"
-                color: Appearance.m3colors.m3surfaceContainerHigh
+                color: (root.hovered || root.selected) ? Appearance.m3colors.m3primaryContainer : Appearance.m3colors.m3surfaceVariant
+                borderWidth: 1
+                borderColor: Qt.rgba(0, 0, 0, 0.1)
                 
                 IconImage {
                     id: iconImg
