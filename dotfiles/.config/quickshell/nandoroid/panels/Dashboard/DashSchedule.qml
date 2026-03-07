@@ -143,8 +143,11 @@ Item {
         }
         save()
         selectedId = ""
-       // ── Layout ──
-    Row {
+        clearForm()
+    }
+
+    // ── Layout ──
+    RowLayout {
         id: schedRow
         anchors.fill: parent
         spacing: 12
@@ -152,8 +155,8 @@ Item {
         // ── Event List (fixed width) ──
         ColumnLayout {
             id: schedSidebar
-            width: 200
-            height: parent.height
+            Layout.preferredWidth: 200
+            Layout.fillHeight: true
             spacing: 8
 
             // New event button
@@ -269,7 +272,7 @@ Item {
         // ── Event Editor ──
         ColumnLayout {
             Layout.fillWidth: true
-            height: parent.height
+            Layout.fillHeight: true
             spacing: 12
 
             // Header
@@ -447,7 +450,6 @@ Item {
                     StyledText { text: root.selectedId ? "Update Event" : "Add Event"; font.weight: Font.Medium; color: Appearance.colors.colOnPrimary }
                 }
             }
-        }
         }
     }
 }
