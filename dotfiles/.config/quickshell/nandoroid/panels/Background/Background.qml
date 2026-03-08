@@ -54,15 +54,72 @@ Variants {
             }
         }
 
+        // Simplified polished cross-fade logic
+        property string currentPath: (Config.ready && Config.options.appearance?.background?.wallpaperPath) ? Config.options.appearance.background.wallpaperPath : ""
+        
+        onCurrentPathChanged: {
+            if (currentPath === "" || currentPath === undefined) return;
+            
+            if (wallpaper1.visible) {
+                wallpaper2.source = currentPath;
+                if (wallpaper2.status === Image.Ready) transAnim2.restart();
+                else {
+                    const conn = (status) => {
+                        if (wallpaper2.status === Image.Ready) {
+                            transAnim2.restart();
+                            wallpaper2.statusChanged.disconnect(conn);
+                        }
+                    }
+                    wallpaper2.statusChanged.connect(conn);
+                }
+            } else {
+                wallpaper1.source = currentPath;
+                if (wallpaper1.status === Image.Ready) transAnim1.restart();
+                else {
+                    const conn = (status) => {
+                        if (wallpaper1.status === Image.Ready) {
+                            transAnim1.restart();
+                            wallpaper1.statusChanged.disconnect(conn);
+                        }
+                    }
+                    wallpaper1.statusChanged.connect(conn);
+                }
+            }
+        }
+
+        // --- Wallpaper Layers ---
         Image {
-            id: wallpaper
+            id: wallpaper1
             anchors.fill: parent
-            source: (Config.ready && Config.options.appearance?.background?.wallpaperPath) 
-                ? Config.options.appearance.background.wallpaperPath 
-                : ""
+            source: root.currentPath
             fillMode: Image.PreserveAspectCrop
-            opacity: status === Image.Ready ? 1 : 0
-            Behavior on opacity { NumberAnimation { duration: 500 } }
+            visible: true
+            z: 1
+            opacity: 1
+        }
+
+        Image {
+            id: wallpaper2
+            anchors.fill: parent
+            fillMode: Image.PreserveAspectCrop
+            visible: false
+            z: 1
+            opacity: 0
+        }
+
+        // --- Polished Transitions ---
+        SequentialAnimation {
+            id: transAnim1
+            ScriptAction { script: { wallpaper1.visible = true; wallpaper1.z = 2; wallpaper2.z = 1; } }
+            NumberAnimation { target: wallpaper1; property: "opacity"; from: 0; to: 1; duration: 800; easing.type: Easing.InOutQuad }
+            ScriptAction { script: { wallpaper2.visible = false; wallpaper2.opacity = 0; } }
+        }
+
+        SequentialAnimation {
+            id: transAnim2
+            ScriptAction { script: { wallpaper2.visible = true; wallpaper2.z = 2; wallpaper1.z = 1; } }
+            NumberAnimation { target: wallpaper2; property: "opacity"; from: 0; to: 1; duration: 800; easing.type: Easing.InOutQuad }
+            ScriptAction { script: { wallpaper1.visible = false; wallpaper1.opacity = 0; } }
         }
 
         Rectangle {
