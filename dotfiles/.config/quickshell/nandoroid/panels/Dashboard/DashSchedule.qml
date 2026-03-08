@@ -14,32 +14,6 @@ import Quickshell.Io
 Item {
     id: root
 
-    property var events: []
-    readonly property string storagePath: Directories.home.replace("file://", "") + "/.cache/nandoroid/schedule.json"
-
-    function save() {
-        scheduleFile.setText(JSON.stringify(root.events, null, 2))
-    }
-
-    function deleteEvent(id) {
-        root.events = root.events.filter(e => e.id !== id)
-        save()
-        if (selectedId === id) { selectedId = ""; clearForm() }
-    }
-
-    FileView {
-        id: scheduleFile
-        path: root.storagePath
-        onLoaded: {
-            try {
-                let parsed = JSON.parse(scheduleFile.text())
-                if (Array.isArray(parsed)) root.events = parsed
-            } catch(e) {}
-        }
-    }
-
-    Component.onCompleted: scheduleFile.reload()
-
     // ── State ──
     property string selectedId: ""
     property string formTitle: ""
@@ -48,10 +22,16 @@ Item {
     property string formEndTime: "10:00"
     property string formRecurrence: "once" // once | daily | weekly | monthly
     property string formDescription: ""
+    property bool formFocus: false
 
     function clearForm() {
         formTitle = ""; formDate = Qt.formatDate(new Date(), "yyyy-MM-dd")
-        formTime = "09:00"; formEndTime = "10:00"; formRecurrence = "once"; formDescription = ""
+        formTime = "09:00"; formEndTime = "10:00"; formRecurrence = "once"; formDescription = ""; formFocus = false
+    }
+
+    function deleteEvent(id) {
+        ScheduleService.deleteEvent(id)
+        if (selectedId === id) { selectedId = ""; clearForm() }
     }
 
     // Auto-save debounce for existing events
@@ -62,15 +42,15 @@ Item {
         onTriggered: {
             if (!root.selectedId || !root.formTitle.trim()) return
             const descVal = root.formDescription.trim() ? root.formDescription.trim() : undefined
-            root.events = root.events.map(e => e.id === root.selectedId ? Object.assign({}, e, {
+            ScheduleService.updateEvent(root.selectedId, {
                 title: root.formTitle, 
                 date: root.formDate, 
                 time: root.formTime, 
                 endTime: root.formEndTime,
                 recurrence: root.formRecurrence, 
-                description: descVal 
-            }) : e)
-            root.save()
+                description: descVal,
+                focus: root.formFocus
+            })
         }
     }
 
@@ -78,14 +58,15 @@ Item {
         if (!formTitle.trim()) return
         const descVal = formDescription.trim() ? formDescription.trim() : undefined
         if (selectedId) {
-            root.events = root.events.map(e => e.id === selectedId ? Object.assign({}, e, { 
+            ScheduleService.updateEvent(selectedId, { 
                 title: formTitle, 
                 date: formDate, 
                 time: formTime, 
                 endTime: formEndTime,
                 recurrence: formRecurrence, 
-                description: descVal 
-            }) : e)
+                description: descVal,
+                focus: formFocus
+            })
         } else {
             const newEv = { 
                 id: Date.now().toString(36), 
@@ -95,11 +76,11 @@ Item {
                 endTime: formEndTime,
                 recurrence: formRecurrence, 
                 description: descVal, 
+                focus: formFocus,
                 lastFired: "" 
             }
-            root.events = root.events.concat([newEv])
+            ScheduleService.addEvent(newEv)
         }
-        root.save()
         selectedId = ""
         clearForm()
     }
@@ -143,7 +124,7 @@ Item {
                     anchors.fill: parent
                     anchors.margins: 6
                     spacing: 4
-                    model: root.events.slice().sort((a, b) =>
+                    model: ScheduleService.events.slice().sort((a, b) =>
                             (a.date + a.time).localeCompare(b.date + b.time))
 
                     delegate: Rectangle {
@@ -168,15 +149,27 @@ Item {
                             anchors.rightMargin: 36
                             spacing: 2
 
-                            StyledText {
-                                text: modelData.title
-                                font.pixelSize: Appearance.font.pixelSize.normal
-                                font.weight: Font.Medium
-                                color: root.selectedId === modelData.id
-                                    ? Appearance.colors.colOnPrimaryContainer
-                                    : Appearance.colors.colOnLayer1
-                                elide: Text.ElideRight
+                            RowLayout {
                                 Layout.fillWidth: true
+                                spacing: 4
+                                StyledText {
+                                    text: modelData.title
+                                    font.pixelSize: Appearance.font.pixelSize.normal
+                                    font.weight: Font.Medium
+                                    color: root.selectedId === modelData.id
+                                        ? Appearance.colors.colOnPrimaryContainer
+                                        : Appearance.colors.colOnLayer1
+                                    elide: Text.ElideRight
+                                    Layout.fillWidth: true
+                                }
+                                MaterialSymbol {
+                                    visible: modelData.focus || false
+                                    text: "do_not_disturb_on"
+                                    iconSize: 14
+                                    color: root.selectedId === modelData.id
+                                        ? Appearance.colors.colOnPrimaryContainer
+                                        : Appearance.colors.colPrimary
+                                }
                             }
                             StyledText {
                                 text: {
@@ -219,6 +212,7 @@ Item {
                                 root.formEndTime = modelData.endTime || ""
                                 root.formRecurrence = modelData.recurrence
                                 root.formDescription = modelData.description || ""
+                                root.formFocus = modelData.focus || false
                                 root.selectedId = modelData.id
                             }
                         }
@@ -235,12 +229,39 @@ Item {
             Layout.fillHeight: true
             spacing: 12
 
-            // Header
-            StyledText {
-                text: root.selectedId ? "Edit Event" : "New Event"
-                font.pixelSize: Appearance.font.pixelSize.large
-                font.weight: Font.Bold
-                color: Appearance.colors.colOnLayer1
+            // Header row with Focus toggle
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: 12
+                StyledText {
+                    text: root.selectedId ? "Edit Event" : "New Event"
+                    font.pixelSize: Appearance.font.pixelSize.large
+                    font.weight: Font.Bold
+                    color: Appearance.colors.colOnLayer1
+                    Layout.fillWidth: true
+                }
+
+                RowLayout {
+                    spacing: 8
+                    MaterialSymbol {
+                        text: "do_not_disturb_on"
+                        iconSize: 18
+                        color: root.formFocus ? Appearance.colors.colPrimary : Appearance.colors.colSubtext
+                    }
+                    StyledText {
+                        text: "Focus Mode"
+                        font.pixelSize: Appearance.font.pixelSize.small
+                        color: root.formFocus ? Appearance.colors.colOnLayer1 : Appearance.colors.colSubtext
+                    }
+                    AndroidToggle {
+                        checked: root.formFocus
+                        color: checked ? Appearance.colors.colPrimary : Appearance.m3colors.m3surfaceContainerHigh
+                        onToggled: {
+                            root.formFocus = !root.formFocus
+                            if (root.selectedId) autoSaveTimer.restart()
+                        }
+                    }
+                }
             }
 
             // Title field
