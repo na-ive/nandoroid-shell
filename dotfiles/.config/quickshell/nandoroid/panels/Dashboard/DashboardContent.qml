@@ -189,13 +189,6 @@ Item {
             MouseArea {
                 anchors.fill: parent
                 hoverEnabled: true
-                onWheel: (wheel) => {
-                    if (wheel.angleDelta.y > 0) {
-                        root.currentTab = (root.currentTab - 1 + root.tabCount) % root.tabCount
-                    } else if (wheel.angleDelta.y < 0) {
-                        root.currentTab = (root.currentTab + 1) % root.tabCount
-                    }
-                }
             }
 
             Row {
@@ -213,6 +206,18 @@ Item {
             id: tabStrip
             width: root.tabStripWidth
             height: parent.height
+
+            // Scroll to change tab - restricted to tabStrip area
+            MouseArea {
+                anchors.fill: parent
+                onWheel: (wheel) => {
+                    if (wheel.angleDelta.y > 0) {
+                        root.currentTab = (root.currentTab - 1 + root.tabCount) % root.tabCount
+                    } else if (wheel.angleDelta.y < 0) {
+                        root.currentTab = (root.currentTab + 1) % root.tabCount
+                    }
+                }
+            }
 
             // Y-offset where the button group starts (vertically centered)
             readonly property real buttonsTop: Math.round(
