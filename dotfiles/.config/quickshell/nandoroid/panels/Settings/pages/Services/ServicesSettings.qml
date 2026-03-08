@@ -22,6 +22,13 @@ Flickable {
     
     ScrollBar.vertical: StyledScrollBar {}
 
+    SequentialAnimation {
+        id: highlightAnim
+        property var target: null
+        NumberAnimation { target: highlightAnim.target; property: "opacity"; from: 1; to: 0.3; duration: 200 }
+        NumberAnimation { target: highlightAnim.target; property: "opacity"; from: 0.3; to: 1; duration: 400 }
+    }
+
     ColumnLayout {
         id: mainCol
         width: parent.width

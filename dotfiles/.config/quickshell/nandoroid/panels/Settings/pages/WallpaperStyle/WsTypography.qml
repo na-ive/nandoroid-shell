@@ -12,7 +12,11 @@ import Quickshell.Io
 ColumnLayout {
     Layout.fillWidth: true
     spacing: 0
-            // ── Typography Section ──
+
+    SearchHandler { searchString: "Typography" }
+
+    // ── Typography Section ──
+
     
             ColumnLayout {
                 Layout.fillWidth: true

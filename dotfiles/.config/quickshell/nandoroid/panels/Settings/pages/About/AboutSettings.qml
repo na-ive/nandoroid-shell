@@ -1,6 +1,7 @@
 import "../../../../core"
 import "../../../../services"
 import "../../../../widgets"
+import "../../../../core/functions" as Functions
 import "."
 import QtQuick
 import QtQuick.Layouts
@@ -16,15 +17,21 @@ Flickable {
     height: parent ? parent.height : 0
     contentHeight: mainCol.implicitHeight + 48
     clip: true
-    
+
     ScrollBar.vertical: StyledScrollBar {}
+
+    SequentialAnimation {
+        id: highlightAnim
+        property var target: null
+        NumberAnimation { target: highlightAnim.target; property: "opacity"; from: 1; to: 0.3; duration: 200 }
+        NumberAnimation { target: highlightAnim.target; property: "opacity"; from: 0.3; to: 1; duration: 400 }
+    }
 
     property string currentView: "main" // "main", "update", "dependency", or "credits"
 
     onCurrentViewChanged: {
         root.contentY = 0
     }
-
 
     onVisibleChanged: {
         if (!visible) root.currentView = "main"
@@ -52,59 +59,15 @@ Flickable {
         width: parent.width
         spacing: 32
 
-        // ── Header ──
-        ColumnLayout {
-            spacing: 4
-            Layout.fillWidth: true
-            
-            RowLayout {
-                spacing: 12
-                Layout.fillWidth: true
-
-                // Back Button (only in sub-pages)
-                RippleButton {
-                    visible: root.currentView !== "main"
-                    implicitWidth: 40
-                    implicitHeight: 40
-                    buttonRadius: 20
-                    colBackground: Appearance.colors.colLayer1
-                    onClicked: root.currentView = "main"
-                    contentItem: MaterialSymbol {
-                        anchors.centerIn: parent
-                        text: "arrow_back"
-                        iconSize: 24
-                        color: Appearance.colors.colOnLayer1
-                    }
-                }
-
-                StyledText {
-                    text: {
-                        if (root.currentView === "update") return "Shell Update"
-                        if (root.currentView === "dependency") return "Dependency Check"
-                        if (root.currentView === "credits") return "Special Thanks"
-                        return "About"
-                    }
-                    font.pixelSize: Appearance.font.pixelSize.huge
-                    font.weight: Font.Bold
-                    color: Appearance.colors.colOnLayer1
-                }
-            }
-
-            StyledText {
-                visible: root.currentView === "main"
-                text: "System information and project branding."
-                font.pixelSize: Appearance.font.pixelSize.normal
-                color: Appearance.colors.colSubtext
-            }
-        }
-
         // ── Main View ──
         AboutMainView {
             visible: root.currentView === "main"
             Layout.fillWidth: true
             version: versionData.version
-            onPushView: (viewName) => { root.currentView = viewName }
+            onPushView: (view) => root.currentView = view
         }
+
+        // ── Update Sub-page ──
         AboutUpdate {
             visible: root.currentView === "update"
             Layout.fillWidth: true
@@ -125,7 +88,4 @@ Flickable {
 
         Item { Layout.fillHeight: true }
     }
-
-    // ── Internal Components ──
-
 }

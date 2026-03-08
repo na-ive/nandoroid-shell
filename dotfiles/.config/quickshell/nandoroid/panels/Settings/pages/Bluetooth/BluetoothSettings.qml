@@ -18,7 +18,7 @@ Item {
     id: root
     
     property int stackLevel: 0 // 0: Main, 1: Pair Menu
-    
+
     function checkPairMode() {
         if (GlobalStates.settingsBluetoothPairMode) {
             root.stackLevel = 1;
@@ -46,6 +46,7 @@ Item {
     }
     
     ColumnLayout {
+        id: mainLayout
         anchors.fill: parent
         spacing: 24
         visible: stackLevel === 0

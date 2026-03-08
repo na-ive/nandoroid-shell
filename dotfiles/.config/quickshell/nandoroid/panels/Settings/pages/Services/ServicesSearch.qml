@@ -9,11 +9,14 @@ import Qt5Compat.GraphicalEffects
 import Quickshell
 
         ColumnLayout {
-                Layout.fillWidth: true
-                spacing: 4
-                Layout.topMargin: 16
+            Layout.fillWidth: true
+            spacing: 4
+            Layout.topMargin: 16
 
-                RowLayout {
+            SearchHandler { searchString: "Search Engine" }
+
+            RowLayout {
+
                     spacing: 12
                     Layout.bottomMargin: 8
                     MaterialSymbol {

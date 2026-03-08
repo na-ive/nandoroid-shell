@@ -12,6 +12,11 @@ import Quickshell
             Layout.fillWidth: true
             spacing: 4
             Layout.topMargin: 16
+            
+            SearchHandler { 
+                searchString: "Disk Monitoring"
+                aliases: ["Storage", "Disk Space", "Drives", "Usage"]
+            }
 
             RowLayout {
                 spacing: 12
@@ -210,4 +215,3 @@ import Quickshell
                 }
             }
         }
-

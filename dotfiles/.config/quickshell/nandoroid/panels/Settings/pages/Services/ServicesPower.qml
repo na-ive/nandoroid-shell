@@ -12,6 +12,8 @@ import Quickshell
             Layout.fillWidth: true
             spacing: 4
             Layout.topMargin: 16
+            
+            SearchHandler { searchString: "Power Management" }
 
             RowLayout {
                 spacing: 12

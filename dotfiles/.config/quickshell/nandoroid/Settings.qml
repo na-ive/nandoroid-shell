@@ -14,6 +14,34 @@ import Quickshell.Wayland
  */
 Scope {
     id: root
+    
+    property string pendingSearchQuery: ""
+    property var searchResults: []
+    property int currentResultIndex: 0
+    property string lastQuery: ""
+
+    function navigateToResult(index) {
+        if (searchResults.length === 0) return;
+        if (index < 0) index = searchResults.length - 1;
+        if (index >= searchResults.length) index = 0;
+        
+        currentResultIndex = index;
+        let result = searchResults[index];
+        
+        const targetPage = result.pageIndex;
+        const query = result.matchedString || lastQuery;
+        
+        console.log("[Settings] Navigating to result index:", index, "Page:", targetPage, "Query:", query);
+
+        if (GlobalStates.settingsPageIndex === targetPage) {
+            // Trigger search handler in the current page
+            SearchRegistry.currentSearch = ""; // Reset first
+            SearchRegistry.currentSearch = query;
+        } else {
+            root.pendingSearchQuery = query;
+            GlobalStates.settingsPageIndex = targetPage;
+        }
+    }
 
     FloatingWindow {
         id: settingsWindow
@@ -41,6 +69,8 @@ Scope {
                 if (!GlobalStates.settingsOpen) {
                     GlobalStates.settingsPageIndex = 0;
                     GlobalStates.settingsBluetoothPairMode = false;
+                    searchInput.text = ""; // Reset search text
+                    searchInput.hasNoResults = false;
                 }
             }
         }
@@ -123,13 +153,27 @@ Scope {
                                     onTextChanged: hasNoResults = false
                                     
                                     onAccepted: {
-                                        let best = SearchRegistry.getBestResult(text)
-                                        if (best) {
-                                            GlobalStates.settingsPageIndex = best.pageIndex
-                                            hasNoResults = false
-                                            searchInput.focus = false
+                                        const query = text.trim();
+                                        if (query === "") return;
+
+                                        if (query.toLowerCase() === root.lastQuery.toLowerCase() && root.searchResults.length > 0) {
+                                            // Jump to next result
+                                            root.navigateToResult(root.currentResultIndex + 1);
                                         } else {
-                                            hasNoResults = true
+                                            // New search - reset state
+                                            root.lastQuery = query;
+                                            let results = SearchRegistry.getResultsRanked(query);
+                                            
+                                            if (results && results.length > 0) {
+                                                root.searchResults = results;
+                                                root.currentResultIndex = 0;
+                                                root.navigateToResult(0);
+                                                hasNoResults = false;
+                                            } else {
+                                                root.searchResults = [];
+                                                root.currentResultIndex = 0;
+                                                hasNoResults = true;
+                                            }
                                         }
                                     }
 
@@ -140,6 +184,16 @@ Scope {
                                         color: searchInput.hasNoResults ? Appearance.m3colors.m3error : Appearance.colors.colSubtext
                                         anchors.verticalCenter: parent.verticalCenter
                                     }
+                                }
+
+                                // Search Indicator (X/Y)
+                                StyledText {
+                                    visible: root.searchResults.length > 0 && searchInput.text === root.lastQuery
+                                    text: (root.currentResultIndex + 1) + "/" + root.searchResults.length
+                                    font.pixelSize: Appearance.font.pixelSize.smaller
+                                    color: Appearance.colors.colPrimary
+                                    Layout.alignment: Qt.AlignVCenter
+                                    Layout.rightMargin: 16
                                 }
                             }
                         }
@@ -203,7 +257,21 @@ Scope {
                                 anchors.margins: 24
                                 Component.onCompleted: source = pages[root.currentIndex].component
                                 
-                                // Error handling
+                                onStatusChanged: {
+                                    if (status === Loader.Ready && root.pendingSearchQuery !== "") {
+                                        applyPendingSearch();
+                                    }
+                                }
+                                
+                                function applyPendingSearch() {
+                                    if (root.pendingSearchQuery !== "") {
+                                        SearchRegistry.currentSearch = "";
+                                        SearchRegistry.currentSearch = root.pendingSearchQuery;
+                                        root.pendingSearchQuery = "";
+                                    }
+                                }
+
+                                onLoaded: applyPendingSearch()
                                 TextEdit {
                                     visible: pageLoader.status === Loader.Error
                                     anchors.centerIn: parent

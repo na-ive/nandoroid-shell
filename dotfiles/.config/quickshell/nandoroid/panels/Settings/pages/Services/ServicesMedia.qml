@@ -12,6 +12,8 @@ import Quickshell
             Layout.fillWidth: true
             spacing: 4
             Layout.topMargin: 16
+            
+            SearchHandler { searchString: "Media Controls" }
 
             RowLayout {
                 spacing: 12

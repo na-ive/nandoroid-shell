@@ -13,7 +13,10 @@ import Quickshell
                 spacing: 4
                 Layout.topMargin: 16
 
+                SearchHandler { searchString: "System Data" }
+
                 RowLayout {
+
                     spacing: 12
                     Layout.bottomMargin: 8
                     MaterialSymbol {

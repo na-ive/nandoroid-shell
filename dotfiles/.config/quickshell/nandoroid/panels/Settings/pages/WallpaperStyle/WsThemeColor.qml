@@ -12,7 +12,14 @@ import Quickshell.Io
 ColumnLayout {
     Layout.fillWidth: true
     spacing: 0
-            // ── Theme Section ──
+
+    SearchHandler { 
+        searchString: "Theme Color"
+        aliases: ["Colors", "Matugen", "Material You", "Accent Color"]
+    }
+
+    // ── Theme Section ──
+
             Rectangle {
                 Layout.fillWidth: true
                 implicitHeight: themeToggleRow.implicitHeight + 36

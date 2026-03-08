@@ -11,6 +11,11 @@ import Quickshell
         ColumnLayout {
             Layout.fillWidth: true
             spacing: 4
+            
+            SearchHandler { 
+                searchString: "Weather"
+                aliases: ["Forecast", "Temperature", "Climate"]
+            }
 
             RowLayout {
                 spacing: 12

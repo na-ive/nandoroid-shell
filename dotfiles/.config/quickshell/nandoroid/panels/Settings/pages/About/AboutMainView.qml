@@ -118,6 +118,11 @@ ColumnLayout {
             ColumnLayout {
                 Layout.fillWidth: true
                 spacing: 4
+                
+                SearchHandler { 
+                    searchString: "System Information"
+                    aliases: ["OS", "Distro", "Kernel", "Hostname"]
+                }
 
                 RowLayout {
                     spacing: 12
@@ -151,6 +156,11 @@ ColumnLayout {
             ColumnLayout {
                 Layout.fillWidth: true
                 spacing: 4
+                
+                SearchHandler { 
+                    searchString: "Hardware"
+                    aliases: ["CPU", "GPU", "Memory", "RAM", "Specs"]
+                }
 
                 RowLayout {
                     spacing: 12

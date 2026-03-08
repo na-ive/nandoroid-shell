@@ -13,7 +13,7 @@ import QtQuick.Controls
  */
 Flickable {
     id: root
-    contentHeight: mainCol.implicitHeight
+    contentHeight: mainCol.implicitHeight + 48
     clip: true
 
     ColumnLayout {

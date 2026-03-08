@@ -10,9 +10,15 @@ import Quickshell.Io
 
 ColumnLayout {
     Layout.fillWidth: true
-    spacing: 4
+    spacing: 12
+
+    SearchHandler { 
+        searchString: "Wallpaper Auto-Cycle"
+        aliases: ["Auto Cycle", "Slideshow", "Wallpaper Timer"]
+    }
 
     // ── Helper for Folder Selection ──
+
     Process {
         id: folderPickerProc
         command: ["zenity", "--file-selection", "--directory", "--title=Select Wallpapers Directory"]

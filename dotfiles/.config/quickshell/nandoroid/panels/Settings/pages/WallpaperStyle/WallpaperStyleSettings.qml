@@ -17,8 +17,17 @@ Flickable {
     id: root
     width: parent ? parent.width : 0
     height: parent ? parent.height : 0
-    contentHeight: mainCol.implicitHeight
+    contentHeight: mainCol.implicitHeight + 48
     clip: true
+    
+    ScrollBar.vertical: StyledScrollBar {}
+
+    SequentialAnimation {
+        id: highlightAnim
+        property var target: null
+        NumberAnimation { target: highlightAnim.target; property: "opacity"; from: 1; to: 0.3; duration: 200 }
+        NumberAnimation { target: highlightAnim.target; property: "opacity"; from: 0.3; to: 1; duration: 400 }
+    }
 
     readonly property var matugenSchemes: [
         { id: "scheme-content",      name: "Content",      colors: [] },
