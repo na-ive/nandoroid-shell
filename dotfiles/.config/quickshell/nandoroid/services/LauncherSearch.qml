@@ -12,6 +12,20 @@ Singleton {
     property string query: ""
     property var clipboardHistory: []
     property var usageData: ({})
+    readonly property string clipboardThumbnailDir: "/tmp/nandoroid/clipboard"
+
+    onClipboardHistoryChanged: {
+        if (!clipboardHistory || clipboardHistory.length === 0) return;
+        Quickshell.execDetached(["mkdir", "-p", root.clipboardThumbnailDir]);
+        clipboardHistory.forEach(entry => {
+            if (entry.isImage) {
+                const thumbPath = root.clipboardThumbnailDir + "/" + entry.id + ".png";
+                // Check if already exists to avoid redundant decodes
+                const checkCmd = "test -f " + thumbPath + " || cliphist decode " + entry.id + " > " + thumbPath;
+                Quickshell.execDetached(["bash", "-c", checkCmd]);
+            }
+        });
+    }
 
     function closeAll() {
         GlobalStates.launcherOpen = false;
@@ -102,14 +116,23 @@ Singleton {
         stdout: StdioCollector {
             onStreamFinished: {
                 const lines = this.text.split("\n").filter(l => l.trim().length > 0);
-                root.clipboardHistory = lines.slice(0, 50); // Limit to 50 entries
+                const newHistory = lines.slice(0, 50).map(line => {
+                    const id = line.split("\t")[0];
+                    const isImage = line.includes("[[ binary data");
+                    return { id: id, raw: line, isImage: isImage };
+                });
+                
+                // Only update if something actually changed to avoid model re-renders/scroll jumping
+                if (JSON.stringify(newHistory) !== JSON.stringify(root.clipboardHistory)) {
+                    root.clipboardHistory = newHistory;
+                }
             }
         }
     }
 
     Timer {
         id: cliphistTimer
-        interval: 1000
+        interval: 2500 // Increased interval
         running: GlobalStates.launcherOpen || GlobalStates.spotlightOpen
         repeat: true
         onTriggered: cliphistProc.running = true
@@ -260,8 +283,16 @@ Singleton {
     }
 
     readonly property var results: {
-        _triggerVal
         const strippedQuery = query.trim();
+        const isClipboard = strippedQuery.startsWith(Config.options.search.clipboardPrefix);
+        
+        // Only trigger full update on clipboard change if we are actually viewing clipboard
+        if (isClipboard) {
+            clipboardHistory; 
+        }
+        
+        _triggerVal
+        
         if (strippedQuery === "") return allApps;
 
         const results = [];
@@ -325,16 +356,21 @@ Singleton {
         // 4. Clipboard Plugin (Prefix: ;)
         if (strippedQuery.startsWith(Config.options.search.clipboardPrefix)) {
             const clipQuery = strippedQuery.slice(Config.options.search.clipboardPrefix.length).toLowerCase().trim();
-            for (const entry of clipboardHistory) {
+            for (const entryObj of clipboardHistory) {
+                const entry = entryObj.raw;
                 if (entry.toLowerCase().includes(clipQuery) || clipQuery === "") {
                     const cleanName = entry.replace(/^\d+\t/, "").trim();
+                    const thumbPath = entryObj.isImage ? (root.clipboardThumbnailDir + "/" + entryObj.id + ".png") : "";
+                    
                     results.push({
-                        name: "Clipboard Entry",
+                        name: entryObj.isImage ? "Clipboard Image" : "Clipboard Entry",
                         subtitle: cleanName,
                         rawValue: entry,
-                        id: "clip-" + entry.split("\t")[0],
-                        icon: "content_paste",
+                        id: "clip-" + entryObj.id,
+                        icon: entryObj.isImage ? "image" : "content_paste",
                         isPlugin: true,
+                        isImage: entryObj.isImage,
+                        imagePath: thumbPath,
                         category: "Command",
                         emoji: "",
                         execute: () => {

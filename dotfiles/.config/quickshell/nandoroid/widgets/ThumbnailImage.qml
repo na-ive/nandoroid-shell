@@ -1,6 +1,7 @@
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import Qt5Compat.GraphicalEffects
 import "../core"
 import "../core/functions"
 
@@ -15,6 +16,7 @@ Item {
     property bool generateThumbnail: true
     required property string sourcePath
     property int fillMode: Image.PreserveAspectCrop
+    property real radius: 10
     
     // Robust path encoding for filenames with spaces/quotes/etc.
     readonly property string encodedSourcePath: {
@@ -46,6 +48,15 @@ Item {
         opacity: status === Image.Ready ? 1 : 0
         Behavior on opacity { NumberAnimation { duration: 250 } }
         
+        layer.enabled: root.radius > 0
+        layer.effect: OpacityMask {
+            maskSource: Rectangle {
+                width: img.width
+                height: img.height
+                radius: root.radius
+            }
+        }
+
         // Error handling fallback
         onStatusChanged: {
             if (status === Image.Error) {
