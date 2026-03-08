@@ -101,6 +101,9 @@ Singleton {
                     property string matugenCustomColor: "#3F51B5"
                     property string matugenThemeFile: ""
                     property string matugenSource: "desktop"
+                    property bool autoCycleEnabled: false
+                    property string autoCycleDirectory: Directories.home + "/Pictures/Wallpapers"
+                    property int autoCycleInterval: 30 // in minutes
                 }
                 property JsonObject screenCorners: JsonObject {
                     // mode: 0 (Off), 1 (On, hide on fullscreen), 2 (Always On)

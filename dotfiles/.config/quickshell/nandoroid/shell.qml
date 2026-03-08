@@ -33,6 +33,7 @@ ShellRoot {
 
     Component.onCompleted: {
         MaterialThemeLoader.reapplyTheme()
+        Wallpapers.syncSettings() // Ensure Wallpapers service is active and synced
         if (Caffeine.active) console.log("Caffeine active on startup")
         startupUpdateCheckProc.running = true
     }

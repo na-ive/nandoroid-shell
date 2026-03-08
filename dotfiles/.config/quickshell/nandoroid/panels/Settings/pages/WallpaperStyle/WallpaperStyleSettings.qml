@@ -228,17 +228,17 @@ Flickable {
             }
         }
 
-        // ── Same Wallpaper Toggle ──
-        Rectangle {
+        // ── Wallpaper Style Options ──
+        SegmentedWrapper {
             Layout.fillWidth: true
-            implicitHeight: sameToggleRow.implicitHeight + 36
-            radius: 20
+            implicitHeight: syncToggleRow.implicitHeight + 40
+            orientation: Qt.Vertical
+            maxRadius: 20
             color: Appearance.m3colors.m3surfaceContainerHigh
-
+            
             RowLayout {
-                id: sameToggleRow
-                anchors.fill: parent
-                anchors.margins: 20
+                id: syncToggleRow
+                anchors.fill: parent; anchors.margins: 20
                 spacing: 20
 
                 MaterialSymbol {
@@ -269,6 +269,9 @@ Flickable {
                 }
             }
         }
+        
+        // ── Wallpaper Auto-Cycle ──
+        WsWallpaperCycle { Layout.fillWidth: true }
 
         // ── Wallpaper Previews ──
         RowLayout {
@@ -301,13 +304,13 @@ Flickable {
                             ? Config.options.lock.wallpaperPath
                             : (Config.options.appearance && Config.options.appearance.background ? Config.options.appearance.background.wallpaperPath : ""))
                         : ""
-                    showCheckmark: syncToggle.checked
-                    clickable: !syncToggle.checked
-                    onClicked: {
-                        console.log("Settings: Opening Wallpaper Selector for Lockscreen");
-                        GlobalStates.wallpaperSelectorTarget = "lock";
-                        GlobalStates.wallpaperSelectorOpen = true;
-                    }
+                     showCheckmark: Config.ready && (Config.options.lock ? !Config.options.lock.useSeparateWallpaper : false)
+                     clickable: Config.ready && (Config.options.lock ? Config.options.lock.useSeparateWallpaper : true)
+                     onClicked: {
+                         console.log("Settings: Opening Wallpaper Selector for Lockscreen");
+                         GlobalStates.wallpaperSelectorTarget = "lock";
+                         GlobalStates.wallpaperSelectorOpen = true;
+                     }
                 }
         }
 

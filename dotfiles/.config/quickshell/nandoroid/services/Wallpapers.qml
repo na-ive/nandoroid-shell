@@ -211,22 +211,129 @@ Singleton {
         Config.options.lock.wallpaperPath = "file://" + cleanPath
     }
 
+    // --- Local state for better reactivity ---
+    property bool _autoCycleEnabled: false
+    property string _autoCycleDirectory: ""
+    property int _autoCycleInterval: 30
+
+    // Explicit setters for the UI to call directly
+    function setAutoCycle(enabled) {
+        if (!Config.ready) return;
+        Config.options.appearance.background.autoCycleEnabled = enabled;
+        _autoCycleEnabled = enabled;
+        console.log("[Wallpapers] setAutoCycle called:", enabled);
+        if (enabled) {
+            autoCycleStartTimer.restart();
+        } else {
+            root.autoCyclePending = false;
+        }
+    }
+
+    function setAutoCycleDirectory(dir) {
+        if (!Config.ready) return;
+        Config.options.appearance.background.autoCycleDirectory = dir;
+        _autoCycleDirectory = dir;
+        console.log("[Wallpapers] setAutoCycleDirectory called:", dir);
+    }
+
+    function setAutoCycleInterval(interval) {
+        if (!Config.ready) return;
+        Config.options.appearance.background.autoCycleInterval = interval;
+        _autoCycleInterval = interval;
+        console.log("[Wallpapers] setAutoCycleInterval called:", interval);
+    }
+
+    function syncSettings() {
+        if (!Config.ready) return;
+        const bg = Config.options.appearance.background;
+        _autoCycleEnabled = bg.autoCycleEnabled;
+        _autoCycleDirectory = bg.autoCycleDirectory || "";
+        _autoCycleInterval = bg.autoCycleInterval || 30;
+        
+        console.log("[Wallpapers] Settings synced - Enabled:", _autoCycleEnabled, "Dir:", _autoCycleDirectory);
+        
+        if (_autoCycleEnabled) {
+            // Kickstart the cycle on startup or reload
+            autoCycleStartTimer.restart();
+        }
+    }
+
+    Connections {
+        target: Config
+        function onReadyChanged() {
+            if (Config.ready) {
+                console.log("[Wallpapers] Config ready, syncing...");
+                root.syncSettings();
+            }
+        }
+    }
+
     // Model for grid view
     property alias folderModel: model
     FolderListModel {
         id: model
-        folder: root.directory
+        folder: {
+            if (!root._autoCycleEnabled || root._autoCycleDirectory === "") return root.directory;
+            let dir = root._autoCycleDirectory;
+            if (!dir.startsWith("file://")) dir = "file://" + dir;
+            return dir;
+        }
+        onFolderChanged: {
+            console.log("[Wallpapers] Model folder changed to:", folder);
+            if (root._autoCycleEnabled) {
+                root.autoCyclePending = true;
+                // If the folder changed, we might need to re-trigger the cycle
+                autoCycleStartTimer.restart();
+            }
+        }
         nameFilters: {
             if (root.searchQuery === "") return root.imagePatterns;
-            const query = root.searchQuery.toLowerCase();
-            return root.imagePatterns.map(p => `*${query}*${p.substring(1)}`);
+            return [`*${root.searchQuery}*`, ...root.imagePatterns];
         }
         showDirs: false
         showDotAndDotDot: false
         sortField: FolderListModel.Name
+        onCountChanged: {
+            console.log("[Wallpapers] Folder count changed:", count);
+            if (count > 0 && root._autoCycleEnabled && root.autoCyclePending) {
+                console.log("[Wallpapers] Resolving pending cycle with newly loaded images");
+                root.autoCyclePending = false;
+                root.nextWallpaper();
+            }
+        }
     }
+
+    property bool autoCyclePending: false
+
+    Timer {
+        id: autoCycleStartTimer
+        interval: 1000 // Give it a bit more time on startup
+        repeat: false
+        onTriggered: {
+            if (!root._autoCycleEnabled) return;
+            
+            if (model.count > 0) {
+                console.log("[Wallpapers] Start timer triggered, count > 0, cycling...");
+                root.nextWallpaper();
+            } else {
+                console.log("[Wallpapers] Start timer triggered but model count is 0, setting pending.");
+                root.autoCyclePending = true;
+            }
+        }
+    }
+
+    Component.onCompleted: {
+        if (Config.ready) {
+            console.log("[Wallpapers] Singleton completed and config ready, syncing...");
+            root.syncSettings();
+        }
+    }
+
     Connections {
-        target: Config.ready ? Config.options.appearance.background : null
+        // Matugen doesn't suffer as much because it's usually called by other UI interactions
+        // but we'll leave it as is or handle it similarly if needed
+        target: (Config.ready && Config.options.appearance) ? Config.options.appearance.background : null
+        ignoreUnknownSignals: true
         function onMatugenChanged() {
             if (!Config.ready) return;
             if (Config.options.appearance.background.matugen) {
@@ -236,11 +343,50 @@ Singleton {
                 if (theme && theme !== "") {
                     root.applyTheme(theme);
                 } else {
-                    // If no basic theme selected, we don't force one yet, 
-                    // or we could apply a default. Let's apply a default to avoid "limbo".
                     root.applyTheme("mocha.json");
                 }
             }
         }
+    }
+
+    // --- Wallpaper Auto-Cycle ---
+    Timer {
+        id: autoCycleTimer
+        interval: Math.max(1, root._autoCycleInterval) * 60 * 1000
+        running: root._autoCycleEnabled
+        repeat: true
+        onTriggered: {
+            console.log("[Wallpapers] Interval reached, cycling...");
+            root.nextWallpaper();
+        }
+    }
+
+    function nextWallpaper() {
+        if (!Config.ready) return;
+        if (!root._autoCycleEnabled) return;
+
+        const count = model.count;
+        if (count <= 0) {
+            console.log("[Wallpapers] No wallpapers available in", model.folder);
+            root.autoCyclePending = true;
+            return;
+        }
+
+        let index = Math.floor(Math.random() * count);
+        let newPath = model.get(index, "fileUrl");
+
+        if (!newPath) {
+            root.autoCyclePending = true;
+            return;
+        }
+
+        console.log("[Wallpapers] Cycling to:", newPath);
+
+        if (newPath.toString() === Config.options.appearance.background.wallpaperPath.toString() && count > 1) {
+            index = (index + 1) % count;
+            newPath = model.get(index, "fileUrl");
+        }
+
+        root.select(newPath);
     }
 }
