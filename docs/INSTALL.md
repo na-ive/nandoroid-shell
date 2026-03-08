@@ -132,4 +132,5 @@ The `all` mode uses `cp -r` to overlay new files and will **not** delete your ex
 | No file picker popup             | Ensure `xdg-desktop-portal-gtk` is running                           |
 | No screen share dialog           | Ensure `xdg-desktop-portal-hyprland` is running                      |
 | Terminal colors not applying     | Check that `python3` is installed                                    |
+| Terminal context menu not opening| Ensure `kitty` is installed (default terminal used in context menu)  |
 | Shell won't start                | Run `quickshell -c nandoroid` from terminal and check errors         |

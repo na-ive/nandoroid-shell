@@ -151,4 +151,5 @@ Neither mode deletes or overwrites your Hyprland keybinds, fish functions, kitty
 | Screen share shows no dialog | Missing Hyprland portal | Install and enable `xdg-desktop-portal-hyprland`  |
 | Old KDE panel showing up     | Plasma still running    | Remove `plasmashell` from autostart               |
 | GTK apps look unstyled       | No GTK theme applied    | Matugen auto-generates GTK CSS, or use `nwg-look` |
+| Terminal context menu not opening| Required terminal missing| Ensure `kitty` is installed (default terminal)    |
 | Icons missing in shell       | Font not installed      | Install `ttf-material-symbols-variable-git`       |

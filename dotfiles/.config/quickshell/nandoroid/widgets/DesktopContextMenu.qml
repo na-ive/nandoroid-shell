@@ -1,0 +1,203 @@
+import QtQuick
+import QtQuick.Layouts
+import QtQuick.Controls
+import Quickshell
+import Quickshell.Io
+import Quickshell.Wayland
+import Quickshell.Hyprland
+import "../core"
+import "../services"
+
+/**
+ * DesktopContextMenu.qml
+ * A modern, premium right-click menu for the desktop.
+ */
+PopupWindow {
+    id: root
+    visible: false
+    
+    property bool isClockMenu: false
+    
+    color: "transparent"
+    
+    // Width and height based on content
+    implicitWidth: menuContainer.implicitWidth
+    implicitHeight: menuContainer.implicitHeight
+
+    Rectangle {
+        id: menuContainer
+        anchors.fill: parent
+        implicitWidth: Appearance.sizes.contextMenuWidth
+        implicitHeight: menuLayout.implicitHeight + 12
+        
+        radius: Appearance.rounding.normal
+        color: Appearance.colors.colLayer0
+        border.color: Appearance.colors.colOutlineVariant
+        border.width: 1
+        
+        // Glassmorphism effect
+        opacity: 0.98
+
+        ColumnLayout {
+            id: menuLayout
+            anchors.fill: parent
+            anchors.margins: 6
+            spacing: 2
+
+            // --- Clock Specific Items ---
+            MenuItem {
+                visible: root.isClockMenu
+                menuText: Config.options.appearance.clock.locked ? "Unlock Clock Position" : "Lock Clock Position"
+                menuIcon: Config.options.appearance.clock.locked ? "lock_open" : "lock"
+                onClicked: {
+                    Config.options.appearance.clock.locked = !Config.options.appearance.clock.locked
+                    root.visible = false
+                }
+            }
+
+            MenuItem {
+                visible: root.isClockMenu
+                menuText: "Clock Settings"
+                menuIcon: "schedule"
+                onClicked: {
+                    GlobalStates.settingsPageIndex = 4 // Wallpaper & Style
+                    GlobalStates.settingsOpen = true
+                    root.visible = false
+                }
+            }
+
+            // --- General Desktop Items ---
+            MenuItem {
+                visible: !root.isClockMenu
+                menuText: "Search (Spotlight)"
+                menuIcon: "search"
+                onClicked: {
+                    GlobalStates.spotlightOpen = true
+                    root.visible = false
+                }
+            }
+
+            MenuItem {
+                visible: !root.isClockMenu
+                menuText: "Overview"
+                menuIcon: "grid_view"
+                onClicked: {
+                    GlobalStates.overviewOpen = true
+                    root.visible = false
+                }
+            }
+
+            MenuItem {
+                visible: !root.isClockMenu
+                menuText: "Wallpaper & Styles"
+                menuIcon: "palette"
+                onClicked: {
+                    GlobalStates.settingsPageIndex = 4 // Wallpaper & Style
+                    GlobalStates.settingsOpen = true
+                    root.visible = false
+                }
+            }
+            
+            MenuItem {
+                visible: !root.isClockMenu
+                menuText: "Dashboard"
+                menuIcon: "dashboard"
+                onClicked: {
+                    GlobalStates.dashboardOpen = true
+                    root.visible = false
+                }
+            }
+
+            // Separator
+            Rectangle {
+                visible: !root.isClockMenu
+                Layout.fillWidth: true
+                Layout.preferredHeight: 1
+                Layout.leftMargin: 12
+                Layout.rightMargin: 12
+                color: Appearance.colors.colOutlineVariant
+                opacity: 0.3
+            }
+
+            MenuItem {
+                visible: !root.isClockMenu
+                menuText: "System Monitor"
+                menuIcon: "monitoring"
+                onClicked: {
+                    GlobalStates.systemMonitorOpen = true
+                    root.visible = false
+                }
+            }
+            
+            MenuItem {
+                visible: !root.isClockMenu
+                menuText: "Terminal"
+                menuIcon: "terminal"
+                onClicked: {
+                    terminalProcess.running = true
+                    root.visible = false
+                }
+            }
+
+            MenuItem {
+                visible: !root.isClockMenu
+                menuText: "Lock Screen"
+                menuIcon: "lock"
+                onClicked: {
+                    GlobalStates.screenLocked = true
+                    root.visible = false
+                }
+            }
+        }
+    }
+
+    Process {
+        id: terminalProcess
+        command: ["kitty"]
+    }
+
+    // Helper component for menu items
+    component MenuItem : RippleButton {
+        id: itemRoot
+        property string menuText: ""
+        property string menuIcon: ""
+        
+        Layout.fillWidth: true
+        Layout.preferredHeight: Appearance.sizes.contextMenuItemHeight
+        
+        buttonRadius: Appearance.rounding.small
+        colBackground: "transparent"
+        
+        contentItem: RowLayout {
+            anchors.fill: parent
+            anchors.leftMargin: 12
+            anchors.rightMargin: 12
+            spacing: 12
+            
+            MaterialSymbol {
+                text: itemRoot.menuIcon
+                iconSize: Appearance.sizes.iconSize * 0.9
+                color: Appearance.colors.colOnLayer0
+            }
+            
+            StyledText {
+                text: itemRoot.menuText
+                font.pixelSize: Appearance.font.pixelSize.small
+                color: Appearance.colors.colOnLayer0
+                Layout.fillWidth: true
+            }
+        }
+    }
+
+    signal menuClosed()
+    onVisibleChanged: {
+        if (!visible) menuClosed();
+    }
+
+    HyprlandFocusGrab {
+        id: focusGrab
+        active: root.visible
+        windows: [root]
+        onCleared: root.visible = false
+    }
+}

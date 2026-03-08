@@ -6,6 +6,8 @@ Item {
     id: root
 
     property bool isLockscreen: false
+    property bool interactive: true
+    signal requestContextMenu(real x, real y, bool isClock)
 
     property string style: {
         if (!Config.ready) return "digital"
@@ -17,8 +19,8 @@ Item {
 
     property color color: Appearance.m3colors.m3onSurface
 
-    implicitWidth: loader.item ? loader.item.implicitWidth : 200
-    implicitHeight: loader.item ? loader.item.implicitHeight : 80
+    implicitWidth: loader.item ? loader.item.implicitWidth : 0
+    implicitHeight: loader.item ? loader.item.implicitHeight : 0
 
     width: implicitWidth
     height: implicitHeight
@@ -68,41 +70,68 @@ Item {
     // Drag area - highest z, blocks background swipe
     MouseArea {
         id: dragArea
-        anchors.fill: parent
+        width: loader.item ? loader.item.implicitWidth : root.implicitWidth
+        height: loader.item ? loader.item.implicitHeight : root.implicitHeight
+        anchors.centerIn: parent
         enabled: !root.isLockscreen
         z: 100
-        cursorShape: Qt.SizeAllCursor
+        cursorShape: (root.interactive && Config.ready && !Config.options.appearance.clock.locked) ? Qt.SizeAllCursor : Qt.ArrowCursor
         hoverEnabled: true
-        propagateComposedEvents: false
         preventStealing: true
+        acceptedButtons: Qt.LeftButton | Qt.RightButton
 
-        property real dragStartX: 0
-        property real dragStartY: 0
-        property real initialOffsetX: 0
-        property real initialOffsetY: 0
+        property real startWinX: 0
+        property real startWinY: 0
+        property real startOffsetX: 0
+        property real startOffsetY: 0
         property bool dragging: false
 
         onPressed: (mouse) => {
-            dragStartX = mouse.x + root.x
-            dragStartY = mouse.y + root.y
-            initialOffsetX = Config.options.appearance.clock.offsetX
-            initialOffsetY = Config.options.appearance.clock.offsetY
-            dragging = true
-            mouse.accepted = true
+            if (mouse.button === Qt.RightButton) {
+                const winPos = dragArea.mapToItem(null, mouse.x, mouse.y);
+                root.requestContextMenu(winPos.x, winPos.y, true);
+                mouse.accepted = true;
+                return;
+            }
+
+            if (!root.interactive) {
+                mouse.accepted = false;
+                return;
+            }
+
+            if (Config.ready && Config.options.appearance.clock.locked) {
+                mouse.accepted = false;
+                return;
+            }
+
+            if (mouse.button === Qt.LeftButton) {
+                const winPos = dragArea.mapToItem(null, mouse.x, mouse.y);
+                startWinX = winPos.x;
+                startWinY = winPos.y;
+                startOffsetX = Config.options.appearance.clock.offsetX;
+                startOffsetY = Config.options.appearance.clock.offsetY;
+                dragging = true;
+                mouse.accepted = true;
+            }
         }
 
         onPositionChanged: (mouse) => {
-            if (!dragging) return
-            let newX = mouse.x + root.x
-            let newY = mouse.y + root.y
-            let dx = newX - dragStartX
-            let dy = newY - dragStartY
-            Config.options.appearance.clock.offsetX = Math.round(initialOffsetX + dx)
-            Config.options.appearance.clock.offsetY = Math.round(initialOffsetY + dy)
+            if (!dragging) return;
+            
+            const winPos = dragArea.mapToItem(null, mouse.x, mouse.y);
+            let dx = winPos.x - startWinX;
+            let dy = winPos.y - startWinY;
+            
+            Config.options.appearance.clock.offsetX = Math.round(startOffsetX + dx);
+            Config.options.appearance.clock.offsetY = Math.round(startOffsetY + dy);
         }
 
-        onReleased: {
-            dragging = false
+        onReleased: (mouse) => {
+            dragging = false;
+        }
+
+        onCanceled: {
+            dragging = false;
         }
     }
 

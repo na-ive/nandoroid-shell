@@ -38,6 +38,22 @@ Variants {
         color: Appearance.colors.colLayer0
 
 
+        // Desktop status tracking
+        readonly property bool isDesktopEmpty: {
+            if (!Config.ready || GlobalStates.screenLocked || GlobalStates.launcherOpen) return false;
+            let currentWsId = HyprlandData.activeWorkspace ? HyprlandData.activeWorkspace.id : -1;
+            let windowsOnWs = HyprlandData.hyprlandClientsForWorkspace(currentWsId);
+            return windowsOnWs.length === 0;
+        }
+
+        // Auto-dismiss on workspace change
+        Connections {
+            target: HyprlandData
+            function onActiveWorkspaceChanged() {
+                desktopContextMenu.visible = false;
+            }
+        }
+
         Image {
             id: wallpaper
             anchors.fill: parent
@@ -63,18 +79,31 @@ Variants {
             anchors.fill: parent
             hoverEnabled: true
             z: 0
+            acceptedButtons: Qt.LeftButton | Qt.RightButton
 
             property int startY: 0
             property bool isDragging: false
 
             onPressed: (mouse) => {
-                let currentWsId = HyprlandData.activeWorkspace ? HyprlandData.activeWorkspace.id : -1;
-                let windowsOnWs = HyprlandData.hyprlandClientsForWorkspace(currentWsId);
-
-                if (windowsOnWs.length === 0 && !GlobalStates.launcherOpen && !GlobalStates.screenLocked) {
-                    startY = mouse.y;
-                    isDragging = true;
+                if (mouse.button === Qt.RightButton && bgRoot.isDesktopEmpty) {
+                    desktopContextMenu.isClockMenu = false;
+                    desktopContextMenu.anchor.window = bgRoot;
+                    desktopContextMenu.anchor.rect = Qt.rect(mouse.x, mouse.y, 0, 0);
+                    // Repositioning: setting same rect might not trigger move if already visible
+                    // but Quickshell popups usually follow strictly. 
+                    // To be safe, we could toggle, but user says it's not responsive.
+                    // Let's just update and let it move.
+                    desktopContextMenu.visible = true;
+                    mouse.accepted = true;
+                    return;
                 }
+
+                if (mouse.button === Qt.LeftButton) {
+                    desktopContextMenu.visible = false;
+                }
+
+                startY = mouse.y;
+                isDragging = true;
             }
 
             onPositionChanged: (mouse) => {
@@ -95,8 +124,22 @@ Variants {
         // Clock is placed directly in PanelWindow, ABOVE gestureArea (z: 10)
         NandoClock {
             z: 10
+            isLockscreen: false
+            interactive: true // Always interactive for clock menu
             opacity: (!GlobalStates.screenLocked && visible) ? 1 : 0
             Behavior on opacity { NumberAnimation { duration: 300 } }
+            onRequestContextMenu: (x, y, isClock) => {
+                desktopContextMenu.isClockMenu = isClock;
+                desktopContextMenu.anchor.window = bgRoot;
+                desktopContextMenu.anchor.rect = Qt.rect(x, y, 0, 0);
+                desktopContextMenu.visible = true;
+            }
+        }
+
+        DesktopContextMenu {
+            id: desktopContextMenu
+            visible: false
+            anchor.edges: Edges.Top | Edges.Left
         }
     }
 }

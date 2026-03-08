@@ -17,7 +17,7 @@ Scope {
 
     PanelWindow {
         id: panelWindow
-        visible: true 
+        visible: GlobalStates.notificationCenterOpen || contentLoader.opacity > 0
         
         exclusiveZone: GlobalStates.notificationCenterOpen && contentLoader.item ? contentLoader.item.implicitWidth : 0
         WlrLayershell.namespace: "nandoroid:notificationCenter"
