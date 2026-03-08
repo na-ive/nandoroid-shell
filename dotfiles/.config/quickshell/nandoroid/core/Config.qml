@@ -328,6 +328,7 @@ Singleton {
                 property string filePrefix: "?"
                 property string commandPrefix: ">"
                 property string iconShape: "Square"
+                property bool enableGrouping: false
             }
 
             // --- Lock ---
