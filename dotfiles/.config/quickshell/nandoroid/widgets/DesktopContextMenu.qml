@@ -36,7 +36,22 @@ PopupWindow {
         border.width: 1
         
         // Glassmorphism effect
-        opacity: 0.98
+        opacity: 0
+        scale: 0.95
+
+        Behavior on opacity {
+            NumberAnimation {
+                duration: root.isClosing ? Appearance.animation.elementMoveExit.duration : Appearance.animation.elementMoveEnter.duration
+                easing.bezierCurve: root.isClosing ? Appearance.animationCurves.emphasizedAccel : Appearance.animationCurves.expressiveDefaultSpatial
+            }
+        }
+        
+        Behavior on scale {
+            NumberAnimation {
+                duration: root.isClosing ? Appearance.animation.elementMoveExit.duration : Appearance.animation.elementMoveEnter.duration
+                easing.bezierCurve: root.isClosing ? Appearance.animationCurves.emphasizedAccel : Appearance.animationCurves.expressiveDefaultSpatial
+            }
+        }
 
         ColumnLayout {
             id: menuLayout
@@ -51,7 +66,7 @@ PopupWindow {
                 menuIcon: Config.options.appearance.clock.locked ? "lock_open" : "lock"
                 onClicked: {
                     Config.options.appearance.clock.locked = !Config.options.appearance.clock.locked
-                    root.visible = false
+                    root.close()
                 }
             }
 
@@ -62,7 +77,7 @@ PopupWindow {
                 onClicked: {
                     GlobalStates.settingsPageIndex = 4 // Wallpaper & Style
                     GlobalStates.settingsOpen = true
-                    root.visible = false
+                    root.close()
                 }
             }
 
@@ -73,7 +88,7 @@ PopupWindow {
                 menuIcon: "search"
                 onClicked: {
                     GlobalStates.spotlightOpen = true
-                    root.visible = false
+                    root.close()
                 }
             }
 
@@ -83,7 +98,7 @@ PopupWindow {
                 menuIcon: "grid_view"
                 onClicked: {
                     GlobalStates.overviewOpen = true
-                    root.visible = false
+                    root.close()
                 }
             }
 
@@ -94,7 +109,7 @@ PopupWindow {
                 onClicked: {
                     GlobalStates.settingsPageIndex = 4 // Wallpaper & Style
                     GlobalStates.settingsOpen = true
-                    root.visible = false
+                    root.close()
                 }
             }
             
@@ -104,7 +119,7 @@ PopupWindow {
                 menuIcon: "dashboard"
                 onClicked: {
                     GlobalStates.dashboardOpen = true
-                    root.visible = false
+                    root.close()
                 }
             }
 
@@ -125,7 +140,7 @@ PopupWindow {
                 menuIcon: "monitoring"
                 onClicked: {
                     GlobalStates.systemMonitorOpen = true
-                    root.visible = false
+                    root.close()
                 }
             }
             
@@ -135,7 +150,7 @@ PopupWindow {
                 menuIcon: "terminal"
                 onClicked: {
                     terminalProcess.running = true
-                    root.visible = false
+                    root.close()
                 }
             }
 
@@ -145,7 +160,7 @@ PopupWindow {
                 menuIcon: "lock"
                 onClicked: {
                     GlobalStates.screenLocked = true
-                    root.visible = false
+                    root.close() // Use animated close
                 }
             }
         }
@@ -189,15 +204,52 @@ PopupWindow {
         }
     }
 
+    // Animation state
+    property bool isClosing: false
+
+    Timer {
+        id: hideTimer
+        interval: Appearance.animation.elementMoveExit.duration
+        onTriggered: {
+            root.visible = false;
+            root.isClosing = false;
+        }
+    }
+
+    function openAt(x, y, isClock) {
+        hideTimer.stop();
+        isClosing = false;
+        isClockMenu = isClock;
+        root.anchor.rect = Qt.rect(x, y, 0, 0);
+        root.visible = true;
+        // Use callLater to ensure properties are applied after visible = true
+        Qt.callLater(() => {
+            menuContainer.opacity = 0.98; // Adjusted from 1 to keep slight glass effect
+            menuContainer.scale = 1;
+        });
+    }
+
+    function close() {
+        if (!visible || isClosing) return;
+        isClosing = true;
+        menuContainer.opacity = 0;
+        menuContainer.scale = 0.95;
+        hideTimer.start();
+    }
+
     signal menuClosed()
     onVisibleChanged: {
-        if (!visible) menuClosed();
+        if (!visible) {
+            menuContainer.opacity = 0;
+            menuContainer.scale = 0.95;
+            menuClosed();
+        }
     }
 
     HyprlandFocusGrab {
         id: focusGrab
-        active: root.visible
+        active: root.visible && !root.isClosing
         windows: [root]
-        onCleared: root.visible = false
+        onCleared: root.close()
     }
 }

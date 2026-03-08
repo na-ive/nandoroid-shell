@@ -50,7 +50,7 @@ Variants {
         Connections {
             target: HyprlandData
             function onActiveWorkspaceChanged() {
-                desktopContextMenu.visible = false;
+                desktopContextMenu.close();
             }
         }
 
@@ -86,20 +86,14 @@ Variants {
 
             onPressed: (mouse) => {
                 if (mouse.button === Qt.RightButton && bgRoot.isDesktopEmpty) {
-                    desktopContextMenu.isClockMenu = false;
                     desktopContextMenu.anchor.window = bgRoot;
-                    desktopContextMenu.anchor.rect = Qt.rect(mouse.x, mouse.y, 0, 0);
-                    // Repositioning: setting same rect might not trigger move if already visible
-                    // but Quickshell popups usually follow strictly. 
-                    // To be safe, we could toggle, but user says it's not responsive.
-                    // Let's just update and let it move.
-                    desktopContextMenu.visible = true;
+                    desktopContextMenu.openAt(mouse.x, mouse.y, false);
                     mouse.accepted = true;
                     return;
                 }
 
                 if (mouse.button === Qt.LeftButton) {
-                    desktopContextMenu.visible = false;
+                    desktopContextMenu.close();
                 }
 
                 startY = mouse.y;
@@ -129,10 +123,8 @@ Variants {
             opacity: (!GlobalStates.screenLocked && visible) ? 1 : 0
             Behavior on opacity { NumberAnimation { duration: 300 } }
             onRequestContextMenu: (x, y, isClock) => {
-                desktopContextMenu.isClockMenu = isClock;
                 desktopContextMenu.anchor.window = bgRoot;
-                desktopContextMenu.anchor.rect = Qt.rect(x, y, 0, 0);
-                desktopContextMenu.visible = true;
+                desktopContextMenu.openAt(x, y, isClock);
             }
         }
 
