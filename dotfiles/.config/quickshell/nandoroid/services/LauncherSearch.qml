@@ -191,11 +191,17 @@ Singleton {
     Connections {
         target: GlobalStates
         function onLauncherOpenChanged() {
-            if (GlobalStates.launcherOpen) root.updateAppModel()
+            if (GlobalStates.launcherOpen && allApps.length === 0) root.updateAppModel()
         }
         function onSpotlightOpenChanged() {
-            if (GlobalStates.spotlightOpen) root.updateAppModel()
+            if (GlobalStates.spotlightOpen && allApps.length === 0) root.updateAppModel()
         }
+    }
+
+    // Refresh model when system entries change, not every open
+    Connections {
+        target: DesktopEntries.applications
+        function onValuesChanged() { root.updateAppModel() }
     }
 
     function updateAppModel() {

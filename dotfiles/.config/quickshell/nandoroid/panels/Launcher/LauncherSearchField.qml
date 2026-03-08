@@ -33,7 +33,7 @@ Rectangle {
 
             Timer {
                 id: focusTimer
-                interval: 50
+                interval: 100
                 repeat: false
                 onTriggered: input.forceActiveFocus()
             }

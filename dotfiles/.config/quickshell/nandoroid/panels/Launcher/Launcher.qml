@@ -76,14 +76,14 @@ PanelWindow {
                     NumberAnimation {
                         target: content
                         property: "y"
-                        duration: 350
+                        duration: 250
                         easing.type: Easing.BezierSpline
                         easing.bezierCurve: Appearance.animationCurves.emphasizedDecel
                     }
                     NumberAnimation {
                         target: content
                         property: "opacity"
-                        duration: 250
+                        duration: 200
                     }
                 }
             },
