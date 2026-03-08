@@ -237,50 +237,57 @@ Flickable {
             }
         }
 
-        // ── Wallpaper Style Options ──
-        SegmentedWrapper {
+        // ── Wallpaper Style Options Group ──
+        ColumnLayout {
             Layout.fillWidth: true
-            implicitHeight: syncToggleRow.implicitHeight + 40
-            orientation: Qt.Vertical
-            maxRadius: 20
-            color: Appearance.m3colors.m3surfaceContainerHigh
-            
-            RowLayout {
-                id: syncToggleRow
-                anchors.fill: parent; anchors.margins: 20
-                spacing: 20
+            spacing: 4 // Tight gap like in Clock section
 
-                MaterialSymbol {
-                    text: "sync"
-                    iconSize: 24
-                    color: Appearance.colors.colPrimary
-                }
+            SegmentedWrapper {
+                Layout.fillWidth: true
+                implicitHeight: syncToggleRow.implicitHeight + 40
+                orientation: Qt.Vertical
+                maxRadius: 20
+                color: Appearance.m3colors.m3surfaceContainerHigh
+                
+                RowLayout {
+                    id: syncToggleRow
+                    anchors.fill: parent; anchors.margins: 20
+                    spacing: 20
 
-                StyledText {
-                    text: "Use same wallpaper for lock screen"
-                    font.pixelSize: Appearance.font.pixelSize.normal
-                    color: Appearance.colors.colOnLayer1
-                    Layout.fillWidth: true
-                }
+                    MaterialSymbol {
+                        text: "sync"
+                        iconSize: 24
+                        color: Appearance.colors.colPrimary
+                    }
 
-                AndroidToggle {
-                    id: syncToggle
-                    checked: Config.ready && (Config.options.lock ? !Config.options.lock.useSeparateWallpaper : false)
-                    onToggled: {
-                        if (Config.ready && Config.options.lock) {
-                            const current = Config.options.lock.useSeparateWallpaper
-                            Config.options.lock.useSeparateWallpaper = !current
-                            if (current) { // Was true (separate), now false (synced)
-                                Wallpapers.selectForLockscreen(Config.options.appearance.background.wallpaperPath)
+                    StyledText {
+                        text: "Use same wallpaper for lock screen"
+                        font.pixelSize: Appearance.font.pixelSize.normal
+                        color: Appearance.colors.colOnLayer1
+                        Layout.fillWidth: true
+                    }
+
+                    AndroidToggle {
+                        id: syncToggle
+                        checked: Config.ready && (Config.options.lock ? !Config.options.lock.useSeparateWallpaper : false)
+                        onToggled: {
+                            if (Config.ready && Config.options.lock) {
+                                const current = Config.options.lock.useSeparateWallpaper
+                                Config.options.lock.useSeparateWallpaper = !current
+                                if (current) { // Was true (separate), now false (synced)
+                                    Wallpapers.selectForLockscreen(Config.options.appearance.background.wallpaperPath)
+                                }
                             }
                         }
                     }
                 }
             }
+            
+            // ── Wallpaper Auto-Cycle ──
+            WsWallpaperCycle { 
+                Layout.fillWidth: true
+            }
         }
-        
-        // ── Wallpaper Auto-Cycle ──
-        WsWallpaperCycle { Layout.fillWidth: true }
 
         // ── Wallpaper Previews ──
         RowLayout {

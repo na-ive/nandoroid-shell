@@ -30,7 +30,7 @@ ColumnLayout {
                     id: themeToggleRow
                     anchors.fill: parent
                     anchors.margins: 20
-                    spacing: 20
+                    spacing: 16
     
                     MaterialSymbol {
                         text: Config.options.appearance.background.darkmode ? "dark_mode" : "light_mode"

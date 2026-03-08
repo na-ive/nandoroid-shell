@@ -59,6 +59,22 @@ Flickable {
         width: parent.width
         spacing: 32
 
+        // ── Header ──
+        ColumnLayout {
+            spacing: 4
+            StyledText {
+                text: "About"
+                font.pixelSize: Appearance.font.pixelSize.huge
+                font.weight: Font.Bold
+                color: Appearance.colors.colOnLayer1
+            }
+            StyledText {
+                text: "System information and shell details."
+                font.pixelSize: Appearance.font.pixelSize.normal
+                color: Appearance.colors.colSubtext
+            }
+        }
+
         // ── Main View ──
         AboutMainView {
             visible: root.currentView === "main"

@@ -10,7 +10,7 @@ import Quickshell.Io
 
 ColumnLayout {
     Layout.fillWidth: true
-    spacing: 12
+    spacing: 4
 
     SearchHandler { 
         searchString: "Wallpaper Auto-Cycle"
