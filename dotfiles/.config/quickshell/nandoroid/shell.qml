@@ -259,6 +259,7 @@ ShellRoot {
 
     // ── Phase 14: Region Selector ──
     RegionSelector { id: regionSelector }
+    RecordingMarker {}
 
     GlobalShortcut {
         name: "regionScreenshot"

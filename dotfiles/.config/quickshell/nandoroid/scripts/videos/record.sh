@@ -72,7 +72,13 @@ getactivemonitor() {
 
 updatestate() {
     local state_value=$1
-    jq ".screenRecord.active = $state_value" "$STATE_FILE" > "${STATE_FILE}.tmp" && cat "${STATE_FILE}.tmp" > "$STATE_FILE"
+    local geometry=$2
+    if [[ -z "$geometry" ]]; then
+        geometry="null"
+    else
+        geometry="\"$geometry\""
+    fi
+    jq ".screenRecord.active = $state_value | .screenRecord.geometry = $geometry" "$STATE_FILE" > "${STATE_FILE}.tmp" && cat "${STATE_FILE}.tmp" > "$STATE_FILE"
     if [[ "$state_value" == "true" ]]; then
         start_timer
     else
@@ -113,7 +119,7 @@ else
     filename="recording_$(getdate).mp4"
     if [[ $FULLSCREEN_FLAG -eq 1 ]]; then
         notify-send "Starting recording" "$filename" -a 'Recorder' -i media-record -t 3000 & disown
-        updatestate true
+        updatestate true "fullscreen"
         if [[ $SOUND_FLAG -eq 1 ]]; then
             wf-recorder -o "$(getactivemonitor)" --pixel-format yuv420p -f "$filename" --audio="$(getaudiooutput)"
         else
@@ -138,7 +144,7 @@ else
         geometry="${x},${y} ${size}"
 
         notify-send "Starting recording" "$filename" -a 'Recorder' -i media-record -t 3000 & disown
-        updatestate true
+        updatestate true "$geometry"
         if [[ $SOUND_FLAG -eq 1 ]]; then
             wf-recorder -o "$(getactivemonitor)" --pixel-format yuv420p -f "$filename" --geometry "$geometry" --audio="$(getaudiooutput)"
         else
