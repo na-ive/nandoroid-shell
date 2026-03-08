@@ -314,8 +314,8 @@ Flickable {
         // ── Theme Section ──
         WsThemeColor { Layout.fillWidth: true }
 
-        // ── Launcher Icons Section ──
-        WsLauncherIcons { Layout.fillWidth: true }
+        // ── Launcher Settings Section ──
+        WsLauncher { Layout.fillWidth: true }
 
         // ── Overview Settings Section ──
         WsOverview { Layout.fillWidth: true }

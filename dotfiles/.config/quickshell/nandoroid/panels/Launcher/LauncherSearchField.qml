@@ -33,7 +33,7 @@ Rectangle {
 
             Timer {
                 id: focusTimer
-                interval: 50
+                interval: 100
                 repeat: false
                 onTriggered: input.forceActiveFocus()
             }
@@ -72,7 +72,7 @@ Rectangle {
             }
 
             Text {
-                text: root.isSpotlightMode ? "Search for anything..." : "Search apps..."
+                text: root.isSpotlightMode ? "Search for anything..." : "Search apps, files or commands..."
                 visible: !input.text
                 color: Appearance.m3colors.m3onSurfaceVariant
                 opacity: 0.6

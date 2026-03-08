@@ -29,7 +29,7 @@ Item {
             { file: "panels/Settings/pages/Display/DisplayEyeCare.qml", pageIndex: 3 },
             { file: "panels/Settings/pages/WallpaperStyle/WallpaperStyleSettings.qml", pageIndex: 4 },
             { file: "panels/Settings/pages/WallpaperStyle/WsThemeColor.qml", pageIndex: 4 },
-            { file: "panels/Settings/pages/WallpaperStyle/WsLauncherIcons.qml", pageIndex: 4 },
+            { file: "panels/Settings/pages/WallpaperStyle/WsLauncher.qml", pageIndex: 4 },
             { file: "panels/Settings/pages/WallpaperStyle/WsOverview.qml", pageIndex: 4 },
             { file: "panels/Settings/pages/WallpaperStyle/WsClock.qml", pageIndex: 4 },
             { file: "panels/Settings/pages/WallpaperStyle/WsLockscreen.qml", pageIndex: 4 },

@@ -12,7 +12,7 @@ RippleButton {
     property var result: modelData
     property bool selected: false
     
-    width: parent.width
+    width: parent ? parent.width : 0
     height: 64
     
     colBackground: root.selected ? Qt.alpha(Appearance.m3colors.m3primary, 0.1) : "transparent"
@@ -64,10 +64,17 @@ RippleButton {
                 
                 MaterialSymbol {
                     text: (result && result.isPlugin) ? (result.icon || "extension") : ""
-                    visible: result && result.isPlugin && result.emoji === ""
+                    visible: result && result.isPlugin && result.emoji === "" && !result.isImage
                     iconSize: 20
                     anchors.centerIn: parent
                     color: (root.hovered || root.selected) ? Appearance.m3colors.m3onPrimaryContainer : Appearance.m3colors.m3onSurfaceVariant
+                }
+
+                ThumbnailImage {
+                    anchors.fill: parent
+                    sourcePath: (result && result.isImage) ? result.imagePath : ""
+                    visible: !!(result && result.isImage)
+                    fillMode: Image.PreserveAspectCrop
                 }
             }
         }

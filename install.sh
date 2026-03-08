@@ -179,6 +179,8 @@ if [[ "$DEP_CHOICE" =~ ^[Yy] ]]; then
         "hyprpicker"
         "hyprlock"
         "hyprsunset"
+        "fd"
+        "libqalculate"
         "jq"
         "xdg-utils"
         "wl-clipboard"

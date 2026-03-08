@@ -69,7 +69,7 @@ PanelWindow {
                 ParallelAnimation {
                     NumberAnimation {
                         properties: "opacity,scale"
-                        duration: 300
+                        duration: 200
                         easing.type: Easing.BezierSpline
                         easing.bezierCurve: Appearance.animationCurves.emphasizedDecel
                     }

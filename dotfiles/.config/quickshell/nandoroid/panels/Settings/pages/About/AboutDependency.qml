@@ -87,6 +87,8 @@ ColumnLayout {
         ListElement { displayName: "jq"; packageName: "jq"; installed: false; desc: "Command-line JSON processor" }
         ListElement { displayName: "XDG Utils"; packageName: "xdg-utils"; installed: false; desc: "Desktop integration utilities" }
         ListElement { displayName: "Wl-Clipboard"; packageName: "wl-clipboard"; installed: false; desc: "Wayland clipboard" }
+        ListElement { displayName: "fd-find"; packageName: "fd"; installed: false; desc: "Fast file search utility" }
+        ListElement { displayName: "Libqalculate"; packageName: "libqalculate"; installed: false; desc: "Advanced math calculator (qalc)" }
         ListElement { displayName: "Google Sans Flex"; packageName: "__font_google_sans"; installed: false; desc: "UI font (from GitHub)" }
         ListElement { displayName: "Material Symbols"; packageName: "ttf-material-symbols-variable-git"; installed: false; desc: "Icon font" }
         ListElement { displayName: "JetBrains Mono NF"; packageName: "ttf-jetbrains-mono-nerd"; installed: false; desc: "Monospace font" }
