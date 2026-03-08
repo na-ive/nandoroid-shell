@@ -95,6 +95,8 @@ Rectangle {
                     if (q.startsWith("!")) return "Web Search";
                     if (q.startsWith("=")) return "Calculator";
                     if (q.startsWith(";")) return "Clipboard History";
+                    if (q.startsWith("?")) return "File Search";
+                    if (q.startsWith(">")) return "Quick Commands";
                     return q ? "Spotlight Search" : "Applications";
                 }
             }

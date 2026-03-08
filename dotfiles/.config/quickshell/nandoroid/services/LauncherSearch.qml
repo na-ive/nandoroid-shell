@@ -4,6 +4,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 import "../core"
+import "../core/functions"
 
 Singleton {
     id: root
@@ -11,6 +12,89 @@ Singleton {
     property string query: ""
     property var clipboardHistory: []
     property var usageData: ({})
+
+    function closeAll() {
+        GlobalStates.launcherOpen = false;
+        GlobalStates.spotlightOpen = false;
+    }
+
+    readonly property var quickCommands: [
+        { name: "Lock Screen", subtitle: "Session Action", id: "cmd-lock", icon: "lock", isPlugin: true, category: "Command", emoji: "", execute: () => { Session.lock(); root.closeAll(); } },
+        { name: "Reboot System", subtitle: "Session Action", id: "cmd-reboot", icon: "restart_alt", isPlugin: true, category: "Command", emoji: "", execute: () => { Session.reboot(); root.closeAll(); } },
+        { name: "Power Off", subtitle: "Session Action", id: "cmd-poweroff", icon: "power_settings_new", isPlugin: true, category: "Command", emoji: "", execute: () => { Session.poweroff(); root.closeAll(); } },
+        { name: "Shutdown", subtitle: "Session Action", id: "cmd-shutdown", icon: "power_settings_new", isPlugin: true, category: "Command", emoji: "", execute: () => { Session.poweroff(); root.closeAll(); } },
+        { name: "Log Out", subtitle: "Session Action", id: "cmd-logout", icon: "logout", isPlugin: true, category: "Command", emoji: "", execute: () => { Session.logout(); root.closeAll(); } },
+        { name: "Exit Shell", subtitle: "Session Action", id: "cmd-exit", icon: "logout", isPlugin: true, category: "Command", emoji: "", execute: () => { Session.logout(); root.closeAll(); } },
+        { name: "Suspend", subtitle: "Session Action", id: "cmd-suspend", icon: "bedtime", isPlugin: true, category: "Command", emoji: "", execute: () => { Session.suspend(); root.closeAll(); } },
+        { name: "Hibernate", subtitle: "Session Action", id: "cmd-hibernate", icon: "save", isPlugin: true, category: "Command", emoji: "", execute: () => { Session.hibernate(); root.closeAll(); } },
+        { name: "Open Dashboard", subtitle: "Shell Interface", id: "cmd-dashboard", icon: "dashboard", isPlugin: true, category: "Command", emoji: "", execute: () => { GlobalStates.dashboardOpen = true; root.closeAll(); } },
+        { name: "Open Settings", subtitle: "Shell Interface", id: "cmd-settings", icon: "settings", isPlugin: true, category: "Command", emoji: "", execute: () => { GlobalStates.settingsOpen = true; root.closeAll(); } },
+        { name: "System Monitor", subtitle: "Shell Interface", id: "cmd-monitor", icon: "monitoring", isPlugin: true, category: "Command", emoji: "", execute: () => { GlobalStates.systemMonitorOpen = true; root.closeAll(); } },
+        { name: "Workspace Overview", subtitle: "Shell Interface", id: "cmd-overview", icon: "grid_view", isPlugin: true, category: "Command", emoji: "", execute: () => { GlobalStates.overviewOpen = true; root.closeAll(); } },
+        { name: "Wallpaper & Style", subtitle: "Shell Interface", id: "cmd-wallpaper", icon: "palette", isPlugin: true, category: "Command", emoji: "", execute: () => { GlobalStates.settingsPageIndex = 4; GlobalStates.settingsOpen = true; root.closeAll(); } },
+        { name: "Bluetooth Settings", subtitle: "Shell Interface", id: "cmd-bluetooth", icon: "bluetooth", isPlugin: true, category: "Command", emoji: "", execute: () => { GlobalStates.settingsPageIndex = 1; GlobalStates.settingsOpen = true; root.closeAll(); } },
+        { name: "Network Settings", subtitle: "Shell Interface", id: "cmd-network", icon: "wifi", isPlugin: true, category: "Command", emoji: "", execute: () => { GlobalStates.settingsPageIndex = 0; GlobalStates.settingsOpen = true; root.closeAll(); } },
+        { name: "Reload Hyprland", subtitle: "Compositor Action", id: "cmd-hypr-reload", icon: "refresh", isPlugin: true, category: "Command", emoji: "", execute: () => { Quickshell.execDetached(["hyprctl", "reload"]); root.closeAll(); } },
+        { name: "Reload Shell", subtitle: "Maintenance", id: "cmd-reload", icon: "refresh", isPlugin: true, category: "Command", emoji: "", execute: () => { Quickshell.reload(); root.closeAll(); } }
+    ]
+
+    Timer {
+        id: fileSearchTimer
+        interval: 300
+        repeat: false
+        onTriggered: {
+            if (!Config.ready || !Config.options.search) return;
+            const term = root.query.trim().slice(Config.options.search.filePrefix.length).trim();
+            if (term.length > 0) {
+                fileSearchProc.runSearch(term);
+            } else {
+                fileSearchProc.results = [];
+                _triggerVal++;
+            }
+        }
+    }
+
+    Process {
+        id: fileSearchProc
+        running: false
+        property var results: []
+        command: ["fd", "-i", "-t", "f", "--max-results", "20", "", "/home"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                const lines = this.text.trim().split("\n").filter(l => l.length > 0);
+                fileSearchProc.results = lines.map(path => {
+                    const parts = path.split("/");
+                    const name = parts[parts.length - 1];
+                    return {
+                        name: name,
+                        subtitle: path,
+                        id: "file-" + path,
+                        icon: "insert_drive_file",
+                        isPlugin: true,
+                        category: "File",
+                        emoji: "",
+                        execute: () => { 
+                            Quickshell.execDetached(["xdg-open", path]); 
+                            root.closeAll(); 
+                        }
+                    };
+                });
+                _triggerVal++;
+            }
+        }
+        function runSearch(term) {
+            running = false;
+            const home = FileUtils.trimFileProtocol(Directories.home.toString());
+            command = ["fd", "-i", "-t", "f", "--max-results", "20", term, home];
+            running = true;
+        }
+    }
+
+    onQueryChanged: {
+        if (Config.ready && Config.options.search && query.trim().startsWith(Config.options.search.filePrefix)) {
+            fileSearchTimer.restart();
+        }
+    }
 
     Process {
         id: cliphistProc
@@ -169,7 +253,9 @@ Singleton {
             Config.options.search.mathPrefix,
             Config.options.search.webPrefix,
             Config.options.search.emojiPrefix,
-            Config.options.search.clipboardPrefix
+            Config.options.search.clipboardPrefix,
+            Config.options.search.filePrefix,
+            Config.options.search.commandPrefix
         ].some(p => stripped.startsWith(p));
     }
 
@@ -194,7 +280,7 @@ Singleton {
                     isPlugin: true,
                     category: "Command",
                     emoji: "",
-                    execute: () => { Quickshell.clipboardText = mathProc.result; GlobalStates.launcherOpen = false; GlobalStates.spotlightOpen = false; }
+                    execute: () => { Quickshell.clipboardText = mathProc.result; root.closeAll(); }
                 });
             }
         }
@@ -211,7 +297,7 @@ Singleton {
                     isPlugin: true,
                     category: "Command",
                     emoji: "",
-                    execute: () => { Qt.openUrlExternally("https://www.google.com/search?q=" + encodeURIComponent(webQuery)); GlobalStates.launcherOpen = false; GlobalStates.spotlightOpen = false; }
+                    execute: () => { Qt.openUrlExternally("https://www.google.com/search?q=" + encodeURIComponent(webQuery)); root.closeAll(); }
                 });
             }
         }
@@ -229,7 +315,7 @@ Singleton {
                         id: "emoji-" + item.name,
                         icon: "face",
                         isPlugin: true,
-                        execute: () => { Quickshell.clipboardText = item.emoji; GlobalStates.launcherOpen = false; GlobalStates.spotlightOpen = false; }
+                        execute: () => { Quickshell.clipboardText = item.emoji; root.closeAll(); }
                     });
                 }
                 if (results.length > 50) break;
@@ -254,8 +340,7 @@ Singleton {
                         execute: () => {
                             const escapedEntry = entry.replace(/'/g, "'\\''");
                             Quickshell.execDetached(["bash", "-c", "printf '" + escapedEntry + "' | cliphist decode | wl-copy"]);
-                            GlobalStates.launcherOpen = false;
-                            GlobalStates.spotlightOpen = false;
+                            root.closeAll();
                         }
                     });
                 }
@@ -263,7 +348,34 @@ Singleton {
             }
         }
 
-        // 5. Regular App Filtering
+        // 5. Quick Commands (Prefix: >)
+        if (strippedQuery.startsWith(Config.options.search.commandPrefix)) {
+            const cmdQuery = strippedQuery.slice(Config.options.search.commandPrefix.length).toLowerCase().trim();
+            for (const cmd of root.quickCommands) {
+                if (cmd.name.toLowerCase().includes(cmdQuery) || cmd.id.toLowerCase().includes(cmdQuery) || cmdQuery === "") {
+                    results.push(cmd);
+                }
+            }
+        }
+
+        // 6. File Search (Prefix: ?)
+        if (strippedQuery.startsWith(Config.options.search.filePrefix)) {
+            results.push(...fileSearchProc.results);
+            if (fileSearchProc.results.length === 0 && strippedQuery.length > 1) {
+                 results.push({
+                    name: "Searching Files...",
+                    subtitle: "Please wait",
+                    id: "file-searching",
+                    icon: "search",
+                    isPlugin: true,
+                    category: "Command",
+                    emoji: "",
+                    execute: () => {}
+                });
+            }
+        }
+
+        // 7. Regular App Filtering
         if (!isPluginSearch) {
             const loweredQuery = strippedQuery.toLowerCase();
             const filteredApps = allApps.filter(app =>

@@ -78,6 +78,8 @@ The interactive installer guides you through dependency installation, config cop
 - **hyprpicker**: For the color picker tool.
 - **hyprlock**: The lock screen provider.
 - **hyprsunset**: For the blue light filter (night light) functionality.
+- **fd**: Required for the file search functionality in Spotlight/Launcher.
+- **libqalculate (`qalc`)**: Required for the math calculator functionality in Spotlight/Launcher.
 - **jq**: For parsing and generating JSON (configs and state files).
 - **xdg-utils (`xdg-open`)**: For opening URLs and files in external apps.
 - **warp-cli** _(Optional)_: Cloudflare WARP client for VPN integration.

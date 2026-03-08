@@ -325,6 +325,8 @@ Singleton {
                 property string webPrefix: "!"
                 property string emojiPrefix: ":"
                 property string clipboardPrefix: ";"
+                property string filePrefix: "?"
+                property string commandPrefix: ">"
                 property string iconShape: "Square"
             }
 
