@@ -359,6 +359,10 @@ Singleton {
         // Dashboard (Calendar panel redesign)
         property real dashboardWidth: Math.min(860, screen.width * 0.68)
         property real dashboardHeight: Math.min(450, screen.height * 0.75)
+
+        // Context Menu
+        property real contextMenuWidth: Math.min(220, screen.width * 0.15)
+        property real contextMenuItemHeight: 40
     }
 
     // --- Animation Curves (M3 Expressive) ---

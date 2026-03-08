@@ -17,7 +17,7 @@ Scope {
 
     PanelWindow {
         id: panelWindow
-        visible: true 
+        visible: GlobalStates.quickSettingsOpen || content.opacity > 0
         
         exclusiveZone: GlobalStates.quickSettingsOpen ? content.implicitWidth : 0
         WlrLayershell.namespace: "nandoroid:quicksettings"
