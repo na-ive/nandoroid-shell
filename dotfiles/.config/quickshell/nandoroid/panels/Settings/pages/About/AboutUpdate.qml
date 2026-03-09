@@ -199,7 +199,7 @@ ColumnLayout {
     Process {
         id: runUpdateProc
         command: ["bash", "-c", `${installState.install_dir}/update.sh ${updateType} ${installState.channel}`]
-        onStreamFinished: {
+        onExited: {
             // Once the script is done (git pull, etc), reload the shell immediately.
             Quickshell.reload();
         }
