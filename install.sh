@@ -275,7 +275,19 @@ mkdir -p "$HOME/.config"
 cp -r dotfiles/.config/* "$HOME/.config/"
 success "Configuration files copied."
 
-# 5. Injection
+# 5. Nandoroid CLI Installation (Optional)
+info "Nandoroid CLI Installation..."
+ask "Install Nandoroid CLI for terminal control? (y/N)"
+read -r CLI_CHOICE < /dev/tty
+if [[ "$CLI_CHOICE" =~ ^[Yy] ]]; then
+    substep "Running CLI installer from GitHub..."
+    bash -c "$(curl -fsSL https://raw.githubusercontent.com/na-ive/nandoroid-cli/main/install.sh)"
+    success "Nandoroid CLI installed."
+else
+    success "Skipped CLI installation."
+fi
+
+# 6. Injection
 info "Configuration injection..."
 substep "Appends settings into your existing configs."
 substep "Will ${C_WHITE}${C_BOLD}NOT${C_RST} overwrite existing configurations."
@@ -323,7 +335,7 @@ else
     success "Skipped."
 fi
 
-# 6. Update Channel
+# 7. Update Channel
 info "Update channel..."
 choice "1" "stable ${C_DIM}- follows git tags (release versions)${C_RST}"
 choice "2" "canary ${C_DIM}- follows latest commit on main${C_RST}"
@@ -335,7 +347,7 @@ if [[ "$CHANNEL_CHOICE" =~ ^[Cc] ]]; then
 fi
 substep "Selected: ${C_ACCENT}${C_BOLD}$CHANNEL${C_RST}"
 
-# 7. Save State
+# 8. Save State
 substep "Saving installation state..."
 mkdir -p "$HOME/.config/nandoroid"
 STATE_FILE="$HOME/.config/nandoroid/install_state.json"

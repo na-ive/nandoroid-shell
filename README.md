@@ -118,7 +118,7 @@ The `.config/` directory distributed with this repository contains necessary sup
 - **`quickshell/nandoroid/`**: The shell itself.
 - **`matugen/`**: Template configs for Material 3 theme generation.
 - **`starship.toml`**: Prompt configuration (requires starship).
-- **`fish/completions/nandoroid.fish`**: Tab-completion for IPC commands in fish shell. *(Note: Currently under development and may not be fully functional yet; evolving alongside nandoroid-cli)*.
+- **`nandoroid-cli`**: (Optional) A powerful command-line interface to control shell panels, media, and system settings. Available at [na-ive/nandoroid-cli](https://github.com/na-ive/nandoroid-cli).
 
 ## IPC Commands
 

@@ -53,6 +53,7 @@ The installer separates dependencies into three groups:
 | **Core**     | Yes         | Hyprland, Quickshell, Pipewire, NetworkManager, Matugen, CLI tools, Python3, etc. |
 | **Fonts**    | Recommended | Google Sans Flex, Material Symbols Rounded, JetBrains Mono NF                     |
 | **Terminal** | Optional    | Kitty, Fish, Starship (for themed terminal aesthetic)                             |
+| **CLI Tool** | Optional    | Nandoroid CLI (unified control interface)                                         |
 
 > **Note on Python:** The shell uses a Python3 script (`apply_terminal_colors.sh`) to apply dynamic colors to your terminal emulators. Python3 is included in the core dependencies.
 
@@ -64,7 +65,17 @@ Copies the required config files to `~/.config/`:
 - `matugen/`: template configs for theme generation
 - `starship.toml`: prompt config (only useful if starship is installed)
 
-### Step 4: Injection (Optional)
+### Step 4: Install Nandoroid CLI (Optional)
+
+You can install the optional CLI tool for easy control of the shell from your terminal:
+
+```bash
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/na-ive/nandoroid-cli/main/install.sh)"
+```
+
+This will install the `nandoroid` binary to `~/.local/bin/`. Make sure this directory is in your `$PATH`.
+
+### Step 5: Injection (Optional)
 
 Appends source/include lines to your existing configs (**non-destructive**):
 

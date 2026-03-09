@@ -89,25 +89,45 @@ When prompted:
 - **Core deps**: Yes (required)
 - **Fonts**: Yes (recommended, the shell looks broken without them)
 - **Terminal tools**: Your choice (kitty/fish/starship are for terminal aesthetics)
+- **CLI Tool**: **Yes (Highly Recommended)**. This installs the `nandoroid-cli` tool.
 - **Injection**: Yes if you want Nandoroid to add `exec-once = quickshell -c nandoroid` and theme includes
 
-### 4. Migrate Your Keybinds
+### 4. Transition to Nandoroid CLI
 
-Nandoroid uses IPC calls for its panels. Add these to your `hyprland.conf`:
+The legacy method of controlling the shell involved long IPC commands. We now recommend using the unified `nandoroid` CLI tool:
+
+| Action                 | Old IPC Method (Legacy)                         | New CLI Method (Recommended) |
+| :--------------------- | :---------------------------------------------- | :--------------------------- |
+| **Toggle Launcher**    | `qs -c nandoroid ipc call launcher toggle`      | `nandoroid launcher`         |
+| **Toggle Dashboard**   | `qs -c nandoroid ipc call dashboard toggle`     | `nandoroid dashboard`        |
+| **Toggle Settings**    | `qs -c nandoroid ipc call settings toggle`      | `nandoroid settings`         |
+| **Reload Shell**       | `quickshell -c nandoroid --reload`              | `nandoroid reload`           |
+| **Set Wallpaper**      | (Manual via settings panel)                     | `nandoroid wallpaper <file>` |
+
+> **Fish Users Note:** If you previously used the manual `nandoroid.fish` completions from this repository, they have been removed. Please install `nandoroid-cli` to get the latest native completions for Fish, Zsh, and Bash.
+
+### 5. Migrate Your Keybinds
+
+Nandoroid uses the `nandoroid` CLI for its panels. Add these to your `hyprland.conf`:
 
 ```ini
-# Nandoroid Shell Controls
-bind = SUPER, Space, exec, qs -c nandoroid ipc call launcher toggle
-bind = SUPER, N, exec, qs -c nandoroid ipc call notifications toggle
-bind = SUPER, A, exec, qs -c nandoroid ipc call quicksettings toggle
-bind = SUPER, M, exec, qs -c nandoroid ipc call systemmonitor toggle
-bind = SUPER, Tab, exec, qs -c nandoroid ipc call overview toggle
+# Nandoroid Shell Controls (via CLI)
+bind = SUPER, Space, exec, nandoroid launcher
+bind = SUPER, N, exec, nandoroid notifications
+bind = SUPER, A, exec, nandoroid quicksettings
+bind = SUPER, M, exec, nandoroid systemmonitor
+bind = SUPER, Tab, exec, nandoroid overview
 
 # Brightness (repeatable)
-bindle = , XF86MonBrightnessUp, exec, qs -c nandoroid ipc call brightness increment
-bindle = , XF86MonBrightnessDown, exec, qs -c nandoroid ipc call brightness decrement
+bindle = , XF86MonBrightnessUp, exec, nandoroid brightness increment
+bindle = , XF86MonBrightnessDown, exec, nandoroid brightness decrement
+```
 
-# Quickshell Global Shortcuts
+### 6. Quickshell Global Shortcuts
+
+These remain as native Quickshell shortcuts:
+
+```ini
 bindd = SUPER, F, File search, global, quickshell:spotlightFiles
 bindd = SUPER, G, Quick commands, global, quickshell:spotlightCommand
 bindd = SUPER, V, Clipboard history, global, quickshell:spotlightClipboard
@@ -117,7 +137,7 @@ bindd = SUPER SHIFT, S, Region OCR, global, quickshell:regionOcr
 bindd = SUPER, R, Record region, global, quickshell:regionRecord
 ```
 
-See the [IPC Commands](../README.md#ipc-commands) section for the full list.
+See the [IPC Commands](../README.md#ipc-commands) section for the full list of raw calls if needed.
 
 ## Coming from KDE Specifically
 
