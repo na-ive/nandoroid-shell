@@ -38,7 +38,12 @@ Singleton {
         repeat: false
         running: false
         onTriggered: {
-            root.applyColors(themeFileView.text())
+            // Only auto-apply from generated file if matugen (wallpaper mode) is active
+            if (Config.ready && Config.options.appearance.background.matugen) {
+                root.applyColors(themeFileView.text())
+            } else {
+                console.log("[MaterialThemeLoader] Matugen file changed, but skipping Shell apply (Basic Color mode active)")
+            }
         }
     }
 
@@ -53,7 +58,10 @@ Singleton {
         onLoadedChanged: {
             const fileContent = themeFileView.text()
             if (fileContent.trim() !== "") {
-                root.applyColors(fileContent)
+                // Only auto-apply from generated file if matugen (wallpaper mode) is active
+                if (Config.ready && Config.options.appearance.background.matugen) {
+                    root.applyColors(fileContent)
+                }
             }
         }
         onLoadFailed: error => {

@@ -237,8 +237,114 @@ import Quickshell
                                 font.family: Appearance.font.family.main
                                 font.pixelSize: Appearance.font.pixelSize.normal
                                 color: Appearance.colors.colOnLayer1
-                                text: (Config.ready && Config.options.search) ? Config.options.search.clipboardPrefix : ">"
+                                text: (Config.ready && Config.options.search) ? Config.options.search.clipboardPrefix : ";"
                                 onEditingFinished: { if (Config.ready && Config.options.search) Config.options.search.clipboardPrefix = text; }
+                            }
+                        }
+                    }
+                }
+
+                // 5. File Search Prefix Card
+                SegmentedWrapper {
+                    Layout.fillWidth: true
+                    implicitHeight: fileRow.implicitHeight + 40
+                    orientation: Qt.Vertical
+                    maxRadius: 20
+                    color: Appearance.m3colors.m3surfaceContainerHigh
+
+                    RowLayout {
+                        id: fileRow
+                        anchors.fill: parent
+                        anchors.margins: 20
+                        spacing: 20
+
+                        ColumnLayout {
+                            spacing: 2
+                            StyledText {
+                                text: "File Search Prefix"
+                                font.pixelSize: Appearance.font.pixelSize.normal
+                                font.weight: Font.Medium
+                                color: Appearance.colors.colOnLayer1
+                            }
+                            StyledText {
+                                text: "Prefix to trigger local file searching."
+                                font.pixelSize: Appearance.font.pixelSize.small
+                                color: Appearance.colors.colSubtext
+                            }
+                        }
+                        Item { Layout.fillWidth: true }
+                        
+                        Rectangle {
+                            width: 120
+                            height: 48
+                            radius: 12
+                            color: Appearance.m3colors.m3surfaceContainerLow
+                            border.width: fileInput.activeFocus ? 2 : 0
+                            border.color: Appearance.colors.colPrimary
+
+                            TextInput {
+                                id: fileInput
+                                anchors.fill: parent
+                                horizontalAlignment: TextInput.AlignHCenter
+                                verticalAlignment: TextInput.AlignVCenter
+                                font.family: Appearance.font.family.main
+                                font.pixelSize: Appearance.font.pixelSize.normal
+                                color: Appearance.colors.colOnLayer1
+                                text: (Config.ready && Config.options.search) ? Config.options.search.filePrefix : "?"
+                                onEditingFinished: { if (Config.ready && Config.options.search) Config.options.search.filePrefix = text; }
+                            }
+                        }
+                    }
+                }
+
+                // 6. Command Prefix Card
+                SegmentedWrapper {
+                    Layout.fillWidth: true
+                    implicitHeight: cmdRow.implicitHeight + 40
+                    orientation: Qt.Vertical
+                    maxRadius: 20
+                    color: Appearance.m3colors.m3surfaceContainerHigh
+
+                    RowLayout {
+                        id: cmdRow
+                        anchors.fill: parent
+                        anchors.margins: 20
+                        spacing: 20
+
+                        ColumnLayout {
+                            spacing: 2
+                            StyledText {
+                                text: "Command Prefix"
+                                font.pixelSize: Appearance.font.pixelSize.normal
+                                font.weight: Font.Medium
+                                color: Appearance.colors.colOnLayer1
+                            }
+                            StyledText {
+                                text: "Prefix to trigger shell commands and quick actions."
+                                font.pixelSize: Appearance.font.pixelSize.small
+                                color: Appearance.colors.colSubtext
+                            }
+                        }
+                        Item { Layout.fillWidth: true }
+                        
+                        Rectangle {
+                            width: 120
+                            height: 48
+                            radius: 12
+                            color: Appearance.m3colors.m3surfaceContainerLow
+                            border.width: cmdInput.activeFocus ? 2 : 0
+                            border.color: Appearance.colors.colPrimary
+
+                            TextInput {
+                                id: cmdInput
+                                anchors.fill: parent
+                                horizontalAlignment: TextInput.AlignHCenter
+                                verticalAlignment: TextInput.AlignVCenter
+                                font.family: Appearance.font.family.main
+                                font.pixelSize: Appearance.font.pixelSize.normal
+                                color: Appearance.colors.colOnLayer1
+                                text: (Config.ready && Config.options.search) ? Config.options.search.commandPrefix : ">"
+                                onEditingFinished: { if (Config.ready && Config.options.search) Config.options.search.commandPrefix = text; }
                             }
                         }
                     }
