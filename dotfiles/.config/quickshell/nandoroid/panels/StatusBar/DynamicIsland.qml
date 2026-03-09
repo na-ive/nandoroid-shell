@@ -361,7 +361,7 @@ Item {
             acceptedButtons: Qt.LeftButton | Qt.MiddleButton | Qt.RightButton
             
             onEntered: {
-                if (islandState === "media" || MprisController.activePlayer) {
+                if (Config.options.media.enableMediaHover && (islandState === "media" || MprisController.activePlayer)) {
                     GlobalStates.openMediaNotch();
                 }
             }

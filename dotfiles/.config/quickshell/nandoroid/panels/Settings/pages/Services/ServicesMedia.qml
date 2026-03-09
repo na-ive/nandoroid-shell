@@ -153,4 +153,71 @@ ColumnLayout {
             }
         }
     }
+
+    // --- Dynamic Island Media Hover Toggle ---
+    SegmentedWrapper {
+        Layout.fillWidth: true
+        implicitHeight: showMediaHoverRow.implicitHeight + 40
+        orientation: Qt.Vertical
+        maxRadius: 20
+        color: Appearance.m3colors.m3surfaceContainerHigh
+
+        RowLayout {
+            id: showMediaHoverRow
+            anchors.fill: parent
+            anchors.margins: 20
+            spacing: 20
+
+            ColumnLayout {
+                spacing: 2
+                Layout.maximumWidth: 400
+                StyledText {
+                    text: "Dynamic Island Hover"
+                    font.pixelSize: Appearance.font.pixelSize.normal
+                    font.weight: Font.Medium
+                    color: Appearance.colors.colOnLayer1
+                }
+                StyledText {
+                    text: "Show the media controls popup when hovering over the Dynamic Island."
+                    font.pixelSize: Appearance.font.pixelSize.small
+                    color: Appearance.colors.colSubtext
+                    wrapMode: Text.Wrap
+                    Layout.fillWidth: true
+                }
+            }
+            Item { Layout.fillWidth: true }
+
+            // Custom Switch
+            Rectangle {
+                implicitWidth: 52
+                implicitHeight: 28
+                radius: 14
+                color: (Config.ready && Config.options.media && Config.options.media.enableMediaHover)
+                    ? Appearance.colors.colPrimary
+                    : Appearance.m3colors.m3surfaceContainerLowest
+
+                Rectangle {
+                    width: 20
+                    height: 20
+                    radius: 10
+                    anchors.verticalCenter: parent.verticalCenter
+                    x: (Config.ready && Config.options.media && Config.options.media.enableMediaHover) ? parent.width - width - 4 : 4
+                    color: (Config.ready && Config.options.media && Config.options.media.enableMediaHover)
+                        ? Appearance.colors.colOnPrimary
+                        : Appearance.colors.colSubtext
+                    Behavior on x { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: {
+                        if (Config.ready && Config.options.media) {
+                            Config.options.media.enableMediaHover = !Config.options.media.enableMediaHover;
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

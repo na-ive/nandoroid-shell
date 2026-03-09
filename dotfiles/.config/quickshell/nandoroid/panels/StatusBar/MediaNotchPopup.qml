@@ -59,7 +59,7 @@ Variants {
             HoverHandler {
                 id: popupHoverHandler
                 onHoveredChanged: {
-                    if (hovered) GlobalStates.openMediaNotch();
+                    if (hovered && Config.options.media.enableMediaHover) GlobalStates.openMediaNotch();
                     else GlobalStates.closeMediaNotchWithDelay();
                 }
             }
