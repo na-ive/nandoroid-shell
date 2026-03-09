@@ -45,45 +45,45 @@ The interactive installer guides you through dependency installation, config cop
 
 - **Hyprland**: The tiling Wayland compositor that hosts the shell.
 - **Quickshell (0.5.0+)**: The engine used to build and run the shell.
-- **Qt 6**: The base framework for the UI (QtQuick, Qt Background, etc.).
-- **Python 3**: Used by the terminal color application script.
+- **dgop**: Essential for system monitoring, CPU, RAM, and temperature stats.
+- **matugen**: Crucial for Material 3 theme generation from wallpapers.
+- **Python 3**: Used by terminal color scripts and system utilities.
+- **jq**: For parsing and generating JSON (configs and state files).
 
 ### System Services & Protocols
 
-- **Pipewire**: For audio management.
+- **Pipewire (`wpctl`)**: For audio management.
 - **NetworkManager (`nmcli`)**: For Wi-Fi and Ethernet controls.
 - **BlueZ (`bluetoothctl`)**: For Bluetooth management.
 - **libnotify (`notify-send`)**: For system notifications and temporary popups.
-- **Polkit (`pkexec`)**: For privileged actions (like password recovery).
-- **Systemd (`systemctl`)**: For power management (suspend, etc.).
+- **Polkit (`pkexec`)**: For privileged actions.
+- **Systemd / Loginctl**: For power management and session locking.
 - **xdg-desktop-portal-hyprland**: For screen sharing dialogs.
 - **xdg-desktop-portal-gtk**: For file picker dialogs.
 
 ### CLI Utilities (Functional)
 
-- **dgop**: Essential for system monitoring, CPU, RAM, and temperature stats.
 - **brightnessctl**: For controlling screen backlight.
 - **ddcutil**: For controlling external monitor brightness.
 - **playerctl**: For media playback (MPRIS) controls.
-- **matugen**: Crucial for Material 3 theme generation from wallpapers.
 - **grim**: For taking screenshots and color detection.
-- **slurp**: For region selection (screenshots, recording, OCR).
+- **slurp**: For region selection.
 - **wf-recorder**: For screen recording functionality.
 - **ImageMagick (`magick`)**: Used for color detection, resizing, and image processing.
 - **ffmpeg (`ffplay`)**: Used for system sounds.
 - **wl-clipboard**: For Wayland clipboard operations.
 - **cliphist**: Required for clipboard history management in Spotlight.
-- **songrec**: Required for the Shazam-like music recognition feature.
-- **zenity**: Required for the avatar/file picker dialogs in Settings.
+- **songrec**: Required for the music recognition feature.
 - **cava**: Used for audio visualization in the shell.
 - **easyeffects**: For audio effects and equalization management.
 - **hyprpicker**: For the color picker tool.
 - **hyprlock**: The lock screen provider.
 - **hyprsunset**: For the blue light filter (night light) functionality.
-- **fd**: Required for the file search functionality in Spotlight/Launcher.
-- **libqalculate (`qalc`)**: Required for the math calculator functionality in Spotlight/Launcher.
-- **jq**: For parsing and generating JSON (configs and state files).
-- **xdg-utils (`xdg-open`)**: For opening URLs and files in external apps.
+- **fd**: Required for the file search functionality in Spotlight.
+- **libqalculate (`qalc`)**: Required for the math calculator in Spotlight.
+* **zenity**: Required for avatar and directory selection dialogs.
+- **tesseract** _(Optional)_: For OCR functionality in region tools.
+- **fprintd** _(Optional)_: For fingerprint sensor support on the lockscreen.
 - **warp-cli** _(Optional)_: Cloudflare WARP client for VPN integration.
 
 ### Fonts
@@ -94,7 +94,7 @@ The interactive installer guides you through dependency installation, config cop
 
 ### Shell & Terminal _(Optional)_
 
-These are not required for the shell to function, but enhance the terminal experience with dynamic Matugen colors:
+These enhance the experience but are not required for the shell to function:
 
 - **kitty**: Terminal emulator with theme injection support.
 - **fish**: Interactive shell.
