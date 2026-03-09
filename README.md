@@ -43,63 +43,71 @@ The interactive installer guides you through dependency installation, config cop
 
 ### Core Components
 
-- **Hyprland**: The tiling Wayland compositor that hosts the shell.
-- **Quickshell (0.5.0+)**: The engine used to build and run the shell.
-- **dgop**: Essential for system monitoring, CPU, RAM, and temperature stats.
-- **matugen**: Crucial for Material 3 theme generation from wallpapers.
-- **Python 3**: Used by terminal color scripts and system utilities.
-- **jq**: For parsing and generating JSON (configs and state files).
+| Component | Package | Description |
+| :--- | :--- | :--- |
+| **Compositor** | `hyprland` | The tiling Wayland compositor hosting the shell. |
+| **Framework** | `quickshell` | The engine (0.5.0+) used to build and run the shell. |
+| **Monitor** | `dgop` | System monitoring (CPU, RAM, Temp) stats. |
+| **Theme** | `matugen` | Material 3 theme generation from wallpapers. |
+| **Scripting** | `python3` | Used by terminal color scripts and utilities. |
+| **JSON** | `jq` | Command-line JSON processor for configs and state. |
 
 ### System Services & Protocols
 
-- **Pipewire (`wpctl`)**: For audio management.
-- **NetworkManager (`nmcli`)**: For Wi-Fi and Ethernet controls.
-- **BlueZ (`bluetoothctl`)**: For Bluetooth management.
-- **libnotify (`notify-send`)**: For system notifications and temporary popups.
-- **Polkit (`pkexec`)**: For privileged actions.
-- **Systemd / Loginctl**: For power management and session locking.
-- **xdg-desktop-portal-hyprland**: For screen sharing dialogs.
-- **xdg-desktop-portal-gtk**: For file picker dialogs.
+| Service | Command | Description |
+| :--- | :--- | :--- |
+| **Audio** | `pipewire` | Audio management via `wpctl`. |
+| **Network** | `networkmanager` | Wi-Fi and Ethernet controls via `nmcli`. |
+| **Bluetooth** | `bluez` | Bluetooth management via `bluetoothctl`. |
+| **Notify** | `libnotify` | System notifications via `notify-send`. |
+| **Auth** | `polkit` | Privileged actions via `pkexec`. |
+| **Session** | `systemd` | Power management and session locking. |
+| **Portal (H)** | `xdg-desktop-portal-hyprland` | Screen sharing and desktop integration. |
+| **Portal (G)** | `xdg-desktop-portal-gtk` | File picker and standard desktop integration. |
 
 ### CLI Utilities (Functional)
 
-- **brightnessctl**: For controlling screen backlight.
-- **ddcutil**: For controlling external monitor brightness.
-- **playerctl**: For media playback (MPRIS) controls.
-- **grim**: For taking screenshots and color detection.
-- **slurp**: For region selection.
-- **wf-recorder**: For screen recording functionality.
-- **ImageMagick (`magick`)**: Used for color detection, resizing, and image processing.
-- **ffmpeg (`ffplay`)**: Used for system sounds.
-- **wl-clipboard**: For Wayland clipboard operations.
-- **cliphist**: Required for clipboard history management in Spotlight.
-- **songrec**: Required for the music recognition feature.
-- **cava**: Used for audio visualization in the shell.
-- **easyeffects**: For audio effects and equalization management.
-- **hyprpicker**: For the color picker tool.
-- **hyprlock**: The lock screen provider.
-- **hyprsunset**: For the blue light filter (night light) functionality.
-- **fd**: Required for the file search functionality in Spotlight.
-- **libqalculate (`qalc`)**: Required for the math calculator in Spotlight.
-* **zenity**: Required for avatar and directory selection dialogs.
-- **tesseract** _(Optional)_: For OCR functionality in region tools.
-- **fprintd** _(Optional)_: For fingerprint sensor support on the lockscreen.
-- **warp-cli** _(Optional)_: Cloudflare WARP client for VPN integration.
+| Utility | Command | Description |
+| :--- | :--- | :--- |
+| **Backlight** | `brightnessctl` | Internal screen brightness control. |
+| **External Br.** | `ddcutil` | External monitor brightness control. |
+| **Media** | `playerctl` | MPRIS media playback controls. |
+| **Screenshot** | `grim` | Wayland screenshot utility. |
+| **Region** | `slurp` | Region selection for screenshots/recording. |
+| **Recorder** | `wf-recorder` | Screen recording functionality. |
+| **Image** | `imagemagick` | Color detection and image processing (`magick`). |
+| **Sound** | `ffmpeg` | System sounds playback via `ffplay`. |
+| **Clipboard** | `wl-clipboard` | Wayland clipboard operations. |
+| **Clip. Hist.** | `cliphist` | Clipboard history management in Spotlight. |
+| **Recognition** | `songrec` | Shazam-like music recognition feature. |
+| **Visualizer** | `cava` | Audio visualization in the shell. |
+| **Effects** | `easyeffects` | Audio effects and equalization management. |
+| **Picker** | `hyprpicker` | System-wide color picker tool. |
+| **Lock** | `hyprlock` | The lock screen provider. |
+| **Night Light** | `hyprsunset` | Blue light filter functionality. |
+| **Search** | `fd` | Fast file search functionality in Spotlight. |
+| **Calculator** | `libqalculate` | Math calculator functionality in Spotlight (`qalc`). |
+| **Dialogs** | `zenity` | File and directory selection dialogs. |
+| **OCR (Opt.)** | `tesseract` | OCR functionality in region tools. |
+| **Biometric (Opt.)** | `fprintd` | Fingerprint sensor support on lockscreen. |
+| **VPN (Opt.)** | `warp-cli` | Cloudflare WARP client integration. |
 
 ### Fonts
 
-- **Google Sans Flex** (from [GitHub](https://github.com/end-4/google-sans-flex)): The primary variable font for the interface.
-- **Material Symbols Rounded** (`ttf-material-symbols-variable-git`): The icon font for all system symbols.
-- **JetBrains Mono NF** (`ttf-jetbrains-mono-nerd`): The default monospace font.
+| Font | Package | Source / Purpose |
+| :--- | :--- | :--- |
+| **UI Font** | `Google Sans Flex` | Primary variable font (from GitHub). |
+| **Icons** | `ttf-material-symbols-variable-git` | Material Symbols icon font. |
+| **Monospace** | `ttf-jetbrains-mono-nerd` | Default monospace and nerd font. |
 
-### Shell & Terminal _(Optional)_
+### Shell & Terminal (Optional)
 
-These enhance the experience but are not required for the shell to function:
-
-- **kitty**: Terminal emulator with theme injection support.
-- **fish**: Interactive shell.
-- **starship**: Cross-shell prompt.
-- **bash / awk / grep / cut / sed**: Standard Unix utilities utilized by core scripts _(required)_.
+| Tool | Package | Purpose |
+| :--- | :--- | :--- |
+| **Terminal** | `kitty` | Terminal emulator with theme injection support. |
+| **Shell** | `fish` | Interactive shell. |
+| **Prompt** | `starship` | Cross-shell prompt. |
+| **Utils** | `bash`, `awk`, `grep` | Standard Unix utilities used by core scripts. |
 
 </details>
 
@@ -107,10 +115,10 @@ These enhance the experience but are not required for the shell to function:
 
 The `.config/` directory distributed with this repository contains necessary supplementary configurations:
 
-- **`quickshell/nandoroid/`**: The shell itself
-- **`matugen/`**: Template configs for Material 3 theme generation
-- **`starship.toml`**: Prompt configuration (requires starship)
-- **`fish/completions/nandoroid.fish`**: Tab-completion for IPC commands in fish shell
+- **`quickshell/nandoroid/`**: The shell itself.
+- **`matugen/`**: Template configs for Material 3 theme generation.
+- **`starship.toml`**: Prompt configuration (requires starship).
+- **`fish/completions/nandoroid.fish`**: Tab-completion for IPC commands in fish shell. *(Note: Currently under development and may not be fully functional yet; evolving alongside the shell)*.
 
 ## IPC Commands
 
