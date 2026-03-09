@@ -356,6 +356,7 @@ Singleton {
             // --- Media ---
             property JsonObject media: JsonObject {
                 property string priority: ""
+                property bool showMediaCard: true
             }
 
             // --- Privacy ---
