@@ -50,7 +50,7 @@ Item {
     readonly property string islandState: {
         if (Notifications.activePopup) return "notification"
         if (ScreenRecord.active) return "recording"
-        if (mediaShowing && MprisController.activePlayer) return "media"
+        if ((mediaShowing || GlobalStates.mediaNotchOpen) && MprisController.activePlayer) return "media"
         if (pomodoroActive) return "pomodoro"
         return "idle"
     }
@@ -359,6 +359,17 @@ Item {
             preventStealing: true
             cursorShape: Qt.PointingHandCursor
             acceptedButtons: Qt.LeftButton | Qt.MiddleButton | Qt.RightButton
+            
+            onEntered: {
+                if (islandState === "media" || MprisController.activePlayer) {
+                    GlobalStates.openMediaNotch();
+                }
+            }
+            
+            onExited: {
+                GlobalStates.closeMediaNotchWithDelay();
+            }
+
             onClicked: (mouse) => {
                 if (mouse.button === Qt.MiddleButton) {
                     HyprlandData.cycleLayout();

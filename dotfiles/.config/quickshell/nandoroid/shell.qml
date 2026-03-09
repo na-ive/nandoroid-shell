@@ -46,6 +46,7 @@ ShellRoot {
 
     // ── Phase 2: Status Bar ──
     StatusBar {}
+    MediaNotchPopup {}
 
     // ── Phase 3: Popups ──
     NotificationPopup {}
