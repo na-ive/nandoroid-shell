@@ -23,10 +23,10 @@ Singleton {
         
         stderr: StdioCollector {
             onStreamFinished: {
-                // Look for actual fatal error markers
-                if (this.text.includes("Error:") || this.text.includes("Invalid")) {
-                    console.log("[Wallpapers] Matugen Error:", this.text);
-                    root.sendNotification("Theming Error", "Failed to process wallpaper. The file might be corrupted or invalid.");
+                // Look for actual fatal error markers (Matugen v4 specific fatal markers)
+                if (this.text.includes("Failed to generate base16 color schemes") || this.text.includes("Invalid PNG signature")) {
+                    console.log("[Wallpapers] Matugen Fatal Error:", this.text);
+                    root.sendNotification("Theming Error", "Failed to process wallpaper. The file might be corrupted.");
                 }
             }
         }
@@ -40,9 +40,9 @@ Singleton {
 
         stderr: StdioCollector {
             onStreamFinished: {
-                // Only notify if it's a fatal error
-                if (this.text.includes("Error:")) {
-                    console.log("[Wallpapers] Matugen Color Error:", this.text);
+                // Ignore benign errors (missing unrelated files/commands)
+                if (this.text.includes("Failed to generate base16 color schemes")) {
+                    console.log("[Wallpapers] Matugen Color Fatal Error:", this.text);
                     root.sendNotification("Theming Error", "Failed to generate theme from color.");
                 }
             }
@@ -288,6 +288,18 @@ Singleton {
         
         console.log("[Wallpapers] Settings synced - Enabled:", _autoCycleEnabled, "Dir:", _autoCycleDirectory);
         
+        // Initial theme load on startup/reload
+        if (bg.matugen) {
+            root.initializeMatugen();
+        } else {
+            const theme = bg.matugenThemeFile;
+            if (theme && theme !== "") {
+                root.applyTheme(theme);
+            } else {
+                root.applyTheme("mocha.json");
+            }
+        }
+
         if (_autoCycleEnabled) {
             // Kickstart the cycle on startup or reload
             autoCycleStartTimer.restart();
