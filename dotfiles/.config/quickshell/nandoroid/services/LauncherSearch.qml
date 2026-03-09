@@ -35,9 +35,7 @@ Singleton {
         { name: "Lock Screen", subtitle: "Session Action", id: "cmd-lock", icon: "lock", isPlugin: true, category: "Command", emoji: "", execute: () => { Session.lock(); root.closeAll(); } },
         { name: "Reboot System", subtitle: "Session Action", id: "cmd-reboot", icon: "restart_alt", isPlugin: true, category: "Command", emoji: "", execute: () => { Session.reboot(); root.closeAll(); } },
         { name: "Power Off", subtitle: "Session Action", id: "cmd-poweroff", icon: "power_settings_new", isPlugin: true, category: "Command", emoji: "", execute: () => { Session.poweroff(); root.closeAll(); } },
-        { name: "Shutdown", subtitle: "Session Action", id: "cmd-shutdown", icon: "power_settings_new", isPlugin: true, category: "Command", emoji: "", execute: () => { Session.poweroff(); root.closeAll(); } },
-        { name: "Log Out", subtitle: "Session Action", id: "cmd-logout", icon: "logout", isPlugin: true, category: "Command", emoji: "", execute: () => { Session.logout(); root.closeAll(); } },
-        { name: "Exit Shell", subtitle: "Session Action", id: "cmd-exit", icon: "logout", isPlugin: true, category: "Command", emoji: "", execute: () => { Session.logout(); root.closeAll(); } },
+        { name: "Log Out", subtitle: "Exit Hyprland", id: "cmd-logout", icon: "logout", isPlugin: true, category: "Command", emoji: "", execute: () => { Session.logout(); root.closeAll(); } },
         { name: "Suspend", subtitle: "Session Action", id: "cmd-suspend", icon: "bedtime", isPlugin: true, category: "Command", emoji: "", execute: () => { Session.suspend(); root.closeAll(); } },
         { name: "Hibernate", subtitle: "Session Action", id: "cmd-hibernate", icon: "save", isPlugin: true, category: "Command", emoji: "", execute: () => { Session.hibernate(); root.closeAll(); } },
         { name: "Open Dashboard", subtitle: "Shell Interface", id: "cmd-dashboard", icon: "dashboard", isPlugin: true, category: "Command", emoji: "", execute: () => { GlobalStates.dashboardOpen = true; root.closeAll(); } },
@@ -47,8 +45,7 @@ Singleton {
         { name: "Wallpaper & Style", subtitle: "Shell Interface", id: "cmd-wallpaper", icon: "palette", isPlugin: true, category: "Command", emoji: "", execute: () => { GlobalStates.settingsPageIndex = 4; GlobalStates.settingsOpen = true; root.closeAll(); } },
         { name: "Bluetooth Settings", subtitle: "Shell Interface", id: "cmd-bluetooth", icon: "bluetooth", isPlugin: true, category: "Command", emoji: "", execute: () => { GlobalStates.settingsPageIndex = 1; GlobalStates.settingsOpen = true; root.closeAll(); } },
         { name: "Network Settings", subtitle: "Shell Interface", id: "cmd-network", icon: "wifi", isPlugin: true, category: "Command", emoji: "", execute: () => { GlobalStates.settingsPageIndex = 0; GlobalStates.settingsOpen = true; root.closeAll(); } },
-        { name: "Reload Hyprland", subtitle: "Compositor Action", id: "cmd-hypr-reload", icon: "refresh", isPlugin: true, category: "Command", emoji: "", execute: () => { Quickshell.execDetached(["hyprctl", "reload"]); root.closeAll(); } },
-        { name: "Reload Shell", subtitle: "Maintenance", id: "cmd-reload", icon: "refresh", isPlugin: true, category: "Command", emoji: "", execute: () => { Quickshell.reload(); root.closeAll(); } }
+        { name: "Restart Shell", subtitle: "Maintenance", id: "cmd-shell-restart", icon: "refresh", isPlugin: true, category: "Command", emoji: "", execute: () => { Quickshell.execDetached([Directories.home.replace("file://", "") + "/.config/quickshell/nandoroid/scripts/restartshell.sh"]); root.closeAll(); } }
     ]
 
     Timer {
