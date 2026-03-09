@@ -205,8 +205,6 @@ ColumnLayout {
         }
     }
 
-    // --- 1. Channel Selector ---
-...
     // --- 3. Update Buttons (50:50) ---
     RowLayout {
         Layout.fillWidth: true
@@ -284,8 +282,6 @@ ColumnLayout {
             }
         }
     }
-
-    // --- Logs & Tags 50:50 Section ---
 
     // --- Logs & Tags 50:50 Section ---
     RowLayout {
