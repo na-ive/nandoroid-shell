@@ -93,11 +93,11 @@ ColumnLayout {
         }
     }
 
-    // --- 2. Check for Updates Hero Card ---
+    // --- 2. Check for Updates Status Row ---
     Rectangle {
         Layout.fillWidth: true
-        Layout.preferredHeight: 250
-        radius: 28
+        Layout.preferredHeight: 80
+        radius: 20
         color: Appearance.m3colors.m3surfaceContainerHigh
         visible: installState.install_dir !== ""
         
@@ -128,37 +128,38 @@ ColumnLayout {
             stdout: StdioCollector { id: checkUpdateCollector }
         }
 
-        ColumnLayout {
-            anchors.centerIn: parent
+        RowLayout {
+            anchors.fill: parent
+            anchors.leftMargin: 20
+            anchors.rightMargin: 16
             spacing: 16
             
             MaterialSymbol {
-                text: "published_with_changes"
-                iconSize: 64
-                color: Appearance.colors.colPrimary
-                Layout.alignment: Qt.AlignHCenter
-            }
-            
-            StyledText {
-                text: "Update Status"
-                font.pixelSize: Appearance.font.pixelSize.large
-                font.weight: Font.Bold
-                color: Appearance.colors.colOnLayer1
-                Layout.alignment: Qt.AlignHCenter
-            }
-            
-            StyledText {
-                text: checkUpdateProc.running ? "Checking..." : (checkUpdateCollector.text ? checkUpdateCollector.text.trim() : "Fetch the latest changes from the repository.")
-                font.pixelSize: Appearance.font.pixelSize.normal
+                text: (checkUpdateCollector.text && checkUpdateCollector.text.includes("Available")) ? "update" : "published_with_changes"
+                iconSize: 24
                 color: (checkUpdateCollector.text && checkUpdateCollector.text.includes("Available")) ? Appearance.colors.colPrimary : Appearance.colors.colSubtext
-                Layout.alignment: Qt.AlignHCenter
+            }
+            
+            ColumnLayout {
+                Layout.fillWidth: true
+                spacing: 2
+                StyledText {
+                    text: "Update Status"
+                    font.pixelSize: Appearance.font.pixelSize.normal
+                    font.weight: Font.Medium
+                    color: Appearance.colors.colOnLayer1
+                }
+                StyledText {
+                    text: checkUpdateProc.running ? "Checking..." : (checkUpdateCollector.text ? checkUpdateCollector.text.trim() : "Fetch the latest changes from the repository.")
+                    font.pixelSize: Appearance.font.pixelSize.small
+                    color: (checkUpdateCollector.text && checkUpdateCollector.text.includes("Available")) ? Appearance.colors.colPrimary : Appearance.colors.colSubtext
+                }
             }
 
             RippleButton {
-                Layout.alignment: Qt.AlignHCenter
-                implicitWidth: checkBtnContent.implicitWidth + 48
-                implicitHeight: 48
-                buttonRadius: 24
+                implicitWidth: 140
+                implicitHeight: 40
+                buttonRadius: 20
                 colBackground: Appearance.colors.colPrimary
                 onClicked: {
                     checkUpdateProc.running = false
@@ -169,18 +170,18 @@ ColumnLayout {
                     gitTagProc.running = true
                 }
                 RowLayout {
-                    id: checkBtnContent
                     anchors.centerIn: parent
                     spacing: 8
                     MaterialSymbol {
                         text: "sync"
-                        iconSize: 20
+                        iconSize: 18
                         color: Appearance.colors.colOnPrimary
                     }
                     StyledText {
-                        text: "Check for Updates"
+                        text: "Check Now"
                         color: Appearance.colors.colOnPrimary
                         font.weight: Font.Medium
+                        font.pixelSize: Appearance.font.pixelSize.small
                     }
                 }
             }
@@ -191,16 +192,11 @@ ColumnLayout {
 
     /**
      * BACKGROUND UPDATE PROCESS
-     * This runs the update.sh script without opening a terminal window.
-     * When finished, it automatically reloads the shell to apply changes.
-     * 
-     * TODO: Add visual feedback/progress indicator in the UI soon.
      */
     Process {
         id: runUpdateProc
         command: ["bash", "-c", `${installState.install_dir}/update.sh ${updateType} ${installState.channel}`]
         onExited: {
-            // Once the script is done (git pull, etc), reload the shell immediately.
             Quickshell.reload();
         }
     }
@@ -398,7 +394,6 @@ ColumnLayout {
         }
     }
     
-    // Fallback warning if install dir missing
     StyledText {
         visible: installState.install_dir === ""
         text: "Update system unavailable. Installation state missing."

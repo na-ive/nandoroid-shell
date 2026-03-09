@@ -62,14 +62,50 @@ Flickable {
         // ── Header ──
         ColumnLayout {
             spacing: 4
-            StyledText {
-                text: "About"
-                font.pixelSize: Appearance.font.pixelSize.huge
-                font.weight: Font.Bold
-                color: Appearance.colors.colOnLayer1
+            
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: 12
+
+                // Back Button (only in sub-pages)
+                RippleButton {
+                    visible: root.currentView !== "main"
+                    implicitWidth: 40
+                    implicitHeight: 40
+                    buttonRadius: 20
+                    colBackground: Appearance.colors.colLayer1
+                    onClicked: root.currentView = "main"
+                    contentItem: MaterialSymbol {
+                        anchors.centerIn: parent
+                        text: "arrow_back"
+                        iconSize: 24
+                        color: Appearance.colors.colOnLayer1
+                    }
+                }
+
+                StyledText {
+                    text: {
+                        if (root.currentView === "main") return "About"
+                        if (root.currentView === "update") return "Shell Update"
+                        if (root.currentView === "dependency") return "Dependency Check"
+                        if (root.currentView === "credits") return "Special Thanks"
+                        return "About"
+                    }
+                    font.pixelSize: Appearance.font.pixelSize.huge
+                    font.weight: Font.Bold
+                    color: Appearance.colors.colOnLayer1
+                    Layout.fillWidth: true
+                }
             }
+
             StyledText {
-                text: "System information and shell details."
+                text: {
+                    if (root.currentView === "main") return "System information and shell details."
+                    if (root.currentView === "update") return "Manage shell update channels and fetch new versions."
+                    if (root.currentView === "dependency") return "Check and install missing system dependencies."
+                    if (root.currentView === "credits") return "Contributors and projects that made Nandoroid possible."
+                    return ""
+                }
                 font.pixelSize: Appearance.font.pixelSize.normal
                 color: Appearance.colors.colSubtext
             }

@@ -101,42 +101,42 @@ ColumnLayout {
 
     Rectangle {
         Layout.fillWidth: true
-        Layout.preferredHeight: 120
-        radius: 28
+        Layout.preferredHeight: 80
+        radius: 20
         color: Appearance.m3colors.m3surfaceContainerHigh
         
         RowLayout {
             anchors.fill: parent
-            anchors.margins: 20
-            spacing: 20
+            anchors.leftMargin: 20
+            anchors.rightMargin: 16
+            spacing: 16
             
             MaterialSymbol {
                 text: "account_tree"
-                iconSize: 48
+                iconSize: 24
                 color: Appearance.colors.colPrimary
             }
             
             ColumnLayout {
                 Layout.fillWidth: true
-                spacing: 4
+                spacing: 2
                 StyledText {
-                    text: "System Dependencies"
-                    font.pixelSize: Appearance.font.pixelSize.large
-                    font.weight: Font.Bold
+                    text: "Dependency Scanner"
+                    font.pixelSize: Appearance.font.pixelSize.normal
+                    font.weight: Font.Medium
                     color: Appearance.colors.colOnLayer1
                 }
                 StyledText {
-                    text: "Ensure all required packages are installed."
-                    font.pixelSize: Appearance.font.pixelSize.normal
+                    text: "Identify and install missing system components."
+                    font.pixelSize: Appearance.font.pixelSize.small
                     color: Appearance.colors.colSubtext
                 }
             }
 
             RippleButton {
-                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                implicitWidth: 160
-                implicitHeight: 48
-                buttonRadius: 24
+                implicitWidth: 140
+                implicitHeight: 40
+                buttonRadius: 20
                 colBackground: Appearance.colors.colPrimary
                 onClicked: {
                     dependencyRoot.scanDependencies();
@@ -146,13 +146,14 @@ ColumnLayout {
                     spacing: 8
                     MaterialSymbol {
                         text: "sync"
-                        iconSize: 20
+                        iconSize: 18
                         color: Appearance.colors.colOnPrimary
                     }
                     StyledText {
                         text: "Scan Now"
                         color: Appearance.colors.colOnPrimary
                         font.weight: Font.Medium
+                        font.pixelSize: Appearance.font.pixelSize.small
                     }
                 }
             }
@@ -174,7 +175,7 @@ ColumnLayout {
                 radius: 20
                 color: Appearance.m3colors.m3surfaceContainerHigh
                 border.width: 1
-                border.color: model.installed ? "#81C995" : Appearance.colors.colError // #81C995 is a material green suitable for both dark and light
+                border.color: model.installed ? "#81C995" : Appearance.colors.colError 
 
                 MouseArea {
                     anchors.fill: parent
