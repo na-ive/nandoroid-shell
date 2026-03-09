@@ -24,31 +24,31 @@ Variants {
         WlrLayershell.layer: WlrLayer.Top
         WlrLayershell.namespace: "nandoroid:media-hud"
         exclusionMode: ExclusionMode.Ignore
-        
-        // Full width window to ensure robust centering of the content
+
         anchors {
             top: true
-            left: true
-            right: true
         }
-        
+
         WlrLayershell.margins {
             top: 44
         }
 
+        // Responsive window width
+        width: Math.min(320, modelData.width * 0.9)
         height: contentRect.height + 20
         color: "transparent"
-        
+
         visible: GlobalStates.mediaNotchOpen || contentRect.opacity > 0
 
         Rectangle {
             id: contentRect
-            width: 300 // Fixed width for the pill
+            // Responsive pill width
+            width: parent.width - 20
             anchors.horizontalCenter: parent.horizontalCenter
             height: mainLayout.implicitHeight + 12
             color: "black"
-            radius: 20
-            
+            radius: Appearance.rounding.button // Use token for consistency
+
             // Animation for entry
             opacity: GlobalStates.mediaNotchOpen ? 1 : 0
             scale: GlobalStates.mediaNotchOpen ? 1 : 0.95
