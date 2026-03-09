@@ -4,7 +4,7 @@ A Quickshell-based desktop shell for Hyprland adopting Android 16 design element
 
 > **Note**: This shell and its dependencies are designed strictly for **Arch Linux based distributions** (Arch, CachyOS, EndeavourOS, etc.).
 
-**Version:** v1.0
+**Version:** v1.1
 **License:** AGPL-3.0
 
 ## Key Features

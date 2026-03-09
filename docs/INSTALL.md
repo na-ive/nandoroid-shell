@@ -123,6 +123,14 @@ On first launch, the shell will use default colors. To generate your theme:
 
 The `all` mode uses `cp -r` to overlay new files and will **not** delete your existing configurations. Your personal Hyprland keybinds, fish functions, kitty settings, etc. remain untouched.
 
+## What's New in v1.1
+
+- **Android 16 Design**: Overhauled OSD, Session, Quick Settings, and Notification Center to match the Material 3 Expressive (Android 16) aesthetic.
+- **Advanced Matugen**: Enhanced theme generation with support for basic color overrides and more robust template integration.
+- **SmartAutomation**: New service for DND syncing, scheduled focus modes, and automatic update checks.
+- **Launcher Improvements**: Added application grouping, quick commands, and clipboard image thumbnails.
+- **Performance**: Implemented "stealth pre-instantiation" for sidebars to ensure instant opening and zero reflow lag.
+
 ## Troubleshooting
 
 | Issue                            | Solution                                                             |
@@ -133,4 +141,6 @@ The `all` mode uses `cp -r` to overlay new files and will **not** delete your ex
 | No screen share dialog           | Ensure `xdg-desktop-portal-hyprland` is running                      |
 | Terminal colors not applying     | Check that `python3` is installed                                    |
 | Terminal context menu not opening| Ensure `kitty` is installed (default terminal used in context menu)  |
+| Audio effects not applying       | Ensure `easyeffects --daemon` is running in background               |
+| DND not syncing with events      | Check if "Focus" is enabled for your event in the Dashboard          |
 | Shell won't start                | Run `quickshell -c nandoroid` from terminal and check errors         |
