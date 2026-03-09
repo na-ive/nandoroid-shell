@@ -89,7 +89,6 @@ ColumnLayout {
         ListElement { displayName: "Wl-Clipboard"; packageName: "wl-clipboard"; installed: false; desc: "Wayland clipboard" }
         ListElement { displayName: "Cliphist"; packageName: "cliphist"; installed: false; desc: "Clipboard history manager" }
         ListElement { displayName: "Zenity"; packageName: "zenity"; installed: false; desc: "System dialogs for file/folder selection" }
-        ListElement { displayName: "fprintd"; packageName: "fprintd"; installed: false; desc: "Fingerprint sensing support (Optional)" }
         ListElement { displayName: "fd"; packageName: "fd"; installed: false; desc: "Fast file search utility" }
         ListElement { displayName: "Libqalculate"; packageName: "libqalculate"; installed: false; desc: "Advanced math calculator (qalc)" }
         ListElement { displayName: "Google Sans Flex"; packageName: "__font_google_sans"; installed: false; desc: "UI font (from GitHub)" }
