@@ -195,6 +195,24 @@ ShellRoot {
     }
 
     GlobalShortcut {
+        name: "spotlightFiles"
+        description: "Open Spotlight in File search mode"
+        onPressed: {
+            GlobalStates.initialSpotlightQuery = "/"
+            GlobalStates.spotlightOpen = true
+        }
+    }
+
+    GlobalShortcut {
+        name: "spotlightCommand"
+        description: "Open Spotlight in Command mode"
+        onPressed: {
+            GlobalStates.initialSpotlightQuery = ">"
+            GlobalStates.spotlightOpen = true
+        }
+    }
+
+    GlobalShortcut {
         name: "spotlightClipboard"
         description: "Open Spotlight in Clipboard mode"
         onPressed: {

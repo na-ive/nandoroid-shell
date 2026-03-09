@@ -169,6 +169,8 @@ Nandoroid uses native Quickshell Global Shortcuts for specialized tool operation
 
 | Shortcut Name           | Description                      | Hyprland Bind Example                                                                      |
 | :---------------------- | :------------------------------- | :----------------------------------------------------------------------------------------- |
+| `spotlightFiles`        | Open Spotlight in File search    | `bindd = SUPER, F, File search, global, quickshell:spotlightFiles`                         |
+| `spotlightCommand`      | Open Spotlight in Quick Commands | `bindd = SUPER, G, Quick commands, global, quickshell:spotlightCommand`                     |
 | `spotlightClipboard`    | Open Spotlight in Clipboard mode | `bindd = SUPER, V, Clipboard history, global, quickshell:spotlightClipboard`               |
 | `spotlightEmoji`        | Open Spotlight in Emoji mode     | `bindd = SUPER, E, Emoji picker, global, quickshell:spotlightEmoji`                        |
 | `regionScreenshot`      | Capture selected region          | `bindd = SUPER, S, Region screenshot, global, quickshell:regionScreenshot`                 |
