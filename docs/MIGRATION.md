@@ -108,6 +108,8 @@ bindle = , XF86MonBrightnessUp, exec, qs -c nandoroid ipc call brightness increm
 bindle = , XF86MonBrightnessDown, exec, qs -c nandoroid ipc call brightness decrement
 
 # Quickshell Global Shortcuts
+bindd = SUPER, F, File search, global, quickshell:spotlightFiles
+bindd = SUPER, G, Quick commands, global, quickshell:spotlightCommand
 bindd = SUPER, V, Clipboard history, global, quickshell:spotlightClipboard
 bindd = SUPER, E, Emoji picker, global, quickshell:spotlightEmoji
 bindd = SUPER, S, Region screenshot, global, quickshell:regionScreenshot
@@ -153,3 +155,5 @@ Neither mode deletes or overwrites your Hyprland keybinds, fish functions, kitty
 | GTK apps look unstyled       | No GTK theme applied    | Matugen auto-generates GTK CSS, or use `nwg-look` |
 | Terminal context menu not opening| Required terminal missing| Ensure `kitty` is installed (default terminal)    |
 | Icons missing in shell       | Font not installed      | Install `ttf-material-symbols-variable-git`       |
+| Clipboard history empty      | `cliphist` not running  | Ensure `cliphist` is installed and daemonized     |
+| Avatar picker not opening    | `zenity` missing        | Install `zenity` package                          |

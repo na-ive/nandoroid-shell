@@ -72,7 +72,9 @@ The interactive installer guides you through dependency installation, config cop
 - **ImageMagick (`magick`)**: Used for color detection, resizing, and image processing.
 - **ffmpeg (`ffplay`)**: Used for system sounds.
 - **wl-clipboard**: For Wayland clipboard operations.
+- **cliphist**: Required for clipboard history management in Spotlight.
 - **songrec**: Required for the Shazam-like music recognition feature.
+- **zenity**: Required for the avatar/file picker dialogs in Settings.
 - **cava**: Used for audio visualization in the shell.
 - **easyeffects**: For audio effects and equalization management.
 - **hyprpicker**: For the color picker tool.
