@@ -156,6 +156,8 @@ ColumnLayout {
                 }
             }
 
+            Item { Layout.fillWidth: true }
+
             RippleButton {
                 implicitWidth: 140
                 implicitHeight: 40
