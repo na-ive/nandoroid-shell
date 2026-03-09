@@ -19,6 +19,50 @@ Item {
     width: parent ? parent.width : 0
     height: parent ? parent.height : 0
 
+    // Deep Link Logic
+    property string targetSearchQuery: ""
+    onTargetSearchQueryChanged: {
+        if (targetSearchQuery !== "") {
+            deepLinkSearch(targetSearchQuery)
+            targetSearchQuery = ""
+        }
+    }
+
+    function deepLinkSearch(query) {
+        if (!query) return;
+        query = query.toLowerCase();
+        for (let i = 0; i < mainCol.children.length; i++) {
+            let child = mainCol.children[i];
+            if (isMatch(child, query)) {
+                mainFlickable.contentY = Math.min(child.y, mainFlickable.contentHeight - mainFlickable.height);
+                highlightAnim.target = child;
+                highlightAnim.restart();
+                break;
+            }
+        }
+    }
+
+    function isMatch(item, query) {
+        if (!item || !item.visible) return false;
+        const props = ["title", "text", "mainText", "label", "name"];
+        for (let p of props) {
+            if (item.hasOwnProperty(p) && typeof item[p] === "string" && item[p].toLowerCase().includes(query)) return true;
+        }
+        if (item.children) {
+            for (let i = 0; i < item.children.length; i++) {
+                if (isMatch(item.children[i], query)) return true;
+            }
+        }
+        return false;
+    }
+
+    SequentialAnimation {
+        id: highlightAnim
+        property var target: null
+        NumberAnimation { target: highlightAnim.target; property: "opacity"; from: 1; to: 0.3; duration: 200 }
+        NumberAnimation { target: highlightAnim.target; property: "opacity"; from: 0.3; to: 1; duration: 400 }
+    }
+
     // ── Placeholder Monitors for Testing ──
     readonly property bool showPlaceholders: false // Set to true to test multi-monitor features on single-monitor setups
     readonly property var debugMonitors: [

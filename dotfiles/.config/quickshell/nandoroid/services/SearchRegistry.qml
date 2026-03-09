@@ -1,5 +1,16 @@
 pragma Singleton
 
+/**
+ * ╔════════════ SEARCH INDEX REGISTRY ════════════╗
+ * ║                                               ║
+ * ║ IMPORTANT: When adding new settings pages or  ║
+ * ║ sub-components, you MUST register the .qml    ║
+ * ║ file path in the startIndexing() function     ║
+ * ║ below to make it searchable.                  ║
+ * ║                                               ║
+ * ╚═══════════════════════════════════════════════╝
+ */
+
 import QtQuick
 import Quickshell
 import Quickshell.Io
@@ -9,8 +20,8 @@ import "."
 Item {
     id: root
 
-    property var sections: []
     property string currentSearch: ""
+    property var sections: []
     property bool isIndexing: pageFile.currentIndex < pageFile.files.length && pageFile.files.length > 0
 
     function startIndexing() {
@@ -20,11 +31,8 @@ Item {
             { file: "panels/Settings/pages/Network/NetworkMainView.qml", pageIndex: 0 },
             { file: "panels/Settings/pages/Network/NetworkSavedView.qml", pageIndex: 0 },
             { file: "panels/Settings/pages/Network/NetworkWiredView.qml", pageIndex: 0 },
-            { file: "panels/Settings/pages/Network/NetworkAddDialog.qml", pageIndex: 0 },
             { file: "panels/Settings/pages/Bluetooth/BluetoothSettings.qml", pageIndex: 1 },
-            { file: "panels/Settings/pages/Bluetooth/BluetoothPairDialog.qml", pageIndex: 1 },
             { file: "panels/Settings/pages/Audio/AudioSettings.qml", pageIndex: 2 },
-            { file: "panels/Settings/pages/Audio/AudioDeviceList.qml", pageIndex: 2 },
             { file: "panels/Settings/pages/Display/DisplaySettings.qml", pageIndex: 3 },
             { file: "panels/Settings/pages/Display/DisplayEyeCare.qml", pageIndex: 3 },
             { file: "panels/Settings/pages/WallpaperStyle/WallpaperStyleSettings.qml", pageIndex: 4 },
@@ -37,6 +45,7 @@ Item {
             { file: "panels/Settings/pages/WallpaperStyle/WsScreenDecor.qml", pageIndex: 4 },
             { file: "panels/Settings/pages/WallpaperStyle/WsTypography.qml", pageIndex: 4 },
             { file: "panels/Settings/pages/WallpaperStyle/WsDateTime.qml", pageIndex: 4 },
+            { file: "panels/Settings/pages/WallpaperStyle/WsWallpaperCycle.qml", pageIndex: 4 },
             { file: "panels/Settings/pages/Services/ServicesSettings.qml", pageIndex: 5 },
             { file: "panels/Settings/pages/Services/ServicesWeather.qml", pageIndex: 5 },
             { file: "panels/Settings/pages/Services/ServicesSearch.qml", pageIndex: 5 },
@@ -46,6 +55,7 @@ Item {
             { file: "panels/Settings/pages/Services/ServicesMedia.qml", pageIndex: 5 },
             { file: "panels/Settings/pages/Services/ServicesPower.qml", pageIndex: 5 },
             { file: "panels/Settings/pages/Services/ServicesSystem.qml", pageIndex: 5 },
+            { file: "panels/Settings/pages/Services/ServicesGitHub.qml", pageIndex: 5 },
             { file: "panels/Settings/pages/About/AboutSettings.qml", pageIndex: 6 },
             { file: "panels/Settings/pages/About/AboutCredits.qml", pageIndex: 6 },
             { file: "panels/Settings/pages/About/AboutDependency.qml", pageIndex: 6 },
@@ -56,7 +66,6 @@ Item {
 
     Component.onCompleted: startIndexing()
 
-    // Listen for language changes
     Connections {
         target: Translation
         function onLanguageCodeChanged() {
@@ -82,36 +91,61 @@ Item {
         }
 
         onLoaded: {
-            console.log("[SearchRegistry] Loaded page file:", path)
-            root.indexQmlFile(text(), files[currentIndex].pageIndex)
-            console.log("[SearchRegistry] Indexed", currentIndex + 1, "/", files.length)
+            const content = text();
+            if (content) {
+                root.indexQmlFile(content, files[currentIndex].pageIndex);
+            }
             currentIndex++
             if (currentIndex < files.length) {
                 Qt.callLater(() => loadNext())
-            } else {
-                console.log("[SearchRegistry] Indexing complete. Total sections:", sections.length)
             }
+        }
+        
+        onLoadFailed: (error) => {
+            console.error("[SearchRegistry] Failed to load file:", path, "Error:", error);
+            currentIndex++;
+            if (currentIndex < files.length) Qt.callLater(() => loadNext());
         }
     }
 
     function indexQmlFile(qmlText, pageIndex) {
         if (!qmlText) return
 
-        let propRegex = /(?:title|text|buttonText|placeholderText|mainText|label|name)\s*:\s*(?:Translation\.tr\()?\s*["']([^"']+)["']/g
+        // 1. First, find all SearchHandlers to identify "Portals"
+        let handlerRegex = /SearchHandler\s*\{[\s\S]*?searchString\s*:\s*["']([^"']+)["'](?:[\s\S]*?aliases\s*:\s*\[([\s\S]*?)\])?/g
+        let handlerMatch
+        let portals = []
+        while ((handlerMatch = handlerRegex.exec(qmlText)) !== null) {
+            let canonical = handlerMatch[1]
+            let aliasStr = handlerMatch[2] || ""
+            let aliases = aliasStr.split(",").map(s => s.replace(/["']/g, "").trim()).filter(s => s !== "")
+            portals.push({ canonical: canonical, aliases: aliases })
+        }
+
+        // 2. If no portals found, use page title as fallback
+        if (portals.length === 0) {
+            portals.push({ canonical: getPageName(pageIndex), aliases: [] })
+        }
+
+        // 3. Find all searchable strings
+        let propRegex = /(?:title|text|buttonText|placeholderText|mainText|label|name|description|hint|headerText)\s*:\s*(?:(?:Translation\.tr|qsTr|qsTranslate)\s*\(\s*)?["']([^"']+)["']/g
         let propMatch
-        let searchStrings = []
+        let allStrings = []
         while ((propMatch = propRegex.exec(qmlText)) !== null) {
             let str = propMatch[1]
-            if (str.length > 2 && !searchStrings.includes(str)) searchStrings.push(str)
+            if (str.length >= 2 && !allStrings.includes(str)) allStrings.push(str)
         }
-        
-        if (searchStrings.length > 0) {
+
+        // Register each portal as a searchable section
+        portals.forEach(portal => {
             registerSection({
                 pageIndex: pageIndex,
                 title: getPageName(pageIndex),
-                searchStrings: searchStrings
+                canonical: portal.canonical,
+                aliases: portal.aliases,
+                contentStrings: allStrings // Map all strings in file to these portals for now
             })
-        }
+        })
     }
 
     function getPageName(index) {
@@ -120,21 +154,17 @@ Item {
     }
 
     function registerSection(data) {
-        // Build search tokens
-        let searchStringsLower = data.searchStrings.map(s => s.toLowerCase())
-        let translatedStringsLower = data.searchStrings.map(s => Translation.tr(s).toLowerCase())
-        let titleLower = data.title.toLowerCase()
-        let translatedTitleLower = Translation.tr(data.title).toLowerCase()
-
-        let tokens = []
-        let allStrings = [titleLower, translatedTitleLower, ...searchStringsLower, ...translatedStringsLower]
-        for (let str of allStrings) {
-            tokens.push(...tokenize(str))
-        }
+        let tokens = new Set()
         
-        data.tokens = Array.from(new Set(tokens)) // unique tokens
+        // Add canonical, aliases, and content to tokens
+        tokenize(data.canonical).forEach(t => tokens.add(t))
+        data.aliases.forEach(a => tokenize(a).forEach(t => tokens.add(t)))
+        
+        // contentStrings help finding the portal even if user doesn't type canonical name
+        data.contentStrings.forEach(s => tokenize(s).forEach(t => tokens.add(t)))
+        
+        data.tokens = Array.from(tokens)
         data.translatedTitle = Translation.tr(data.title)
-        data.translatedStrings = data.searchStrings.map(s => Translation.tr(s))
         
         let newSections = sections.slice()
         newSections.push(data)
@@ -143,25 +173,22 @@ Item {
 
     function tokenize(text) {
         if (!text) return []
-        // Split by non-alphanumeric and underscores, keep only words > 2 chars
-        return text.toLowerCase().split(/[^a-z0-9_]+/).filter(t => t.length > 2)
+        return text.toLowerCase().split(/[^a-z0-9_]+/).filter(t => t.length >= 2)
     }
 
-    function fuzzyMatch(query, text) {
-        if (!query || !text) return 0
-        if (text.includes(query)) return 100 // Direct substring match
-        
-        let score = 0
-        let queryIdx = 0
-        for (let i = 0; i < text.length && queryIdx < query.length; i++) {
-            if (text[i] === query[queryIdx]) {
-                queryIdx++
-                score += 10
-            } else {
-                score -= 1
+    function levenshtein(a, b) {
+        if (a.length === 0) return b.length;
+        if (b.length === 0) return a.length;
+        let matrix = [];
+        for (let i = 0; i <= b.length; i++) matrix[i] = [i];
+        for (let j = 0; j <= a.length; j++) matrix[0][j] = j;
+        for (let i = 1; i <= b.length; i++) {
+            for (let j = 1; j <= a.length; j++) {
+                if (b.charAt(i - 1) === a.charAt(j - 1)) matrix[i][j] = matrix[i - 1][j - 1];
+                else matrix[i][j] = Math.min(matrix[i - 1][j - 1] + 1, matrix[i][j - 1] + 1, matrix[i - 1][j] + 1);
             }
         }
-        return queryIdx === query.length ? Math.max(0, score) : 0
+        return matrix[b.length][a.length];
     }
 
     function getResultsRanked(query) {
@@ -173,53 +200,50 @@ Item {
         for (let section of sections) {
             let score = 0
             
-            // 1. Exact or partial title match
-            let titleLower = section.translatedTitle.toLowerCase()
-            if (titleLower === query) score += 2000
-            else if (titleLower.includes(query)) score += 1000
+            // Priority 1: Canonical match
+            if (section.canonical.toLowerCase() === query) score += 10000
+            else if (section.canonical.toLowerCase().includes(query)) score += 5000
             
-            // 2. Token matches
+            // Priority 2: Alias match
+            section.aliases.forEach(a => {
+                if (a.toLowerCase() === query) score += 8000
+                else if (a.toLowerCase().includes(query)) score += 4000
+            })
+            
+            // Priority 3: Token match
             for (let qToken of queryTokens) {
                 for (let sToken of section.tokens) {
-                    if (sToken === qToken) score += 500
+                    if (sToken === qToken) score += 1000
                     else if (sToken.includes(qToken)) score += 200
                 }
-            }
-            
-            // 3. String matches
-            let bestStr = ""
-            if (section.translatedStrings) {
-                for (let str of section.translatedStrings) {
-                    let lower = str.toLowerCase()
-                    if (lower === query) {
-                        score += 800
-                        bestStr = str
-                        break
-                    } else if (lower.includes(query)) {
-                        score += 400
-                        if (bestStr === "") bestStr = str
-                    }
-                }
-            }
-
-            // 4. Fuzzy match fallback
-            if (score === 0 && query.length > 3) {
-                let fuzzy = fuzzyMatch(query, section.translatedTitle.toLowerCase())
-                if (fuzzy > 20) score += fuzzy
             }
             
             if (score > 0) {
                 results.push({
                     pageIndex: section.pageIndex,
                     title: section.translatedTitle,
-                    matchedString: bestStr || section.translatedTitle,
+                    matchedString: section.canonical, // Always return the canonical portal name
                     score: score
                 })
             }
         }
         
         results.sort((a, b) => b.score - a.score)
-        return results
+        
+        // --- STRICT DEDUPLICATION ---
+        let uniqueResults = []
+        let seenTargets = new Set()
+        
+        for (let res of results) {
+            // deduplicate by page + canonical target
+            let key = res.pageIndex + "|" + res.matchedString.toLowerCase()
+            if (!seenTargets.has(key)) {
+                uniqueResults.push(res)
+                seenTargets.add(key)
+            }
+        }
+        
+        return uniqueResults
     }
 
     function getBestResult(query) {

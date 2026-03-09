@@ -13,12 +13,22 @@ ColumnLayout {
     id: root
     Layout.fillWidth: true
     spacing: 0
+    
+    SearchHandler { 
+        searchString: "Launcher"
+        aliases: ["App Launcher", "Search Bar", "Drawer"]
+    }
 
     // ── Launcher Section ──
     ColumnLayout {
         Layout.fillWidth: true
         Layout.topMargin: 12
         spacing: 16
+        
+        SearchHandler { 
+            searchString: "Icon Shapes"
+            aliases: ["Icons", "Shapes", "App Icons"]
+        }
 
         // Section Header
         RowLayout {

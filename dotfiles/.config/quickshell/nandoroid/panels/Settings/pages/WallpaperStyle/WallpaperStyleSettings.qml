@@ -17,8 +17,17 @@ Flickable {
     id: root
     width: parent ? parent.width : 0
     height: parent ? parent.height : 0
-    contentHeight: mainCol.implicitHeight
+    contentHeight: mainCol.implicitHeight + 48
     clip: true
+    
+    ScrollBar.vertical: StyledScrollBar {}
+
+    SequentialAnimation {
+        id: highlightAnim
+        property var target: null
+        NumberAnimation { target: highlightAnim.target; property: "opacity"; from: 1; to: 0.3; duration: 200 }
+        NumberAnimation { target: highlightAnim.target; property: "opacity"; from: 0.3; to: 1; duration: 400 }
+    }
 
     readonly property var matugenSchemes: [
         { id: "scheme-content",      name: "Content",      colors: [] },
@@ -228,45 +237,55 @@ Flickable {
             }
         }
 
-        // ── Same Wallpaper Toggle ──
-        Rectangle {
+        // ── Wallpaper Style Options Group ──
+        ColumnLayout {
             Layout.fillWidth: true
-            implicitHeight: sameToggleRow.implicitHeight + 36
-            radius: 20
-            color: Appearance.m3colors.m3surfaceContainerHigh
+            spacing: 4 // Tight gap like in Clock section
 
-            RowLayout {
-                id: sameToggleRow
-                anchors.fill: parent
-                anchors.margins: 20
-                spacing: 20
+            SegmentedWrapper {
+                Layout.fillWidth: true
+                implicitHeight: syncToggleRow.implicitHeight + 40
+                orientation: Qt.Vertical
+                maxRadius: 20
+                color: Appearance.m3colors.m3surfaceContainerHigh
+                
+                RowLayout {
+                    id: syncToggleRow
+                    anchors.fill: parent; anchors.margins: 20
+                    spacing: 20
 
-                MaterialSymbol {
-                    text: "sync"
-                    iconSize: 24
-                    color: Appearance.colors.colPrimary
-                }
+                    MaterialSymbol {
+                        text: "sync"
+                        iconSize: 24
+                        color: Appearance.colors.colPrimary
+                    }
 
-                StyledText {
-                    text: "Use same wallpaper for lock screen"
-                    font.pixelSize: Appearance.font.pixelSize.normal
-                    color: Appearance.colors.colOnLayer1
-                    Layout.fillWidth: true
-                }
+                    StyledText {
+                        text: "Use same wallpaper for lock screen"
+                        font.pixelSize: Appearance.font.pixelSize.normal
+                        color: Appearance.colors.colOnLayer1
+                        Layout.fillWidth: true
+                    }
 
-                AndroidToggle {
-                    id: syncToggle
-                    checked: Config.ready && (Config.options.lock ? !Config.options.lock.useSeparateWallpaper : false)
-                    onToggled: {
-                        if (Config.ready && Config.options.lock) {
-                            const current = Config.options.lock.useSeparateWallpaper
-                            Config.options.lock.useSeparateWallpaper = !current
-                            if (current) { // Was true (separate), now false (synced)
-                                Wallpapers.selectForLockscreen(Config.options.appearance.background.wallpaperPath)
+                    AndroidToggle {
+                        id: syncToggle
+                        checked: Config.ready && (Config.options.lock ? !Config.options.lock.useSeparateWallpaper : false)
+                        onToggled: {
+                            if (Config.ready && Config.options.lock) {
+                                const current = Config.options.lock.useSeparateWallpaper
+                                Config.options.lock.useSeparateWallpaper = !current
+                                if (current) { // Was true (separate), now false (synced)
+                                    Wallpapers.selectForLockscreen(Config.options.appearance.background.wallpaperPath)
+                                }
                             }
                         }
                     }
                 }
+            }
+            
+            // ── Wallpaper Auto-Cycle ──
+            WsWallpaperCycle { 
+                Layout.fillWidth: true
             }
         }
 
@@ -301,13 +320,13 @@ Flickable {
                             ? Config.options.lock.wallpaperPath
                             : (Config.options.appearance && Config.options.appearance.background ? Config.options.appearance.background.wallpaperPath : ""))
                         : ""
-                    showCheckmark: syncToggle.checked
-                    clickable: !syncToggle.checked
-                    onClicked: {
-                        console.log("Settings: Opening Wallpaper Selector for Lockscreen");
-                        GlobalStates.wallpaperSelectorTarget = "lock";
-                        GlobalStates.wallpaperSelectorOpen = true;
-                    }
+                     showCheckmark: Config.ready && (Config.options.lock ? !Config.options.lock.useSeparateWallpaper : false)
+                     clickable: Config.ready && (Config.options.lock ? Config.options.lock.useSeparateWallpaper : true)
+                     onClicked: {
+                         console.log("Settings: Opening Wallpaper Selector for Lockscreen");
+                         GlobalStates.wallpaperSelectorTarget = "lock";
+                         GlobalStates.wallpaperSelectorOpen = true;
+                     }
                 }
         }
 

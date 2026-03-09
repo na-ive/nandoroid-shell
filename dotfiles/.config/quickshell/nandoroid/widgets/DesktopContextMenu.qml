@@ -76,6 +76,7 @@ PopupWindow {
                 menuIcon: "schedule"
                 onClicked: {
                     GlobalStates.settingsPageIndex = 4 // Wallpaper & Style
+                    SearchRegistry.currentSearch = "Clock Style"
                     GlobalStates.settingsOpen = true
                     root.close()
                 }

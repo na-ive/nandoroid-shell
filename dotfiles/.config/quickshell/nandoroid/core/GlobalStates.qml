@@ -28,7 +28,26 @@ Singleton {
     property bool systemMonitorOpen: false
     property bool regionSelectorOpen: false
     property bool overviewOpen: false
+    property bool mediaNotchOpen: false
     property string wallpaperSelectorTarget: "desktop" // "desktop" or "lock"
+    
+    // --- Media Notch Timing Logic ---
+    Timer { 
+        id: mediaNotchTimer
+        interval: 500 // Increased from 200ms
+        onTriggered: mediaNotchOpen = false
+    }
+
+    function openMediaNotch() {
+        mediaNotchTimer.stop();
+        mediaNotchOpen = true;
+    }
+
+    function closeMediaNotchWithDelay() {
+        mediaNotchTimer.start();
+    }
+    // ---------------------------------
+
     property var wallpaperSelectorWindow: null // For focus-grab synchronization
     property var activeComboBox: null
 
@@ -177,6 +196,7 @@ Singleton {
         systemMonitorOpen = false
         sessionOpen = false
         overviewOpen = false
+        mediaNotchOpen = false
         // Note: wallpaperSelectorOpen and regionSelectorOpen are excluded
     }
 

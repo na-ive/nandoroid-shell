@@ -18,6 +18,11 @@ ColumnLayout {
                 Layout.fillWidth: true
                 Layout.topMargin: 12
                 spacing: 16
+                
+                SearchHandler { 
+                    searchString: "Lockscreen"
+                    aliases: ["Lock", "Lock Screen"]
+                }
     
                 // Section Header
                 RowLayout {
@@ -52,6 +57,7 @@ ColumnLayout {
                             id: showCavaRow
                             anchors.fill: parent; anchors.margins: 16
                             spacing: 16
+                            SearchHandler { searchString: "Show Cava Visualizer" }
                             MaterialSymbol { text: "equalizer"; iconSize: 24; color: Appearance.colors.colPrimary }
                             StyledText { text: "Show Cava Visualizer"; Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
                             AndroidToggle {
@@ -71,6 +77,7 @@ ColumnLayout {
                             id: showMediaRow
                             anchors.fill: parent; anchors.margins: 16
                             spacing: 16
+                            SearchHandler { searchString: "Show Media Controls" }
                             MaterialSymbol { text: "movie"; iconSize: 24; color: Appearance.colors.colPrimary }
                             StyledText { text: "Show Media Controls"; Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
                             AndroidToggle {

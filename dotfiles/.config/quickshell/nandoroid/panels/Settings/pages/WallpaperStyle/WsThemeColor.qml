@@ -12,7 +12,14 @@ import Quickshell.Io
 ColumnLayout {
     Layout.fillWidth: true
     spacing: 0
-            // ── Theme Section ──
+
+    SearchHandler { 
+        searchString: "Theme Color"
+        aliases: ["Colors", "Matugen", "Material You", "Accent Color"]
+    }
+
+    // ── Theme Section ──
+
             Rectangle {
                 Layout.fillWidth: true
                 implicitHeight: themeToggleRow.implicitHeight + 36
@@ -23,7 +30,7 @@ ColumnLayout {
                     id: themeToggleRow
                     anchors.fill: parent
                     anchors.margins: 20
-                    spacing: 20
+                    spacing: 16
     
                     MaterialSymbol {
                         text: Config.options.appearance.background.darkmode ? "dark_mode" : "light_mode"

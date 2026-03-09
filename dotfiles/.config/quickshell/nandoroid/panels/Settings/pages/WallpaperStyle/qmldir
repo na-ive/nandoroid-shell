@@ -8,6 +8,7 @@ WsOverview 1.0 WsOverview.qml
 WsLauncher 1.0 WsLauncher.qml
 WsThemeColor 1.0 WsThemeColor.qml
 WsTypography 1.0 WsTypography.qml
+WsWallpaperCycle 1.0 WsWallpaperCycle.qml
 AndroidToggle 1.0 AndroidToggle.qml
 ColorCard 1.0 ColorCard.qml
 WallpaperPreview 1.0 WallpaperPreview.qml

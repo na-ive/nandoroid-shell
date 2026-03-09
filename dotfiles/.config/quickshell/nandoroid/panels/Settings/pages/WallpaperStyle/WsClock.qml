@@ -8,12 +8,18 @@ import QtQuick.Controls
 import Qt5Compat.GraphicalEffects
 import Quickshell
 import Quickshell.Io
-
 ColumnLayout {
     Layout.fillWidth: true
     spacing: 0
-            // ── Clock Style Section ──
-            ColumnLayout {
+
+    SearchHandler { 
+        searchString: "Clock Style"
+        aliases: ["Clock", "Time", "Watch"]
+    }
+
+    // ── Clock Section ──
+    ColumnLayout {
+
                 id: clockStyleSection
                 Layout.fillWidth: true
                 Layout.topMargin: 12

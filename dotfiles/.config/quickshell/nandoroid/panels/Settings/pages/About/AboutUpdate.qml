@@ -187,6 +187,26 @@ ColumnLayout {
         }
     }
 
+    property string updateType: "" // "shell" or "all"
+
+    /**
+     * BACKGROUND UPDATE PROCESS
+     * This runs the update.sh script without opening a terminal window.
+     * When finished, it automatically reloads the shell to apply changes.
+     * 
+     * TODO: Add visual feedback/progress indicator in the UI soon.
+     */
+    Process {
+        id: runUpdateProc
+        command: ["bash", "-c", `${installState.install_dir}/update.sh ${updateType} ${installState.channel}`]
+        onStreamFinished: {
+            // Once the script is done (git pull, etc), reload the shell immediately.
+            Quickshell.reload();
+        }
+    }
+
+    // --- 1. Channel Selector ---
+...
     // --- 3. Update Buttons (50:50) ---
     RowLayout {
         Layout.fillWidth: true
@@ -200,7 +220,8 @@ ColumnLayout {
             buttonRadius: 20
             colBackground: Appearance.m3colors.m3surfaceContainerHigh
             onClicked: {
-                Quickshell.execDetached(["kitty", "--hold", "-e", "bash", "-c", `${installState.install_dir}/update.sh shell ${installState.channel}`])
+                updateRoot.updateType = "shell";
+                runUpdateProc.running = true;
             }
             RowLayout {
                 anchors.fill: parent
@@ -235,7 +256,8 @@ ColumnLayout {
             buttonRadius: 20
             colBackground: Appearance.m3colors.m3surfaceContainerHigh
             onClicked: {
-                Quickshell.execDetached(["kitty", "--hold", "-e", "bash", "-c", `${installState.install_dir}/update.sh all ${installState.channel}`])
+                updateRoot.updateType = "all";
+                runUpdateProc.running = true;
             }
             RowLayout {
                 anchors.fill: parent
@@ -262,6 +284,8 @@ ColumnLayout {
             }
         }
     }
+
+    // --- Logs & Tags 50:50 Section ---
 
     // --- Logs & Tags 50:50 Section ---
     RowLayout {

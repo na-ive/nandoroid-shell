@@ -4,6 +4,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import "../core"
 
 /**
  * Handles EasyEffects active state and presets.
@@ -24,11 +25,17 @@ Singleton {
 
     function disable() {
         root.active = false
+        if (Config.ready && Config.options.system) {
+            Config.options.system.easyeffectsEnabled = false;
+        }
         Quickshell.execDetached(["bash", "-c", "pkill easyeffects || flatpak pkill com.github.wwmm.easyeffects"])
     }
 
     function enable() {
         root.active = true
+        if (Config.ready && Config.options.system) {
+            Config.options.system.easyeffectsEnabled = true;
+        }
         Quickshell.execDetached(["bash", "-c", "easyeffects --hide-window --service-mode || flatpak run com.github.wwmm.easyeffects --hide-window --service-mode"])
     }
 
@@ -37,6 +44,22 @@ Singleton {
             root.disable()
         } else {
             root.enable()
+        }
+    }
+
+    // Restore last known state on startup
+    Connections {
+        target: Config
+        function onReadyChanged() {
+            if (Config.ready && Config.options.system) {
+                const shouldBeEnabled = Config.options.system.easyeffectsEnabled;
+                // Only act if current state doesn't match persisted preference
+                if (shouldBeEnabled && !root.active) {
+                    root.enable();
+                } else if (!shouldBeEnabled && root.active) {
+                    root.disable();
+                }
+            }
         }
     }
 

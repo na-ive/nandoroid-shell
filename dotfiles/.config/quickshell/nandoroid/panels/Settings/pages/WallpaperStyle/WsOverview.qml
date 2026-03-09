@@ -12,8 +12,14 @@ import Quickshell.Io
 ColumnLayout {
     Layout.fillWidth: true
     spacing: 0
-            // ── Overview Settings Section ──
-            ColumnLayout {
+    
+    SearchHandler { 
+        searchString: "Overview"
+        aliases: ["Workspaces", "Window Manager", "Expose"]
+    }
+
+    // ── Overview Settings Section ──
+    ColumnLayout {
                 id: overviewSettingsSection
                 Layout.fillWidth: true
                 Layout.topMargin: 12
@@ -28,7 +34,7 @@ ColumnLayout {
                         color: Appearance.colors.colPrimary
                     }
                     StyledText {
-                        text: "Overview Settings"
+                        text: "Overview"
                         font.pixelSize: Appearance.font.pixelSize.large
                         font.weight: Font.Medium
                         color: Appearance.colors.colOnLayer1

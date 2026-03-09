@@ -14,6 +14,8 @@ ColumnLayout {
     id: root
     Layout.fillWidth: true
     spacing: 4
+    
+    SearchHandler { searchString: "GitHub" }
 
     // Section Header
     RowLayout {

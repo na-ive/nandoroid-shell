@@ -12,7 +12,14 @@ import Quickshell.Io
 ColumnLayout {
     Layout.fillWidth: true
     spacing: 0
-            // ── Status Bar Section ──
+
+    SearchHandler { 
+        searchString: "Status Bar"
+        aliases: ["Bar", "Top Bar", "Panel"]
+    }
+
+    // ── Status Bar Section ──
+
             ColumnLayout {
                 Layout.fillWidth: true
                 Layout.topMargin: 12

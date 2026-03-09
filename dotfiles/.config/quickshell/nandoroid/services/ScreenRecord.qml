@@ -11,6 +11,7 @@ Singleton {
 
     property bool active: false
     property int seconds: 0
+    property string geometry: ""
     property int recordingMode: 0 // 0: Region (no audio), 1: Region (with audio), 2: Fullscreen (with audio)
     property string stateFile: "/tmp/nandoroid_states.json"
 
@@ -52,6 +53,7 @@ Singleton {
                 if (data && data.screenRecord) {
                     root.active = data.screenRecord.active === true;
                     root.seconds = parseInt(data.screenRecord.seconds) || 0;
+                    root.geometry = data.screenRecord.geometry || "";
                 }
             } catch(e) {
                 console.error("[ScreenRecord] Failed to parse state:", e);

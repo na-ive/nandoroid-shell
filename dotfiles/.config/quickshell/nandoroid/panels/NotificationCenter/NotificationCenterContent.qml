@@ -61,6 +61,7 @@ Item {
         // ── Media Card ──
         MediaCard {
             Layout.fillWidth: true
+            visible: Config.options.media?.showMediaCard ?? true
         }
 
         // ── Weather Card ──

@@ -12,7 +12,11 @@ import Quickshell.Io
 ColumnLayout {
     Layout.fillWidth: true
     spacing: 0
-            // ── Date & Time Section ──
+
+    SearchHandler { searchString: "Date & Time" }
+
+    // ── Date & Time Section ──
+
             ColumnLayout {
                 Layout.fillWidth: true
                 Layout.topMargin: 12

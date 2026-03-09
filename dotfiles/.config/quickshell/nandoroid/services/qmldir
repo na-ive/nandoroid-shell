@@ -31,3 +31,5 @@ singleton ConservationMode 1.0 ConservationMode.qml
 singleton PowerProfileService 1.0 PowerProfileService.qml
 singleton AppSearch AppSearch.qml
 singleton SearchRegistry SearchRegistry.qml
+singleton ScheduleService ScheduleService.qml
+singleton SmartAutomation SmartAutomation.qml

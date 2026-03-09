@@ -101,6 +101,9 @@ Singleton {
                     property string matugenCustomColor: "#3F51B5"
                     property string matugenThemeFile: ""
                     property string matugenSource: "desktop"
+                    property bool autoCycleEnabled: false
+                    property string autoCycleDirectory: Directories.home + "/Pictures/Wallpapers"
+                    property int autoCycleInterval: 30 // in minutes
                 }
                 property JsonObject screenCorners: JsonObject {
                     // mode: 0 (Off), 1 (On, hide on fullscreen), 2 (Always On)
@@ -345,6 +348,8 @@ Singleton {
             }
             // --- System ---
             property JsonObject system: JsonObject {
+                property string lastUpdateCheckDate: ""
+                property bool easyeffectsEnabled: true
                 property list<var> monitoredDisks: [
                     { "path": "/", "alias": "System" }
                 ]
@@ -352,6 +357,7 @@ Singleton {
             // --- Media ---
             property JsonObject media: JsonObject {
                 property string priority: ""
+                property bool showMediaCard: true
             }
 
             // --- Privacy ---

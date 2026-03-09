@@ -12,7 +12,14 @@ import Quickshell.Io
 ColumnLayout {
     Layout.fillWidth: true
     spacing: 0
-            // ── Screen Decor Section ──
+
+    SearchHandler { 
+        searchString: "Screen Decor"
+        aliases: ["Corners", "Borders", "Rounding"]
+    }
+
+    // ── Screen Decor Section ──
+
             ColumnLayout {
                 Layout.fillWidth: true
                 Layout.topMargin: 12
