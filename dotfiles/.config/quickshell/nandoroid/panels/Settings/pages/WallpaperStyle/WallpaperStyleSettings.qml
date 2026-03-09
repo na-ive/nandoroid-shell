@@ -111,7 +111,6 @@ Flickable {
         stderr: StdioCollector {
             onStreamFinished: {
                 if (this.text.includes("Error:") || this.text.includes("Invalid")) {
-                    console.log("[WallpaperStyle] Matugen Preview Error (stderr):", this.text);
                     root.sendNotification("Preview Error", "Failed to generate preview for this wallpaper.");
                 }
             }
@@ -125,7 +124,6 @@ Flickable {
                     const jsonStart = rawText.indexOf("{");
                     const jsonEnd = rawText.lastIndexOf("}");
                     if (jsonStart === -1 || jsonEnd === -1) {
-                        if (rawText !== "") console.log("[WallpaperStyle] Matugen Output No JSON:", rawText);
                         throw "No JSON";
                     }
                     
@@ -152,7 +150,6 @@ Flickable {
                         batchUpdateTimer.restart();
                     }
                 } catch(e) {
-                    console.log("Matugen Preview Error:", e);
                     // Don't stop the iterate timer on error
                 }
                 previewIterateTimer.start();
@@ -239,7 +236,6 @@ Flickable {
     IpcHandler {
         target: "settings_wallpaper"
         function test() {
-            console.log("IPC: Settings Wallpaper page received test signal");
         }
     }
 
@@ -253,7 +249,6 @@ Flickable {
         Behavior on opacity { NumberAnimation { duration: 250 } }
 
         // RESET LOGS ON LOAD
-        Component.onCompleted: console.log("WallpaperStyleSettings loaded successfully");
 
         // ── Header ──
         ColumnLayout {
@@ -339,7 +334,6 @@ Flickable {
                     showCheckmark: false
                     clickable: true
                     onClicked: {
-                        console.log("Settings: Opening Wallpaper Selector for Desktop");
                         GlobalStates.wallpaperSelectorTarget = "desktop";
                         GlobalStates.wallpaperSelectorOpen = true;
                     }
@@ -357,7 +351,6 @@ Flickable {
                      showCheckmark: Config.ready && (Config.options.lock ? !Config.options.lock.useSeparateWallpaper : false)
                      clickable: Config.ready && (Config.options.lock ? Config.options.lock.useSeparateWallpaper : true)
                      onClicked: {
-                         console.log("Settings: Opening Wallpaper Selector for Lockscreen");
                          GlobalStates.wallpaperSelectorTarget = "lock";
                          GlobalStates.wallpaperSelectorOpen = true;
                      }

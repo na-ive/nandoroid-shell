@@ -57,7 +57,6 @@ Singleton {
     property double nextUpdateTime: 0
 
     onUpdateIntervalChanged: {
-        console.log("[Weather] Config update: Next refresh in " + updateInterval + " min");
         root.nextUpdateTime = Date.now() + (updateInterval * 60000);
     }
 
@@ -74,7 +73,6 @@ Singleton {
                         if (trimmed !== "" && trimmed.indexOf("{") === 0) {
                             const data = JSON.parse(trimmed);
                             processWeatherData(data);
-                            console.log("[Weather] Cache loaded successfully");
                         }
                     } catch (e) {
                         console.error("[Weather] Cache parse error:", e);
@@ -87,26 +85,21 @@ Singleton {
     // --- Fetch Logic ---
     function fetch(silent = false) {
         if (Config.ready && Config.options.weather && !Config.options.weather.enable) {
-            console.log("[Weather] Fetch aborted: Service is disabled.");
             return;
         }
 
         if (loading && !silent) {
-            console.log("[Weather] Manual fetch ignored: update already in progress");
             return;
         }
         
         // Safety: if it's been loading for too long, reset it
-        if (loading) console.log("[Weather] Fetching over existing process...");
         
         // Re-check health status (1 hour cooldown for wttr.in)
         const now = new Date().getTime();
         if (!wttrInHealthy && (now - lastWttrInFail > 3600000)) {
-            console.log("[Weather] Retrying wttr.in after cooldown");
             wttrInHealthy = true;
         }
 
-        console.log("[Weather] Fetching updated data...");
         root.status = "Connecting...";
         if (!silent) loading = true;
         
@@ -118,22 +111,17 @@ Singleton {
         if (wttrInHealthy) {
             weatherProc.running = true;
         } else {
-            console.log("[Weather] wttr.in marked down, jumping to fallback");
             fallbackTrigger();
         }
     }
 
     function fallbackTrigger() {
         root.status = "Finding location...";
-        console.log("[Weather] Starting fallback sequence...");
-        console.log("[Weather] Manual Location String: '" + root.manualLocation + "'");
         
         if (root.autoLocation || root.manualLocation.trim() === "") {
-            console.log("[Weather] Using IP location (Auto: " + root.autoLocation + ")");
             ipLocProc.running = false;
             ipLocProc.running = true;
         } else {
-            console.log("[Weather] Using Geocoding for: " + root.manualLocation);
             geocodingProc.running = false;
             geocodingProc.running = true;
         }
@@ -152,14 +140,11 @@ Singleton {
             if (root.nextUpdateTime > 0) {
                 const remainingSecs = Math.round((root.nextUpdateTime - now) / 1000);
                 if (now >= root.nextUpdateTime) {
-                    console.log("[Weather] Watchdog: TARGET REACHED! Fetching now...");
                     root.fetch(true);
                 } else if (remainingSecs > 0 && remainingSecs <= 60 && remainingSecs % 20 === 0) {
                     // Log every 20s when under 1 minute
-                    console.log("[Weather] Watchdog: Auto-refresh in " + remainingSecs + "s");
                 } else if (remainingSecs > 60 && remainingSecs % 300 === 0) {
                     // Log every 5 minutes for long intervals
-                    console.log("[Weather] Watchdog: Next update in ~" + Math.round(remainingSecs/60) + " minutes");
                 }
             } else {
                 root.nextUpdateTime = now + (root.updateInterval * 60000);
@@ -168,7 +153,6 @@ Singleton {
     }
 
     Component.onCompleted: {
-        console.log("[Weather] Service started.");
         
         // 1. Synchronously read cache via FileView
         try {
@@ -176,7 +160,6 @@ Singleton {
             if (cacheData && cacheData.trim() !== "" && cacheData.indexOf("{") === 0) {
                 const data = JSON.parse(cacheData);
                 root.processWeatherData(data);
-                console.log("[Weather] Cache loaded synchronously");
             }
         } catch (e) {
             console.warn("[Weather] Sync cache read failed, falling back to process");
@@ -262,7 +245,6 @@ Singleton {
                         if (!results) throw "Empty response";
                         const data = JSON.parse(results);
                         if (data.status === "success") {
-                            console.log("[Weather] Step: IP Loc successful ->", data.city);
                             root.fetchOpenMeteo(data.lat.toString(), data.lon.toString(), data.city);
                         } else {
                             throw data.message || "Unknown error";
@@ -290,7 +272,6 @@ Singleton {
             // Clean location string: 'Karanganyar Regency, ID' -> 'Karanganyar'
             let cleanLoc = root.manualLocation.split(',')[0].replace(/Regency/g, '').trim();
             const loc = encodeURIComponent(cleanLoc);
-            console.log("[Weather] Step: Geocoding search for cleaned name: '" + cleanLoc + "'");
             return ["bash", "-c", `curl -sfL -m 15 "https://geocoding-api.open-meteo.com/v1/search?name=${loc}&count=1&language=en&format=json"`];
         }
         stdout: StdioCollector {
@@ -302,7 +283,6 @@ Singleton {
                         if (data && data.results && data.results.length > 0) {
                             const res = data.results[0];
                             const displayName = res.admin1 ? (res.name + ", " + res.admin1) : res.name;
-                            console.log("[Weather] Step: Geocoding successful ->", displayName);
                             root.fetchOpenMeteo(res.latitude.toString(), res.longitude.toString(), displayName);
                         } else {
                             console.warn("[Weather] Step: Geocoding no results, trying IP fallback");
@@ -346,7 +326,6 @@ Singleton {
             const windUnit = root.unit === "F" ? "&wind_speed_unit=mph" : "&wind_speed_unit=kmh";
             const url = `https://api.open-meteo.com/v1/forecast?latitude=${latVal}&longitude=${lonVal}${tempUnit}${windUnit}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,weather_code,wind_speed_10m&hourly=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto`;
             
-            console.log("[Weather] Step: Fetching forecast for " + latVal + "," + lonVal);
             // Increased timeout to 15s
             return ["bash", "-c", `mkdir -p "${root.cacheDir}" && curl -sfL -m 15 "${url}" > "${root.cachePath}.tmp" && jq -e . "${root.cachePath}.tmp" >/dev/null 2>&1 && mv "${root.cachePath}.tmp" "${root.cachePath}" && cat "${root.cachePath}"` ];
         }
@@ -370,7 +349,6 @@ Singleton {
                         }
                         const data = JSON.parse(results);
                         processWeatherData(data); // Using the central processor that saves cache
-                        console.log("[Weather] Step: UI and Cache update triggered");
                         root.status = "Updated via fallback";
                     } catch(e) {
                         console.error("[Weather] Step: Open-Meteo Parse Error:", e);
@@ -383,12 +361,10 @@ Singleton {
     function processWeatherData(data) {
         if (!data) return;
         const jsonStr = JSON.stringify(data);
-        console.log("[Weather] Step: Processing data (" + jsonStr.length + " bytes)");
         
         try {
             // Quickshell.Io FileView uses setText for writing
             cacheFileWriter.setText(jsonStr);
-            console.log("[Weather] Step: JSON Cache updated via FileView");
         } catch(e) {
             console.error("[Weather] Step: JSON Cache write error:", e);
         }

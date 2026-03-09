@@ -25,7 +25,6 @@ Singleton {
             onStreamFinished: {
                 // Look for actual fatal error markers (Matugen v4 specific fatal markers)
                 if (this.text.includes("Failed to generate base16 color schemes") || this.text.includes("Invalid PNG signature")) {
-                    console.log("[Wallpapers] Matugen Fatal Error:", this.text);
                     root.sendNotification("Theming Error", "Failed to process wallpaper. The file might be corrupted.");
                 }
             }
@@ -42,7 +41,6 @@ Singleton {
             onStreamFinished: {
                 // Ignore benign errors (missing unrelated files/commands)
                 if (this.text.includes("Failed to generate base16 color schemes")) {
-                    console.log("[Wallpapers] Matugen Color Fatal Error:", this.text);
                     root.sendNotification("Theming Error", "Failed to generate theme from color.");
                 }
             }
@@ -183,13 +181,11 @@ Singleton {
     
     function initializeMatugen() {
         if (!Config.ready) {
-            console.log("[Wallpapers] Config not ready, delaying initialization...");
             configWaitTimer.start();
             return;
         }
         
         if (Config.options.appearance.background.matugen) {
-            console.log("[Wallpapers] Triggering initial theme generation from current wallpaper...");
             const source = Config.options.appearance.background.matugenSource || "desktop"
             const path = (source === "lockscreen" && Config.options.lock) ? Config.options.lock.wallpaperPath : Config.options.appearance.background.wallpaperPath;
             const cleanPath = path.toString().startsWith("file://") ? path.toString().substring(7) : path.toString();
@@ -257,7 +253,6 @@ Singleton {
         if (!Config.ready) return;
         Config.options.appearance.background.autoCycleEnabled = enabled;
         _autoCycleEnabled = enabled;
-        console.log("[Wallpapers] setAutoCycle called:", enabled);
         if (enabled) {
             autoCycleStartTimer.restart();
         } else {
@@ -269,14 +264,12 @@ Singleton {
         if (!Config.ready) return;
         Config.options.appearance.background.autoCycleDirectory = dir;
         _autoCycleDirectory = dir;
-        console.log("[Wallpapers] setAutoCycleDirectory called:", dir);
     }
 
     function setAutoCycleInterval(interval) {
         if (!Config.ready) return;
         Config.options.appearance.background.autoCycleInterval = interval;
         _autoCycleInterval = interval;
-        console.log("[Wallpapers] setAutoCycleInterval called:", interval);
     }
 
     function syncSettings() {
@@ -286,7 +279,6 @@ Singleton {
         _autoCycleDirectory = bg.autoCycleDirectory || "";
         _autoCycleInterval = bg.autoCycleInterval || 30;
         
-        console.log("[Wallpapers] Settings synced - Enabled:", _autoCycleEnabled, "Dir:", _autoCycleDirectory);
         
         // Initial theme load on startup/reload
         if (bg.matugen) {
@@ -310,7 +302,6 @@ Singleton {
         target: Config
         function onReadyChanged() {
             if (Config.ready) {
-                console.log("[Wallpapers] Config ready, syncing...");
                 root.syncSettings();
             }
         }
@@ -327,7 +318,6 @@ Singleton {
             return dir;
         }
         onFolderChanged: {
-            console.log("[Wallpapers] Model folder changed to:", folder);
             if (root._autoCycleEnabled) {
                 root.autoCyclePending = true;
                 // If the folder changed, we might need to re-trigger the cycle
@@ -342,9 +332,7 @@ Singleton {
         showDotAndDotDot: false
         sortField: FolderListModel.Name
         onCountChanged: {
-            console.log("[Wallpapers] Folder count changed:", count);
             if (count > 0 && root._autoCycleEnabled && root.autoCyclePending) {
-                console.log("[Wallpapers] Resolving pending cycle with newly loaded images");
                 root.autoCyclePending = false;
                 root.nextWallpaper();
             }
@@ -361,10 +349,8 @@ Singleton {
             if (!root._autoCycleEnabled) return;
             
             if (model.count > 0) {
-                console.log("[Wallpapers] Start timer triggered, count > 0, cycling...");
                 root.nextWallpaper();
             } else {
-                console.log("[Wallpapers] Start timer triggered but model count is 0, setting pending.");
                 root.autoCyclePending = true;
             }
         }
@@ -372,7 +358,6 @@ Singleton {
 
     Component.onCompleted: {
         if (Config.ready) {
-            console.log("[Wallpapers] Singleton completed and config ready, syncing...");
             root.syncSettings();
         }
     }
@@ -404,7 +389,6 @@ Singleton {
         running: root._autoCycleEnabled
         repeat: true
         onTriggered: {
-            console.log("[Wallpapers] Interval reached, cycling...");
             root.nextWallpaper();
         }
     }
@@ -415,7 +399,6 @@ Singleton {
 
         const count = model.count;
         if (count <= 0) {
-            console.log("[Wallpapers] No wallpapers available in", model.folder);
             root.autoCyclePending = true;
             return;
         }
@@ -428,7 +411,6 @@ Singleton {
             return;
         }
 
-        console.log("[Wallpapers] Cycling to:", newPath);
 
         if (newPath.toString() === Config.options.appearance.background.wallpaperPath.toString() && count > 1) {
             index = (index + 1) % count;

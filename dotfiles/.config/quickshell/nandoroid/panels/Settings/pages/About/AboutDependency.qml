@@ -87,7 +87,9 @@ ColumnLayout {
         ListElement { displayName: "jq"; packageName: "jq"; installed: false; desc: "Command-line JSON processor" }
         ListElement { displayName: "XDG Utils"; packageName: "xdg-utils"; installed: false; desc: "Desktop integration utilities" }
         ListElement { displayName: "Wl-Clipboard"; packageName: "wl-clipboard"; installed: false; desc: "Wayland clipboard" }
-        ListElement { displayName: "fd-find"; packageName: "fd"; installed: false; desc: "Fast file search utility" }
+        ListElement { displayName: "Cliphist"; packageName: "cliphist"; installed: false; desc: "Clipboard history manager" }
+        ListElement { displayName: "Zenity"; packageName: "zenity"; installed: false; desc: "System dialogs for file/folder selection" }
+        ListElement { displayName: "fd"; packageName: "fd"; installed: false; desc: "Fast file search utility" }
         ListElement { displayName: "Libqalculate"; packageName: "libqalculate"; installed: false; desc: "Advanced math calculator (qalc)" }
         ListElement { displayName: "Google Sans Flex"; packageName: "__font_google_sans"; installed: false; desc: "UI font (from GitHub)" }
         ListElement { displayName: "Material Symbols"; packageName: "ttf-material-symbols-variable-git"; installed: false; desc: "Icon font" }

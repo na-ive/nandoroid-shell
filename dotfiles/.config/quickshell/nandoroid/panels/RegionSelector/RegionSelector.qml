@@ -29,15 +29,12 @@ Scope {
     property int selectionMode: modeRect
 
     Component.onCompleted: {
-        console.log("[RegionSelector] Component completed")
     }
 
-    onActionChanged: console.log(`[RegionSelector] Action changed to: ${action}`)
     
     Connections {
         target: GlobalStates
         function onRegionSelectorOpenChanged() {
-            console.log(`[RegionSelector] regionSelectorOpen: ${GlobalStates.regionSelectorOpen}`)
         }
     }
 
@@ -54,7 +51,6 @@ Scope {
             active: GlobalStates.regionSelectorOpen && (Config.ready && Config.options.regionSelector && (!Config.options.regionSelector.showOnlyOnFocusedMonitor || monitorIsFocused))
             
             onStatusChanged: {
-                console.log(`[RegionSelector] Loader status for screen ${modelData.name}: ${status}`)
                 if (status === Loader.Error) {
                     console.error(`[RegionSelector] Error loading RegionSelection: ${regionSelectorLoader.sourceComponent ? regionSelectorLoader.sourceComponent.errorString() : "unknown error"}`)
                 }
@@ -63,7 +59,6 @@ Scope {
             source: "RegionSelection.qml"
 
             onLoaded: {
-                console.log(`[RegionSelector] Successfully loaded RegionSelection for screen ${modelData.name}`)
                 item.screen = regionSelectorLoader.modelData
                 item.action = root.action
                 item.selectionMode = root.selectionMode

@@ -79,7 +79,6 @@ PanelWindow {
             return winWsId === activeWs;
         });
         
-        console.log(`[RegionSelection] Monitor: ${hyprlandMonitor.name}, WS: ${activeWs}, Windows: ${filtered.length}/${root.windows.length}`);
         
         return filtered.map(window => {
             return {
@@ -162,10 +161,8 @@ PanelWindow {
     
     property bool preparationDone: false
     onPreparationDoneChanged: {
-        console.log(`[RegionSelection] preparationDone: ${preparationDone}, isRecording: ${root.isRecording}, visible: ${root.visible}`)
         if (!preparationDone) return;
         if (root.isRecording && root.recordingShouldStop) {
-            console.log("[RegionSelection] Stopping existing recording")
             Quickshell.execDetached([Quickshell.shellPath("scripts/videos/record.sh")]);
             root.dismiss();
             return;
@@ -177,13 +174,11 @@ PanelWindow {
             return;
         }
 
-        console.log("[RegionSelection] Setting visible to true")
         root.visible = true;
         HyprlandData.updateAll();
     }
 
     Component.onCompleted: {
-        console.log(`[RegionSelection] Component created for screen: ${root.screen.name}`)
     }
 
     /*
@@ -221,7 +216,6 @@ PanelWindow {
             case actionRecordFullscreenWithSound: actionEnum = ScreenshotAction.Action.RecordFullscreenWithSound; break;
         }
 
-        console.log(`[RegionSelection] Snipping: x=${root.regionX}, y=${root.regionY}, w=${root.regionWidth}, h=${root.regionHeight}, scale=${root.monitorScale}`)
         
         const command = ScreenshotAction.getCommand(
             root.regionX * root.monitorScale,
@@ -233,7 +227,6 @@ PanelWindow {
             savePath
         )
         
-        console.log(`[RegionSelection] Executing command: ${command.join(" ")}`)
         Quickshell.execDetached(command);
         root.dismiss();
     }

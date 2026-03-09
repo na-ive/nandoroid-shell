@@ -186,6 +186,8 @@ if [[ "$DEP_CHOICE" =~ ^[Yy] ]]; then
         "jq"
         "xdg-utils"
         "wl-clipboard"
+        "cliphist"
+        "zenity"
     )
     paru -S --needed $CONFIRM_FLAG "${CORE_DEPS[@]}" < /dev/tty
     success "Core dependencies installed."
