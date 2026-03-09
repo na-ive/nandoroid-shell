@@ -101,12 +101,33 @@ Item {
         }
     }
 
+    function sendNotification(title, body) {
+        const iconPath = Directories.home.replace("file://", "") + "/.config/quickshell/nandoroid/assets/icons/NAnDoroid.svg";
+        const cmd = [
+            "notify-send",
+            "-a", "NAnDoroid",
+            "-i", iconPath,
+            title,
+            body
+        ];
+        Quickshell.execDetached(cmd);
+    }
+
     Process {
         id: previewMatugen
-        command: ["bash", "-c", `matugen -t "${currentScheme}" -m ${Config.options.appearance.background.darkmode ? "dark" : "light"} image "${currentPath}" --dry-run -j hex --old-json-output --source-color-index 0`]
+        command: ["bash", "-c", `matugen -c ~/.config/matugen/config.toml -t "$1" -m "$2" image "$3" --dry-run -j hex --old-json-output --source-color-index 0`, "matugen", currentScheme, (Config.options.appearance.background.darkmode ? "dark" : "light"), currentPath]
         property string currentScheme: ""
         property string currentPath: ""
         property string currentSource: ""
+        
+        stderr: StdioCollector {
+            onStreamFinished: {
+                if (this.text.includes("Error:") || this.text.includes("Invalid")) {
+                    console.log("[QuickWallpaper] Matugen Preview Error (stderr):", this.text);
+                    root.sendNotification("Preview Error", "Failed to generate preview for this wallpaper.");
+                }
+            }
+        }
         
         stdout: StdioCollector {
             onStreamFinished: {

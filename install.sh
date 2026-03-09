@@ -163,6 +163,8 @@ if [[ "$DEP_CHOICE" =~ ^[Yy] ]]; then
         "xdg-desktop-portal-hyprland"
         "xdg-desktop-portal-gtk"
         "python3"
+        "python-virtualenv"
+        "adw-gtk3"
         "dgop"
         "brightnessctl"
         "ddcutil"
@@ -188,7 +190,25 @@ if [[ "$DEP_CHOICE" =~ ^[Yy] ]]; then
     paru -S --needed $CONFIRM_FLAG "${CORE_DEPS[@]}" < /dev/tty
     success "Core dependencies installed."
 
-    # 3b. Fonts
+    # 3b. KDE Material You Venv (Optional but recommended)
+    info "KDE Material You integration..."
+    ask "Setup Python venv for KDE theming? (y/N)"
+    read -r VENV_CHOICE < /dev/tty
+    if [[ "$VENV_CHOICE" =~ ^[Yy] ]]; then
+        VENV_PATH="$HOME/.local/share/nandoroid/venv"
+        substep "Creating venv in ${C_ACCENT}$VENV_PATH${C_RST}..."
+        mkdir -p "$(dirname "$VENV_PATH")"
+        python3 -m venv "$VENV_PATH"
+        substep "Installing kde-material-you-colors..."
+        "$VENV_PATH/bin/pip" install --upgrade pip < /dev/tty
+        "$VENV_PATH/bin/pip" install "materialyoucolor<3.0.0" < /dev/tty
+        "$VENV_PATH/bin/pip" install kde-material-you-colors < /dev/tty
+        success "KDE theming venv ready."
+    else
+        success "Skipped."
+    fi
+
+    # 3c. Fonts
     info "Font installation..."
     choice "1" "Google Sans Flex   ${C_DIM}(UI font, from GitHub)${C_RST}"
     choice "2" "Material Symbols   ${C_DIM}(icon font, from AUR)${C_RST}"

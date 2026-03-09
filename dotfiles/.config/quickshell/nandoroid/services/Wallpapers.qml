@@ -17,16 +17,48 @@ Singleton {
     // Helper process to generate material colors
     Process {
         id: matugenProc
-        command: ["bash", "-c", `matugen -t "${scheme}" -m ${Config.options.appearance.background.darkmode ? "dark" : "light"} image "${filePath}" --source-color-index 0`]
+        command: ["bash", "-c", `matugen -c ~/.config/matugen/config.toml -t "$1" -m "$2" image "$3" --source-color-index 0 && sh -c "~/.config/quickshell/nandoroid/scripts/colors/apply_system_theme.sh"`, "matugen", scheme, (Config.options.appearance.background.darkmode ? "dark" : "light"), filePath]
         property string filePath
         property string scheme: Config.options.appearance.background.matugenScheme || "scheme-tonal-spot"
+        
+        stderr: StdioCollector {
+            onStreamFinished: {
+                // Look for actual fatal error markers
+                if (this.text.includes("Error:") || this.text.includes("Invalid")) {
+                    console.log("[Wallpapers] Matugen Error:", this.text);
+                    root.sendNotification("Theming Error", "Failed to process wallpaper. The file might be corrupted or invalid.");
+                }
+            }
+        }
     }
 
     Process {
         id: matugenColorProc
-        command: ["bash", "-c", `matugen -t "${scheme}" -m ${Config.options.appearance.background.darkmode ? "dark" : "light"} color hex "${hexColor}" --source-color-index 0`]
+        command: ["bash", "-c", `matugen -c ~/.config/matugen/config.toml -t "$1" -m "$2" color hex "$3" --source-color-index 0 && sh -c "~/.config/quickshell/nandoroid/scripts/colors/apply_system_theme.sh"`, "matugen", scheme, (Config.options.appearance.background.darkmode ? "dark" : "light"), hexColor]
         property string hexColor
         property string scheme: "scheme-tonal-spot"
+
+        stderr: StdioCollector {
+            onStreamFinished: {
+                // Only notify if it's a fatal error
+                if (this.text.includes("Error:")) {
+                    console.log("[Wallpapers] Matugen Color Error:", this.text);
+                    root.sendNotification("Theming Error", "Failed to generate theme from color.");
+                }
+            }
+        }
+    }
+
+    function sendNotification(title, body) {
+        const iconPath = Directories.home.replace("file://", "") + "/.config/quickshell/nandoroid/assets/icons/NAnDoroid.svg";
+        const cmd = [
+            "notify-send",
+            "-a", "NAnDoroid",
+            "-i", iconPath,
+            title,
+            body
+        ];
+        Quickshell.execDetached(cmd);
     }
 
     function toggleDarkMode() {
@@ -118,15 +150,7 @@ Singleton {
         const cleanDir = themesDir.startsWith("file://") ? themesDir.substring(7) : themesDir;
         const fullPath = cleanDir + fileName;
         
-        // 1. apply immediately to UI
-        themeReadProc.filePath = fullPath;
-        themeReadProc.running = true;
-        
-        // 2. Save for persistence (MaterialThemeLoader watches this)
-        themeWriteProc.sourcePath = fullPath;
-        themeWriteProc.running = true;
-        
-        // Update config for persistent matching and automatic mode switching
+        // Update config first for proper dark mode detection in matugen
         const theme = root.findBasicThemeByFile(fileName);
         if (theme) {
             Config.options.appearance.background.matugen = false;
@@ -142,7 +166,19 @@ Singleton {
             } else if (!isLight && !Config.options.appearance.background.darkmode) {
                 Config.options.appearance.background.darkmode = true;
             }
+
+            // Run matugen to generate full system colors (GTK, KDE, etc) from the first basic color
+            matugenColorProc.hexColor = theme.colors[0];
+            matugenColorProc.running = true;
         }
+
+        // 1. apply immediately to UI (for fast feedback)
+        themeReadProc.filePath = fullPath;
+        themeReadProc.running = true;
+        
+        // 2. Save for persistence (MaterialThemeLoader watches this)
+        themeWriteProc.sourcePath = fullPath;
+        themeWriteProc.running = true;
     }
     
     function initializeMatugen() {

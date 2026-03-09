@@ -89,12 +89,33 @@ Flickable {
         }
     }
 
+    function sendNotification(title, body) {
+        const iconPath = Directories.home.replace("file://", "") + "/.config/quickshell/nandoroid/assets/icons/NAnDoroid.svg";
+        const cmd = [
+            "notify-send",
+            "-a", "NAnDoroid",
+            "-i", iconPath,
+            title,
+            body
+        ];
+        Quickshell.execDetached(cmd);
+    }
+
     Process {
         id: previewMatugen
-        command: ["bash", "-c", `matugen -t "${currentScheme}" -m ${Config.options.appearance.background.darkmode ? "dark" : "light"} image "${currentPath}" --dry-run -j hex --old-json-output --source-color-index 0`]
+        command: ["bash", "-c", `matugen -c ~/.config/matugen/config.toml -t "$1" -m "$2" image "$3" --dry-run -j hex --old-json-output --source-color-index 0`, "matugen", currentScheme, (Config.options.appearance.background.darkmode ? "dark" : "light"), currentPath]
         property string currentScheme: ""
         property string currentPath: ""
         property string currentSource: ""
+        
+        stderr: StdioCollector {
+            onStreamFinished: {
+                if (this.text.includes("Error:") || this.text.includes("Invalid")) {
+                    console.log("[WallpaperStyle] Matugen Preview Error (stderr):", this.text);
+                    root.sendNotification("Preview Error", "Failed to generate preview for this wallpaper.");
+                }
+            }
+        }
         
         stdout: StdioCollector {
             onStreamFinished: {
@@ -103,20 +124,33 @@ Flickable {
                     const rawText = this.text.trim();
                     const jsonStart = rawText.indexOf("{");
                     const jsonEnd = rawText.lastIndexOf("}");
-                    if (jsonStart === -1 || jsonEnd === -1) throw "No JSON";
+                    if (jsonStart === -1 || jsonEnd === -1) {
+                        if (rawText !== "") console.log("[WallpaperStyle] Matugen Output No JSON:", rawText);
+                        throw "No JSON";
+                    }
                     
                     const data = JSON.parse(rawText.substring(jsonStart, jsonEnd + 1));
                     
                     const mode = Config.options.appearance.background.darkmode ? "dark" : "light";
-                    const colors = [
-                        data.colors.primary[mode] || data.colors.primary.default, 
-                        data.colors.secondary[mode] || data.colors.secondary.default, 
-                        data.colors.tertiary[mode] || data.colors.tertiary.default
-                    ];
+                    let colors = [];
                     
-                    // Batch updates to avoid flickering
-                    root.pendingPreviews[previewMatugen.currentSource + "_" + previewMatugen.currentScheme] = colors;
-                    batchUpdateTimer.restart();
+                    // Handle various matugen JSON formats (old vs new)
+                    if (data.colors) {
+                        if (data.colors.primary && typeof data.colors.primary === 'object') {
+                            colors = [
+                                data.colors.primary[mode] || data.colors.primary.default, 
+                                data.colors.secondary[mode] || data.colors.secondary.default, 
+                                data.colors.tertiary[mode] || data.colors.tertiary.default
+                            ];
+                        } else if (data.colors.light) {
+                             colors = [data.colors.light.primary, data.colors.light.surface_container_high, data.colors.light.secondary];
+                        }
+                    }
+                    
+                    if (colors.length > 0) {
+                        root.pendingPreviews[previewMatugen.currentSource + "_" + previewMatugen.currentScheme] = colors;
+                        batchUpdateTimer.restart();
+                    }
                 } catch(e) {
                     console.log("Matugen Preview Error:", e);
                     // Don't stop the iterate timer on error

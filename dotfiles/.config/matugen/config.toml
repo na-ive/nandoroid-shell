@@ -5,6 +5,7 @@
 [templates.m3colors]
 input_path = '~/.config/matugen/templates/colors.json'
 output_path = '~/.local/state/quickshell/user/generated/colors.json'
+post_hook = '~/.config/quickshell/nandoroid/scripts/colors/apply_system_theme.sh'
 
 [templates.hyprland]
 input_path = '~/.config/matugen/templates/hyprland/colors.conf'
@@ -71,11 +72,6 @@ output_path = '~/.config/btop/themes/matugen.theme'
 [templates.obsidian]
 input_path = '~/.config/matugen/templates/obsidian_matugen.css'
 # output_path = '~/Documents/Obsidian-Vault/.obsidian/snippets/matugen.css' # Example: path to your obsidian vault snippet
-
-[templates.iisddmtheme]
-input_path = '~/.config/ii-sddm-theme/SddmColors.qml'
-output_path = '~/.config/ii-sddm-theme/Colors.qml'
-post_hook = 'python3 ~/.config/ii-sddm-theme/generate_settings.py && sudo ~/.config/ii-sddm-theme/sddm-theme-apply.sh &'
 
 [templates.terminal]
 input_path = '~/.config/matugen/templates/terminal/sequences.txt'
