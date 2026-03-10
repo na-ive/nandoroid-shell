@@ -47,17 +47,30 @@ Singleton {
         }
     }
 
-    // Restore last known state on startup
+    // Polling timer to keep the toggle UI accurate to the system state
+    Timer {
+        id: pollTimer
+        interval: 3000
+        running: true
+        repeat: true
+        onTriggered: root.fetchActiveState()
+    }
+
+    // ENFORCEMENT: On startup, make reality match the user's last preference
     Connections {
         target: Config
         function onReadyChanged() {
             if (Config.ready && Config.options.system) {
                 const shouldBeEnabled = Config.options.system.easyeffectsEnabled;
-                // Only act if current state doesn't match persisted preference
-                if (shouldBeEnabled && !root.active) {
+                
+                // If user wants it OFF, but exec-once (or something else) started it, KILL IT.
+                if (!shouldBeEnabled) {
+                    // We run pkill regardless to be sure it follows the "OFF" preference
+                    Quickshell.execDetached(["bash", "-c", "pkill easyeffects || flatpak pkill com.github.wwmm.easyeffects"])
+                } 
+                // If user wants it ON, make sure it's running
+                else if (shouldBeEnabled) {
                     root.enable();
-                } else if (!shouldBeEnabled && root.active) {
-                    root.disable();
                 }
             }
         }

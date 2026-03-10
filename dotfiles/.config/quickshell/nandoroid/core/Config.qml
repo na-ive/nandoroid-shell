@@ -349,7 +349,7 @@ Singleton {
             // --- System ---
             property JsonObject system: JsonObject {
                 property string lastUpdateCheckDate: ""
-                property bool easyeffectsEnabled: true
+                property bool easyeffectsEnabled: false
                 property list<var> monitoredDisks: [
                     { "path": "/", "alias": "System" }
                 ]
