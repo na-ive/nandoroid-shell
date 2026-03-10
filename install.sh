@@ -363,6 +363,7 @@ success "State saved."
 # Done
 finished
 substep "Nandoroid Shell is a ${C_WHITE}${C_BOLD}shell${C_RST}, not full dotfiles."
+substep "Check ${C_ACCENT}extras/${C_RST} for clean, modular Hyprland and Fish configs."
 substep "File pickers / screen sharing require XDG portals."
 substep "Make sure ${C_ACCENT}xdg-desktop-portal-hyprland${C_RST} and"
 substep "${C_ACCENT}xdg-desktop-portal-gtk${C_RST} are installed."
