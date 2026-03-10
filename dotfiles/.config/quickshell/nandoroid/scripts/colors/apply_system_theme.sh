@@ -10,7 +10,11 @@ COLOR_FILE="$XDG_STATE_HOME/quickshell/user/generated/color.txt"
 
 # Extract settings from config.json using python
 get_config_val() {
-    python3 -c "import json, sys; print(json.load(open('$CONFIG_FILE')).get('appearance', {}).get('background', {}).get('$1', '$2'))" 2>/dev/null
+    if [[ ! -f "$CONFIG_FILE" ]]; then
+        echo "$2"
+        return
+    fi
+    python3 -c "import json, sys; print(json.load(open('$CONFIG_FILE')).get('appearance', {}).get('background', {}).get('$1', '$2'))" 2>/dev/null || echo "$2"
 }
 
 MATUGEN_SCHEME=$(get_config_val "matugenScheme" "scheme-tonal-spot")
@@ -32,9 +36,6 @@ fi
 # 2. Update KDE
 if [[ -d "$VENV_PATH" && -f "$COLOR_FILE" ]]; then
     COLOR=$(tr -d '\n' < "$COLOR_FILE")
-    
-    # Force ignore external virtualenv variable to avoid conflicts
-    unset ILLOGICAL_IMPULSE_VIRTUAL_ENV
     
     case "$MATUGEN_SCHEME" in
         scheme-content) sv_num=0 ;;
