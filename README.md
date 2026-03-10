@@ -49,6 +49,7 @@ The interactive installer guides you through dependency installation, config cop
 | **Framework** | `quickshell` | The engine (0.5.0+) used to build and run the shell. |
 | **Monitor** | `dgop` | System monitoring (CPU, RAM, Temp) stats. |
 | **Theme** | `matugen` | Material 3 theme generation from wallpapers. |
+| **GTK Theme** | `adw-gtk-theme` | Libadwaita-like theme for GTK3 applications. |
 | **Scripting** | `python3` | Used by terminal color scripts and utilities. |
 | **JSON** | `jq` | Command-line JSON processor for configs and state. |
 

@@ -164,7 +164,7 @@ if [[ "$DEP_CHOICE" =~ ^[Yy] ]]; then
         "xdg-desktop-portal-gtk"
         "python3"
         "python-virtualenv"
-        "adw-gtk3"
+        "adw-gtk-theme"
         "dgop"
         "brightnessctl"
         "ddcutil"
