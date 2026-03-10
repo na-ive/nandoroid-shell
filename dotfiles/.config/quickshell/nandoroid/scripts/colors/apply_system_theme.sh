@@ -37,6 +37,9 @@ fi
 if [[ -d "$VENV_PATH" && -f "$COLOR_FILE" ]]; then
     COLOR=$(tr -d '\n' < "$COLOR_FILE")
     
+    # Force ignore external virtualenv variable to avoid conflicts
+    unset ILLOGICAL_IMPULSE_VIRTUAL_ENV
+    
     case "$MATUGEN_SCHEME" in
         scheme-content) sv_num=0 ;;
         scheme-expressive) sv_num=1 ;;
