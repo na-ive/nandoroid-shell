@@ -273,6 +273,15 @@ Item {
                         selectedTextColor: Appearance.colors.colOnPrimaryContainer
                         onTextChanged: saveTimer.restart()
 
+                        onCursorRectangleChanged: {
+                            const margin = 20 // Extra padding to keep cursor comfortable
+                            if (cursorRectangle.y < bodyFlickable.contentY) {
+                                bodyFlickable.contentY = cursorRectangle.y
+                            } else if (cursorRectangle.y + cursorRectangle.height + margin > bodyFlickable.contentY + bodyFlickable.height) {
+                                bodyFlickable.contentY = cursorRectangle.y + cursorRectangle.height - bodyFlickable.height + margin
+                            }
+                        }
+
                         StyledText {
                             anchors.top: parent.top
                             anchors.left: parent.left
