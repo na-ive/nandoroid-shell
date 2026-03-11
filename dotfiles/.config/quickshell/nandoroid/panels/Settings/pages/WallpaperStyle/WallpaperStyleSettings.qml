@@ -280,21 +280,25 @@ Flickable {
                 
                 RowLayout {
                     id: syncToggleRow
-                    anchors.fill: parent; anchors.margins: 20
+                    anchors.fill: parent; anchors.margins: 16
                     spacing: 20
 
-                    MaterialSymbol {
-                        text: "sync"
-                        iconSize: 24
-                        color: Appearance.colors.colPrimary
+                    RowLayout {
+                        spacing: 16
+                        Layout.preferredWidth: 70
+                        MaterialSymbol {
+                            text: "sync"
+                            iconSize: 24
+                            color: Appearance.colors.colPrimary
+                        }
+                        StyledText {
+                            text: "Use same wallpaper for lock screen"
+                            color: Appearance.colors.colOnLayer1
+                            Layout.fillWidth: true
+                        }
                     }
 
-                    StyledText {
-                        text: "Use same wallpaper for lock screen"
-                        font.pixelSize: Appearance.font.pixelSize.normal
-                        color: Appearance.colors.colOnLayer1
-                        Layout.fillWidth: true
-                    }
+                    Item { Layout.fillWidth: true }
 
                     AndroidToggle {
                         id: syncToggle

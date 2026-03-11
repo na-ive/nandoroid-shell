@@ -62,7 +62,6 @@ ColumnLayout {
                             MaterialSymbol { text: "reorder"; iconSize: 24; color: Appearance.colors.colPrimary }
                             StyledText { 
                                 text: "Rows"
-                                font.pixelSize: Appearance.font.pixelSize.normal
                                 color: Appearance.colors.colOnLayer1
                                 Layout.fillWidth: true
                             }
@@ -103,7 +102,6 @@ ColumnLayout {
                             MaterialSymbol { text: "view_week"; iconSize: 24; color: Appearance.colors.colPrimary }
                             StyledText { 
                                 text: "Columns"
-                                font.pixelSize: Appearance.font.pixelSize.normal
                                 color: Appearance.colors.colOnLayer1
                                 Layout.fillWidth: true
                             }
@@ -144,7 +142,6 @@ ColumnLayout {
                             MaterialSymbol { text: "zoom_in"; iconSize: 24; color: Appearance.colors.colPrimary }
                             StyledText { 
                                 text: "Window Scale"
-                                font.pixelSize: Appearance.font.pixelSize.normal
                                 color: Appearance.colors.colOnLayer1
                                 Layout.fillWidth: true
                             }
@@ -185,7 +182,6 @@ ColumnLayout {
                             MaterialSymbol { text: "space_dashboard"; iconSize: 24; color: Appearance.colors.colPrimary }
                             StyledText { 
                                 text: "Workspace Spacing"
-                                font.pixelSize: Appearance.font.pixelSize.normal
                                 color: Appearance.colors.colOnLayer1
                                 Layout.fillWidth: true
                             }

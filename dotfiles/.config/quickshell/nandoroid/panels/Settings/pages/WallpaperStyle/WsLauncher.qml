@@ -93,7 +93,6 @@ ColumnLayout {
                     }
                     StyledText {
                         text: "Icon Shapes"
-                        font.pixelSize: Appearance.font.pixelSize.normal
                         font.weight: Font.Medium
                         color: Appearance.colors.colOnLayer1
                     }

@@ -20,31 +20,35 @@ ColumnLayout {
 
     // ── Theme Section ──
 
-            Rectangle {
+            SegmentedWrapper {
                 Layout.fillWidth: true
                 implicitHeight: themeToggleRow.implicitHeight + 36
-                radius: 20
+                maxRadius: 20
                 color: Appearance.m3colors.m3surfaceContainerHigh
     
                 RowLayout {
                     id: themeToggleRow
                     anchors.fill: parent
-                    anchors.margins: 20
-                    spacing: 16
+                    anchors.margins: 16
+                    spacing: 20
     
-                    MaterialSymbol {
-                        text: Config.options.appearance.background.darkmode ? "dark_mode" : "light_mode"
-                        iconSize: 24
-                        color: Appearance.colors.colPrimary
+                    RowLayout {
+                        spacing: 16
+                        Layout.preferredWidth: 70
+                        MaterialSymbol {
+                            text: Config.options.appearance.background.darkmode ? "dark_mode" : "light_mode"
+                            iconSize: 24
+                            color: Appearance.colors.colPrimary
+                        }
+                        StyledText {
+                            text: "Dark theme"
+                            color: Appearance.colors.colOnLayer1
+                            Layout.fillWidth: true
+                        }
                     }
     
-                    StyledText {
-                        text: "Dark theme"
-                        font.pixelSize: Appearance.font.pixelSize.normal
-                        color: Appearance.colors.colOnLayer1
-                        Layout.fillWidth: true
-                    }
-    
+                    Item { Layout.fillWidth: true }
+
                     AndroidToggle {
                         checked: Config.ready && (Config.options.appearance && Config.options.appearance.background ? Config.options.appearance.background.darkmode : false)
                         onToggled: Wallpapers.toggleDarkMode()

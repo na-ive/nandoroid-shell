@@ -59,7 +59,6 @@ ColumnLayout {
                             MaterialSymbol { text: "pace"; iconSize: 24; color: Appearance.colors.colPrimary }
                             StyledText {
                                 text: "Time Format"
-                                font.pixelSize: Appearance.font.pixelSize.normal
                                 color: Appearance.colors.colOnLayer1
                                 Layout.fillWidth: true
                             }
@@ -111,7 +110,6 @@ ColumnLayout {
                             MaterialSymbol { text: "calendar_month"; iconSize: 24; color: Appearance.colors.colPrimary }
                             StyledText {
                                 text: "Date Format"
-                                font.pixelSize: Appearance.font.pixelSize.normal
                                 color: Appearance.colors.colOnLayer1
                                 Layout.fillWidth: true
                             }
