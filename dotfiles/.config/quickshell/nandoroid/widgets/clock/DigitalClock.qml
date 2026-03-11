@@ -52,7 +52,7 @@ ColumnLayout {
     readonly property string cfgFamily:    Appearance.font.family.title
 
     readonly property bool isVertical: Config.ready && cfg.isVertical
-    readonly property bool showDate:   Config.ready && cfg.showDate
+    readonly property bool showDate:   Config.ready && Config.options.appearance.clock.showDate
     readonly property bool hideAmPm:   Config.ready && cfg.hideAmPm
 
     // ── Time strings ───────────────────────────────────────────

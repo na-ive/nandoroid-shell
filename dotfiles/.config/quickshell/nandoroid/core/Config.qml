@@ -114,6 +114,7 @@ Singleton {
                     property string style: "digital"
                     property string styleLocked: "digital"
                     property bool showOnDesktop: true
+                    property bool showDate: true
                     property bool useSameStyle: true
                     property int offsetX: 0
                     property int offsetY: -50
@@ -123,7 +124,6 @@ Singleton {
                         property bool isVertical: false
                         property string colorStyle: "primary"
                         property int fontSize: 84
-                        property bool showDate: true
                         property bool hideAmPm: false
                     }
 
@@ -132,7 +132,6 @@ Singleton {
                         property bool isVertical: false
                         property string colorStyle: "primary"
                         property int fontSize: 84
-                        property bool showDate: true
                         property bool hideAmPm: false
                     }
 
@@ -145,7 +144,6 @@ Singleton {
                         property bool showMarks: true
                         property bool hourMarks: false
                         property bool timeIndicators: false
-                        property bool showDate: true
                         property string dateStyle: "bubble" // bubble, border, rect, none
                         property string handStyle: "modern" // fallback
                         property string hourHandStyle: "fill" // fill, classic, hollow, none
@@ -165,7 +163,6 @@ Singleton {
                         property bool showMarks: true
                         property bool hourMarks: false
                         property bool timeIndicators: false
-                        property bool showDate: true
                         property string dateStyle: "bubble"
                         property string handStyle: "modern"
                         property string hourHandStyle: "fill"
@@ -181,7 +178,6 @@ Singleton {
                         property string blockColorStyle: "primary"
                         property int fontSize: 18
                         property string blockType: "js"
-                        property bool showDate: true
                         property string fontFamily: "JetBrainsMono Nerd Font"
                     }
 
@@ -192,7 +188,6 @@ Singleton {
                         property string blockColorStyle: "primary"
                         property int fontSize: 18
                         property string blockType: "js"
-                        property bool showDate: true
                         property string fontFamily: "JetBrainsMono Nerd Font"
                     }
 

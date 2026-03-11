@@ -40,7 +40,7 @@ ColumnLayout {
     // ── Config ──────────────────────────────────────────────────
     readonly property int    cfgSize:    Config.ready ? cfg.fontSize  : 18
     readonly property string blockType:  Config.ready ? cfg.blockType : "js"
-    readonly property bool   showDate:   Config.ready && cfg.showDate
+    readonly property bool   showDate:   Config.ready && Config.options.appearance.clock.showDate
     readonly property string fontFamily: (Config.ready && cfg.fontFamily) || Appearance.font.family.monospace
 
     readonly property string currentTime: DateTime.currentTime

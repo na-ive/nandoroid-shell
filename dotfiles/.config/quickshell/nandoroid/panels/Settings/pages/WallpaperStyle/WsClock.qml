@@ -725,20 +725,8 @@ ColumnLayout {
                             MaterialSymbol { text: "calendar_today"; iconSize: 24; color: Appearance.colors.colPrimary }
                             StyledText { text: "Show date"; Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
                             AndroidToggle {
-                                checked: {
-                                    if (!Config.ready) return true;
-                                    const s = advancedPanel.currentStyle;
-                                    if (s === "digital") return Config.options.appearance.clock.digital.showDate;
-                                    if (s === "analog") return Config.options.appearance.clock.analog.showDate;
-                                    return Config.options.appearance.clock.code.showDate;
-                                }
-                                onToggled: {
-                                    if (!Config.ready) return;
-                                    const s = advancedPanel.currentStyle;
-                                    if (s === "digital") Config.options.appearance.clock.digital.showDate = !Config.options.appearance.clock.digital.showDate;
-                                    else if (s === "analog") Config.options.appearance.clock.analog.showDate = !Config.options.appearance.clock.analog.showDate;
-                                    else Config.options.appearance.clock.code.showDate = !Config.options.appearance.clock.code.showDate;
-                                }
+                                checked: Config.ready && Config.options.appearance.clock.showDate
+                                onToggled: if(Config.ready) Config.options.appearance.clock.showDate = !Config.options.appearance.clock.showDate
                             }
                         }
                     }

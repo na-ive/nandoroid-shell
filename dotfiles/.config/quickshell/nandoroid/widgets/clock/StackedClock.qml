@@ -18,7 +18,8 @@ ColumnLayout {
         labelFontWeight: "Normal",
         alignment: "center",
         colorStyle: "primary",
-        textColorStyle: "onSurface"
+        textColorStyle: "onSurface",
+        showDate: true
     })
 
     // Safely resolve the config object
@@ -31,6 +32,8 @@ ColumnLayout {
         
         return target || defaultCfg;
     }
+
+    readonly property bool showDate: Config.ready && Config.options.appearance.clock.showDate
 
     readonly property color mainColor: {
         if (!Config.ready || !cfg) return Appearance.colors.colPrimary
@@ -97,6 +100,7 @@ ColumnLayout {
     readonly property string amPm: DateTime.hours >= 12 ? "PM" : "AM"
 
     Text {
+        visible: root.showDate
         text: root.dayName
         font.pixelSize: cfg.labelFontSize || 24
         font.family: cfg.fontFamily || "sans"
@@ -108,6 +112,7 @@ ColumnLayout {
     }
 
     Text {
+        visible: root.showDate
         text: root.dayNumber
         font.pixelSize: cfg.fontSize || 64
         font.family: cfg.fontFamily || "sans"
