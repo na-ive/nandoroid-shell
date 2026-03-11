@@ -79,22 +79,26 @@ Scope {
                 anchors.topMargin: barWindow.isCentered && barWindow.showBackground ? -barWindow.cornerRadius : 0
                 anchors.horizontalCenter: parent.horizontalCenter
                 
-                width: barWindow.isCentered ? Math.min(barWindow.centeredWidth, parent.width - 40) : parent.width
+                width: (barWindow.isCentered && barWindow.showBackground) ? Math.min(barWindow.centeredWidth, parent.width - 40) : parent.width
                 height: Appearance.sizes.statusBarHeight + (barWindow.isCentered && barWindow.showBackground ? barWindow.cornerRadius : 0)
                 color: barWindow.showBackground ? Appearance.colors.colStatusBarSolid : "transparent"
                 
-                radius: barWindow.isCentered ? barWindow.cornerRadius : 0
+                radius: (barWindow.isCentered && barWindow.showBackground) ? barWindow.cornerRadius : 0
 
                 Behavior on color { ColorAnimation { duration: Appearance.animation.elementMoveFast.duration } }
                 Behavior on width { NumberAnimation { duration: 400; easing.type: Easing.OutQuint } }
                 Behavior on anchors.topMargin { NumberAnimation { duration: 400; easing.type: Easing.OutQuint } }
             }
 
-            // ── Gradient overlay (when not in background mode) ─────────
+            // ── Gradient overlay (Always full width) ─────────
             Rectangle {
-                anchors.fill: barBg
+                anchors {
+                    left: parent.left
+                    right: parent.right
+                    top: parent.top
+                }
+                height: Appearance.sizes.statusBarHeight
                 color: "transparent"
-                radius: barBg.radius
                 visible: !barWindow.showBackground && (Config.ready && Config.options.statusBar ? Config.options.statusBar.useGradient : true)
                 gradient: Gradient {
                     GradientStop { position: 0.0; color: Appearance.colors.colStatusBarGradientStart }
