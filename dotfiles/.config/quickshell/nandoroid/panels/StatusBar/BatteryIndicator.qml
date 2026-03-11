@@ -8,6 +8,8 @@ import Quickshell
 
 Item {
     id: root
+    property color color: Appearance.colors.colStatusBarText
+    
     readonly property var chargeState: Battery.chargeState
     readonly property bool isCharging: Battery.isCharging
     readonly property bool isPluggedIn: Battery.isPluggedIn
@@ -33,7 +35,7 @@ Item {
             // highlightColor: (isLow && !isCharging) ? Appearance.m3colors.m3error : Appearance.colors.colStatusBarText
             highlightColor: {
                  if (isLow && !isCharging) return Appearance.m3colors.m3error
-                 return Appearance.colors.colStatusBarText
+                 return root.color
             }
             trackColor: {
                 if (isLow && !isCharging) return Appearance.m3colors.m3errorContainer
@@ -60,14 +62,14 @@ Item {
                         text: "bolt"
                         iconSize: 8
                         visible: isCharging
-                        color: (isLow && !isCharging) ? Appearance.m3colors.m3onError : Appearance.colors.colStatusBarText
+                        color: (isLow && !isCharging) ? Appearance.m3colors.m3onError : root.color
                     }
                     StyledText {
                         Layout.alignment: Qt.AlignVCenter
                         font.pixelSize: 10
                         font.weight: Font.DemiBold
                         text: batteryProgress.text
-                        color: (isLow && !isCharging) ? Appearance.m3colors.m3onError : Appearance.colors.colStatusBarText
+                        color: (isLow && !isCharging) ? Appearance.m3colors.m3onError : root.color
                     }
                 }
             }

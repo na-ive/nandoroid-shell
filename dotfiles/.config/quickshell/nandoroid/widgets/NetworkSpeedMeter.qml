@@ -12,6 +12,9 @@ ColumnLayout {
     spacing: -6
     visible: Config.ready && Config.options.bar ? Config.options.bar.show_network_speed : false
 
+    property color color: Appearance.colors.colStatusBarText
+    property color subtextColor: Appearance.colors.colStatusBarSubtext
+
     readonly property string currentUnit: Config.ready && Config.options.bar ? Config.options.bar.network_speed_unit : "KB"
 
     function formatSpeed(bytes) {
@@ -47,14 +50,14 @@ ColumnLayout {
             text: root.formatSpeed(SystemData.networkTxRate)
             font.pixelSize: 10
             font.weight: Font.Medium
-            color: Appearance.colors.colStatusBarText
+            color: root.color
             horizontalAlignment: Text.AlignRight
             verticalAlignment: Text.AlignBottom
         }
         MaterialSymbol {
             text: "arrow_drop_up"
             iconSize: 14
-            color: root.isHighSpeed(SystemData.networkTxRate) ? Appearance.colors.colStatusBarText : Appearance.colors.colStatusBarSubtext
+            color: root.isHighSpeed(SystemData.networkTxRate) ? root.color : root.subtextColor
         }
     }
 
@@ -67,14 +70,14 @@ ColumnLayout {
             text: root.formatSpeed(SystemData.networkRxRate)
             font.pixelSize: 10
             font.weight: Font.Medium
-            color: Appearance.colors.colStatusBarText
+            color: root.color
             horizontalAlignment: Text.AlignRight
             verticalAlignment: Text.AlignTop
         }
         MaterialSymbol {
             text: "arrow_drop_down"
             iconSize: 14
-            color: root.isHighSpeed(SystemData.networkRxRate) ? Appearance.colors.colStatusBarText : Appearance.colors.colStatusBarSubtext
+            color: root.isHighSpeed(SystemData.networkRxRate) ? root.color : root.subtextColor
         }
     }
 }

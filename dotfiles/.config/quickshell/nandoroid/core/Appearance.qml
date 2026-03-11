@@ -148,18 +148,17 @@ Singleton {
         property bool statusBarDarkText: false
 
         // When background is shown, gradient + adaptive text mode are ignored
-        readonly property bool statusBarBgActive: Config.ready && Config.options.statusBar
-            ? (Config.options.statusBar.backgroundStyle ?? 0) > 0
+        readonly property bool statusBarAlwaysSolid: Config.ready && Config.options.statusBar
+            ? (Config.options.statusBar.backgroundStyle ?? 0) === 1
             : false
 
-        // Gradient is only active when backgroundStyle = 0 AND useGradient = true
-        readonly property bool statusBarGradientActive: !statusBarBgActive
+        // Gradient is only active when backgroundStyle != 1 AND useGradient = true
+        readonly property bool statusBarGradientActive: !statusBarAlwaysSolid
             && (Config.ready && Config.options.statusBar ? (Config.options.statusBar.useGradient ?? true) : true)
 
-        // Resolved dark text: locked to wallpaper-based detection if bg is active (theme decides),
-        // otherwise respects user setting
+        // Resolved dark text: respects user setting if not ALWAYS solid
         readonly property bool resolvedStatusBarDarkText: {
-            if (statusBarBgActive) return false; // background mode: use theme text (always on surface)
+            if (statusBarAlwaysSolid) return false; // background mode: use theme text (always on surface)
             if (!Config.ready || !Config.options.statusBar) return statusBarDarkText;
             const mode = Config.options.statusBar.textColorMode ?? "adaptive";
             if (mode === "dark") return true;
@@ -167,9 +166,7 @@ Singleton {
             return statusBarDarkText; // adaptive
         }
 
-        property color colStatusBarText: statusBarBgActive
-            ? m3colors.m3onSurface
-            : (resolvedStatusBarDarkText ? "#1E1E1E" : "#F5F5F5")
+        property color colStatusBarText: resolvedStatusBarDarkText ? "#1E1E1E" : "#F5F5F5"
         property color colStatusBarSubtext: Functions.ColorUtils.applyAlpha(colStatusBarText, 0.7)
         property color colStatusBarGradientStart: {
             if (!statusBarGradientActive) return "transparent";

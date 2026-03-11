@@ -23,6 +23,23 @@ Item {
     
     readonly property real sidePadding: isCentered ? Math.max(12, (root.width - centeredWidth) / 2) : 12
 
+    // Dynamic background detection for color switching
+    readonly property int bgStyle: (Config.ready && Config.options.statusBar) ? (Config.options.statusBar.backgroundStyle ?? 0) : 0
+    readonly property int activeWorkspaceId: monitor?.activeWorkspace?.id ?? -1
+    readonly property bool hasTiledWindows: {
+        if (bgStyle !== 2 || activeWorkspaceId === -1) return false;
+        return HyprlandData.windowList.some(w => 
+            w.workspace.id === activeWorkspaceId && 
+            !w.floating && 
+            w.monitor === monitorIndex
+        );
+    }
+    readonly property bool showBackground: bgStyle === 1 || (bgStyle === 2 && hasTiledWindows)
+
+    // Selection of the final color based on actual visibility
+    readonly property color finalContentColor: showBackground ? Appearance.m3colors.m3onSurface : Appearance.colors.colStatusBarText
+    readonly property color finalSubtextColor: showBackground ? Appearance.m3colors.m3onSurfaceVariant : Appearance.colors.colStatusBarSubtext
+
     // ── Click-to-close backdrop (invisible, catches unfocused clicks) ──
     MouseArea {
         anchors.fill: parent
@@ -126,7 +143,7 @@ Item {
                         return (custom && custom !== "") ? custom : (SystemInfo.distroIcon || "linux-symbolic");
                     }
                     colorize: true
-                    color: Appearance.colors.colStatusBarText
+                    color: root.finalContentColor
                     width: (root.monitor && root.monitor.width && root.monitor.width > 2000) ? 20 : 18
                     height: (root.monitor && root.monitor.width && root.monitor.width > 2000) ? 20 : 18
                     Layout.alignment: Qt.AlignVCenter
@@ -140,6 +157,8 @@ Item {
                     Layout.alignment: Qt.AlignVCenter
                     Layout.maximumWidth: Math.min(400, (root.monitor ? root.monitor.width : 1920) * 0.25)
                     monitor: root.monitor
+                    color: root.finalContentColor
+                    subtextColor: root.finalSubtextColor
                 }
             }
         }
@@ -160,7 +179,7 @@ Item {
         text: DateTime.currentTime
         font.pixelSize: 14 // Bigger font
         font.weight: Font.DemiBold
-        color: Appearance.colors.colStatusBarText
+        color: root.finalContentColor
     }
 
     // Date (Right of Notch)
@@ -170,7 +189,7 @@ Item {
         text: DateTime.currentDate
         font.pixelSize: 14 // Bigger font
         font.weight: Font.DemiBold
-        color: Appearance.colors.colStatusBarText
+        color: root.finalContentColor
     }
 
     // --- Absolute Center Workspace Indicator ---
@@ -198,6 +217,8 @@ Item {
             // Network Speed Meter
             NetworkSpeedMeter {
                 Layout.alignment: Qt.AlignVCenter
+                color: root.finalContentColor
+                subtextColor: root.finalSubtextColor
             }
 
             // System Tray (Apps tray will be to the left of this)
@@ -212,7 +233,7 @@ Item {
                 text: "key"
                 iconSize: 16
                 fill: 1
-                color: Appearance.colors.colStatusBarText
+                color: root.finalContentColor
             }
 
             // WiFi (real data from Network service)
@@ -220,7 +241,7 @@ Item {
                 text: Network.materialSymbol
                 iconSize: 16
                 fill: 1
-                color: Appearance.colors.colStatusBarText
+                color: root.finalContentColor
             }
 
             // Bluetooth (real data from BluetoothStatus service)
@@ -231,7 +252,7 @@ Item {
                     text: BluetoothStatus.materialSymbol
                     iconSize: 16
                     fill: BluetoothStatus.connected ? 1 : 0
-                    color: Appearance.colors.colStatusBarText
+                    color: root.finalContentColor
                 }
 
                 // Vertical Battery Bar
@@ -241,7 +262,7 @@ Item {
                     width: 3
                     height: 12
                     radius: 1.5
-                    color: Appearance.colors.colStatusBarSubtext
+                    color: root.finalSubtextColor
                     Layout.alignment: Qt.AlignVCenter
                     
                     Rectangle {
@@ -249,7 +270,7 @@ Item {
                         width: parent.width
                         height: parent.height * (parent.device ? parent.device.battery : 0)
                         radius: 1.5
-                        color: Appearance.colors.colStatusBarText
+                        color: root.finalContentColor
                     }
                 }
             }
@@ -258,6 +279,7 @@ Item {
             BatteryIndicator {
                 visible: Battery.available
                 Layout.alignment: Qt.AlignVCenter
+                color: root.finalContentColor
             }
 
 
@@ -275,7 +297,7 @@ Item {
                     text: "notifications_active"
                     iconSize: 16
                     fill: 1
-                    color: Appearance.colors.colStatusBarText
+                    color: root.finalContentColor
                 }
 
                 Rectangle {
@@ -306,7 +328,7 @@ Item {
                 text: "notifications_paused"
                 iconSize: 16
                 fill: 1
-                color: Appearance.colors.colStatusBarText
+                color: root.finalContentColor
                 Layout.alignment: Qt.AlignVCenter
             }
 
