@@ -247,25 +247,40 @@ ColumnLayout {
                             }
     
                             // Font Size
-                            StyledText { text: "Font Size"; color: Appearance.colors.colOnLayer1 }
+                            StyledText { 
+                                text: "Font Size"
+                                Layout.preferredWidth: 110
+                                color: Appearance.colors.colOnLayer1 
+                            }
                             RowLayout {
-                                Layout.alignment: Qt.AlignRight
+                                Layout.fillWidth: true
+                                spacing: 12
                                 StyledSlider {
-                                    Layout.preferredWidth: 200
+                                    Layout.fillWidth: true
                                     value: Config.ready ? advancedPanel.digitalCfg.fontSize : 84
                                     from: 48; to: 200
                                     onMoved: advancedPanel.digitalCfg.fontSize = Math.round(value)
                                 }
-                                StyledText { text: Math.round(advancedPanel.digitalCfg.fontSize).toString(); color: Appearance.colors.colOnLayer1 }
+                                StyledText { 
+                                    text: Math.round(advancedPanel.digitalCfg.fontSize).toString()
+                                    color: Appearance.colors.colOnLayer1 
+                                    Layout.preferredWidth: 40
+                                    horizontalAlignment: Text.AlignRight
+                                }
                             }
     
     
                             // Time-Date Gap
-                            StyledText { text: "Date Gap"; color: Appearance.colors.colOnLayer1 }
+                            StyledText { 
+                                text: "Date Gap"
+                                Layout.preferredWidth: 110
+                                color: Appearance.colors.colOnLayer1 
+                            }
                             RowLayout {
-                                Layout.alignment: Qt.AlignRight
+                                Layout.fillWidth: true
+                                spacing: 12
                                 StyledSlider {
-                                    Layout.preferredWidth: 200
+                                    Layout.fillWidth: true
                                     from: -40; to: 60; stepSize: 1
                                     value: Config.ready ? (advancedPanel.digitalCfg.dateGap ?? 4) : 4
                                     onMoved: advancedPanel.digitalCfg.dateGap = Math.round(value)
@@ -273,6 +288,8 @@ ColumnLayout {
                                 StyledText {
                                     text: Math.round(advancedPanel.digitalCfg.dateGap ?? 4).toString() + "px"
                                     color: Appearance.colors.colOnLayer1
+                                    Layout.preferredWidth: 40
+                                    horizontalAlignment: Text.AlignRight
                                 }
                             }
                         }
@@ -290,16 +307,26 @@ ColumnLayout {
                             rowSpacing: 16
                             columnSpacing: 12
     
-                            StyledText { text: "Clock Size"; Layout.alignment: Qt.AlignVCenter; color: Appearance.colors.colOnLayer1 }
+                            StyledText { 
+                                text: "Clock Size"
+                                Layout.preferredWidth: 110
+                                color: Appearance.colors.colOnLayer1 
+                            }
                             RowLayout {
-                                Layout.alignment: Qt.AlignRight
+                                Layout.fillWidth: true
+                                spacing: 12
                                 StyledSlider {
-                                    Layout.preferredWidth: 200
+                                    Layout.fillWidth: true
                                     value: Config.ready ? advancedPanel.analogCfg.size : 240
                                     from: 120; to: 480
                                     onMoved: advancedPanel.analogCfg.size = Math.round(value)
                                 }
-                                StyledText { text: Math.round(advancedPanel.analogCfg.size).toString(); color: Appearance.colors.colOnLayer1 }
+                                StyledText { 
+                                    text: Math.round(advancedPanel.analogCfg.size).toString()
+                                    color: Appearance.colors.colOnLayer1 
+                                    Layout.preferredWidth: 40
+                                    horizontalAlignment: Text.AlignRight
+                                }
                             }
     
                             StyledText {
@@ -307,6 +334,7 @@ ColumnLayout {
                                 Layout.alignment: Qt.AlignTop
                                 color: Appearance.colors.colOnLayer1
                                 Layout.topMargin: 12
+                                Layout.preferredWidth: 110
                                 visible: Config.ready && advancedPanel.analogCfg.backgroundStyle === "shape"
                             }
                             Flow {
@@ -331,7 +359,11 @@ ColumnLayout {
                                     }
                                 }
                             }
-                            StyledText { text: "Background Style"; color: Appearance.colors.colOnLayer1 }
+                            StyledText { 
+                                text: "Background Style"
+                                Layout.preferredWidth: 110
+                                color: Appearance.colors.colOnLayer1 
+                            }
                             Row {
                                 Layout.alignment: Qt.AlignRight
                                 spacing: 2
@@ -348,12 +380,14 @@ ColumnLayout {
     
                             StyledText {
                                 text: "Sides"
+                                Layout.preferredWidth: 110
                                 color: Appearance.colors.colOnLayer1
                                 visible: Config.ready && (advancedPanel.analogCfg.backgroundStyle === "cookie" || advancedPanel.analogCfg.backgroundStyle === "sine")
                             }
                             RowLayout {
                                 visible: Config.ready && (advancedPanel.analogCfg.backgroundStyle === "cookie" || advancedPanel.analogCfg.backgroundStyle === "sine")
                                 Layout.fillWidth: true
+                                spacing: 12
                                 StyledSlider {
                                     Layout.fillWidth: true
                                     from: 3
@@ -365,31 +399,33 @@ ColumnLayout {
                                 StyledText {
                                     text: Math.round(advancedPanel.analogCfg.sides).toString()
                                     color: Appearance.colors.colOnLayer1
+                                    Layout.preferredWidth: 40
+                                    horizontalAlignment: Text.AlignRight
                                 }
                             }
     
-                            StyledText { text: "Constantly Rotate"; color: Appearance.colors.colOnLayer1 }
+                            StyledText { text: "Constantly Rotate"; Layout.preferredWidth: 160; color: Appearance.colors.colOnLayer1 }
                             AndroidToggle {
                                 Layout.alignment: Qt.AlignRight
                                 checked: Config.ready && advancedPanel.analogCfg.constantlyRotate
                                 onToggled: advancedPanel.analogCfg.constantlyRotate = !advancedPanel.analogCfg.constantlyRotate
                             }
     
-                            StyledText { text: "Time Indicators"; color: Appearance.colors.colOnLayer1 }
+                            StyledText { text: "Time Indicators"; Layout.preferredWidth: 160; color: Appearance.colors.colOnLayer1 }
                             AndroidToggle {
                                 Layout.alignment: Qt.AlignRight
                                 checked: Config.ready && advancedPanel.analogCfg.timeIndicators
                                 onToggled: advancedPanel.analogCfg.timeIndicators = !advancedPanel.analogCfg.timeIndicators
                             }
     
-                            StyledText { text: "Hour Marks"; color: Appearance.colors.colOnLayer1 }
+                            StyledText { text: "Hour Marks"; Layout.preferredWidth: 160; color: Appearance.colors.colOnLayer1 }
                             AndroidToggle {
                                 Layout.alignment: Qt.AlignRight
                                 checked: Config.ready && advancedPanel.analogCfg.hourMarks
                                 onToggled: advancedPanel.analogCfg.hourMarks = !advancedPanel.analogCfg.hourMarks
                             }
     
-                            StyledText { text: "Show Marks"; color: Appearance.colors.colOnLayer1 }
+                            StyledText { text: "Show Marks"; Layout.preferredWidth: 160; color: Appearance.colors.colOnLayer1 }
                             AndroidToggle {
                                 Layout.alignment: Qt.AlignRight
                                 checked: Config.ready && advancedPanel.analogCfg.showMarks
@@ -398,6 +434,7 @@ ColumnLayout {
     
                             StyledText {
                                 text: "Dial Style"
+                                Layout.preferredWidth: 110
                                 color: Appearance.colors.colOnLayer1
                                 visible: Config.ready && advancedPanel.analogCfg.showMarks
                             }
@@ -416,7 +453,7 @@ ColumnLayout {
                                 }
                             }
     
-                            StyledText { text: "Hour Hand"; color: Appearance.colors.colOnLayer1 }
+                            StyledText { text: "Hour Hand"; Layout.preferredWidth: 160; color: Appearance.colors.colOnLayer1 }
                             Row {
                                 Layout.alignment: Qt.AlignRight
                                 spacing: 2
@@ -431,7 +468,7 @@ ColumnLayout {
                                 }
                             }
     
-                            StyledText { text: "Minute Hand"; color: Appearance.colors.colOnLayer1 }
+                            StyledText { text: "Minute Hand"; Layout.preferredWidth: 160; color: Appearance.colors.colOnLayer1 }
                             Row {
                                 Layout.alignment: Qt.AlignRight
                                 spacing: 2
@@ -446,7 +483,7 @@ ColumnLayout {
                                 }
                             }
     
-                            StyledText { text: "Second Hand"; color: Appearance.colors.colOnLayer1 }
+                            StyledText { text: "Second Hand"; Layout.preferredWidth: 160; color: Appearance.colors.colOnLayer1 }
                             Row {
                                 Layout.alignment: Qt.AlignRight
                                 spacing: 2
@@ -461,7 +498,7 @@ ColumnLayout {
                                 }
                             }
     
-                            StyledText { text: "Date Style"; color: Appearance.colors.colOnLayer1 }
+                            StyledText { text: "Date Style"; Layout.preferredWidth: 160; color: Appearance.colors.colOnLayer1 }
                             Row {
                                 Layout.alignment: Qt.AlignRight
                                 spacing: 2
@@ -494,7 +531,7 @@ ColumnLayout {
                             rowSpacing: 16
                             columnSpacing: 12
     
-                            StyledText { text: "Value Color"; color: Appearance.colors.colOnLayer1 }
+                            StyledText { text: "Value Color"; Layout.preferredWidth: 160; color: Appearance.colors.colOnLayer1 }
                             Row {
                                 Layout.alignment: Qt.AlignRight
                                 spacing: 2
@@ -509,7 +546,7 @@ ColumnLayout {
                                 }
                             }
     
-                            StyledText { text: "Keyword Color"; color: Appearance.colors.colOnLayer1 }
+                            StyledText { text: "Keyword Color"; Layout.preferredWidth: 160; color: Appearance.colors.colOnLayer1 }
                             Row {
                                 Layout.alignment: Qt.AlignRight
                                 spacing: 2
@@ -524,7 +561,7 @@ ColumnLayout {
                                 }
                             }
     
-                            StyledText { text: "Block Color"; color: Appearance.colors.colOnLayer1 }
+                            StyledText { text: "Block Color"; Layout.preferredWidth: 160; color: Appearance.colors.colOnLayer1 }
                             Row {
                                 Layout.alignment: Qt.AlignRight
                                 spacing: 2
@@ -541,6 +578,7 @@ ColumnLayout {
     
                             StyledText {
                                 text: "Block Style"
+                                Layout.preferredWidth: 110
                                 color: Appearance.colors.colOnLayer1
                             }
                             Row {
@@ -563,16 +601,26 @@ ColumnLayout {
                                 }
                             }
     
-                            StyledText { text: "Font Size"; color: Appearance.colors.colOnLayer1 }
+                            StyledText { 
+                                text: "Font Size"
+                                Layout.preferredWidth: 110
+                                color: Appearance.colors.colOnLayer1 
+                            }
                             RowLayout {
-                                Layout.alignment: Qt.AlignRight
+                                Layout.fillWidth: true
+                                spacing: 12
                                 StyledSlider {
-                                    Layout.preferredWidth: 200
+                                    Layout.fillWidth: true
                                     value: Config.ready ? advancedPanel.codeCfg.fontSize : 18
                                     from: 12; to: 48
                                     onMoved: advancedPanel.codeCfg.fontSize = Math.round(value)
                                 }
-                                StyledText { text: Math.round(advancedPanel.codeCfg.fontSize).toString(); color: Appearance.colors.colOnLayer1 }
+                                StyledText { 
+                                    text: Math.round(advancedPanel.codeCfg.fontSize).toString()
+                                    color: Appearance.colors.colOnLayer1 
+                                    Layout.preferredWidth: 40
+                                    horizontalAlignment: Text.AlignRight
+                                }
                             }
     
                         }
@@ -590,7 +638,7 @@ ColumnLayout {
                             rowSpacing: 16
                             columnSpacing: 12
     
-                            StyledText { text: "Main Color"; color: Appearance.colors.colOnLayer1 }
+                            StyledText { text: "Main Color"; Layout.preferredWidth: 160; color: Appearance.colors.colOnLayer1 }
                             Row {
                                 Layout.alignment: Qt.AlignRight
                                 spacing: 2
@@ -605,7 +653,7 @@ ColumnLayout {
                                 }
                             }
     
-                            StyledText { text: "Text Color"; color: Appearance.colors.colOnLayer1 }
+                            StyledText { text: "Text Color"; Layout.preferredWidth: 160; color: Appearance.colors.colOnLayer1 }
                             Row {
                                 Layout.alignment: Qt.AlignRight
                                 spacing: 2
@@ -620,7 +668,7 @@ ColumnLayout {
                                 }
                             }
     
-                            StyledText { text: "Alignment"; color: Appearance.colors.colOnLayer1 }
+                            StyledText { text: "Alignment"; Layout.preferredWidth: 160; color: Appearance.colors.colOnLayer1 }
                             Row {
                                 Layout.alignment: Qt.AlignRight
                                 spacing: 2
@@ -635,30 +683,49 @@ ColumnLayout {
                                 }
                             }
     
-                            StyledText { text: "Clock Size"; color: Appearance.colors.colOnLayer1 }
+                            StyledText { 
+                                text: "Clock Size"
+                                Layout.preferredWidth: 110
+                                color: Appearance.colors.colOnLayer1 
+                            }
                             RowLayout {
-                                Layout.alignment: Qt.AlignRight
+                                Layout.fillWidth: true
+                                spacing: 12
                                 StyledSlider {
-                                    Layout.preferredWidth: 200
+                                    Layout.fillWidth: true
                                     value: Config.ready ? advancedPanel.stackedCfg.fontSize : 84
                                     from: 32; to: 160
                                     onMoved: advancedPanel.stackedCfg.fontSize = Math.round(value)
                                 }
-                                StyledText { text: Math.round(advancedPanel.stackedCfg.fontSize).toString(); color: Appearance.colors.colOnLayer1 }
+                                StyledText { 
+                                    text: Math.round(advancedPanel.stackedCfg.fontSize).toString()
+                                    color: Appearance.colors.colOnLayer1 
+                                    Layout.preferredWidth: 40
+                                    horizontalAlignment: Text.AlignRight
+                                }
                             }
     
-                            StyledText { text: "Label Size"; color: Appearance.colors.colOnLayer1 }
+                            StyledText { 
+                                text: "Label Size"
+                                Layout.preferredWidth: 110
+                                color: Appearance.colors.colOnLayer1 
+                            }
                             RowLayout {
-                                Layout.alignment: Qt.AlignRight
+                                Layout.fillWidth: true
+                                spacing: 12
                                 StyledSlider {
-                                    Layout.preferredWidth: 200
+                                    Layout.fillWidth: true
                                     value: Config.ready ? advancedPanel.stackedCfg.labelFontSize : 42
                                     from: 16; to: 84
                                     onMoved: advancedPanel.stackedCfg.labelFontSize = Math.round(value)
                                 }
-                                StyledText { text: Math.round(advancedPanel.stackedCfg.labelFontSize).toString(); color: Appearance.colors.colOnLayer1 }
+                                StyledText { 
+                                    text: Math.round(advancedPanel.stackedCfg.labelFontSize).toString()
+                                    color: Appearance.colors.colOnLayer1 
+                                    Layout.preferredWidth: 40
+                                    horizontalAlignment: Text.AlignRight
+                                }
                             }
-    
                         }
                     }
                 }

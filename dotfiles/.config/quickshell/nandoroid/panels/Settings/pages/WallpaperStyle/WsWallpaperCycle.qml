@@ -45,7 +45,7 @@ ColumnLayout {
         RowLayout {
             id: cycleMainRow
             anchors.fill: parent
-            anchors.margins: 20
+            anchors.margins: 16
             spacing: 20
             MaterialSymbol { text: "auto_mode"; iconSize: 24; color: Appearance.colors.colPrimary }
             StyledText { text: "Wallpaper Auto-Cycle"; Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
@@ -59,19 +59,29 @@ ColumnLayout {
     // ── Expanded Cycle Settings ────
     SegmentedWrapper {
         Layout.fillWidth: true
-        implicitHeight: intervalRow.implicitHeight + 32
+        implicitHeight: intervalRow.implicitHeight + 36
         orientation: Qt.Vertical
         maxRadius: 20
         color: Appearance.m3colors.m3surfaceContainerHigh
         visible: Config.ready && Config.options.appearance.background.autoCycleEnabled
         RowLayout {
             id: intervalRow
-            anchors.fill: parent; anchors.margins: 20
+            anchors.fill: parent; anchors.margins: 16
             spacing: 20
-            MaterialSymbol { text: "schedule"; iconSize: 24; color: Appearance.colors.colPrimary }
-            StyledText { text: "Cycle Interval"; Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
+
+            RowLayout {
+                spacing: 16
+                Layout.preferredWidth: 70
+                MaterialSymbol { text: "schedule"; iconSize: 24; color: Appearance.colors.colPrimary }
+                StyledText { 
+                    text: "Cycle Interval"
+                    Layout.fillWidth: true
+                    color: Appearance.colors.colOnLayer1 
+                }
+            }
+
             StyledSlider {
-                Layout.preferredWidth: 160
+                Layout.fillWidth: true
                 from: 1; to: 120; stepSize: 1
                 value: (Config.ready && Config.options.appearance.background.autoCycleInterval !== undefined) ? Config.options.appearance.background.autoCycleInterval : 30
                 onMoved: Wallpapers.setAutoCycleInterval(Math.round(value))
@@ -87,14 +97,14 @@ ColumnLayout {
 
     SegmentedWrapper {
         Layout.fillWidth: true
-        implicitHeight: directoryRow.implicitHeight + 32
+        implicitHeight: directoryRow.implicitHeight + 36
         orientation: Qt.Vertical
         maxRadius: 20
         color: Appearance.m3colors.m3surfaceContainerHigh
         visible: Config.ready && Config.options.appearance.background.autoCycleEnabled
         RowLayout {
             id: directoryRow
-            anchors.fill: parent; anchors.margins: 20
+            anchors.fill: parent; anchors.margins: 16
             spacing: 20
             MaterialSymbol { text: "folder_open"; iconSize: 24; color: Appearance.colors.colPrimary }
             ColumnLayout {

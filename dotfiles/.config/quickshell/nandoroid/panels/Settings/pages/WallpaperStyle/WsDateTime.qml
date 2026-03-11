@@ -53,9 +53,10 @@ ColumnLayout {
                         RowLayout {
                             id: timeRow
                             anchors.fill: parent
-                            anchors.margins: 20
-                            spacing: 20
+                            anchors.margins: 16
+                            spacing: 16
                             
+                            MaterialSymbol { text: "pace"; iconSize: 24; color: Appearance.colors.colPrimary }
                             StyledText {
                                 text: "Time Format"
                                 font.pixelSize: Appearance.font.pixelSize.normal
@@ -65,7 +66,7 @@ ColumnLayout {
     
                             RowLayout {
                                 spacing: 4
-                                Layout.preferredHeight: 52
+                                Layout.preferredHeight: 48
                                 
                                 Repeater {
                                     model: [
@@ -79,8 +80,8 @@ ColumnLayout {
                                         Layout.fillHeight: true
                                         
                                         buttonText: modelData.label
-                                        leftPadding: 20
-                                        rightPadding: 20
+                                        leftPadding: 16
+                                        rightPadding: 16
                                         
                                         colInactive: Appearance.m3colors.m3surfaceContainerLow
                                         colActive: Appearance.m3colors.m3primary
@@ -104,9 +105,10 @@ ColumnLayout {
                         RowLayout {
                             id: dateRow
                             anchors.fill: parent
-                            anchors.margins: 20
-                            spacing: 20
+                            anchors.margins: 16
+                            spacing: 16
                             
+                            MaterialSymbol { text: "calendar_month"; iconSize: 24; color: Appearance.colors.colPrimary }
                             StyledText {
                                 text: "Date Format"
                                 font.pixelSize: Appearance.font.pixelSize.normal
@@ -116,7 +118,7 @@ ColumnLayout {
     
                             RowLayout {
                                 spacing: 4
-                                Layout.preferredHeight: 52
+                                Layout.preferredHeight: 48
                                 
                                 Repeater {
                                     model: [
@@ -130,8 +132,8 @@ ColumnLayout {
                                         Layout.fillHeight: true
                                         
                                         buttonText: modelData.label
-                                        leftPadding: 20
-                                        rightPadding: 20
+                                        leftPadding: 16
+                                        rightPadding: 16
                                         
                                         colInactive: Appearance.m3colors.m3surfaceContainerLow
                                         colActive: Appearance.m3colors.m3primary

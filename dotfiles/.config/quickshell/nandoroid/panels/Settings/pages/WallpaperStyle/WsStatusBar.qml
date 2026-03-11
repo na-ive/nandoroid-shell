@@ -202,27 +202,6 @@ ColumnLayout {
                         }
                     }
 
-                    // ── Autohide Toggle ──────────────
-                    SegmentedWrapper {
-                        Layout.fillWidth: true
-                        implicitHeight: autohideRow.implicitHeight + 32
-                        orientation: Qt.Vertical
-                        maxRadius: 20
-                        color: Appearance.m3colors.m3surfaceContainerHigh
-                        RowLayout {
-                            id: autohideRow
-                            anchors.fill: parent; anchors.margins: 16
-                            spacing: 16
-                            MaterialSymbol { text: "visibility_off"; iconSize: 24; color: Appearance.colors.colPrimary }
-                            StyledText { text: "Autohide status bar"; Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
-                            AndroidToggle {
-                                checked: Config.ready && Config.options.statusBar ? Config.options.statusBar.autohide : false
-                                onToggled: if (Config.ready && Config.options.statusBar)
-                                    Config.options.statusBar.autohide = !Config.options.statusBar.autohide
-                            }
-                        }
-                    }
-
                     // ── Centered Width (only visible when centered is active) ──
                     SegmentedWrapper {
                         Layout.fillWidth: true

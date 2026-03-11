@@ -83,7 +83,7 @@ ColumnLayout {
     
                     SegmentedWrapper {
                         Layout.fillWidth: true
-                        implicitHeight: screenCornerRadRow.implicitHeight + 32
+                        implicitHeight: screenCornerRadRow.implicitHeight + 36
                         orientation: Qt.Vertical
                         maxRadius: 20
                         color: Appearance.m3colors.m3surfaceContainerHigh
@@ -92,10 +92,20 @@ ColumnLayout {
                             id: screenCornerRadRow
                             anchors.fill: parent; anchors.margins: 16
                             spacing: 16
-                            MaterialSymbol { text: "straighten"; iconSize: 24; color: Appearance.colors.colPrimary }
-                            StyledText { text: "Corner radius"; Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
+                            
+                            RowLayout {
+                                spacing: 16
+                                Layout.preferredWidth: 70
+                                MaterialSymbol { text: "straighten"; iconSize: 24; color: Appearance.colors.colPrimary }
+                                StyledText { 
+                                    text: "Corner radius"
+                                    Layout.fillWidth: true
+                                    color: Appearance.colors.colOnLayer1 
+                                }
+                            }
+
                             StyledSlider {
-                                Layout.preferredWidth: 160
+                                Layout.fillWidth: true
                                 from: 0; to: 100; stepSize: 1
                                 value: Config.ready && Config.options.appearance.screenCorners ? Config.options.appearance.screenCorners.radius : 20
                                 onMoved: if (Config.ready && Config.options.appearance.screenCorners)
@@ -104,6 +114,8 @@ ColumnLayout {
                             StyledText {
                                 text: Math.round(Config.ready && Config.options.appearance.screenCorners ? Config.options.appearance.screenCorners.radius : 20).toString() + "px"
                                 color: Appearance.colors.colOnLayer1
+                                Layout.preferredWidth: 40
+                                horizontalAlignment: Text.AlignRight
                             }
                         }
                     }

@@ -12,12 +12,12 @@ import Quickshell.Io
 ColumnLayout {
     Layout.fillWidth: true
     spacing: 0
-            // ── Lockscreen Section ──
-            ColumnLayout {
+    // ── Lockscreen Section ──
+    ColumnLayout {
                 id: lockscreenStyleSection
                 Layout.fillWidth: true
                 Layout.topMargin: 12
-                spacing: 16
+                spacing: 4
                 
                 SearchHandler { 
                     searchString: "Lockscreen"
@@ -27,7 +27,7 @@ ColumnLayout {
                 // Section Header
                 RowLayout {
                     spacing: 12
-                    Layout.bottomMargin: 4
+                    Layout.bottomMargin: 8
     
                     MaterialSymbol {
                         text: "lock"
@@ -57,7 +57,6 @@ ColumnLayout {
                             id: showCavaRow
                             anchors.fill: parent; anchors.margins: 16
                             spacing: 16
-                            SearchHandler { searchString: "Show Cava Visualizer" }
                             MaterialSymbol { text: "equalizer"; iconSize: 24; color: Appearance.colors.colPrimary }
                             StyledText { text: "Show Cava Visualizer"; Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
                             AndroidToggle {
@@ -77,7 +76,6 @@ ColumnLayout {
                             id: showMediaRow
                             anchors.fill: parent; anchors.margins: 16
                             spacing: 16
-                            SearchHandler { searchString: "Show Media Controls" }
                             MaterialSymbol { text: "movie"; iconSize: 24; color: Appearance.colors.colPrimary }
                             StyledText { text: "Show Media Controls"; Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
                             AndroidToggle {

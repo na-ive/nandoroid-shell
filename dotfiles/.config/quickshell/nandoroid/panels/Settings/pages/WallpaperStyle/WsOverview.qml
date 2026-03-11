@@ -45,24 +45,29 @@ ColumnLayout {
                 // Rows
                 SegmentedWrapper {
                     Layout.fillWidth: true
-                    implicitHeight: overviewRowsRow.implicitHeight + 40
+                    implicitHeight: overviewRowsRow.implicitHeight + 36
                     orientation: Qt.Vertical
+                    maxRadius: 20
                     color: Appearance.m3colors.m3surfaceContainerHigh
-                    smallRadius: 8
-                    fullRadius: 20
                     
                     RowLayout {
                         id: overviewRowsRow
                         anchors.fill: parent
-                        anchors.margins: 20
+                        anchors.margins: 16
                         spacing: 20
     
-                        StyledText { 
-                            text: "Rows"
-                            font.pixelSize: Appearance.font.pixelSize.normal
-                            color: Appearance.colors.colOnLayer1
-                            Layout.preferredWidth: 140
+                        RowLayout {
+                            spacing: 16
+                            Layout.preferredWidth: 70
+                            MaterialSymbol { text: "reorder"; iconSize: 24; color: Appearance.colors.colPrimary }
+                            StyledText { 
+                                text: "Rows"
+                                font.pixelSize: Appearance.font.pixelSize.normal
+                                color: Appearance.colors.colOnLayer1
+                                Layout.fillWidth: true
+                            }
                         }
+
                         StyledSlider {
                             Layout.fillWidth: true
                             value: Config.ready && Config.options.overview ? Config.options.overview.rows : 2
@@ -81,24 +86,29 @@ ColumnLayout {
                 // Columns
                 SegmentedWrapper {
                     Layout.fillWidth: true
-                    implicitHeight: overviewColsRow.implicitHeight + 40
+                    implicitHeight: overviewColsRow.implicitHeight + 36
                     orientation: Qt.Vertical
+                    maxRadius: 20
                     color: Appearance.m3colors.m3surfaceContainerHigh
-                    smallRadius: 8
-                    fullRadius: 20
                     
                     RowLayout {
                         id: overviewColsRow
                         anchors.fill: parent
-                        anchors.margins: 20
+                        anchors.margins: 16
                         spacing: 20
     
-                        StyledText { 
-                            text: "Columns"
-                            font.pixelSize: Appearance.font.pixelSize.normal
-                            color: Appearance.colors.colOnLayer1
-                            Layout.preferredWidth: 140
+                        RowLayout {
+                            spacing: 16
+                            Layout.preferredWidth: 70
+                            MaterialSymbol { text: "view_week"; iconSize: 24; color: Appearance.colors.colPrimary }
+                            StyledText { 
+                                text: "Columns"
+                                font.pixelSize: Appearance.font.pixelSize.normal
+                                color: Appearance.colors.colOnLayer1
+                                Layout.fillWidth: true
+                            }
                         }
+
                         StyledSlider {
                             Layout.fillWidth: true
                             value: Config.ready && Config.options.overview ? Config.options.overview.columns : 5
@@ -117,24 +127,29 @@ ColumnLayout {
                 // Scale
                 SegmentedWrapper {
                     Layout.fillWidth: true
-                    implicitHeight: overviewScaleRow.implicitHeight + 40
+                    implicitHeight: overviewScaleRow.implicitHeight + 36
                     orientation: Qt.Vertical
+                    maxRadius: 20
                     color: Appearance.m3colors.m3surfaceContainerHigh
-                    smallRadius: 8
-                    fullRadius: 20
                     
                     RowLayout {
                         id: overviewScaleRow
                         anchors.fill: parent
-                        anchors.margins: 20
+                        anchors.margins: 16
                         spacing: 20
     
-                        StyledText { 
-                            text: "Window Scale"
-                            font.pixelSize: Appearance.font.pixelSize.normal
-                            color: Appearance.colors.colOnLayer1
-                            Layout.preferredWidth: 140
+                        RowLayout {
+                            spacing: 16
+                            Layout.preferredWidth: 70
+                            MaterialSymbol { text: "zoom_in"; iconSize: 24; color: Appearance.colors.colPrimary }
+                            StyledText { 
+                                text: "Window Scale"
+                                font.pixelSize: Appearance.font.pixelSize.normal
+                                color: Appearance.colors.colOnLayer1
+                                Layout.fillWidth: true
+                            }
                         }
+
                         StyledSlider {
                             Layout.fillWidth: true
                             value: Config.ready && Config.options.overview ? Config.options.overview.scale * 100 : 15
@@ -153,24 +168,29 @@ ColumnLayout {
                 // Workspace Spacing
                 SegmentedWrapper {
                     Layout.fillWidth: true
-                    implicitHeight: overviewSpacingRow.implicitHeight + 40
+                    implicitHeight: overviewSpacingRow.implicitHeight + 36
                     orientation: Qt.Vertical
+                    maxRadius: 20
                     color: Appearance.m3colors.m3surfaceContainerHigh
-                    smallRadius: 8
-                    fullRadius: 20
                     
                     RowLayout {
                         id: overviewSpacingRow
                         anchors.fill: parent
-                        anchors.margins: 20
+                        anchors.margins: 16
                         spacing: 20
     
-                        StyledText { 
-                            text: "Workspace Spacing"
-                            font.pixelSize: Appearance.font.pixelSize.normal
-                            color: Appearance.colors.colOnLayer1
-                            Layout.preferredWidth: 140
+                        RowLayout {
+                            spacing: 16
+                            Layout.preferredWidth: 70
+                            MaterialSymbol { text: "space_dashboard"; iconSize: 24; color: Appearance.colors.colPrimary }
+                            StyledText { 
+                                text: "Workspace Spacing"
+                                font.pixelSize: Appearance.font.pixelSize.normal
+                                color: Appearance.colors.colOnLayer1
+                                Layout.fillWidth: true
+                            }
                         }
+
                         StyledSlider {
                             Layout.fillWidth: true
                             value: Config.ready && Config.options.overview ? Config.options.overview.workspaceSpacing : 10
