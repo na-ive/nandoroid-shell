@@ -71,6 +71,7 @@ Item {
             anchors.left: parent.left
             anchors.leftMargin: root.isCentered ? root.sidePadding : 4
             anchors.verticalCenter: parent.verticalCenter
+            color: root.finalContentColor
         }
     }
 
@@ -98,6 +99,7 @@ Item {
             anchors.right: parent.right
             anchors.rightMargin: root.isCentered ? root.sidePadding : 4
             anchors.verticalCenter: parent.verticalCenter
+            color: root.finalContentColor
         }
     }
 
