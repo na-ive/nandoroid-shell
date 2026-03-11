@@ -10,7 +10,6 @@ import "../../widgets"
 /**
  * NAnDoroid Ported Dock
  * A minimalist Material You dock adapted from Illogical Impulse.
- * Supports multiple background styles, auto-hide and themed icons.
  */
 Scope {
     id: root
@@ -28,13 +27,11 @@ Scope {
             WlrLayershell.namespace: "nandoroid:dock"
             exclusionMode: ExclusionMode.Ignore
             
-            // Only show if enabled in config
             visible: Config.ready && Config.options.dock.enable && !GlobalStates.screenLocked
             
-            // ── Background Style Config ────────────────────────────────
             readonly property int bgStyle: Config.ready && Config.options.dock ? Config.options.dock.backgroundStyle : 1
             
-            // ── Auto Hide Logic ────────────────────────────────────────
+            // ── Auto Hide Logic ──
             readonly property bool hasActiveWindows: {
                 if (!Config.ready || !HyprlandData.activeWorkspace) return false;
                 return HyprlandData.windowList.some(w => 
@@ -44,163 +41,154 @@ Scope {
                 );
             }
 
-            // ── Reveal Logic ───────────────────────────────────────────
+            // ── Reveal Logic ──
             property bool reveal: {
                 if (!Config.ready) return true;
                 const autoHide = Config.options.dock.autoHide;
                 const autoHideMode = Config.options.dock.autoHideMode;
                 const showOnlyInDesktop = Config.options.dock.showOnlyInDesktop;
                 
+                // Hard-reveal cases
                 if (root.pinned) return true;
                 if (GlobalStates.launcherOpen || GlobalStates.dashboardOpen || GlobalStates.overviewOpen) return true;
                 if (dockMouseArea.containsMouse) return true;
-                if (showOnlyInDesktop && hasActiveWindows) return false;
                 
-                if (autoHide) {
-                    if (autoHideMode === 1) return false; 
-                    else return !hasActiveWindows;
+                // 1. Logic: Show Only In Desktop
+                if (showOnlyInDesktop) {
+                    if (hasActiveWindows) return false; // Mati total jika ada jendela
+                    
+                    // Di desktop: Simple Auto Hide (ON: Sembunyi, OFF: Tampil)
+                    return !autoHide; 
                 }
+                
+                // 2. Logic: Normal Auto Hide (Intelligent / Always)
+                if (autoHide) {
+                    if (autoHideMode === 1) return false; // Always hide
+                    else return !hasActiveWindows; // Intelligent hide
+                }
+                
                 return true;
             }
 
-            anchors {
-                bottom: true
-            }
-
+            anchors { bottom: true }
             color: "transparent"
             
-            implicitHeight: (Config.ready ? Config.options.dock.height : 70) + Appearance.sizes.elevationMargin
-            implicitWidth: dockBackground.implicitWidth + 40
+            readonly property real dockHeight: Config.ready ? Config.options.dock.height : 70
+            implicitHeight: dockHeight + Appearance.sizes.elevationMargin
+            implicitWidth: mainRowContainer.implicitWidth + 40
 
             mask: Region {
-                item: dockMouseArea
+                item: Item {
+                    width: mainRowContainer.implicitWidth + 20
+                    height: dockWindow.reveal ? dockWindow.height : (Config.options.dock.showOnlyInDesktop && hasActiveWindows ? 0 : 10)
+                    anchors.bottom: dockWindow.bottom
+                    anchors.horizontalCenter: dockWindow.horizontalCenter
+                }
             }
 
             MouseArea {
                 id: dockMouseArea
-                anchors.bottom: parent.bottom
-                anchors.horizontalCenter: parent.horizontalCenter
-                
-                height: dockWindow.reveal ? parent.height : (Config.ready && (Config.options.dock.autoHide || Config.options.dock.showOnlyInDesktop) ? 10 : 0)
-                width: dockBackground.implicitWidth + 20
+                anchors.fill: parent
                 hoverEnabled: true
-
-                Behavior on height { 
-                    animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(dockMouseArea)
+                
+                // Trigger height: 0 jika showOnlyInDesktop nyala dan ada jendela
+                height: {
+                    if (!Config.ready) return parent.height;
+                    if (Config.options.dock.showOnlyInDesktop && hasActiveWindows && !GlobalStates.launcherOpen) return 0;
+                    return dockWindow.reveal ? parent.height : 10;
                 }
 
-                Item {
-                    id: dockBackground
-                    anchors.bottom: parent.bottom
-                    
-                    // attached mode (2) has 0 margin, floating (1) has elevationMargin
-                    anchors.bottomMargin: dockWindow.bgStyle === 2 ? 0 : Appearance.sizes.elevationMargin / 2
+                RowLayout {
+                    id: mainRowContainer
                     anchors.horizontalCenter: parent.horizontalCenter
+                    spacing: 12
                     
-                    implicitWidth: dockRowLayout.implicitWidth + 20
-                    height: Config.ready ? Config.options.dock.height : 70
-
-                    y: dockWindow.reveal ? 0 : height + Appearance.sizes.elevationMargin
+                    readonly property real bMargin: (dockWindow.bgStyle === 2) ? 0 : Appearance.sizes.elevationMargin / 2
+                    anchors.bottom: parent.bottom
+                    anchors.bottomMargin: dockWindow.reveal ? bMargin : -height - 20
                     opacity: dockWindow.reveal ? 1 : 0
                     
-                    Behavior on y { 
-                        animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(dockBackground)
-                    }
-                    Behavior on opacity { 
-                        animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(dockBackground)
-                    }
+                    Behavior on anchors.bottomMargin { animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(mainRowContainer) }
+                    Behavior on opacity { animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(mainRowContainer) }
 
-                    // ── Dock Background Visuals ──
-                    StyledRectangularShadow {
-                        target: dockVisualRect
-                        opacity: 0.3
-                        visible: dockWindow.bgStyle !== 0
-                    }
+                    // ── Main Apps Island ──
+                    Item {
+                        id: dockBackground
+                        implicitWidth: dockRowLayout.implicitWidth + 24
+                        implicitHeight: dockWindow.dockHeight
+                        Layout.alignment: Qt.AlignVCenter
 
-                    Rectangle {
-                        id: dockVisualRect
-                        anchors.fill: parent
-                        
-                        // Floating: fully rounded. Attached: only top corners rounded.
-                        radius: dockWindow.bgStyle === 1 ? height / 2 : 0
-                        topLeftRadius: dockWindow.bgStyle === 2 ? 24 : radius
-                        topRightRadius: dockWindow.bgStyle === 2 ? 24 : radius
-                        
-                        color: Appearance.colors.colStatusBarSolid
-                        opacity: dockWindow.bgStyle === 0 ? 0 : 0.95
-                        
-                        // No border as requested to match status bar
-                        border.width: 0
-                    }
-
-                    // ── Dock Content ──
-                    RowLayout {
-                        id: dockRowLayout
-                        anchors.centerIn: parent
-                        spacing: 8
-                        property real padding: 6
-
-                        // ── Apps Section ──
-                        DockApps {
-                            id: dockApps
-                            buttonPadding: dockRowLayout.padding
-                            spacing: dockRowLayout.spacing
-                            height: parent.height
+                        StyledRectangularShadow {
+                            target: dockVisualRect
+                            opacity: 0.3
+                            visible: dockWindow.bgStyle !== 0
                         }
 
-                        // ── Launcher Trigger ──
-                        DockButton {
-                            id: launcherButton
-                            onClicked: GlobalStates.launcherOpen = !GlobalStates.launcherOpen
-                            toggled: GlobalStates.launcherOpen
-                            
-                            dockTopInset: dockRowLayout.padding
-                            dockBottomInset: dockRowLayout.padding
-                            
-                            background: Item {
-                                anchors.fill: parent
+                        Rectangle {
+                            id: dockVisualRect
+                            anchors.fill: parent
+                            radius: dockWindow.bgStyle === 1 ? height / 2 : 0
+                            topLeftRadius: (dockWindow.bgStyle === 1 || dockWindow.bgStyle === 2) ? (dockWindow.bgStyle === 1 ? height/2 : 24) : 0
+                            topRightRadius: (dockWindow.bgStyle === 1 || dockWindow.bgStyle === 2) ? (dockWindow.bgStyle === 1 ? height/2 : 24) : 0
+                            bottomLeftRadius: (dockWindow.bgStyle === 1) ? height/2 : 0
+                            bottomRightRadius: (dockWindow.bgStyle === 1) ? height/2 : 0
+                            color: Appearance.colors.colStatusBarSolid
+                            opacity: dockWindow.bgStyle === 0 ? 0 : 1.0
+                            border.width: 0
+                        }
+
+                        RowLayout {
+                            id: dockRowLayout
+                            anchors.centerIn: parent
+                            spacing: 8
+                            property real padding: 6
+
+                            DockApps {
+                                id: dockApps
+                                buttonPadding: dockRowLayout.padding
+                                spacing: dockRowLayout.spacing
+                                height: parent.height
+                            }
+
+                            DockButton {
+                                id: launcherButton
+                                onClicked: GlobalStates.launcherOpen = !GlobalStates.launcherOpen
+                                toggled: GlobalStates.launcherOpen
+                                dockTopInset: 6; dockBottomInset: 6
                                 
-                                Rectangle {
+                                background: Item {
                                     anchors.fill: parent
-                                    anchors.topMargin: launcherButton.dockTopInset
-                                    anchors.bottomMargin: launcherButton.dockBottomInset
-                                    radius: launcherButton.buttonRadius
-                                    color: launcherButton.baseColor
-                                    visible: !(Config.ready && Config.options.dock.monochromeIcons)
+                                    Rectangle {
+                                        anchors.fill: parent
+                                        anchors.topMargin: 6; anchors.bottomMargin: 6
+                                        radius: Appearance.rounding.button
+                                        color: launcherButton.baseColor
+                                        visible: !(Config.ready && Config.options.dock.monochromeIcons)
+                                    }
+                                    MaterialShape {
+                                        anchors.fill: parent; anchors.margins: 4
+                                        visible: Config.ready && Config.options.dock.monochromeIcons
+                                        shapeString: Config.ready && Config.options.search ? Config.options.search.iconShape : "Circle"
+                                        color: launcherButton.down ? Appearance.colors.colPrimary : Appearance.colors.colPrimaryContainer
+                                    }
                                 }
 
-                                MaterialShape {
+                                contentItem: Item {
                                     anchors.fill: parent
-                                    anchors.margins: 4
-                                    visible: Config.ready && Config.options.dock.monochromeIcons
-                                    shapeString: Config.ready && Config.options.search ? Config.options.search.iconShape : "Circle"
-                                    color: launcherButton.down ? Appearance.colors.colPrimary : Appearance.colors.colPrimaryContainer
+                                    MaterialSymbol {
+                                        id: launcherIcon
+                                        anchors.centerIn: parent
+                                        text: "apps"
+                                        iconSize: Config.ready && Config.options.dock.monochromeIcons ? 24 : 28
+                                        color: launcherButton.toggled ? Appearance.colors.colOnPrimary : Appearance.colors.colOnLayer0
+                                        visible: !(Config.ready && Config.options.dock.monochromeIcons)
+                                    }
+                                    ColorOverlay {
+                                        anchors.fill: launcherIcon; source: launcherIcon
+                                        color: Appearance.colors.colOnPrimaryContainer
+                                        visible: Config.ready && Config.options.dock.monochromeIcons
+                                    }
                                 }
-                            }
-
-                            contentItem: Item {
-                                anchors.fill: parent
-                                MaterialSymbol {
-                                    id: launcherIcon
-                                    anchors.centerIn: parent
-                                    text: "apps"
-                                    iconSize: Config.ready && Config.options.dock.monochromeIcons ? 24 : 28
-                                    color: launcherButton.toggled ? Appearance.colors.colOnPrimary : Appearance.colors.colOnLayer0
-                                    
-                                    visible: !(Config.ready && Config.options.dock.monochromeIcons)
-                                }
-
-                                ColorOverlay {
-                                    anchors.fill: launcherIcon
-                                    source: launcherIcon
-                                    color: Appearance.colors.colOnPrimaryContainer
-                                    visible: Config.ready && Config.options.dock.monochromeIcons
-                                }
-                            }
-
-                            StyledToolTip {
-                                text: "Launcher"
-                                visible: launcherButton.hovered
                             }
                         }
                     }

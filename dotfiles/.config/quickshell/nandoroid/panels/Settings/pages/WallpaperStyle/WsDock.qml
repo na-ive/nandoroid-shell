@@ -67,6 +67,29 @@ ColumnLayout {
                 }
             }
 
+            // ── Show only in Desktop ──────────────
+            SegmentedWrapper {
+                Layout.fillWidth: true
+                implicitHeight: showDesktopRow.implicitHeight + 32
+                orientation: Qt.Vertical
+                maxRadius: 20
+                color: Appearance.m3colors.m3surfaceContainerHigh
+                enabled: Config.ready && Config.options.dock && Config.options.dock.enable
+                opacity: enabled ? 1 : 0.5
+                RowLayout {
+                    id: showDesktopRow
+                    anchors.fill: parent; anchors.margins: 16
+                    spacing: 16
+                    MaterialSymbol { text: "desktop_windows"; iconSize: 24; color: Appearance.colors.colPrimary }
+                    StyledText { text: "Show Only in Desktop"; Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
+                    AndroidToggle {
+                        checked: Config.ready && Config.options.dock ? Config.options.dock.showOnlyInDesktop : false
+                        onToggled: if (Config.ready && Config.options.dock)
+                            Config.options.dock.showOnlyInDesktop = !Config.options.dock.showOnlyInDesktop
+                    }
+                }
+            }
+
             // ── Auto Hide Group ──────────────
             SegmentedWrapper {
                 Layout.fillWidth: true
@@ -93,10 +116,10 @@ ColumnLayout {
                         }
                     }
 
-                    // Mode Selection (only if autoHide is on)
+                    // Mode Selection (HANYA MUNCUL JIKA showOnlyInDesktop MATI)
                     ColumnLayout {
                         Layout.fillWidth: true
-                        visible: Config.ready && Config.options.dock && Config.options.dock.autoHide
+                        visible: Config.ready && Config.options.dock && Config.options.dock.autoHide && !Config.options.dock.showOnlyInDesktop
                         spacing: 8
                         
                         StyledText { 
@@ -132,29 +155,6 @@ ColumnLayout {
                                 }
                             }
                         }
-                    }
-                }
-            }
-
-            // ── Show only in Desktop ──────────────
-            SegmentedWrapper {
-                Layout.fillWidth: true
-                implicitHeight: showDesktopRow.implicitHeight + 32
-                orientation: Qt.Vertical
-                maxRadius: 20
-                color: Appearance.m3colors.m3surfaceContainerHigh
-                enabled: Config.ready && Config.options.dock && Config.options.dock.enable
-                opacity: enabled ? 1 : 0.5
-                RowLayout {
-                    id: showDesktopRow
-                    anchors.fill: parent; anchors.margins: 16
-                    spacing: 16
-                    MaterialSymbol { text: "desktop_windows"; iconSize: 24; color: Appearance.colors.colPrimary }
-                    StyledText { text: "Show Only in Desktop"; Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
-                    AndroidToggle {
-                        checked: Config.ready && Config.options.dock ? Config.options.dock.showOnlyInDesktop : false
-                        onToggled: if (Config.ready && Config.options.dock)
-                            Config.options.dock.showOnlyInDesktop = !Config.options.dock.showOnlyInDesktop
                     }
                 }
             }
