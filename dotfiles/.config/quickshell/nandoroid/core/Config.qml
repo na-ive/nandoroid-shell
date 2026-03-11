@@ -276,7 +276,7 @@ Singleton {
                 property int hoverRegionHeight: 2
                 property bool pinnedOnStartup: false
                 property bool monochromeIcons: false
-                property list<string> pinnedApps: ["org.mozilla.firefox", "kitty", "thunar"]
+                property list<string> pinnedApps: ["kitty", "org.kde.dolphin"]
                 property list<string> ignoredAppRegexes: ["^xwaylandvideobridge$"]
                 property int height: 70
             }

@@ -165,6 +165,7 @@ Scope {
 
                             DockButton {
                                 id: launcherButton
+                                pointingHandCursor: true
                                 onClicked: GlobalStates.launcherOpen = !GlobalStates.launcherOpen
                                 toggled: GlobalStates.launcherOpen
                                 dockTopInset: 6; dockBottomInset: 6

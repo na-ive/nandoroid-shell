@@ -87,6 +87,7 @@ DockButton {
         anchors.fill: parent
         enabled: appToplevel.toplevels.length > 0
         hoverEnabled: true
+        cursorShape: Qt.PointingHandCursor
         acceptedButtons: Qt.NoButton
         onEntered: {
             if (appListRoot) {

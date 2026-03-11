@@ -38,6 +38,7 @@ Item {
             required property var modelData
             appToplevel: modelData
             appListRoot: root
+            pointingHandCursor: true
 
             dockTopInset: root.buttonPadding
             dockBottomInset: root.buttonPadding
