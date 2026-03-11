@@ -11,18 +11,22 @@ import Quickshell.Hyprland
  * Notification Center panel — slides down from the left side of the status bar.
  * Contains: Media controls, Weather widget, Notification list.
  */
-Scope {
+Variants {
     id: root
-
+    model: Quickshell.screens
 
     PanelWindow {
         id: panelWindow
-        visible: GlobalStates.notificationCenterOpen || contentLoader.opacity > 0
+        required property var modelData
+        screen: modelData
+
+        readonly property bool isActive: GlobalStates.activeScreen === modelData
+        visible: (GlobalStates.notificationCenterOpen && isActive) || contentLoader.opacity > 0
         
-        exclusiveZone: GlobalStates.notificationCenterOpen && contentLoader.item ? contentLoader.item.implicitWidth : 0
+        exclusiveZone: (GlobalStates.notificationCenterOpen && isActive) && contentLoader.item ? contentLoader.item.implicitWidth : 0
         WlrLayershell.namespace: "nandoroid:notificationCenter"
-        WlrLayershell.layer: (GlobalStates.notificationCenterOpen || contentLoader.opacity > 0) ? WlrLayer.Top : WlrLayer.Background
-        WlrLayershell.keyboardFocus: GlobalStates.notificationCenterOpen ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
+        WlrLayershell.layer: ((GlobalStates.notificationCenterOpen || contentLoader.opacity > 0) && isActive) ? WlrLayer.Top : WlrLayer.Background
+        WlrLayershell.keyboardFocus: (GlobalStates.notificationCenterOpen && isActive) ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
         color: "transparent"
 
         anchors {
@@ -35,7 +39,7 @@ Scope {
 
         HyprlandFocusGrab {
             id: focusGrab
-            active: GlobalStates.notificationCenterOpen
+            active: GlobalStates.notificationCenterOpen && isActive
             windows: [panelWindow]
             onCleared: {
                 if (contentLoader.item) contentLoader.item.close();
@@ -54,8 +58,8 @@ Scope {
             id: contentLoader
             anchors.fill: parent
             active: true 
-            visible: opacity > 0 // Only visible (and animating) when actually opening/open
-            enabled: GlobalStates.notificationCenterOpen
+            visible: (opacity > 0 && isActive) // Only visible (and animating) when actually opening/open
+            enabled: GlobalStates.notificationCenterOpen && isActive
             
             transform: Translate {
                 id: contentTransform
@@ -64,13 +68,13 @@ Scope {
             states: [
                 State {
                     name: "open"
-                    when: GlobalStates.notificationCenterOpen
+                    when: GlobalStates.notificationCenterOpen && isActive
                     PropertyChanges { target: contentLoader; opacity: 1 }
                     PropertyChanges { target: contentTransform; x: 0 }
                 },
                 State {
                     name: "closed"
-                    when: !GlobalStates.notificationCenterOpen
+                    when: (!GlobalStates.notificationCenterOpen || !isActive)
                     PropertyChanges { target: contentLoader; opacity: 0 }
                     PropertyChanges { target: contentTransform; x: -contentLoader.width - 40 }
                 }

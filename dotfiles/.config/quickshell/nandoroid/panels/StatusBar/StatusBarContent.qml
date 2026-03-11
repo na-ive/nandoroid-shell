@@ -32,7 +32,10 @@ Item {
         anchors.bottom: parent.bottom
         width: parent.width * 0.35
         cursorShape: Qt.PointingHandCursor
-        onClicked: GlobalStates.notificationCenterOpen = !GlobalStates.notificationCenterOpen
+        onClicked: {
+            GlobalStates.activeScreen = root.QsWindow.window.screen;
+            GlobalStates.notificationCenterOpen = !GlobalStates.notificationCenterOpen;
+        }
 
         onScrollUp: Brightness.increaseBrightness()
         onScrollDown: Brightness.decreaseBrightness()
@@ -55,7 +58,10 @@ Item {
         anchors.bottom: parent.bottom
         width: parent.width * 0.35
         cursorShape: Qt.PointingHandCursor
-        onClicked: GlobalStates.quickSettingsOpen = !GlobalStates.quickSettingsOpen
+        onClicked: {
+            GlobalStates.activeScreen = root.QsWindow.window.screen;
+            GlobalStates.quickSettingsOpen = !GlobalStates.quickSettingsOpen;
+        }
 
         onScrollUp: Audio.incrementVolume()
         onScrollDown: Audio.decrementVolume()
@@ -79,7 +85,10 @@ Item {
         width: parent.width * 0.30
         hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
-        onClicked: GlobalStates.dashboardOpen = !GlobalStates.dashboardOpen
+        onClicked: {
+            GlobalStates.activeScreen = root.QsWindow.window.screen;
+            GlobalStates.dashboardOpen = !GlobalStates.dashboardOpen;
+        }
     }
 
 

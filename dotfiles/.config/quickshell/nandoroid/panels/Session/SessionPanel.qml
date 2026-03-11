@@ -1,4 +1,3 @@
-
 import "../../core"
 import QtQuick
 import Qt5Compat.GraphicalEffects
@@ -7,21 +6,17 @@ import Quickshell.Io
 import Quickshell.Wayland
 import Quickshell.Hyprland
 
-Scope {
+Variants {
     id: root
+    model: Quickshell.screens
 
-    Connections {
-        target: GlobalStates
-        function onSessionOpenChanged() {
-            if (GlobalStates.sessionOpen) panelLoader.active = true;
-        }
-    }
-
-    Loader {
+    delegate: Loader {
         id: panelLoader
-        active: GlobalStates.sessionOpen
+        required property var modelData
+        active: GlobalStates.sessionOpen && GlobalStates.activeScreen === modelData
         sourceComponent: PanelWindow {
             id: sessionWindow
+            screen: modelData
 
             WlrLayershell.layer: WlrLayer.Overlay
             WlrLayershell.namespace: "nandoroid:session"
@@ -37,9 +32,6 @@ Scope {
 
             color: "transparent"
 
-            // Background removed for cleaner look, handled by SessionContent island
-
-
             // Click outside to close
             MouseArea {
                 anchors.fill: parent
@@ -49,13 +41,6 @@ Scope {
             // Content centered
             SessionContent {
                 anchors.centerIn: parent
-
-                Connections {
-                    target: GlobalStates
-                    function onSessionOpenChanged() {
-                        if (!GlobalStates.sessionOpen) panelLoader.active = false
-                    }
-                }
             }
         }
     }

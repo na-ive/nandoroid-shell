@@ -15,17 +15,22 @@ import Quickshell.Hyprland
  * RoundCorner pieces inside CalendarContent produce the inverted concave
  * shoulder corners that visually fuse the panel to the status bar.
  */
-Scope {
+Variants {
     id: root
+    model: Quickshell.screens
 
     PanelWindow {
         id: panelWindow
+        required property var modelData
+        screen: modelData
+
+        readonly property bool isActive: GlobalStates.activeScreen === modelData
         // Keep window mapped as long as it's open OR the panel is still visually fading out
-        visible: GlobalStates.dashboardOpen || (content && content.panelOpacity > 0)
+        visible: (GlobalStates.dashboardOpen && isActive) || (content && content.panelOpacity > 0 && isActive)
         exclusiveZone: 0
         WlrLayershell.namespace: "nandoroid:dashboard"
-        WlrLayershell.layer: WlrLayer.Overlay
-        WlrLayershell.keyboardFocus: GlobalStates.dashboardOpen ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
+        WlrLayershell.layer: (GlobalStates.dashboardOpen && isActive) ? WlrLayer.Overlay : WlrLayer.Background
+        WlrLayershell.keyboardFocus: (GlobalStates.dashboardOpen && isActive) ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
         color: "transparent"
 
         // Full desktop overlay bounds
@@ -44,7 +49,7 @@ Scope {
 
         HyprlandFocusGrab {
             id: focusGrab
-            active: GlobalStates.dashboardOpen
+            active: GlobalStates.dashboardOpen && isActive
             windows: [panelWindow]
             onCleared: {
                 GlobalStates.dashboardOpen = false
@@ -54,6 +59,7 @@ Scope {
         DashboardContent {
             id: content
             anchors.fill: parent
+            visible: isActive
             onClosed: {
                 GlobalStates.dashboardOpen = false;
             }

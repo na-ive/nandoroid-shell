@@ -30,6 +30,7 @@ Singleton {
     property bool overviewOpen: false
     property bool mediaNotchOpen: false
     property var activeMediaNotchScreen: null
+    property var activeScreen: Quickshell.screens[0]
     property string wallpaperSelectorTarget: "desktop" // "desktop" or "lock"
     
     // --- Media Notch Timing Logic ---

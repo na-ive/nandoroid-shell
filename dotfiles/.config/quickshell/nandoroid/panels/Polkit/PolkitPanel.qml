@@ -24,6 +24,9 @@ Scope {
                 required property var modelData
                 screen: modelData
                 
+                readonly property bool isActive: GlobalStates.activeScreen === modelData
+                visible: PolkitService.active && isActive
+
                 anchors {
                     top: true
                     left: true
@@ -33,15 +36,15 @@ Scope {
 
                 color: "transparent"
                 WlrLayershell.namespace: "nandoroid:polkit"
-                WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
-                WlrLayershell.layer: WlrLayer.Overlay
+                WlrLayershell.keyboardFocus: (PolkitService.active && isActive) ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
+                WlrLayershell.layer: (PolkitService.active && isActive) ? WlrLayer.Overlay : WlrLayer.Background
                 exclusionMode: ExclusionMode.Ignore
 
                 // ── Scrim ──
                 Rectangle {
                     anchors.fill: parent
                     color: Appearance.colors.colScrim
-                    opacity: panelWindow.active ? 1 : 0
+                    opacity: (PolkitService.active && isActive) ? 1 : 0
                     Behavior on opacity { NumberAnimation { duration: 200 } }
                 }
 

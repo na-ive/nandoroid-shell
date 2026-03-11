@@ -11,18 +11,22 @@ import Quickshell.Hyprland
  * Quick Settings panel — positioned top-right, directly below the status bar.
  * Uses HyprlandFocusGrab for click-outside-to-close (same pattern as NotificationCenter).
  */
-Scope {
+Variants {
     id: root
-
+    model: Quickshell.screens
 
     PanelWindow {
         id: panelWindow
-        visible: GlobalStates.quickSettingsOpen || content.opacity > 0
+        required property var modelData
+        screen: modelData
+
+        readonly property bool isActive: GlobalStates.activeScreen === modelData
+        visible: (GlobalStates.quickSettingsOpen && isActive) || content.opacity > 0
         
-        exclusiveZone: GlobalStates.quickSettingsOpen ? content.implicitWidth : 0
+        exclusiveZone: (GlobalStates.quickSettingsOpen && isActive) ? content.implicitWidth : 0
         WlrLayershell.namespace: "nandoroid:quicksettings"
-        WlrLayershell.layer: (GlobalStates.quickSettingsOpen || content.opacity > 0) ? WlrLayer.Top : WlrLayer.Background
-        WlrLayershell.keyboardFocus: GlobalStates.quickSettingsOpen ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
+        WlrLayershell.layer: ((GlobalStates.quickSettingsOpen || content.opacity > 0) && isActive) ? WlrLayer.Top : WlrLayer.Background
+        WlrLayershell.keyboardFocus: (GlobalStates.quickSettingsOpen && isActive) ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
         color: "transparent"
 
         anchors {
@@ -35,7 +39,7 @@ Scope {
 
         HyprlandFocusGrab {
             id: focusGrab
-            active: GlobalStates.quickSettingsOpen && !GlobalStates.isPickingFile
+            active: GlobalStates.quickSettingsOpen && !GlobalStates.isPickingFile && isActive
             windows: [panelWindow]
             onCleared: {
                 if (!GlobalStates.isPickingFile) {
@@ -54,8 +58,8 @@ Scope {
         QuickSettingsContent {
             id: content
             anchors.fill: parent
-            visible: opacity > 0 // Only visible (and animating) when actually opening/open
-            enabled: GlobalStates.quickSettingsOpen
+            visible: (opacity > 0 && isActive) // Only visible (and animating) when actually opening/open
+            enabled: GlobalStates.quickSettingsOpen && isActive
             
             transform: Translate {
                 id: contentTransform
@@ -64,13 +68,13 @@ Scope {
             states: [
                 State {
                     name: "open"
-                    when: GlobalStates.quickSettingsOpen
+                    when: GlobalStates.quickSettingsOpen && isActive
                     PropertyChanges { target: content; opacity: 1 }
                     PropertyChanges { target: contentTransform; x: 0 }
                 },
                 State {
                     name: "closed"
-                    when: !GlobalStates.quickSettingsOpen
+                    when: (!GlobalStates.quickSettingsOpen || !isActive)
                     PropertyChanges { target: content; opacity: 0 }
                     PropertyChanges { target: contentTransform; x: content.width + 40 }
                 }

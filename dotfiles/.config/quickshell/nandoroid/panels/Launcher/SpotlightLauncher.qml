@@ -6,89 +6,96 @@ import "../../core"
 import "../../services"
 import "../../widgets"
 
-PanelWindow {
+Variants {
     id: root
-    
-    visible: GlobalStates.spotlightOpen || (content && content.opacity > 0)
-    
-    anchors {
-        left: true
-        right: true
-        top: true
-        bottom: true
-    }
+    model: Quickshell.screens
 
-    WlrLayershell.namespace: "quickshell:spotlight"
-    WlrLayershell.layer: WlrLayer.Overlay
-    WlrLayershell.keyboardFocus: GlobalStates.spotlightOpen ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
+    PanelWindow {
+        id: panelWindow
+        required property var modelData
+        screen: modelData
 
-    HyprlandFocusGrab {
-        id: grab
-        windows: [root]
-        active: GlobalStates.spotlightOpen
-    }
-
-    color: "transparent"
-    
-    onVisibleChanged: {
-        if (visible) {
-            LauncherSearch.query = "";
+        readonly property bool isActive: GlobalStates.activeScreen === modelData
+        visible: (GlobalStates.spotlightOpen && isActive) || (content && content.opacity > 0)
+        
+        anchors {
+            left: true
+            right: true
+            top: true
+            bottom: true
         }
-    }
-    
-    MouseArea {
-        anchors.fill: parent
-        onClicked: GlobalStates.spotlightOpen = false
-    }
-    
-    readonly property var screen: Quickshell.screens[0]
 
-    SpotlightContent {
-        id: content
-        
-        width: Math.min(root.width * 0.5, 750) 
-        height: Math.min(root.height * 0.7, 550)
-        anchors.horizontalCenter: parent.horizontalCenter
-        y: parent.height * 0.15 
-        
-        opacity: 0
-        scale: 1.0 
+        WlrLayershell.namespace: "quickshell:spotlight"
+        WlrLayershell.layer: (GlobalStates.spotlightOpen && isActive) ? WlrLayer.Overlay : WlrLayer.Background
+        WlrLayershell.keyboardFocus: (GlobalStates.spotlightOpen && isActive) ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
 
-        states: [
-            State {
-                name: "visible"
-                when: GlobalStates.spotlightOpen
-                PropertyChanges { target: content; opacity: 1.0; scale: 1.0 }
+        HyprlandFocusGrab {
+            id: grab
+            windows: [panelWindow]
+            active: GlobalStates.spotlightOpen && isActive
+        }
+
+        color: "transparent"
+        
+        onVisibleChanged: {
+            if (visible && isActive) {
+                LauncherSearch.query = "";
             }
-        ]
+        }
         
-        transitions: [
-            Transition {
-                from: ""
-                to: "visible"
-                ParallelAnimation {
-                    NumberAnimation {
-                        properties: "opacity,scale"
-                        duration: 200
-                        easing.type: Easing.BezierSpline
-                        easing.bezierCurve: Appearance.animationCurves.emphasizedDecel
+        MouseArea {
+            anchors.fill: parent
+            onClicked: GlobalStates.spotlightOpen = false
+        }
+        
+        SpotlightContent {
+            id: content
+            
+            width: Math.min(panelWindow.width * 0.5, 750) 
+            height: Math.min(panelWindow.height * 0.7, 550)
+            anchors.horizontalCenter: parent.horizontalCenter
+            y: parent.height * 0.15 
+            
+            opacity: 0
+            scale: 1.0 
+            visible: isActive
+
+            states: [
+                State {
+                    name: "visible"
+                    when: GlobalStates.spotlightOpen && isActive
+                    PropertyChanges { target: content; opacity: 1.0; scale: 1.0 }
+                }
+            ]
+        
+            transitions: [
+                Transition {
+                    from: ""
+                    to: "visible"
+                    ParallelAnimation {
+                        NumberAnimation {
+                            properties: "opacity,scale"
+                            duration: 200
+                            easing.type: Easing.BezierSpline
+                            easing.bezierCurve: Appearance.animationCurves.emphasizedDecel
+                        }
+                    }
+                },
+                Transition {
+                    from: "visible"
+                    to: ""
+                    ParallelAnimation {
+                        NumberAnimation {
+                            properties: "opacity,scale"
+                            duration: 250
+                            easing.type: Easing.BezierSpline
+                            easing.bezierCurve: Appearance.animationCurves.emphasized
+                        }
                     }
                 }
-            },
-            Transition {
-                from: "visible"
-                to: ""
-                ParallelAnimation {
-                    NumberAnimation {
-                        properties: "opacity,scale"
-                        duration: 250
-                        easing.type: Easing.BezierSpline
-                        easing.bezierCurve: Appearance.animationCurves.emphasized
-                    }
-                }
-            }
-        ]
-        
-        Keys.onEscapePressed: GlobalStates.spotlightOpen = false
+            ]
+            
+            Keys.onEscapePressed: GlobalStates.spotlightOpen = false
+        }
     }
 }
