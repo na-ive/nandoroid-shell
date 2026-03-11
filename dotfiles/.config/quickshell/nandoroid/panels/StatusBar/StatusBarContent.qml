@@ -52,7 +52,7 @@ Item {
             tooltipText: "Scroll to change brightness"
             side: "left"
             anchors.left: parent.left
-            anchors.leftMargin: root.sidePadding
+            anchors.leftMargin: root.isCentered ? root.sidePadding : 4
             anchors.verticalCenter: parent.verticalCenter
         }
     }
@@ -79,7 +79,7 @@ Item {
             tooltipText: "Scroll to change volume"
             side: "right"
             anchors.right: parent.right
-            anchors.rightMargin: root.sidePadding
+            anchors.rightMargin: root.isCentered ? root.sidePadding : 4
             anchors.verticalCenter: parent.verticalCenter
         }
     }
