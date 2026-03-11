@@ -232,6 +232,8 @@ Singleton {
             // --- Status Bar ---
             property JsonObject statusBar: JsonObject {
                 property real height: 40
+                property string layoutStyle: "standard" // standard, centered
+                property int centeredWidth: 1200
                 property string textColorMode: "adaptive" // adaptive, light, dark
                 property bool useGradient: true
                 // 0 = None (transparent), 1 = Always (solid), 2 = Adaptive (show when window active)

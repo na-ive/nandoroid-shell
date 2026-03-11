@@ -29,9 +29,17 @@ Variants {
         WlrLayershell.keyboardFocus: (GlobalStates.notificationCenterOpen && isActive) ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
         color: "transparent"
 
+        readonly property bool isCentered: (Config.ready && Config.options.statusBar) ? Config.options.statusBar.layoutStyle === "centered" : false
+        readonly property real centeredWidth: (Config.ready && Config.options.statusBar) ? Config.options.statusBar.centeredWidth : 1200
+        readonly property real sidePadding: isCentered ? Math.round((modelData.width - Math.min(centeredWidth, modelData.width - 40)) / 2) : 0
+
         anchors {
             top: true
             left: true
+        }
+
+        WlrLayershell.margins {
+            left: panelWindow.sidePadding
         }
 
         implicitWidth: contentLoader.item ? contentLoader.item.implicitWidth : 0
@@ -70,13 +78,16 @@ Variants {
                     name: "open"
                     when: GlobalStates.notificationCenterOpen && isActive
                     PropertyChanges { target: contentLoader; opacity: 1 }
-                    PropertyChanges { target: contentTransform; x: 0 }
+                    PropertyChanges { target: contentTransform; x: 0; y: 0 }
                 },
                 State {
                     name: "closed"
                     when: (!GlobalStates.notificationCenterOpen || !isActive)
                     PropertyChanges { target: contentLoader; opacity: 0 }
-                    PropertyChanges { target: contentTransform; x: -contentLoader.width - 40 }
+                    PropertyChanges { target: contentTransform; 
+                        x: panelWindow.isCentered ? 0 : -contentLoader.width - 40;
+                        y: panelWindow.isCentered ? -contentLoader.height - 40 : 0;
+                    }
                 }
             ]
 
@@ -86,7 +97,7 @@ Variants {
                     ParallelAnimation {
                         NumberAnimation {
                             target: contentTransform
-                            property: "x"
+                            properties: "x,y"
                             duration: Appearance.animation.elementMove.duration
                             easing.bezierCurve: Appearance.animationCurves.expressiveDefaultSpatial
                         }
@@ -103,7 +114,7 @@ Variants {
                     ParallelAnimation {
                         NumberAnimation {
                             target: contentTransform
-                            property: "x"
+                            properties: "x,y"
                             duration: Appearance.animation.elementMoveExit.duration
                             easing.bezierCurve: Appearance.animationCurves.emphasized
                         }

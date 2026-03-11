@@ -14,6 +14,9 @@ import Quickshell.Hyprland
 Item {
     id: root
     property HyprlandMonitor monitor
+    property color color: Appearance.colors.colStatusBarText
+    property color subtextColor: Appearance.colors.colStatusBarSubtext
+    
     readonly property Toplevel activeWindow: ToplevelManager.activeToplevel
     readonly property bool focusingThisMonitor: HyprlandData.activeWorkspace?.monitor == monitor?.name
 
@@ -45,7 +48,7 @@ Item {
             Layout.fillWidth: true
             Layout.maximumWidth: root.Layout.maximumWidth
             font.pixelSize: Appearance.font.pixelSize.smallest
-            color: Appearance.colors.colStatusBarSubtext
+            color: root.subtextColor
             elide: Text.ElideRight
             text: root.appClassText
         }
@@ -55,7 +58,7 @@ Item {
             Layout.fillWidth: true
             Layout.maximumWidth: root.Layout.maximumWidth
             font.pixelSize: Appearance.font.pixelSize.smaller
-            color: Appearance.colors.colStatusBarText
+            color: root.color
             elide: Text.ElideRight
             text: root.appTitleText
         }

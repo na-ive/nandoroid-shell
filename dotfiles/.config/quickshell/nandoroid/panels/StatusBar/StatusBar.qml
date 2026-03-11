@@ -49,43 +49,47 @@ Scope {
             readonly property int cornerRadius: Config.ready && Config.options.statusBar
                 ? (Config.options.statusBar.backgroundCornerRadius ?? 20) : 20
 
-            property bool hasActiveWindows: false
+            // Track tiled windows for adaptive style
+            readonly property int activeWorkspaceId: Hyprland.monitorFor(modelData)?.activeWorkspace?.id ?? -1
+            
+            readonly property bool hasTiledWindows: {
+                if (bgStyle !== 2 || activeWorkspaceId === -1) return false;
+                // Filter windows that are on this monitor's active workspace and NOT floating
+                return HyprlandData.windowList.some(w => 
+                    w.workspace.id === activeWorkspaceId && 
+                    !w.floating && 
+                    w.monitor === monitorIndex
+                );
+            }
+
             readonly property bool showBackground: {
                 if (bgStyle === 1) return true;
-                if (bgStyle === 2) return hasActiveWindows;
+                if (bgStyle === 2) return hasTiledWindows;
                 return false;
             }
 
-            // Track tiled windows for adaptive style
-            Connections {
-                enabled: barWindow.bgStyle === 2
-                target: HyprlandData
-                function onWindowListChanged() {
-                    const monitor = HyprlandData.monitors.find(m => m.id === barWindow.monitorIndex);
-                    const wsId = monitor?.activeWorkspace?.id;
-                    barWindow.hasActiveWindows = wsId
-                        ? HyprlandData.windowList.some(w => w.workspace.id === wsId && !w.floating)
-                        : false;
-                }
-            }
+            readonly property bool isCentered: (Config.ready && Config.options.statusBar) ? Config.options.statusBar.layoutStyle === "centered" : false
+            readonly property real centeredWidth: (Config.ready && Config.options.statusBar) ? Config.options.statusBar.centeredWidth : 1200
 
             // ── Solid background rectangle ─────────────────────────────
             Rectangle {
                 id: barBg
-                anchors {
-                    left: parent.left
-                    right: parent.right
-                    top: parent.top
-                }
-                height: Appearance.sizes.statusBarHeight
+                anchors.top: parent.top
+                anchors.topMargin: barWindow.isCentered && barWindow.showBackground ? -barWindow.cornerRadius : 0
+                anchors.horizontalCenter: parent.horizontalCenter
+                
+                width: (barWindow.isCentered && barWindow.showBackground) ? Math.min(barWindow.centeredWidth, parent.width - 40) : parent.width
+                height: Appearance.sizes.statusBarHeight + (barWindow.isCentered && barWindow.showBackground ? barWindow.cornerRadius : 0)
                 color: barWindow.showBackground ? Appearance.colors.colStatusBarSolid : "transparent"
+                
+                radius: (barWindow.isCentered && barWindow.showBackground) ? barWindow.cornerRadius : 0
 
-                Behavior on color {
-                    ColorAnimation { duration: Appearance.animation.elementMoveFast.duration }
-                }
+                Behavior on color { ColorAnimation { duration: Appearance.animation.elementMoveFast.duration } }
+                Behavior on width { NumberAnimation { duration: 400; easing.type: Easing.OutQuint } }
+                Behavior on anchors.topMargin { NumberAnimation { duration: 400; easing.type: Easing.OutQuint } }
             }
 
-            // ── Gradient overlay (when not in background mode) ─────────
+            // ── Gradient overlay (Always full width) ─────────
             Rectangle {
                 anchors {
                     left: parent.left
@@ -94,42 +98,43 @@ Scope {
                 }
                 height: Appearance.sizes.statusBarHeight
                 color: "transparent"
+                visible: !barWindow.showBackground && (Config.ready && Config.options.statusBar ? Config.options.statusBar.useGradient : true)
                 gradient: Gradient {
                     GradientStop { position: 0.0; color: Appearance.colors.colStatusBarGradientStart }
                     GradientStop { position: 1.0; color: Appearance.colors.colStatusBarGradientEnd }
                 }
             }
 
-            // ── Bottom-left round corner decorator ─────────────────────
+            // ── Left Round Corner Decorator ─────────────────────
             RoundCorner {
                 anchors {
-                    left: parent.left
-                    top: barBg.bottom
+                    left: barWindow.isCentered ? barBg.right : parent.left
+                    top: barWindow.isCentered ? parent.top : barBg.bottom
                 }
                 implicitSize: barWindow.cornerRadius
                 color: barWindow.showBackground ? Appearance.colors.colStatusBarSolid : "transparent"
-                corner: RoundCorner.CornerEnum.TopLeft
+                // Standard mode: Bottom-left corner (inverted)
+                // Centered mode: Top-left corner (inverted, adjacent to pill right side)
+                corner: barWindow.isCentered ? RoundCorner.CornerEnum.TopLeft : RoundCorner.CornerEnum.TopLeft
                 visible: barWindow.showBackground
 
-                Behavior on color {
-                    ColorAnimation { duration: Appearance.animation.elementMoveFast.duration }
-                }
+                Behavior on color { ColorAnimation { duration: Appearance.animation.elementMoveFast.duration } }
             }
 
-            // ── Bottom-right round corner decorator ────────────────────
+            // ── Right Round Corner Decorator ────────────────────
             RoundCorner {
                 anchors {
-                    right: parent.right
-                    top: barBg.bottom
+                    right: barWindow.isCentered ? barBg.left : parent.right
+                    top: barWindow.isCentered ? parent.top : barBg.bottom
                 }
                 implicitSize: barWindow.cornerRadius
                 color: barWindow.showBackground ? Appearance.colors.colStatusBarSolid : "transparent"
-                corner: RoundCorner.CornerEnum.TopRight
+                // Standard mode: Bottom-right corner (inverted)
+                // Centered mode: Top-right corner (inverted, adjacent to pill left side)
+                corner: barWindow.isCentered ? RoundCorner.CornerEnum.TopRight : RoundCorner.CornerEnum.TopRight
                 visible: barWindow.showBackground
 
-                Behavior on color {
-                    ColorAnimation { duration: Appearance.animation.elementMoveFast.duration }
-                }
+                Behavior on color { ColorAnimation { duration: Appearance.animation.elementMoveFast.duration } }
             }
 
             // ── Content ────────────────────────────────────────────────
