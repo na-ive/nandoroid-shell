@@ -16,8 +16,8 @@ import Quickshell.Wayland
  */
 Item {
     id: root
-    width: parent ? parent.width : 0
-    height: parent ? parent.height : 0
+    implicitWidth: parent ? parent.width : 0
+    implicitHeight: parent ? parent.height : 0
 
     // Deep Link Logic
     property string targetSearchQuery: ""
@@ -842,6 +842,8 @@ Item {
                     anchors.margins: 20
                     spacing: 12
                     
+                    property var mon: root.currentMonitor ? Brightness.getMonitorByName(root.currentMonitor.name) : null
+
                     RowLayout {
                         width: parent.width
                         StyledText {
@@ -852,8 +854,7 @@ Item {
                         }
                         Item { Layout.fillWidth: true }
                         StyledText {
-                            property var mon: root.currentMonitor ? Brightness.getMonitorByName(root.currentMonitor.name) : null
-                            text: mon ? Math.round(mon.multipliedBrightness * 100) + "%" : "N/A"
+                            text: brightCol.mon ? Math.round(brightCol.mon.multipliedBrightness * 100) + "%" : "N/A"
                             font.pixelSize: Appearance.font.pixelSize.small
                             color: Appearance.colors.colPrimary
                         }
@@ -864,8 +865,7 @@ Item {
                         from: 0.0
                         to: 1.0
                         stepSize: 0.01
-                        property var mon: root.currentMonitor ? Brightness.getMonitorByName(root.currentMonitor.name) : null
-                        value: mon ? mon.brightness : 0.5
+                        value: brightCol.mon ? brightCol.mon.brightness : 0.5
                         configuration: StyledSlider.Configuration.M
                         onPressedChanged: {
                             if (!pressed) {
@@ -883,13 +883,13 @@ Item {
                         }
 
                         onMoved: {
-                            if (mon) mon.setBrightness(value);
+                            if (brightCol.mon) brightCol.mon.setBrightness(value);
                         }
                         
                         // Prevent the value from updating via binding while dragging
                         Binding on value {
-                            when: !root.isDraggingBrightness && mon !== null
-                            value: mon ? mon.brightness : 0.5
+                            when: !root.isDraggingBrightness && brightCol.mon !== null
+                            value: brightCol.mon ? brightCol.mon.brightness : 0.5
                             restoreMode: Binding.RestoreBindingOrValue
                         }
                     }

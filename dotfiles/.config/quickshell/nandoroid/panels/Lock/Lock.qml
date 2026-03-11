@@ -1,5 +1,6 @@
 pragma ComponentBehavior: Bound
 import "../../core"
+import "../../services"
 import QtQuick
 import Quickshell
 import Quickshell.Io

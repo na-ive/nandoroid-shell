@@ -125,6 +125,7 @@ Item {
             
             // Actions (Only when expanded) - Responsive Row
             Row {
+                id: actionsRow
                 width: parent.width
                 visible: root.expanded && notificationObject
                 spacing: 8
@@ -133,7 +134,7 @@ Item {
                 readonly property real buttonWidth: (width - (spacing * (totalButtons - 1))) / totalButtons
 
                 NotificationActionButton {
-                    width: parent.buttonWidth
+                    width: actionsRow.buttonWidth
                     buttonText: "Close"
                     onClicked: {
                         if (notificationObject) Notifications.discardNotification(notificationObject.notificationId);
@@ -162,7 +163,7 @@ Item {
                 }
 
                 NotificationActionButton {
-                    width: parent.buttonWidth
+                    width: actionsRow.buttonWidth
                     onClicked: {
                         Quickshell.clipboardText = notificationObject.body
                         copyIcon.text = "inventory"
@@ -202,7 +203,7 @@ Item {
                 Repeater {
                     model: notificationObject ? notificationObject.actions : []
                     NotificationActionButton {
-                        width: parent.buttonWidth
+                        width: actionsRow.buttonWidth
                         required property var modelData
                         buttonText: modelData.text
                         onClicked: {

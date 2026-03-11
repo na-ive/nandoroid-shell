@@ -21,12 +21,12 @@ Singleton {
     }
 
     readonly property string cleanPrompt: {
-        if (!root.flow) return Translation.tr("Password");
+        if (!root.flow) return qsTr("Password");
         let prompt = root.flow.inputPrompt.trim();
         if (prompt.endsWith(":")) prompt = prompt.slice(0, -1);
         
         const usePasswordChars = !root.flow.responseVisible;
-        return prompt || (usePasswordChars ? Translation.tr("Password") : Translation.tr("Input"));
+        return prompt || (usePasswordChars ? qsTr("Password") : qsTr("Input"));
     }
 
     function cancel() {

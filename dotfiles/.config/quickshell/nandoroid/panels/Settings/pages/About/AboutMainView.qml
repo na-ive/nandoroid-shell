@@ -289,10 +289,7 @@ ColumnLayout {
                             colBackground: "transparent"
                             onClicked: pushView( "credits")
                             
-                            topLeftRadius: parent.rTopLeft
-                            topRightRadius: parent.rTopRight
-                            bottomLeftRadius: parent.rBottomLeft
-                            bottomRightRadius: parent.rBottomRight
+                            buttonRadius: Appearance.rounding.button
                         }
                     }
                 }

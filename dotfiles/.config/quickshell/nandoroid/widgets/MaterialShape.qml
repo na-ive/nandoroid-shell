@@ -171,14 +171,6 @@ Item {
         active: root.image !== null && root.image.toString() !== ""
         anchors.fill: parent
         sourceComponent: Item {
-            layer.enabled: true
-            layer.effect: OpacityMask {
-                maskSource: ShaderEffectSource { recursive: true
-                    sourceItem: canvas
-                    hideSource: false // Keep the background color visible behind the image
-                }
-            }
-
             Image {
                 id: imageItem
                 anchors.fill: parent
@@ -187,6 +179,13 @@ Item {
                 asynchronous: true
                 antialiasing: true
                 cache: false
+                visible: false // Hidden, used as source for OpacityMask
+            }
+
+            OpacityMask {
+                anchors.fill: parent
+                source: imageItem
+                maskSource: canvas
             }
         }
     }

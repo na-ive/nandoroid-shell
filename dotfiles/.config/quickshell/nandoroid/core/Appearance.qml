@@ -334,6 +334,7 @@ Singleton {
         readonly property var screen: Quickshell.screens[0]
         property real statusBarHeight: 40
         property real touchTarget: 48
+        property real elevationMargin: 12
         
         // Dynamic Sidebar Panel sizing
         property real quickSettingsWidth: Math.min(420, screen.width * 0.35)

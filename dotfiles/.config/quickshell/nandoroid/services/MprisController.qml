@@ -36,16 +36,17 @@ Singleton {
     property bool _artDownloaded: false
     property double _cacheBuster: 0
     property string displayedArtFilePath: _artDownloaded ? ((_activeArtPath.startsWith("/") ? `file://${_activeArtPath}` : _activeArtPath) + "?t=" + _cacheBuster) : ""
+    property string artPathForQuantizer: _artDownloaded ? (_activeArtPath.startsWith("/") ? `file://${_activeArtPath}` : _activeArtPath) : ""
 
     property string _pendingUrl: ""
     property string _pendingDest: ""
 
     property color artDominantColor: {
         // Initial fallback
-        if (!_artDownloaded && _activeArtPath === "") return Appearance.colors.colPrimaryContainer
+        if (!_artDownloaded || _activeArtPath === "") return Appearance.colors.colPrimaryContainer
 
         let raw = (colorQuantizer.colors && colorQuantizer.colors.length > 0) ? colorQuantizer.colors[0] : Appearance.colors.colPrimary
-        return Functions.ColorUtils.mix(raw, Appearance.colors.colPrimaryContainer, 0.8) || Appearance.m3colors.m3secondaryContainer
+        return (raw !== undefined) ? Functions.ColorUtils.mix(raw, Appearance.colors.colPrimaryContainer, 0.8) : Appearance.m3colors.m3secondaryContainer
     }
 
     // --- Dynamic Color Tokens (Persistent) ---
@@ -127,7 +128,7 @@ Singleton {
 
     ColorQuantizer {
         id: colorQuantizer
-        source: root.displayedArtFilePath
+        source: root.artPathForQuantizer
         depth: 0
         rescaleSize: 1
     }

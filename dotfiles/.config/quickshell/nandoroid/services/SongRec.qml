@@ -11,7 +11,7 @@ Singleton {
 
     enum MonitorSource { Monitor, Input }
 
-    property var monitorSource: root.MonitorSource.Monitor
+    property var monitorSource: SongRec.MonitorSource.Monitor
     property int timeoutInterval: (Config.ready && Config.options.musicRecognition) ? Config.options.musicRecognition.interval : 2
     property int timeoutDuration: (Config.ready && Config.options.musicRecognition) ? Config.options.musicRecognition.timeout : 30
     readonly property bool running: recognizeMusicProc.running

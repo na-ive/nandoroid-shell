@@ -73,11 +73,11 @@ ColumnLayout {
             StyledSlider {
                 Layout.preferredWidth: 160
                 from: 1; to: 120; stepSize: 1
-                value: Config.ready ? Config.options.appearance.background.autoCycleInterval : 30
+                value: (Config.ready && Config.options.appearance.background.autoCycleInterval !== undefined) ? Config.options.appearance.background.autoCycleInterval : 30
                 onMoved: Wallpapers.setAutoCycleInterval(Math.round(value))
             }
             StyledText {
-                text: `${Config.options.appearance.background.autoCycleInterval}m`
+                text: `${(Config.ready && Config.options.appearance.background.autoCycleInterval !== undefined) ? Config.options.appearance.background.autoCycleInterval : 30}m`
                 color: Appearance.colors.colOnLayer1
                 Layout.preferredWidth: 40
                 horizontalAlignment: Text.AlignRight
@@ -105,7 +105,7 @@ ColumnLayout {
                         const dir = Config.ready ? Config.options.appearance.background.autoCycleDirectory : "";
                         return dir === "" || dir === undefined ? "Not selected" : dir;
                     }
-                    font.pixelSize: Appearance.font.pixelSize.tiny
+                    font.pixelSize: (Appearance.font && Appearance.font.pixelSize) ? Appearance.font.pixelSize.smallest : 10
                     color: Appearance.colors.colSubtext
                     elide: Text.ElideMiddle
                     Layout.fillWidth: true

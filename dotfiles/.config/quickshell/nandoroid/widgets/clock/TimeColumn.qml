@@ -2,6 +2,7 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import ".."
+import "../../core"
 import "../../services"
 
 Column {
@@ -22,7 +23,7 @@ Column {
             required property int index
 
             property bool isAmPm: modelData.match(/^[AP]M$/i) !== null
-            property real baseSize: isAmPm ? 18 : (root.hourMarksEnabled ? 38 : 62)
+            property real baseSize: isAmPm ? 24 : (root.hourMarksEnabled ? 48 : 84)
 
             anchors.horizontalCenter: root.horizontalCenter
             text: isAmPm ? modelData : modelData.padStart(2, "0")

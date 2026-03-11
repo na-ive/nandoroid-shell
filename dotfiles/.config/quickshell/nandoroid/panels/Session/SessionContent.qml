@@ -3,6 +3,7 @@ import "../../services"
 import "../../widgets"
 import QtQuick
 import QtQuick.Layouts
+import Qt5Compat.GraphicalEffects
 
 /**
  * Android 16 Style Session Menu
@@ -34,7 +35,12 @@ Item {
         color: Appearance.colors.colLayer0 
         
         layer.enabled: true
-        layer.effect: Qt.createQmlObject('import Qt5Compat.GraphicalEffects; DropShadow { radius: 16; samples: 24; color: "#aa000000"; verticalOffset: 8 }', islandWrapper)
+        layer.effect: DropShadow {
+            radius: 16
+            samples: 24
+            color: "#aa000000"
+            verticalOffset: 8
+        }
 
         ColumnLayout {
             id: mainLayout

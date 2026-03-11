@@ -53,8 +53,8 @@ Scope {
         color: "transparent"
 
         // Since it's a real window, it defaults to a reasonable size:
-        width: Math.min(1100, screen.width * 0.85)
-        height: Math.min(800, screen.height * 0.8)
+        implicitWidth: Math.min(1100, screen.width * 0.85)
+        implicitHeight: Math.min(800, screen.height * 0.8)
 
         onVisibleChanged: {
             if (!visible) {

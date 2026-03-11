@@ -29,17 +29,22 @@ Singleton {
     property bool regionSelectorOpen: false
     property bool overviewOpen: false
     property bool mediaNotchOpen: false
+    property var activeMediaNotchScreen: null
     property string wallpaperSelectorTarget: "desktop" // "desktop" or "lock"
     
     // --- Media Notch Timing Logic ---
     Timer { 
         id: mediaNotchTimer
         interval: 500 // Increased from 200ms
-        onTriggered: mediaNotchOpen = false
+        onTriggered: {
+            mediaNotchOpen = false;
+            activeMediaNotchScreen = null;
+        }
     }
 
-    function openMediaNotch() {
+    function openMediaNotch(screen = null) {
         mediaNotchTimer.stop();
+        if (screen !== null) activeMediaNotchScreen = screen;
         mediaNotchOpen = true;
     }
 

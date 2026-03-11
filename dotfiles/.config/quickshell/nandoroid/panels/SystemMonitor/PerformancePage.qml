@@ -13,6 +13,7 @@ import "pages"
  */
 Item {
     id: root
+    property int subIndex: 0
 
 
     // Reset to Overview (0) when System Monitor closes

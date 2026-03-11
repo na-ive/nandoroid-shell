@@ -18,14 +18,15 @@ Singleton {
     onCustomPathChanged: statusProc.running = true
 
     Component.onCompleted: {
-        checkTools();
+        checkToolsProc.running = true;
     }
 
-    function checkTools() {
-        const procCtl = Quickshell.exec(["which", "powerprofilesctl"]);
-        procCtl.finished.connect(() => {
-            root.hasPowerProfilesCtl = (procCtl.exitCode === 0);
-        });
+    Process {
+        id: checkToolsProc
+        command: ["which", "powerprofilesctl"]
+        onExited: (code) => {
+            root.hasPowerProfilesCtl = (code === 0);
+        }
     }
 
     function setProfile(profile) {

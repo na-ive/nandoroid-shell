@@ -39,8 +39,7 @@ ColumnLayout {
                 asynchronous: true
                 opacity: status === Image.Ready ? 1 : 0
                 Behavior on opacity { NumberAnimation { duration: 300 } }
-            }
-            
+            }            
             // 1. Selection indicator (Primary tint) - Only when Synced/Selected
             Rectangle {
                 anchors.fill: parent

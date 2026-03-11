@@ -37,11 +37,11 @@ Item {
         color: root.color
 
         Behavior on height {
-            animation: ({duration: 300})
+            NumberAnimation { duration: 300 }
         }
 
         Behavior on x {
-            animation: ({duration: 300})
+            NumberAnimation { duration: 300 }
         }
     }
 }

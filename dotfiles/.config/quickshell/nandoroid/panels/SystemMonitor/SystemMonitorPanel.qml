@@ -32,12 +32,13 @@ Scope {
         title: "System Monitor"
 
         // Default native window size
-        width: Math.min(1100, Appearance.sizes.screen.width * 0.75)
-        height: Math.min(820, Appearance.sizes.screen.height * 0.85)
+        implicitWidth: Math.min(1100, Appearance.sizes.screen.width * 0.75)
+        implicitHeight: Math.min(820, Appearance.sizes.screen.height * 0.85)
 
         // Main Panel Background
         Rectangle {
             id: root
+            property int currentIndex: 0
             anchors.fill: parent
             color: Appearance.colors.colLayer0
             border.color: Appearance.colors.colLayer1
@@ -196,7 +197,11 @@ Scope {
                                     Image {
                                         id: avatarImage
                                         anchors.fill: parent
-                                        source: "file://" + SystemInfo.userAvatarPath
+                                        source: {
+                                            const path = SystemInfo.userAvatarPath;
+                                            if (!path || path.includes("/var/lib/AccountsService/icons/")) return "";
+                                            return "file://" + path;
+                                        }
                                         fillMode: Image.PreserveAspectCrop
                                         visible: status === Image.Ready
                                         

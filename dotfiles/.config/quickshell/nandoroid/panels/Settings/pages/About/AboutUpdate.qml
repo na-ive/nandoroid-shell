@@ -334,7 +334,7 @@ ColumnLayout {
                         font.pixelSize: Appearance.font.pixelSize.small
                         color: Appearance.colors.colSubtext
                         wrapMode: Text.WrapAnywhere
-                        font.family: Appearance.font.monospace
+                        font.family: Appearance.font.family.monospace
                         lineHeight: 1.2
                     }
                 }
@@ -388,7 +388,7 @@ ColumnLayout {
                         font.pixelSize: Appearance.font.pixelSize.small
                         color: Appearance.colors.colSubtext
                         wrapMode: Text.WrapAnywhere
-                        font.family: Appearance.font.monospace
+                        font.family: Appearance.font.family.monospace
                         lineHeight: 1.2
                     }
                 }

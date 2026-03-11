@@ -362,7 +362,7 @@ Item {
             
             onEntered: {
                 if (Config.options.media.enableMediaHover && (islandState === "media" || MprisController.activePlayer)) {
-                    GlobalStates.openMediaNotch();
+                    GlobalStates.openMediaNotch(root.QsWindow.window.screen);
                 }
             }
             

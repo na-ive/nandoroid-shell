@@ -34,11 +34,11 @@ Variants {
         }
 
         // Responsive window width
-        width: Math.min(320, modelData.width * 0.9)
-        height: contentRect.height + 20
+        implicitWidth: Math.min(320, modelData.width * 0.9)
+        implicitHeight: contentRect.height + 20
         color: "transparent"
 
-        visible: GlobalStates.mediaNotchOpen || contentRect.opacity > 0
+        visible: (GlobalStates.mediaNotchOpen && (GlobalStates.activeMediaNotchScreen === null || GlobalStates.activeMediaNotchScreen === modelData)) || contentRect.opacity > 0
 
         Rectangle {
             id: contentRect
@@ -50,8 +50,8 @@ Variants {
             radius: Appearance.rounding.button // Use token for consistency
 
             // Animation for entry
-            opacity: GlobalStates.mediaNotchOpen ? 1 : 0
-            scale: GlobalStates.mediaNotchOpen ? 1 : 0.95
+            opacity: (GlobalStates.mediaNotchOpen && (GlobalStates.activeMediaNotchScreen === null || GlobalStates.activeMediaNotchScreen === modelData)) ? 1 : 0
+            scale: (GlobalStates.mediaNotchOpen && (GlobalStates.activeMediaNotchScreen === null || GlobalStates.activeMediaNotchScreen === modelData)) ? 1 : 0.95
             Behavior on opacity { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
             Behavior on scale { NumberAnimation { duration: 300; easing.type: Easing.OutBack } }
 
@@ -59,7 +59,7 @@ Variants {
             HoverHandler {
                 id: popupHoverHandler
                 onHoveredChanged: {
-                    if (hovered && Config.options.media.enableMediaHover) GlobalStates.openMediaNotch();
+                    if (hovered && Config.options.media.enableMediaHover) GlobalStates.openMediaNotch(modelData);
                     else GlobalStates.closeMediaNotchWithDelay();
                 }
             }

@@ -55,7 +55,7 @@ Variants {
         }
 
         // Simplified polished cross-fade logic
-        property string currentPath: (Config.ready && Config.options.appearance?.background?.wallpaperPath) ? Config.options.appearance.background.wallpaperPath : ""
+        property string currentPath: (Config.ready && Config.options.appearance && Config.options.appearance.background && Config.options.appearance.background.wallpaperPath) ? Config.options.appearance.background.wallpaperPath : ""
         
         onCurrentPathChanged: {
             if (currentPath === "" || currentPath === undefined) return;
@@ -91,7 +91,7 @@ Variants {
         Image {
             id: wallpaper1
             anchors.fill: parent
-            source: root.currentPath
+            source: bgRoot.currentPath
             fillMode: Image.PreserveAspectCrop
             visible: true
             z: 1

@@ -46,8 +46,8 @@ Singleton {
         enabled: root.inhibited
         window: PanelWindow {
             id: window
-            width: 0
-            height: 0
+            implicitWidth: 0
+            implicitHeight: 0
             visible: true
             color: "transparent"
             WlrLayershell.layer: WlrLayer.Background

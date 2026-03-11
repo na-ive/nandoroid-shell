@@ -35,7 +35,7 @@ Singleton {
     property real value: volume
 
     function friendlyDeviceName(node) {
-        return (node.nickname || node.description || Translation.tr("Unknown"));
+        return (node.nickname || node.description || qsTr("Unknown"));
     }
     function appNodeDisplayName(node) {
         return (node.properties["application.name"] || node.description || node.name)

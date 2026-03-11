@@ -364,7 +364,9 @@ Item {
                         source: {
                             const cfgPath = Config.options.bar?.avatar_path;
                             if (cfgPath && cfgPath !== "") return `file://${cfgPath}`;
-                            return `file://${SystemInfo.userAvatarPath}`;
+                            const sysPath = SystemInfo.userAvatarPath;
+                            if (!sysPath || sysPath.includes("/var/lib/AccountsService/icons/")) return "";
+                            return `file://${sysPath}`;
                         }
                         sourceSize: Qt.size(44, 44)
                         fillMode: Image.PreserveAspectCrop

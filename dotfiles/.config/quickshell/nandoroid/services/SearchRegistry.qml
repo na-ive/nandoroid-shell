@@ -66,13 +66,6 @@ Item {
 
     Component.onCompleted: startIndexing()
 
-    Connections {
-        target: Translation
-        function onLanguageCodeChanged() {
-            startIndexing()
-        }
-    }
-
     FileView {
         id: pageFile
         property var files: []
@@ -128,7 +121,7 @@ Item {
         }
 
         // 3. Find all searchable strings
-        let propRegex = /(?:title|text|buttonText|placeholderText|mainText|label|name|description|hint|headerText)\s*:\s*(?:(?:Translation\.tr|qsTr|qsTranslate)\s*\(\s*)?["']([^"']+)["']/g
+        let propRegex = /(?:title|text|buttonText|placeholderText|mainText|label|name|description|hint|headerText)\s*:\s*(?:(?:qsTr|qsTranslate)\s*\(\s*)?["']([^"']+)["']/g
         let propMatch
         let allStrings = []
         while ((propMatch = propRegex.exec(qmlText)) !== null) {
@@ -164,7 +157,7 @@ Item {
         data.contentStrings.forEach(s => tokenize(s).forEach(t => tokens.add(t)))
         
         data.tokens = Array.from(tokens)
-        data.translatedTitle = Translation.tr(data.title)
+        data.translatedTitle = qsTr(data.title)
         
         let newSections = sections.slice()
         newSections.push(data)

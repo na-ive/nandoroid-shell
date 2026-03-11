@@ -111,8 +111,8 @@ Item {
                     }
                     colorize: true
                     color: Appearance.colors.colStatusBarText
-                    width: (root.monitor && root.monitor.width > 2000) ? 20 : 18
-                    height: (root.monitor && root.monitor.width > 2000) ? 20 : 18
+                    width: (root.monitor && root.monitor.width && root.monitor.width > 2000) ? 20 : 18
+                    height: (root.monitor && root.monitor.width && root.monitor.width > 2000) ? 20 : 18
                     Layout.alignment: Qt.AlignVCenter
                 }
 
@@ -122,7 +122,7 @@ Item {
                 // Active window title
                 ActiveWindowTitle {
                     Layout.alignment: Qt.AlignVCenter
-                    Layout.maximumWidth: Math.min(400, root.monitor.width * 0.25)
+                    Layout.maximumWidth: Math.min(400, (root.monitor ? root.monitor.width : 1920) * 0.25)
                     monitor: root.monitor
                 }
             }

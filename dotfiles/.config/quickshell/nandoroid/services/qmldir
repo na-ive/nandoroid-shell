@@ -10,7 +10,6 @@ singleton MprisController MprisController.qml
 singleton Network Network.qml
 singleton Notifications Notifications.qml
 singleton SystemInfo SystemInfo.qml
-singleton Translation Translation.qml
 singleton Wallpapers Wallpapers.qml
 singleton Caffeine Caffeine.qml
 singleton Session Session.qml
