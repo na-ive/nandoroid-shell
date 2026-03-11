@@ -157,7 +157,8 @@ Item {
                 // Active window title
                 ActiveWindowTitle {
                     Layout.alignment: Qt.AlignVCenter
-                    Layout.maximumWidth: Math.min(400, (root.monitor ? root.monitor.width : 1920) * 0.25)
+                    // Dynamically calculate max width: proportional to HUD width in centered mode
+                    Layout.maximumWidth: root.isCentered ? (root.centeredWidth * 0.2) : Math.min(400, parent.width * 0.25)
                     monitor: root.monitor
                     color: root.finalContentColor
                     subtextColor: root.finalSubtextColor

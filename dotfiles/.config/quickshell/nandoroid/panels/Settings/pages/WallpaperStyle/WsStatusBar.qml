@@ -202,10 +202,31 @@ ColumnLayout {
                         }
                     }
 
+                    // ── Autohide Toggle ──────────────
+                    SegmentedWrapper {
+                        Layout.fillWidth: true
+                        implicitHeight: autohideRow.implicitHeight + 32
+                        orientation: Qt.Vertical
+                        maxRadius: 20
+                        color: Appearance.m3colors.m3surfaceContainerHigh
+                        RowLayout {
+                            id: autohideRow
+                            anchors.fill: parent; anchors.margins: 16
+                            spacing: 16
+                            MaterialSymbol { text: "visibility_off"; iconSize: 24; color: Appearance.colors.colPrimary }
+                            StyledText { text: "Autohide status bar"; Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
+                            AndroidToggle {
+                                checked: Config.ready && Config.options.statusBar ? Config.options.statusBar.autohide : false
+                                onToggled: if (Config.ready && Config.options.statusBar)
+                                    Config.options.statusBar.autohide = !Config.options.statusBar.autohide
+                            }
+                        }
+                    }
+
                     // ── Centered Width (only visible when centered is active) ──
                     SegmentedWrapper {
                         Layout.fillWidth: true
-                        implicitHeight: centeredWidthRow.implicitHeight + 32
+                        implicitHeight: centeredWidthRow.implicitHeight + 36
                         orientation: Qt.Vertical
                         maxRadius: 20
                         color: Appearance.m3colors.m3surfaceContainerHigh
@@ -213,11 +234,21 @@ ColumnLayout {
                         RowLayout {
                             id: centeredWidthRow
                             anchors.fill: parent; anchors.margins: 16
-                            spacing: 16
-                            MaterialSymbol { text: "width_full"; iconSize: 24; color: Appearance.colors.colPrimary }
-                            StyledText { text: "Centered width"; Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
+                            spacing: 20
+
+                            RowLayout {
+                                spacing: 16
+                                Layout.preferredWidth: 70 // Ramped down to give maximum space to slider
+                                MaterialSymbol { text: "width_full"; iconSize: 24; color: Appearance.colors.colPrimary }
+                                StyledText { 
+                                    text: "Centered width"
+                                    Layout.fillWidth: true
+                                    color: Appearance.colors.colOnLayer1 
+                                }
+                            }
+
                             StyledSlider {
-                                Layout.preferredWidth: 160
+                                Layout.fillWidth: true
                                 from: 800; to: 2000; stepSize: 50
                                 value: Config.ready && Config.options.statusBar ? (Config.options.statusBar.centeredWidth ?? 1200) : 1200
                                 onMoved: if (Config.ready && Config.options.statusBar)
@@ -227,14 +258,16 @@ ColumnLayout {
                                 text: Math.round(Config.ready && Config.options.statusBar
                                     ? (Config.options.statusBar.centeredWidth ?? 1200) : 1200).toString() + "px"
                                 color: Appearance.colors.colOnLayer1
+                                Layout.preferredWidth: 50
+                                horizontalAlignment: Text.AlignRight
                             }
                         }
                     }
-    
+
                     // ── Corner radius (visible when ANY background style is active) ──
                     SegmentedWrapper {
                         Layout.fillWidth: true
-                        implicitHeight: sbCornerRow.implicitHeight + 32
+                        implicitHeight: sbCornerRow.implicitHeight + 36
                         orientation: Qt.Vertical
                         maxRadius: 20
                         color: Appearance.m3colors.m3surfaceContainerHigh
@@ -242,12 +275,22 @@ ColumnLayout {
                         RowLayout {
                             id: sbCornerRow
                             anchors.fill: parent; anchors.margins: 16
-                            spacing: 16
-                            MaterialSymbol { text: "rounded_corner"; iconSize: 24; color: Appearance.colors.colPrimary }
-                            StyledText { text: "Corner radius"; Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
+                            spacing: 20
+
+                            RowLayout {
+                                spacing: 16
+                                Layout.preferredWidth: 70
+                                MaterialSymbol { text: "rounded_corner"; iconSize: 24; color: Appearance.colors.colPrimary }
+                                StyledText { 
+                                    text: "Corner radius"
+                                    Layout.fillWidth: true
+                                    color: Appearance.colors.colOnLayer1 
+                                }
+                            }
+
                             StyledSlider {
-                                Layout.preferredWidth: 160
-                                from: 0; to: 40; stepSize: 1
+                                Layout.fillWidth: true
+                                from: 0; to: 20; stepSize: 1
                                 value: Config.ready && Config.options.statusBar ? (Config.options.statusBar.backgroundCornerRadius ?? 20) : 20
                                 onMoved: if (Config.ready && Config.options.statusBar)
                                     Config.options.statusBar.backgroundCornerRadius = Math.round(value)
@@ -256,10 +299,11 @@ ColumnLayout {
                                 text: Math.round(Config.ready && Config.options.statusBar
                                     ? (Config.options.statusBar.backgroundCornerRadius ?? 20) : 20).toString() + "px"
                                 color: Appearance.colors.colOnLayer1
+                                Layout.preferredWidth: 50
+                                horizontalAlignment: Text.AlignRight
                             }
                         }
-                    }
-    
+                    }    
                     // ── Workspace count ──────────────────────────────────────────
                     SegmentedWrapper {
                         Layout.fillWidth: true
