@@ -33,7 +33,7 @@ PanelWindow {
     property int windowCount: appToplevel ? appToplevel.toplevels.length : 0
     
     // Fetch the desktop entry to get its actions (Jump List)
-    readonly property var desktopEntry: DesktopEntries.heuristicLookup(root.appId)
+    readonly property var desktopEntry: DesktopEntries.byId(root.appId) || DesktopEntries.heuristicLookup(root.appId)
 
     property real targetX: 0
     property real targetY: 0
@@ -48,8 +48,8 @@ PanelWindow {
         id: menuContainer
         x: root.targetX; y: root.targetY
         implicitWidth: Appearance.sizes.contextMenuWidth
-        implicitHeight: menuLayout.implicitHeight + 12
-        radius: Appearance.rounding.normal
+        implicitHeight: menuLayout.implicitHeight + 8
+        radius: Appearance.rounding.small
         color: Appearance.colors.colLayer0
         border.color: Appearance.colors.colOutlineVariant
         border.width: 1
@@ -62,31 +62,34 @@ PanelWindow {
 
         ColumnLayout {
             id: menuLayout
-            anchors.fill: parent; anchors.margins: 6; spacing: 2
+            anchors.fill: parent; anchors.margins: 4; spacing: 1 // Tight spacing
 
             // Header
             RowLayout {
-                Layout.fillWidth: true; Layout.margins: 8; spacing: 12
-                IconImage {
-                    Layout.preferredWidth: 24; Layout.preferredHeight: 24
-                    source: Quickshell.iconPath(AppSearch.guessIcon(root.appId), "application-x-executable")
+                Layout.fillWidth: true; Layout.leftMargin: 8; Layout.rightMargin: 8; Layout.topMargin: 4; Layout.bottomMargin: 4; spacing: 8
+                Item {
+                    Layout.preferredWidth: 20; Layout.preferredHeight: 20
+                    IconImage {
+                        anchors.fill: parent
+                        source: "image://icon/" + AppSearch.guessIcon(root.appId)
+                    }
                 }
                 StyledText {
-                    text: root.appId.charAt(0).toUpperCase() + root.appId.slice(1)
+                    text: root.desktopEntry ? root.desktopEntry.name : (root.appId.charAt(0).toUpperCase() + root.appId.slice(1))
                     font.pixelSize: Appearance.font.pixelSize.small
                     font.weight: Font.Bold; color: Appearance.colors.colOnLayer0
                     elide: Text.ElideRight; Layout.fillWidth: true
                 }
             }
 
-            Rectangle { Layout.fillWidth: true; Layout.preferredHeight: 1; Layout.margins: 8; color: Appearance.colors.colOutlineVariant; opacity: 0.2 }
+            Rectangle { Layout.fillWidth: true; Layout.preferredHeight: 1; Layout.margins: 4; color: Appearance.colors.colOutlineVariant; opacity: 0.1 }
 
             // --- Desktop Actions (Jump List) ---
             Repeater {
-                model: root.desktopEntry ? root.desktopEntry.actions : []
+                model: (root.desktopEntry && root.desktopEntry.actions) ? root.desktopEntry.actions : []
                 delegate: MenuItem {
                     menuText: modelData.name
-                    menuIcon: "bolt" // Generic action icon
+                    menuIcon: modelData.icon || "bolt"
                     onClicked: {
                         modelData.execute();
                         root.close();
@@ -94,24 +97,25 @@ PanelWindow {
                 }
             }
 
-            // Separator if there were actions
-            Rectangle { 
-                visible: root.desktopEntry && root.desktopEntry.actions.length > 0
-                Layout.fillWidth: true; Layout.preferredHeight: 1; Layout.margins: 8; color: Appearance.colors.colOutlineVariant; opacity: 0.2 
+            // Always show "New Window" as a fallback if no specific actions are found
+            MenuItem {
+                visible: root.appId !== "" && (!root.desktopEntry || !root.desktopEntry.actions || root.desktopEntry.actions.length === 0)
+                menuText: "New Window"
+                menuIcon: "add_box"
+                onClicked: { 
+                    if (root.desktopEntry) root.desktopEntry.execute();
+                    else Quickshell.execDetached([root.appId]);
+                    root.close();
+                }
             }
+
+            Rectangle { Layout.fillWidth: true; Layout.preferredHeight: 1; Layout.margins: 8; color: Appearance.colors.colOutlineVariant; opacity: 0.2 }
 
             // --- Standard Actions ---
             MenuItem {
                 menuText: root.isPinned ? "Unpin from Dock" : "Pin to Dock"
                 menuIcon: root.isPinned ? "keep_off" : "keep"
                 onClicked: { TaskbarApps.togglePin(root.appId); root.close() }
-            }
-
-            MenuItem {
-                // Only show "New Window" if it's not already covered by Desktop Actions
-                visible: root.appId !== "" && (!root.desktopEntry || root.desktopEntry.actions.length === 0)
-                menuText: "New Window"; menuIcon: "add_box"
-                onClicked: { if (root.desktopEntry) root.desktopEntry.execute(); root.close() }
             }
 
             Rectangle { visible: root.windowCount > 0; Layout.fillWidth: true; Layout.preferredHeight: 1; Layout.margins: 8; color: Appearance.colors.colOutlineVariant; opacity: 0.2 }
@@ -144,12 +148,12 @@ PanelWindow {
     component MenuItem : RippleButton {
         id: itemRoot
         property string menuText: ""; property string menuIcon: ""
-        Layout.fillWidth: true; Layout.preferredHeight: Appearance.sizes.contextMenuItemHeight
-        buttonRadius: Appearance.rounding.small; colBackground: "transparent"
+        Layout.fillWidth: true; Layout.preferredHeight: 32 // Thinner items
+        buttonRadius: Appearance.rounding.verysmall; colBackground: "transparent"
         contentItem: RowLayout {
-            anchors.fill: parent; anchors.leftMargin: 12; anchors.rightMargin: 12; spacing: 12
+            anchors.fill: parent; anchors.leftMargin: 8; anchors.rightMargin: 8; spacing: 8
             MaterialSymbol {
-                text: itemRoot.menuIcon; iconSize: Appearance.sizes.iconSize * 0.8
+                text: itemRoot.menuIcon; iconSize: 18
                 color: (itemRoot.menuIcon === "close" || itemRoot.menuIcon === "gavel") ? Appearance.colors.colError : Appearance.colors.colOnLayer0
             }
             StyledText {

@@ -131,10 +131,8 @@ Scope {
                             id: dockApps; buttonPadding: 6; spacing: 8; height: visualContainer.height
                             
                             onRequestContextMenu: (appData, x, y) => {
-                                // Maps coordinates to current PanelWindow local coords
-                                const localPos = dockApps.mapToItem(null, x, y);
-                                // Add window screen offset to get global screen coordinates
-                                dockContextMenu.openAt(dockWindow.screenX + localPos.x, dockWindow.screenY + localPos.y, appData);
+                                // x and y are already window-relative from mapToItem(null, ...) in DockApps.qml
+                                dockContextMenu.openAt(dockWindow.screenX + x, dockWindow.screenY + y, appData);
                             }
                         }
 
