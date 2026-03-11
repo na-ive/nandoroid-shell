@@ -16,7 +16,20 @@ Singleton {
     property real cpuUsage: 0
     property real cpuTemperature: 0
     property string cpuModel: ""
-    property int cpuCores: 1
+    property int cpuThreads: 1
+    property int physicalCores: 1
+    
+    Process {
+        id: coreDetectProc
+        command: ["bash", "-c", "grep '^cpu cores' /proc/cpuinfo | head -n1 | awk '{print $4}' || echo 1"]
+        running: true
+        stdout: StdioCollector {
+            onStreamFinished: {
+                const val = parseInt(this.text.trim());
+                if (!isNaN(val)) root.physicalCores = val;
+            }
+        }
+    }
     
     property real memUsage: 0
     property real swapUsage: 0
@@ -25,9 +38,11 @@ Singleton {
     
     property real networkRxRate: 0
     property real networkTxRate: 0
+    readonly property real networkTotalRate: networkRxRate + networkTxRate
     
     property real diskReadRate: 0
     property real diskWriteRate: 0
+    readonly property real diskTotalRate: diskReadRate + diskWriteRate
     
     // System stats
     property string loadAverage: ""
@@ -43,6 +58,12 @@ Singleton {
     
     // GPUs (Disabled for now to fix SIGSEGV)
     property var availableGpus: []
+    readonly property bool hasValidGpuData: {
+        if (availableGpus.length === 0) return false;
+        // Check if at least one GPU has valid temperature or usage data
+        // For iGPUs, dgop often returns 0 for everything
+        return availableGpus.some(gpu => gpu.temp > 0 || (gpu.usage !== undefined && gpu.usage > 0));
+    }
 
     // History tracking
     readonly property int historySize: 60
@@ -149,7 +170,7 @@ Singleton {
                             root.cpuUsage = (data.cpu.usage || 0) / 100;
                             root.cpuTemperature = data.cpu.temperature || 0;
                             root.cpuModel = data.cpu.model || "";
-                            root.cpuCores = data.cpu.count || 1;
+                            root.cpuThreads = data.cpu.count || 1;
                             root.cpuHistory = root.addToHistory(root.cpuHistory, root.cpuUsage * 100);
                         }
 

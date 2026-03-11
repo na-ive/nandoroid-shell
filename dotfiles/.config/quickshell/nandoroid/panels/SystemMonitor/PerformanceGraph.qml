@@ -13,8 +13,12 @@ Item {
     property real maxValue: 100
     property string lineColor: Appearance.colors.colPrimary
     property string fillColor: Appearance.colors.colPrimary
+    
+    implicitWidth: 200
+    implicitHeight: 60
     property real fillOpacity: 0.1
     property real lineWidth: 2
+    property bool inverted: false
     
     onHistoryChanged: canvas.requestPaint()
     
@@ -41,8 +45,8 @@ Item {
             
             for (var i = 0; i < history.length; i++) {
                 var x = i * step;
-                var val = history[i];
-                var y = h - (val / maxValue * h);
+                var val = Math.min(maxValue, history[i]);
+                var y = root.inverted ? (val / maxValue * h) : h - (val / maxValue * h);
                 
                 if (i === 0) ctx.moveTo(x, y);
                 else ctx.lineTo(x, y);
@@ -51,8 +55,13 @@ Item {
             ctx.stroke();
             
             // Fill area
-            ctx.lineTo(w, h);
-            ctx.lineTo(0, h);
+            if (root.inverted) {
+                ctx.lineTo(w, 0);
+                ctx.lineTo(0, 0);
+            } else {
+                ctx.lineTo(w, h);
+                ctx.lineTo(0, h);
+            }
             ctx.closePath();
             ctx.fillStyle = Functions.ColorUtils.transparentize(fillColor, 1 - fillOpacity);
             ctx.fill();

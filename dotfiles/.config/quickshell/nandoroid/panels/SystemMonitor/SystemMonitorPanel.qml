@@ -117,135 +117,77 @@ Scope {
                     Layout.fillHeight: true
                     spacing: 12
                     
-                    // Side Navigation (Rounded card inside)
+                    // Side Navigation (Matching SettingsSidebar style)
                     Rectangle {
                         id: sidebar
                         Layout.fillHeight: true
-                        width: 240
-                        color: Appearance.colors.colLayer1
+                        width: 220
+                        color: Appearance.colors.colLayer0
                         radius: 20
                         
                         ColumnLayout {
                             anchors.fill: parent
-                            anchors.margins: 16
-                            spacing: 8
+                            anchors.margins: 12
+                            spacing: 16
                             
-                            Repeater {
-                                model: [
-                                { name: "Performance", icon: "monitoring" },
-                                { name: "Processes", icon: "list" }
-                            ]
-                            
-                            delegate: RippleButton {
+                            // Navigation Items
+                            ColumnLayout {
                                 Layout.fillWidth: true
-                                implicitHeight: 52
-                                buttonRadius: 16
-                                colBackground: GlobalStates.systemMonitorIndex === index 
-                                    ? Functions.ColorUtils.transparentize(Appearance.colors.colPrimary, 0.85) 
-                                    : "transparent"
-                                colBackgroundHover: GlobalStates.systemMonitorIndex === index 
-                                    ? colBackground 
-                                    : Appearance.colors.colLayer2
+                                spacing: 8
                                 
-                                onClicked: GlobalStates.systemMonitorIndex = index
-                                
-                                RowLayout {
-                                    anchors.fill: parent
-                                    anchors.leftMargin: 16
-                                    spacing: 16
+                                Repeater {
+                                    model: [
+                                        { name: "Performance", icon: "monitoring" },
+                                        { name: "Processes", icon: "list" }
+                                    ]
                                     
-                                    MaterialSymbol {
-                                        text: modelData.icon
-                                        iconSize: 24
-                                        color: GlobalStates.systemMonitorIndex === index 
-                                            ? Appearance.colors.colPrimary 
-                                            : Appearance.colors.colSubtext
-                                    }
-                                    
-                                    StyledText {
-                                        text: modelData.name
-                                        font.pixelSize: 15
-                                        font.weight: GlobalStates.systemMonitorIndex === index ? Font.Bold : Font.Medium
-                                        color: GlobalStates.systemMonitorIndex === index 
-                                            ? Appearance.colors.colPrimary 
-                                            : Appearance.colors.colOnLayer0
-                                    }
-                                }
-                            }
-                        }
-                        
-                        Item { Layout.fillHeight: true }
-                        
-                        // Bottom Profile info
-                        Rectangle {
-                            Layout.fillWidth: true
-                            implicitHeight: 72
-                            radius: 20
-                            color: "transparent"
-                            
-                            RowLayout {
-                                anchors.fill: parent
-                                anchors.margins: 4
-                                spacing: 14
-                                
-                                // Circular Avatar
-                                Rectangle {
-                                    id: avatarContainer
-                                    width: 48; height: 48; radius: 24
-                                    color: Appearance.colors.colLayer2
-                                    
-                                    Image {
-                                        id: avatarImage
-                                        anchors.fill: parent
-                                        source: {
-                                            const cfgPath = Config.options.bar?.avatar_path;
-                                            if (cfgPath && cfgPath !== "") return `file://${cfgPath}`;
-                                            const sysPath = SystemInfo.userAvatarPath;
-                                            if (!sysPath || sysPath.includes("/var/lib/AccountsService/icons/")) return "";
-                                            return `file://${sysPath}`;
-                                        }
-                                        fillMode: Image.PreserveAspectCrop
-                                        visible: status === Image.Ready
+                                    delegate: RippleButton {
+                                        Layout.fillWidth: true
+                                        implicitHeight: 48
+                                        buttonRadius: 16
+                                        colBackground: GlobalStates.systemMonitorIndex === index 
+                                            ? Functions.ColorUtils.transparentize(Appearance.colors.colPrimary, 0.88) 
+                                            : "transparent"
+                                        colBackgroundHover: GlobalStates.systemMonitorIndex === index 
+                                            ? colBackground 
+                                            : Appearance.colors.colLayer0Hover
                                         
-                                        layer.enabled: true
-                                        layer.effect: OpacityMask {
-                                            maskSource: Rectangle {
-                                                width: avatarContainer.width
-                                                height: avatarContainer.height
-                                                radius: avatarContainer.radius
+                                        onClicked: GlobalStates.systemMonitorIndex = index
+                                        
+                                        RowLayout {
+                                            anchors.fill: parent
+                                            anchors.leftMargin: 16
+                                            spacing: 16
+                                            
+                                            MaterialSymbol {
+                                                text: modelData.icon
+                                                iconSize: 24
+                                                color: GlobalStates.systemMonitorIndex === index 
+                                                    ? Appearance.colors.colPrimary 
+                                                    : Appearance.colors.colSubtext
+                                            }
+                                            
+                                            StyledText {
+                                                text: modelData.name
+                                                font.pixelSize: Appearance.font.pixelSize.normal
+                                                font.weight: GlobalStates.systemMonitorIndex === index ? Font.Medium : Font.Normal
+                                                color: GlobalStates.systemMonitorIndex === index 
+                                                    ? Appearance.colors.colPrimary 
+                                                    : Appearance.colors.colOnLayer0
                                             }
                                         }
                                     }
-                                    
-                                    // Fallback
-                                    StyledText {
-                                        anchors.centerIn: parent
-                                        visible: avatarImage.status !== Image.Ready
-                                        text: SystemInfo.username.charAt(0).toUpperCase()
-                                        color: Appearance.m3colors.m3onPrimaryContainer
-                                        font.pixelSize: 18
-                                        font.weight: Font.Black
-                                    }
                                 }
-                                
-                                ColumnLayout {
-                                    spacing: 0
-                                    StyledText {
-                                        text: SystemInfo.hostname
-                                        font.pixelSize: 15
-                                        font.weight: Font.Bold
-                                        color: Appearance.m3colors.m3onSurface
-                                    }
-                                    StyledText {
-                                        text: "Up: " + SystemData.uptime
-                                        font.pixelSize: 11
-                                        color: Appearance.colors.colSubtext
-                                    }
-                                }
+                            }
+                            
+                            Item { Layout.fillHeight: true }
+                            
+                            // Bottom Profile info (Using universal widget)
+                            UserProfile {
+                                compact: false
                             }
                         }
                     }
-                }
                 
                 // Main Content Area
                 Rectangle {

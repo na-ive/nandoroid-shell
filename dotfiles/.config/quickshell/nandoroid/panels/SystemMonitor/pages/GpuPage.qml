@@ -23,7 +23,7 @@ Item {
         }
 
         Repeater {
-            model: SystemData.availableGpus
+            model: SystemData.hasValidGpuData ? SystemData.availableGpus : []
             delegate: Rectangle {
                 Layout.fillWidth: true
                 implicitHeight: 180
@@ -75,7 +75,7 @@ Item {
         
         // Proper Fallback Card for layout consistency
         Rectangle {
-            visible: SystemData.availableGpus.length === 0
+            visible: !SystemData.hasValidGpuData
             Layout.fillWidth: true
             Layout.fillHeight: true
             color: Appearance.colors.colLayer2
@@ -84,6 +84,7 @@ Item {
 
             ColumnLayout {
                 anchors.centerIn: parent
+                width: parent.width * 0.8
                 spacing: 12
                 MaterialSymbol {
                     text: "videogame_asset_off"
@@ -92,11 +93,20 @@ Item {
                     Layout.alignment: Qt.AlignCenter
                 }
                 StyledText {
-                    text: "No GPU detected on this system"
+                    text: "GPU performance data not available"
                     font.pixelSize: 16
                     font.weight: Font.Medium
-                    color: Appearance.m3colors.m3outline
+                    color: Appearance.m3colors.m3onSurface
                     Layout.alignment: Qt.AlignCenter
+                }
+                StyledText {
+                    text: "Your GPU (likely integrated) does not report usage or temperature data to the system sensors."
+                    font.pixelSize: 12
+                    color: Appearance.m3colors.m3onSurfaceVariant
+                    Layout.alignment: Qt.AlignCenter
+                    horizontalAlignment: Text.AlignHCenter
+                    wrapMode: Text.WordWrap
+                    Layout.fillWidth: true
                 }
             }
         }

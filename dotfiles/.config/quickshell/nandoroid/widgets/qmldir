@@ -44,3 +44,4 @@ CavaWidget CavaWidget.qml
 RoundCorner RoundCorner.qml
 DesktopContextMenu DesktopContextMenu.qml
 SearchHandler SearchHandler.qml
+UserProfile UserProfile.qml

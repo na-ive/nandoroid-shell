@@ -145,18 +145,21 @@ Item {
         }
 
         background: Rectangle {
-            implicitWidth: 220
-            color: Appearance.colors.colLayer2
-            radius: 12
-            border.color: Appearance.m3colors.darkmode ? Appearance.colors.colLayer3 : Functions.ColorUtils.applyAlpha(Appearance.m3colors.m3outline, 0.2)
+            implicitWidth: Appearance.sizes.contextMenuWidth
+            color: Appearance.colors.colLayer0
+            opacity: 0.98
+            radius: Appearance.rounding.normal
+            border.color: Appearance.colors.colOutlineVariant
             border.width: 1
         }
 
         component StyledMenuItem: MenuItem {
             id: menuItem
+            
+            implicitHeight: Appearance.sizes.contextMenuItemHeight
+            
             contentItem: RowLayout {
-                spacing: 16
-                Item { Layout.preferredWidth: 8 }
+                spacing: 12
                 MaterialSymbol {
                     text: {
                         if (menuItem.text.includes("Kill")) return "delete_forever";
@@ -166,29 +169,27 @@ Item {
                         if (menuItem.text.includes("Copy")) return "content_copy";
                         return "info";
                     }
-                    iconSize: 20
-                    color: menuItem.highlighted ? Appearance.colors.colPrimary : Appearance.m3colors.m3onSurface
+                    iconSize: Appearance.sizes.iconSize * 0.9
+                    color: menuItem.highlighted ? Appearance.colors.colPrimary : Appearance.colors.colOnLayer0
                 }
                 StyledText {
                     text: menuItem.text
-                    font.pixelSize: 14
-                    font.weight: menuItem.highlighted ? Font.Bold : Font.Medium
-                    color: menuItem.highlighted ? Appearance.colors.colPrimary : Appearance.m3colors.m3onSurface
+                    font.pixelSize: Appearance.font.pixelSize.small
+                    font.weight: menuItem.highlighted ? Font.Medium : Font.Normal
+                    color: menuItem.highlighted ? Appearance.colors.colPrimary : Appearance.colors.colOnLayer0
+                    Layout.fillWidth: true
                 }
-                Item { Layout.fillWidth: true }
             }
-            background: Item {
-                implicitHeight: 48
-                Rectangle {
-                    anchors.fill: parent
-                    anchors.margins: 4
-                    color: menuItem.highlighted ? Functions.ColorUtils.applyAlpha(Appearance.colors.colPrimary, 0.15) : "transparent"
-                    radius: 12
-                }
+            
+            background: Rectangle {
+                anchors.fill: parent
+                anchors.margins: 4
+                color: menuItem.highlighted ? Functions.ColorUtils.applyAlpha(Appearance.colors.colPrimary, 0.12) : "transparent"
+                radius: Appearance.rounding.small
             }
         }
         
-        padding: 8
+        padding: 6
 
         StyledMenuItem {
             text: "Stop (Pause)"
@@ -200,7 +201,13 @@ Item {
         }
         
         MenuSeparator {
-            contentItem: Rectangle { implicitHeight: 1; color: Appearance.colors.colLayer3; anchors.leftMargin: 12; anchors.rightMargin: 12 }
+            contentItem: Rectangle { 
+                implicitHeight: 1 
+                color: Appearance.colors.colOutlineVariant 
+                opacity: 0.3
+                Layout.leftMargin: 12 
+                Layout.rightMargin: 12 
+            }
         }
 
         StyledMenuItem {
@@ -214,7 +221,13 @@ Item {
         }
 
         MenuSeparator {
-            contentItem: Rectangle { implicitHeight: 1; color: Appearance.colors.colLayer3; anchors.leftMargin: 12; anchors.rightMargin: 12 }
+            contentItem: Rectangle { 
+                implicitHeight: 1 
+                color: Appearance.colors.colOutlineVariant 
+                opacity: 0.3
+                Layout.leftMargin: 12 
+                Layout.rightMargin: 12 
+            }
         }
 
         StyledMenuItem {

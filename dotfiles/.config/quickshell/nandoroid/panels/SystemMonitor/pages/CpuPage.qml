@@ -36,8 +36,13 @@ Item {
                 RowLayout {
                     Layout.fillWidth: true
                     ColumnLayout {
-                        StyledText { text: SystemData.cpuModel; font.pixelSize: 16; font.weight: Font.Medium }
-                        StyledText { text: SystemData.cpuCores + " Cores / Threads"; color: Appearance.colors.colSubtext }
+                        spacing: 0
+                        StyledText { text: SystemData.cpuModel; font.pixelSize: 16; font.weight: Font.Medium; color: Appearance.m3colors.m3onSurface }
+                        StyledText { 
+                            text: `${SystemData.physicalCores} Cores / ${SystemData.cpuThreads} Threads`; 
+                            color: Appearance.colors.colSubtext; 
+                            font.pixelSize: 12 
+                        }
                     }
                     Item { Layout.fillWidth: true }
                     StyledText { 
@@ -59,9 +64,27 @@ Item {
                 
                 RowLayout {
                     Layout.fillWidth: true
-                    StyledText { text: "Temperature: " + Math.round(SystemData.cpuTemperature) + "°C"; font.weight: Font.Bold }
+                    spacing: 20
+                    
+                    ColumnLayout {
+                        spacing: 0
+                        StyledText { text: "TEMPERATURE"; font.pixelSize: 10; font.weight: Font.Bold; color: Appearance.m3colors.m3outline }
+                        StyledText { text: Math.round(SystemData.cpuTemperature) + "°C"; font.weight: Font.Medium; font.pixelSize: 14 }
+                    }
+
+                    ColumnLayout {
+                        spacing: 0
+                        StyledText { text: "LOAD AVERAGE"; font.pixelSize: 10; font.weight: Font.Bold; color: Appearance.m3colors.m3outline }
+                        StyledText { text: SystemData.loadAverage; font.weight: Font.Medium; font.pixelSize: 14 }
+                    }
+
                     Item { Layout.fillWidth: true }
-                    StyledText { text: "Load Average: " + SystemData.loadAverage; color: Appearance.colors.colSubtext }
+
+                    ColumnLayout {
+                        spacing: 0
+                        StyledText { text: "UPTIME"; font.pixelSize: 10; font.weight: Font.Bold; color: Appearance.m3colors.m3outline }
+                        StyledText { text: SystemData.uptime; font.weight: Font.Medium; font.pixelSize: 14; horizontalAlignment: Text.AlignRight }
+                    }
                 }
             }
         }
