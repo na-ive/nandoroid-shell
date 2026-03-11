@@ -116,10 +116,6 @@ DockButton {
         if (root.desktopEntry) root.desktopEntry.execute();
     }
 
-    altAction: () => {
-        TaskbarApps.togglePin(appToplevel.appId);
-    }
-
     contentItem: Item {
         visible: !root.isSeparator
         anchors.fill: parent
