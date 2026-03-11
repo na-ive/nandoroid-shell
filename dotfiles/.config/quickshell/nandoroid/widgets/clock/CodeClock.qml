@@ -8,6 +8,7 @@ ColumnLayout {
     id: root
     spacing: 2
 
+    readonly property string alignment: "left"
     property bool isLockscreen: false
 
     // Resolve which config object to use:

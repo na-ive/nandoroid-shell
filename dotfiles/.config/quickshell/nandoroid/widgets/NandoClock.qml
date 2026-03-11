@@ -38,8 +38,26 @@ Item {
     readonly property real clockOffsetX: Config.ready ? Config.options.appearance.clock.offsetX : 0
     readonly property real clockOffsetY: Config.ready ? Config.options.appearance.clock.offsetY : -50
 
-    x: (parentWidth / 2 - width / 2) + (isLockscreen ? 0 : clockOffsetX)
+    // Dynamic anchor point based on alignment to prevent shifting
+    readonly property string alignment: {
+        if (!loader.item) return "center";
+        if (loader.item.alignment !== undefined) return loader.item.alignment;
+        if (loader.item.cfg && loader.item.cfg.alignment !== undefined) return loader.item.cfg.alignment;
+        return "center";
+    }
+
+    // Position the Item's (0,0) at the anchor target (Center + Offset)
+    x: (parentWidth / 2) + (isLockscreen ? 0 : clockOffsetX)
     y: (parentHeight / 2 - height / 2) + (isLockscreen ? -50 : clockOffsetY)
+    
+    // Shift the item relative to its width based on alignment
+    transform: Translate {
+        x: {
+            if (root.alignment === "left") return 0; // Anchor is at X (Left edge)
+            if (root.alignment === "right") return -root.width; // Anchor is at X (Right edge)
+            return -root.width / 2; // Anchor is at X (Center)
+        }
+    }
 
     Loader {
         id: loader

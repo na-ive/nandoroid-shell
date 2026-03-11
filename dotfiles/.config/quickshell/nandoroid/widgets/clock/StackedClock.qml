@@ -7,18 +7,33 @@ ColumnLayout {
     id: root
     spacing: 0
     
-    implicitWidth: 400 // Fixed width to prevent shifting when digits change
-    
     property bool isLockscreen: false
 
+    // Internal default config to ensure we never have undefined access
+    readonly property var defaultCfg: ({
+        fontSize: 64,
+        labelFontSize: 24,
+        fontFamily: "sans",
+        fontWeight: "Bold",
+        labelFontWeight: "Normal",
+        alignment: "center",
+        colorStyle: "primary",
+        textColorStyle: "onSurface"
+    })
+
+    // Safely resolve the config object
     readonly property var cfg: {
-        if (Config.ready && isLockscreen && !Config.options.appearance.clock.useSameStyle)
-            return Config.options.appearance.clock.stackedLocked
-        return Config.options.appearance.clock.stacked
+        if (!Config.ready || !Config.options || !Config.options.appearance || !Config.options.appearance.clock) 
+            return defaultCfg;
+        
+        const clockCfg = Config.options.appearance.clock;
+        let target = (isLockscreen && !clockCfg.useSameStyle) ? clockCfg.stackedLocked : clockCfg.stacked;
+        
+        return target || defaultCfg;
     }
 
     readonly property color mainColor: {
-        if (!Config.ready) return Appearance.m3colors.m3error
+        if (!Config.ready || !cfg) return Appearance.colors.colPrimary
         const s = cfg.colorStyle
         if (s === "primary") return Appearance.colors.colPrimary
         if (s === "secondary") return Appearance.colors.colSecondary
@@ -26,8 +41,9 @@ ColumnLayout {
         if (s === "error") return Appearance.m3colors.m3error
         return Appearance.m3colors.m3onSurface
     }
+
     readonly property color labelColor: {
-        if (!Config.ready) return Appearance.m3colors.m3onSurface
+        if (!Config.ready || !cfg) return Appearance.m3colors.m3onSurface
         const s = cfg.textColorStyle
         if (s === "primary") return Appearance.colors.colPrimary
         if (s === "secondary") return Appearance.colors.colSecondary
@@ -61,7 +77,7 @@ ColumnLayout {
         return Qt.AlignLeft
     }
 
-    function mapTextALign(a) {
+    function mapTextAlign(a) {
         if (a === "right") return Text.AlignRight
         if (a === "center") return Text.AlignHCenter
         return Text.AlignLeft
@@ -82,52 +98,47 @@ ColumnLayout {
 
     Text {
         text: root.dayName
-        font.pixelSize: cfg.labelFontSize
-        font.family: cfg.fontFamily
+        font.pixelSize: cfg.labelFontSize || 24
+        font.family: cfg.fontFamily || "sans"
         font.weight: root.fontW(cfg.labelFontWeight)
         color: root.labelColor
         opacity: 0.8
         Layout.alignment: root.mapAlign(cfg.alignment)
-        horizontalAlignment: root.mapTextALign(cfg.alignment)
-        Layout.fillWidth: true
+        horizontalAlignment: root.mapTextAlign(cfg.alignment)
     }
 
     Text {
         text: root.dayNumber
-        font.pixelSize: cfg.fontSize
-        font.family: cfg.fontFamily
+        font.pixelSize: cfg.fontSize || 64
+        font.family: cfg.fontFamily || "sans"
         font.weight: root.fontW(cfg.labelFontWeight)
         color: root.labelColor
         Layout.alignment: root.mapAlign(cfg.alignment)
-        horizontalAlignment: root.mapTextALign(cfg.alignment)
-        Layout.fillWidth: true
-        Layout.topMargin: - (cfg.fontSize * 0.2)
+        horizontalAlignment: root.mapTextAlign(cfg.alignment)
+        Layout.topMargin: - ((cfg.fontSize || 64) * 0.2)
     }
 
     Text {
         text: root.displayHours + ":" + root.displayMinutes
-        font.pixelSize: cfg.fontSize
-        font.family: cfg.fontFamily
+        font.pixelSize: cfg.fontSize || 64
+        font.family: cfg.fontFamily || "sans"
         font.weight: root.fontW(cfg.fontWeight)
         color: root.mainColor
         Layout.alignment: root.mapAlign(cfg.alignment)
-        horizontalAlignment: root.mapTextALign(cfg.alignment)
-        Layout.fillWidth: true
-        Layout.topMargin: - (cfg.fontSize * 0.2)
+        horizontalAlignment: root.mapTextAlign(cfg.alignment)
+        Layout.topMargin: - ((cfg.fontSize || 64) * 0.2)
     }
 
     Text {
         visible: !root.is24H
         text: root.amPm
-        font.pixelSize: cfg.labelFontSize + 6
-        font.family: cfg.fontFamily
+        font.pixelSize: (cfg.labelFontSize || 24) + 6
+        font.family: cfg.fontFamily || "sans"
         font.weight: root.fontW(cfg.labelFontWeight)
         color: root.labelColor
         opacity: 0.8
         Layout.alignment: root.mapAlign(cfg.alignment)
-        horizontalAlignment: root.mapTextALign(cfg.alignment)
-        Layout.fillWidth: true
-        Layout.topMargin: - (cfg.labelFontSize * 0.3)
+        horizontalAlignment: root.mapTextAlign(cfg.alignment)
+        Layout.topMargin: - ((cfg.labelFontSize || 24) * 0.3)
     }
-}
 }
