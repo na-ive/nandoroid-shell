@@ -14,6 +14,7 @@ Scope {
         active: GlobalStates.wallpaperSelectorOpen
         sourceComponent: PanelWindow {
             id: panelWindow
+            screen: Quickshell.screens[0]
             exclusiveZone: 0
             WlrLayershell.namespace: "nandoroid:wallpaperselector"
             WlrLayershell.layer: WlrLayer.Overlay

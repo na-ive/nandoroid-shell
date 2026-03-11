@@ -7,6 +7,8 @@ ColumnLayout {
     id: root
     spacing: 0
     
+    implicitWidth: 400 // Fixed width to prevent shifting when digits change
+    
     property bool isLockscreen: false
 
     readonly property var cfg: {
@@ -59,6 +61,12 @@ ColumnLayout {
         return Qt.AlignLeft
     }
 
+    function mapTextALign(a) {
+        if (a === "right") return Text.AlignRight
+        if (a === "center") return Text.AlignHCenter
+        return Text.AlignLeft
+    }
+
     readonly property date now: new Date()
     readonly property string dayName: Qt.formatDate(now, "ddd").toLowerCase()
     readonly property string dayNumber: getOrdinal(now.getDate()).toLowerCase()
@@ -80,6 +88,8 @@ ColumnLayout {
         color: root.labelColor
         opacity: 0.8
         Layout.alignment: root.mapAlign(cfg.alignment)
+        horizontalAlignment: root.mapTextALign(cfg.alignment)
+        Layout.fillWidth: true
     }
 
     Text {
@@ -89,6 +99,8 @@ ColumnLayout {
         font.weight: root.fontW(cfg.labelFontWeight)
         color: root.labelColor
         Layout.alignment: root.mapAlign(cfg.alignment)
+        horizontalAlignment: root.mapTextALign(cfg.alignment)
+        Layout.fillWidth: true
         Layout.topMargin: - (cfg.fontSize * 0.2)
     }
 
@@ -99,6 +111,8 @@ ColumnLayout {
         font.weight: root.fontW(cfg.fontWeight)
         color: root.mainColor
         Layout.alignment: root.mapAlign(cfg.alignment)
+        horizontalAlignment: root.mapTextALign(cfg.alignment)
+        Layout.fillWidth: true
         Layout.topMargin: - (cfg.fontSize * 0.2)
     }
 
@@ -111,6 +125,9 @@ ColumnLayout {
         color: root.labelColor
         opacity: 0.8
         Layout.alignment: root.mapAlign(cfg.alignment)
+        horizontalAlignment: root.mapTextALign(cfg.alignment)
+        Layout.fillWidth: true
         Layout.topMargin: - (cfg.labelFontSize * 0.3)
     }
+}
 }
