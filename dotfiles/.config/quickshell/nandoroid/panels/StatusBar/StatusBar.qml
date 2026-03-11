@@ -49,24 +49,23 @@ Scope {
             readonly property int cornerRadius: Config.ready && Config.options.statusBar
                 ? (Config.options.statusBar.backgroundCornerRadius ?? 20) : 20
 
-            property bool hasActiveWindows: false
-            readonly property bool showBackground: {
-                if (bgStyle === 1) return true;
-                if (bgStyle === 2) return hasActiveWindows;
-                return false;
+            // Track tiled windows for adaptive style
+            readonly property int activeWorkspaceId: Hyprland.monitorFor(modelData)?.activeWorkspace?.id ?? -1
+            
+            readonly property bool hasTiledWindows: {
+                if (bgStyle !== 2 || activeWorkspaceId === -1) return false;
+                // Filter windows that are on this monitor's active workspace and NOT floating
+                return HyprlandData.windowList.some(w => 
+                    w.workspace.id === activeWorkspaceId && 
+                    !w.floating && 
+                    w.monitor === monitorIndex
+                );
             }
 
-            // Track tiled windows for adaptive style
-            Connections {
-                enabled: barWindow.bgStyle === 2
-                target: HyprlandData
-                function onWindowListChanged() {
-                    const monitor = HyprlandData.monitors.find(m => m.id === barWindow.monitorIndex);
-                    const wsId = monitor?.activeWorkspace?.id;
-                    barWindow.hasActiveWindows = wsId
-                        ? HyprlandData.windowList.some(w => w.workspace.id === wsId && !w.floating)
-                        : false;
-                }
+            readonly property bool showBackground: {
+                if (bgStyle === 1) return true;
+                if (bgStyle === 2) return hasTiledWindows;
+                return false;
             }
 
             readonly property bool isCentered: (Config.ready && Config.options.statusBar) ? Config.options.statusBar.layoutStyle === "centered" : false
