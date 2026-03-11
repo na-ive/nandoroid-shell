@@ -15,8 +15,13 @@ import Quickshell.Io
  */
 Item {
     id: root
-    implicitWidth: 1100
-    implicitHeight: 800
+    
+    // Responsive sizing
+    width: Math.min(1100, (parent ? parent.width : 1200) * 0.9)
+    height: Math.min(800, (parent ? parent.height : 900) * 0.85)
+    
+    implicitWidth: width
+    implicitHeight: height
     
     focus: true
     Keys.onEscapePressed: close()
