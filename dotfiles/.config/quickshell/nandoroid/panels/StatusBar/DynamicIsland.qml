@@ -31,7 +31,7 @@ Item {
 
     // --- State Logic ---
     property bool mediaShowing: false
-    Timer { id: mediaTimer; interval: 5000; onTriggered: root.mediaShowing = false }
+    Timer { id: mediaTimer; interval: 3000; onTriggered: root.mediaShowing = false }
 
     Connections {
         target: MprisController
@@ -66,6 +66,17 @@ Item {
         anchors.verticalCenter: parent.verticalCenter
         height: 28
         clip: true
+        
+        HoverHandler {
+            enabled: islandState === "media"
+            onHoveredChanged: {
+                if (hovered && Config.options.media.enableMediaHover) {
+                    GlobalStates.openMediaNotch(root.QsWindow.window.screen);
+                } else {
+                    GlobalStates.closeMediaNotchWithDelay();
+                }
+            }
+        }
         
         width: {
             if (islandState === "notification") {
@@ -256,6 +267,17 @@ Item {
         height: 28
         clip: true
         
+        HoverHandler {
+            enabled: islandState === "media"
+            onHoveredChanged: {
+                if (hovered && Config.options.media.enableMediaHover) {
+                    GlobalStates.openMediaNotch(root.QsWindow.window.screen);
+                } else {
+                    GlobalStates.closeMediaNotchWithDelay();
+                }
+            }
+        }
+        
         width: {
             if (islandState === "notification") return notifSummaryLabel.visible ? Math.min(notifSummaryLabel.implicitWidth, 200) + 8 : 0
             if (islandState === "recording") return recordTimeLabel.implicitWidth + 8
@@ -361,8 +383,13 @@ Item {
             acceptedButtons: Qt.LeftButton | Qt.MiddleButton | Qt.RightButton
             
             onEntered: {
-                if (Config.options.media.enableMediaHover && (islandState === "media" || MprisController.activePlayer)) {
-                    GlobalStates.openMediaNotch(root.QsWindow.window.screen);
+                // Hovering the center reveal the island (state becomes "media")
+                // but we DON'T call openMediaNotch here.
+                if (MprisController.activePlayer) {
+                    root.mediaShowing = true;
+                    mediaTimer.restart();
+                    // Also stop the closing timer if it's already open from ear hover
+                    if (GlobalStates.mediaNotchOpen) GlobalStates.mediaNotchTimer.stop();
                 }
             }
             

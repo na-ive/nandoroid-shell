@@ -36,7 +36,7 @@ Singleton {
     // --- Media Notch Timing Logic ---
     Timer { 
         id: mediaNotchTimer
-        interval: 500 // Increased from 200ms
+        interval: 2000 // Popup persists for 2 seconds
         onTriggered: {
             mediaNotchOpen = false;
             activeMediaNotchScreen = null;
