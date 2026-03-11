@@ -35,9 +35,8 @@ Scope {
 
             WlrLayershell.namespace: "nandoroid:dock"
             
-            // ── Exclusive Zone Logic (Space Reservation) ──
-            // Using exclusiveZone is the most reliable way to push windows.
-            // We only set it if not in auto-hide/desktop mode.
+            // ── Exclusive Zone Logic ──
+            // Menentukan ruang yang dipesan di bawah monitor.
             exclusiveZone: {
                 if (!Config.ready) return 0;
                 if (!Config.options.dock.showOnlyInDesktop && !Config.options.dock.autoHide) {
@@ -46,11 +45,10 @@ Scope {
                 return 0;
             }
             
-            // For exclusiveZone to work along the bottom, we usually anchor to all 3 bottom sides
+            // KEMBALI KE ANCHOR SEDERHANA (HANYA BOTTOM)
+            // Ini membuat jendela hanya selebar Dock, sehingga semua klik/hover otomatis masuk
             anchors {
                 bottom: true
-                left: true
-                right: true
             }
             
             visible: Config.ready && Config.options.dock.enable && !GlobalStates.screenLocked
@@ -59,18 +57,9 @@ Scope {
             readonly property real dockHeight: Config.ready ? Config.options.dock.height : 70
             readonly property int bgStyle: Config.ready && Config.options.dock ? Config.options.dock.backgroundStyle : 1
             
+            // Window width must follow the content
+            implicitWidth: mainRowContainer.implicitWidth + 40
             implicitHeight: dockHeight + Appearance.sizes.elevationMargin
-
-            // ── Mask ──
-            // Only allow interaction where the dock is or the trigger strip is.
-            mask: Region {
-                item: Item {
-                    width: mainRowContainer.width + 20
-                    height: dockWindow.reveal ? mainRowContainer.height + 20 : (Config.options.dock.showOnlyInDesktop && hasActiveWindows ? 0 : 10)
-                    anchors.bottom: dockWindow.bottom
-                    anchors.horizontalCenter: dockWindow.horizontalCenter
-                }
-            }
 
             // ── Auto Hide Logic ──
             readonly property bool hasActiveWindows: {
@@ -111,11 +100,15 @@ Scope {
                 anchors.fill: parent
                 hoverEnabled: true
                 
+                // Tinggi area pemicu hover saat Dock sembunyi
                 height: {
                     if (!Config.ready) return parent.height;
+                    // Mati total jika showOnlyInDesktop nyala dan ada jendela
                     if (Config.options.dock.showOnlyInDesktop && hasActiveWindows && !GlobalStates.launcherOpen) return 0;
                     return dockWindow.reveal ? parent.height : 10;
                 }
+                // Pastikan MouseArea selalu di bawah jendela (nempel pinggir layar)
+                anchors.bottom: parent.bottom
 
                 RowLayout {
                     id: mainRowContainer
