@@ -211,6 +211,70 @@ Singleton {
         // Note: wallpaperSelectorOpen and regionSelectorOpen are excluded
     }
 
+    function activateSettings() {
+        const cmd = `
+            # Find settings window address
+            ADDR=$(hyprctl clients -j | jq -r '.[] | select(.title == "Settings" and .class == "org.quickshell") | .address')
+            
+            if [ -z "$ADDR" ] || [ "$ADDR" = "null" ]; then
+                # Not open, so open it
+                qs -c nandoroid ipc call settings open_direct
+                exit 0
+            fi
+
+            # Check if it's already the active window
+            ACTIVE_ADDR=$(hyprctl activewindow -j | jq -r .address)
+            
+            if [ "$ADDR" = "$ACTIVE_ADDR" ]; then
+                # Already focused here, so close it
+                qs -c nandoroid ipc call settings close
+            else
+                # Pull it here! Get current workspace name
+                CUR_WS=$(hyprctl activeworkspace -j | jq -r .name)
+                
+                # Move window to current workspace silently
+                hyprctl dispatch movetoworkspacesilent "name:$CUR_WS,address:$ADDR"
+                
+                # Micro-delay to let Hyprland update internal state, then focus
+                sleep 0.05
+                hyprctl dispatch focuswindow "address:$ADDR"
+            fi
+        `;
+        Quickshell.execDetached(["bash", "-c", cmd]);
+    }
+
+    function activateSystemMonitor() {
+        const cmd = `
+            # Find System Monitor window address
+            ADDR=$(hyprctl clients -j | jq -r '.[] | select(.title == "System Monitor" and .class == "org.quickshell") | .address')
+            
+            if [ -z "$ADDR" ] || [ "$ADDR" = "null" ]; then
+                # Not open, so open it
+                qs -c nandoroid ipc call systemmonitor open_direct
+                exit 0
+            fi
+
+            # Check if it's already the active window
+            ACTIVE_ADDR=$(hyprctl activewindow -j | jq -r .address)
+            
+            if [ "$ADDR" = "$ACTIVE_ADDR" ]; then
+                # Already focused here, so close it
+                qs -c nandoroid ipc call systemmonitor close
+            else
+                # Pull it here! Get current workspace name
+                CUR_WS=$(hyprctl activeworkspace -j | jq -r .name)
+                
+                # Move window to current workspace silently
+                hyprctl dispatch movetoworkspacesilent "name:$CUR_WS,address:$ADDR"
+                
+                # Micro-delay
+                sleep 0.05
+                hyprctl dispatch focuswindow "address:$ADDR"
+            fi
+        `;
+        Quickshell.execDetached(["bash", "-c", cmd]);
+    }
+
     // ═══════════════════════════════════════════════════════════════
     // HYPRLAND LAYOUT STATE (dynamic, not persisted)
     // ═══════════════════════════════════════════════════════════════

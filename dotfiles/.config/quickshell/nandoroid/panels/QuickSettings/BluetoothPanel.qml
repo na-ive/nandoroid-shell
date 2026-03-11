@@ -253,7 +253,7 @@ Rectangle {
                 onClicked: {
                     GlobalStates.settingsPageIndex = 1;
                     GlobalStates.settingsBluetoothPairMode = true;
-                    GlobalStates.settingsOpen = true;
+                    GlobalStates.activateSettings();
                 }
                 StyledText {
                     id: btPairText

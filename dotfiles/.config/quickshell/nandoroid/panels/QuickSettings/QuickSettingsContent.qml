@@ -470,7 +470,7 @@ Item {
                         colRipple: Appearance.colors.colLayer2Active
                         onClicked: {
                             GlobalStates.quickSettingsOpen = false
-                            GlobalStates.settingsOpen = true
+                            GlobalStates.activateSettings()
                         }
                         MaterialSymbol {
                             anchors.centerIn: parent

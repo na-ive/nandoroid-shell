@@ -142,9 +142,10 @@ ShellRoot {
 
     IpcHandler {
         target: "settings"
-        function open() { GlobalStates.settingsOpen = true }
+        function open() { GlobalStates.activateSettings() }
+        function open_direct() { GlobalStates.settingsOpen = true }
         function close() { GlobalStates.settingsOpen = false }
-        function toggle() { GlobalStates.settingsOpen = !GlobalStates.settingsOpen }
+        function toggle() { GlobalStates.activateSettings() }
     }
 
     IpcHandler {
@@ -241,9 +242,10 @@ ShellRoot {
 
     IpcHandler {
         target: "systemmonitor"
-        function open() { GlobalStates.systemMonitorOpen = true }
+        function open() { GlobalStates.activateSystemMonitor() }
+        function open_direct() { GlobalStates.systemMonitorOpen = true }
         function close() { GlobalStates.systemMonitorOpen = false }
-        function toggle() { GlobalStates.systemMonitorOpen = !GlobalStates.systemMonitorOpen }
+        function toggle() { GlobalStates.activateSystemMonitor() }
     }
 
     // ── Phase 14: Region Selector ──

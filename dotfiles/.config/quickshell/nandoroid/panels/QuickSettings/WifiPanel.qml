@@ -373,7 +373,7 @@ Rectangle {
                 colBackgroundHover: Appearance.colors.colLayer1Hover
                 onClicked: {
                     GlobalStates.settingsPageIndex = 0;
-                    GlobalStates.settingsOpen = true;
+                    GlobalStates.activateSettings();
                 }
                 StyledText {
                     id: detailsText

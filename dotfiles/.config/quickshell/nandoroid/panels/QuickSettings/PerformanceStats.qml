@@ -36,7 +36,7 @@ Rectangle {
                 onClicked: {
                     GlobalStates.systemMonitorIndex = 0;
                     GlobalStates.performanceSubIndex = 1;
-                    GlobalStates.systemMonitorOpen = true;
+                    GlobalStates.activateSystemMonitor();
                 }
             }
 
@@ -49,7 +49,7 @@ Rectangle {
                 onClicked: {
                     GlobalStates.systemMonitorIndex = 0;
                     GlobalStates.performanceSubIndex = 1;
-                    GlobalStates.systemMonitorOpen = true;
+                    GlobalStates.activateSystemMonitor();
                 }
             }
 
@@ -61,7 +61,7 @@ Rectangle {
                 onClicked: {
                     GlobalStates.systemMonitorIndex = 0;
                     GlobalStates.performanceSubIndex = 3;
-                    GlobalStates.systemMonitorOpen = true;
+                    GlobalStates.activateSystemMonitor();
                 }
             }
 
@@ -73,7 +73,7 @@ Rectangle {
                 onClicked: {
                     GlobalStates.systemMonitorIndex = 0;
                     GlobalStates.performanceSubIndex = 3;
-                    GlobalStates.systemMonitorOpen = true;
+                    GlobalStates.activateSystemMonitor();
                 }
             }
         }
@@ -95,7 +95,7 @@ Rectangle {
                     onClicked: {
                         GlobalStates.systemMonitorIndex = 0;
                         GlobalStates.performanceSubIndex = 5;
-                        GlobalStates.systemMonitorOpen = true;
+                        GlobalStates.activateSystemMonitor();
                     }
 
                     contentItem: ColumnLayout {
