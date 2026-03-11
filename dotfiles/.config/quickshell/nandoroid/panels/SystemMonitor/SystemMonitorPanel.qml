@@ -198,9 +198,11 @@ Scope {
                                         id: avatarImage
                                         anchors.fill: parent
                                         source: {
-                                            const path = SystemInfo.userAvatarPath;
-                                            if (!path || path.includes("/var/lib/AccountsService/icons/")) return "";
-                                            return "file://" + path;
+                                            const cfgPath = Config.options.bar?.avatar_path;
+                                            if (cfgPath && cfgPath !== "") return `file://${cfgPath}`;
+                                            const sysPath = SystemInfo.userAvatarPath;
+                                            if (!sysPath || sysPath.includes("/var/lib/AccountsService/icons/")) return "";
+                                            return `file://${sysPath}`;
                                         }
                                         fillMode: Image.PreserveAspectCrop
                                         visible: status === Image.Ready

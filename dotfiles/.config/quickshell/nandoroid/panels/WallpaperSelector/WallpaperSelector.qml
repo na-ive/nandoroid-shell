@@ -20,8 +20,8 @@ Scope {
             WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
             color: "transparent"
 
-            width: 1100
-            height: 800
+            implicitWidth: 1100
+            implicitHeight: 800
 
             Component.onCompleted: GlobalStates.wallpaperSelectorWindow = panelWindow
             Component.onDestruction: GlobalStates.wallpaperSelectorWindow = null
