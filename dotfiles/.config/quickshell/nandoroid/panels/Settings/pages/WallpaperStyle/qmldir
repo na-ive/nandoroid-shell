@@ -5,6 +5,7 @@ WsStatusBar 1.0 WsStatusBar.qml
 WsLockscreen 1.0 WsLockscreen.qml
 WsClock 1.0 WsClock.qml
 WsOverview 1.0 WsOverview.qml
+WsDock 1.0 WsDock.qml
 WsLauncher 1.0 WsLauncher.qml
 WsThemeColor 1.0 WsThemeColor.qml
 WsTypography 1.0 WsTypography.qml

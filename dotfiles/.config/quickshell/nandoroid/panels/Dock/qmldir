@@ -1,0 +1,5 @@
+Dock Dock.qml
+DockApps DockApps.qml
+DockAppButton DockAppButton.qml
+DockButton DockButton.qml
+DockSeparator DockSeparator.qml

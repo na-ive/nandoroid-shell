@@ -28,6 +28,7 @@ singleton RegionService 1.0 RegionService.qml
 singleton CavaService 1.0 CavaService.qml
 singleton ConservationMode 1.0 ConservationMode.qml
 singleton PowerProfileService 1.0 PowerProfileService.qml
+singleton TaskbarApps TaskbarApps.qml
 singleton AppSearch AppSearch.qml
 singleton SearchRegistry SearchRegistry.qml
 singleton ScheduleService ScheduleService.qml

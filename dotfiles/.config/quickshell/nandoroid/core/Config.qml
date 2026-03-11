@@ -266,6 +266,21 @@ Singleton {
                 ]
             }
 
+            // --- Dock ---
+            property JsonObject dock: JsonObject {
+                property bool enable: true
+                property bool autoHide: true
+                property int autoHideMode: 0 // 0: Intelligent, 1: Always
+                property bool showOnlyInDesktop: false
+                property int backgroundStyle: 1 // 0: None, 1: Floating, 2: Attached
+                property int hoverRegionHeight: 2
+                property bool pinnedOnStartup: false
+                property bool monochromeIcons: false
+                property list<string> pinnedApps: ["org.mozilla.firefox", "kitty", "thunar"]
+                property list<string> ignoredAppRegexes: ["^xwaylandvideobridge$"]
+                property int height: 70
+            }
+
             // --- Power Profile ---
             property JsonObject powerProfile: JsonObject {
                 property bool enabled: false
