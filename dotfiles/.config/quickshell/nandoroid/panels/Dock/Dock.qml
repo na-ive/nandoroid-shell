@@ -23,14 +23,55 @@ Scope {
             property int monitorIndex: modelData.index ?? 0
             
             screen: modelData
-            WlrLayershell.layer: WlrLayer.Overlay
+            
+            // ── Layer Logic ──
+            WlrLayershell.layer: {
+                if (!Config.ready) return WlrLayer.Overlay;
+                if (Config.options.dock.showOnlyInDesktop || Config.options.dock.autoHide) {
+                    return WlrLayer.Overlay;
+                }
+                return WlrLayer.Top;
+            }
+
             WlrLayershell.namespace: "nandoroid:dock"
-            exclusionMode: ExclusionMode.Ignore
+            
+            // ── Exclusive Zone Logic (Space Reservation) ──
+            // Using exclusiveZone is the most reliable way to push windows.
+            // We only set it if not in auto-hide/desktop mode.
+            exclusiveZone: {
+                if (!Config.ready) return 0;
+                if (!Config.options.dock.showOnlyInDesktop && !Config.options.dock.autoHide) {
+                    return dockHeight + (dockWindow.bgStyle === 2 ? 0 : Appearance.sizes.elevationMargin / 2);
+                }
+                return 0;
+            }
+            
+            // For exclusiveZone to work along the bottom, we usually anchor to all 3 bottom sides
+            anchors {
+                bottom: true
+                left: true
+                right: true
+            }
             
             visible: Config.ready && Config.options.dock.enable && !GlobalStates.screenLocked
+            color: "transparent"
             
+            readonly property real dockHeight: Config.ready ? Config.options.dock.height : 70
             readonly property int bgStyle: Config.ready && Config.options.dock ? Config.options.dock.backgroundStyle : 1
             
+            implicitHeight: dockHeight + Appearance.sizes.elevationMargin
+
+            // ── Mask ──
+            // Only allow interaction where the dock is or the trigger strip is.
+            mask: Region {
+                item: Item {
+                    width: mainRowContainer.width + 20
+                    height: dockWindow.reveal ? mainRowContainer.height + 20 : (Config.options.dock.showOnlyInDesktop && hasActiveWindows ? 0 : 10)
+                    anchors.bottom: dockWindow.bottom
+                    anchors.horizontalCenter: dockWindow.horizontalCenter
+                }
+            }
+
             // ── Auto Hide Logic ──
             readonly property bool hasActiveWindows: {
                 if (!Config.ready || !HyprlandData.activeWorkspace) return false;
@@ -48,42 +89,21 @@ Scope {
                 const autoHideMode = Config.options.dock.autoHideMode;
                 const showOnlyInDesktop = Config.options.dock.showOnlyInDesktop;
                 
-                // Hard-reveal cases
                 if (root.pinned) return true;
                 if (GlobalStates.launcherOpen || GlobalStates.dashboardOpen || GlobalStates.overviewOpen) return true;
                 if (dockMouseArea.containsMouse) return true;
                 
-                // 1. Logic: Show Only In Desktop
                 if (showOnlyInDesktop) {
-                    if (hasActiveWindows) return false; // Mati total jika ada jendela
-                    
-                    // Di desktop: Simple Auto Hide (ON: Sembunyi, OFF: Tampil)
+                    if (hasActiveWindows) return false;
                     return !autoHide; 
                 }
                 
-                // 2. Logic: Normal Auto Hide (Intelligent / Always)
                 if (autoHide) {
-                    if (autoHideMode === 1) return false; // Always hide
-                    else return !hasActiveWindows; // Intelligent hide
+                    if (autoHideMode === 1) return false;
+                    else return !hasActiveWindows;
                 }
                 
                 return true;
-            }
-
-            anchors { bottom: true }
-            color: "transparent"
-            
-            readonly property real dockHeight: Config.ready ? Config.options.dock.height : 70
-            implicitHeight: dockHeight + Appearance.sizes.elevationMargin
-            implicitWidth: mainRowContainer.implicitWidth + 40
-
-            mask: Region {
-                item: Item {
-                    width: mainRowContainer.implicitWidth + 20
-                    height: dockWindow.reveal ? dockWindow.height : (Config.options.dock.showOnlyInDesktop && hasActiveWindows ? 0 : 10)
-                    anchors.bottom: dockWindow.bottom
-                    anchors.horizontalCenter: dockWindow.horizontalCenter
-                }
             }
 
             MouseArea {
@@ -91,7 +111,6 @@ Scope {
                 anchors.fill: parent
                 hoverEnabled: true
                 
-                // Trigger height: 0 jika showOnlyInDesktop nyala dan ada jendela
                 height: {
                     if (!Config.ready) return parent.height;
                     if (Config.options.dock.showOnlyInDesktop && hasActiveWindows && !GlobalStates.launcherOpen) return 0;
@@ -104,6 +123,7 @@ Scope {
                     spacing: 12
                     
                     readonly property real bMargin: (dockWindow.bgStyle === 2) ? 0 : Appearance.sizes.elevationMargin / 2
+                    
                     anchors.bottom: parent.bottom
                     anchors.bottomMargin: dockWindow.reveal ? bMargin : -height - 20
                     opacity: dockWindow.reveal ? 1 : 0
