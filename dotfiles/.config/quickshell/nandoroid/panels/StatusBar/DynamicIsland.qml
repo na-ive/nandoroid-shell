@@ -389,7 +389,7 @@ Item {
                     root.mediaShowing = true;
                     mediaTimer.restart();
                     // Also stop the closing timer if it's already open from ear hover
-                    if (GlobalStates.mediaNotchOpen) GlobalStates.mediaNotchTimer.stop();
+                    if (GlobalStates.mediaNotchOpen) GlobalStates.stopMediaNotchTimer();
                 }
             }
             

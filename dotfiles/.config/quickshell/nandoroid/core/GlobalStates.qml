@@ -34,6 +34,7 @@ Singleton {
     property string wallpaperSelectorTarget: "desktop" // "desktop" or "lock"
     
     // --- Media Notch Timing Logic ---
+    property alias mediaNotchTimer: mediaNotchTimer
     Timer { 
         id: mediaNotchTimer
         interval: 2000 // Popup persists for 2 seconds
@@ -47,6 +48,10 @@ Singleton {
         mediaNotchTimer.stop();
         if (screen !== null) activeMediaNotchScreen = screen;
         mediaNotchOpen = true;
+    }
+
+    function stopMediaNotchTimer() {
+        mediaNotchTimer.stop();
     }
 
     function closeMediaNotchWithDelay() {
