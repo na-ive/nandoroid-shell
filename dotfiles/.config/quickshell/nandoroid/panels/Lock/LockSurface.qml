@@ -117,37 +117,75 @@ MouseArea {
         height: Appearance.sizes.statusBarHeight
         z: 10
 
+        readonly property bool isCentered: (Config.ready && Config.options.statusBar) ? Config.options.statusBar.layoutStyle === "centered" : false
+        readonly property real centeredWidth: (Config.ready && Config.options.statusBar) ? Config.options.statusBar.centeredWidth : 1200
+        readonly property real sidePadding: isCentered ? Math.round((parent.width - Math.min(centeredWidth, parent.width - 40)) / 2) : 12
+        readonly property int cornerRadius: (Config.ready && Config.options.statusBar?.backgroundCornerRadius) || 20
+
         // 1. Solid background (follows system config)
         Rectangle {
             id: barBg
-            anchors.fill: parent
-            color: (Config.ready && Config.options.statusBar?.backgroundStyle !== 0) 
-                   ? Appearance.colors.colStatusBarSolid 
-                   : "transparent"
+            anchors.top: parent.top
+            anchors.horizontalCenter: parent.horizontalCenter
+            
+            readonly property bool showBg: (Config.ready && Config.options.statusBar?.backgroundStyle !== 0)
+            
+            width: (lockStatusBarContainer.isCentered && showBg) ? Math.min(lockStatusBarContainer.centeredWidth, parent.width - 40) : parent.width
+            height: parent.height + (lockStatusBarContainer.isCentered && showBg ? lockStatusBarContainer.cornerRadius : 0)
+            anchors.topMargin: (lockStatusBarContainer.isCentered && showBg) ? -lockStatusBarContainer.cornerRadius : 0
+            
+            color: showBg ? Appearance.colors.colStatusBarSolid : "transparent"
+            radius: (lockStatusBarContainer.isCentered && showBg) ? lockStatusBarContainer.cornerRadius : 0
+
+            Behavior on width { NumberAnimation { duration: 400; easing.type: Easing.OutQuint } }
+            Behavior on anchors.topMargin { NumberAnimation { duration: 400; easing.type: Easing.OutQuint } }
 
             // concanve corners
+            // Standard Corners
             RoundCorner {
                 anchors.left: parent.left
                 anchors.top: parent.bottom
-                implicitSize: (Config.ready && Config.options.statusBar?.backgroundCornerRadius) || 20
+                implicitSize: lockStatusBarContainer.cornerRadius
                 color: barBg.color
                 corner: RoundCorner.CornerEnum.TopLeft
-                visible: barBg.color !== "transparent"
+                visible: barBg.showBg && !lockStatusBarContainer.isCentered
             }
             RoundCorner {
                 anchors.right: parent.right
                 anchors.top: parent.bottom
-                implicitSize: (Config.ready && Config.options.statusBar?.backgroundCornerRadius) || 20
+                implicitSize: lockStatusBarContainer.cornerRadius
                 color: barBg.color
                 corner: RoundCorner.CornerEnum.TopRight
-                visible: barBg.color !== "transparent"
+                visible: barBg.showBg && !lockStatusBarContainer.isCentered
+            }
+
+            // HUD Corners
+            RoundCorner {
+                anchors { right: parent.left; top: parent.top; topMargin: lockStatusBarContainer.cornerRadius }
+                implicitSize: lockStatusBarContainer.cornerRadius
+                color: barBg.color
+                corner: RoundCorner.CornerEnum.TopRight 
+                visible: barBg.showBg && lockStatusBarContainer.isCentered
+            }
+            RoundCorner {
+                anchors { left: parent.right; top: parent.top; topMargin: lockStatusBarContainer.cornerRadius }
+                implicitSize: lockStatusBarContainer.cornerRadius
+                color: barBg.color
+                corner: RoundCorner.CornerEnum.TopLeft
+                visible: barBg.showBg && lockStatusBarContainer.isCentered
             }
         }
 
         // 2. Gradient overlay
         Rectangle {
-            anchors.fill: parent
+            anchors {
+                left: parent.left
+                right: parent.right
+                top: parent.top
+            }
+            height: parent.height
             color: "transparent"
+            visible: (Config.ready && Config.options.statusBar?.backgroundStyle === 0)
             gradient: Gradient {
                 GradientStop { position: 0.0; color: Appearance.colors.colStatusBarGradientStart }
                 GradientStop { position: 1.0; color: Appearance.colors.colStatusBarGradientEnd }
@@ -191,7 +229,7 @@ MouseArea {
             RowLayout {
                 anchors.left: parent.left
                 anchors.verticalCenter: parent.verticalCenter
-                anchors.leftMargin: 12
+                anchors.leftMargin: lockStatusBarContainer.sidePadding + (lockStatusBarContainer.isCentered ? 12 : 0)
                 spacing: 8
                 StyledText {
                     text: SystemInfo.username + "  •  " + (Network.wifiEnabled ? (Network.networkName || "Offline") : "WiFi Off")
@@ -228,6 +266,7 @@ MouseArea {
                 // Battery
                 BatteryIndicator {
                     Layout.alignment: Qt.AlignVCenter
+                    color: Appearance.colors.colStatusBarText
                 }
 
                 // Notifications
@@ -257,7 +296,7 @@ MouseArea {
             PrivacyIndicator {
                 id: privacyIndicator
                 anchors.right: parent.right
-                anchors.rightMargin: 10
+                anchors.rightMargin: lockStatusBarContainer.sidePadding + (lockStatusBarContainer.isCentered ? 8 : -2)
                 anchors.verticalCenter: parent.verticalCenter
             }
         }

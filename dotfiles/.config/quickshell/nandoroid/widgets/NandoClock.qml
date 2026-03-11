@@ -39,7 +39,7 @@ Item {
     readonly property real clockOffsetY: Config.ready ? Config.options.appearance.clock.offsetY : -50
 
     // Dynamic anchor point based on alignment to prevent shifting
-    readonly property string alignment: {
+    property string alignment: {
         if (!loader.item) return "center";
         if (loader.item.alignment !== undefined) return loader.item.alignment;
         if (loader.item.cfg && loader.item.cfg.alignment !== undefined) return loader.item.cfg.alignment;
@@ -47,12 +47,13 @@ Item {
     }
 
     // Position the Item's (0,0) at the anchor target (Center + Offset)
-    x: (parentWidth / 2) + (isLockscreen ? 0 : clockOffsetX)
-    y: (parentHeight / 2 - height / 2) + (isLockscreen ? -50 : clockOffsetY)
+    x: isLockscreen ? x : (parentWidth / 2) + clockOffsetX
+    y: isLockscreen ? y : (parentHeight / 2 - height / 2) + clockOffsetY
     
     // Shift the item relative to its width based on alignment
     transform: Translate {
         x: {
+            if (root.isLockscreen) return 0; // Fixed center on lockscreen
             if (root.alignment === "left") return 0; // Anchor is at X (Left edge)
             if (root.alignment === "right") return -root.width; // Anchor is at X (Right edge)
             return -root.width / 2; // Anchor is at X (Center)
