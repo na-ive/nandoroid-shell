@@ -69,67 +69,69 @@ Scope {
                 }
             }
 
+            readonly property bool isCentered: (Config.ready && Config.options.statusBar) ? Config.options.statusBar.layoutStyle === "centered" : false
+            readonly property real centeredWidth: (Config.ready && Config.options.statusBar) ? Config.options.statusBar.centeredWidth : 1200
+
             // ── Solid background rectangle ─────────────────────────────
             Rectangle {
                 id: barBg
-                anchors {
-                    left: parent.left
-                    right: parent.right
-                    top: parent.top
-                }
-                height: Appearance.sizes.statusBarHeight
+                anchors.top: parent.top
+                anchors.topMargin: barWindow.isCentered && barWindow.showBackground ? -barWindow.cornerRadius : 0
+                anchors.horizontalCenter: parent.horizontalCenter
+                
+                width: barWindow.isCentered ? Math.min(barWindow.centeredWidth, parent.width - 40) : parent.width
+                height: Appearance.sizes.statusBarHeight + (barWindow.isCentered && barWindow.showBackground ? barWindow.cornerRadius : 0)
                 color: barWindow.showBackground ? Appearance.colors.colStatusBarSolid : "transparent"
+                
+                radius: barWindow.isCentered ? barWindow.cornerRadius : 0
 
-                Behavior on color {
-                    ColorAnimation { duration: Appearance.animation.elementMoveFast.duration }
-                }
+                Behavior on color { ColorAnimation { duration: Appearance.animation.elementMoveFast.duration } }
+                Behavior on width { NumberAnimation { duration: 400; easing.type: Easing.OutQuint } }
+                Behavior on anchors.topMargin { NumberAnimation { duration: 400; easing.type: Easing.OutQuint } }
             }
 
             // ── Gradient overlay (when not in background mode) ─────────
             Rectangle {
-                anchors {
-                    left: parent.left
-                    right: parent.right
-                    top: parent.top
-                }
-                height: Appearance.sizes.statusBarHeight
+                anchors.fill: barBg
                 color: "transparent"
+                radius: barBg.radius
+                visible: !barWindow.showBackground && (Config.ready && Config.options.statusBar ? Config.options.statusBar.useGradient : true)
                 gradient: Gradient {
                     GradientStop { position: 0.0; color: Appearance.colors.colStatusBarGradientStart }
                     GradientStop { position: 1.0; color: Appearance.colors.colStatusBarGradientEnd }
                 }
             }
 
-            // ── Bottom-left round corner decorator ─────────────────────
+            // ── Left Round Corner Decorator ─────────────────────
             RoundCorner {
                 anchors {
-                    left: parent.left
-                    top: barBg.bottom
+                    left: barWindow.isCentered ? barBg.right : parent.left
+                    top: barWindow.isCentered ? parent.top : barBg.bottom
                 }
                 implicitSize: barWindow.cornerRadius
                 color: barWindow.showBackground ? Appearance.colors.colStatusBarSolid : "transparent"
-                corner: RoundCorner.CornerEnum.TopLeft
+                // Standard mode: Bottom-left corner (inverted)
+                // Centered mode: Top-left corner (inverted, adjacent to pill right side)
+                corner: barWindow.isCentered ? RoundCorner.CornerEnum.TopLeft : RoundCorner.CornerEnum.TopLeft
                 visible: barWindow.showBackground
 
-                Behavior on color {
-                    ColorAnimation { duration: Appearance.animation.elementMoveFast.duration }
-                }
+                Behavior on color { ColorAnimation { duration: Appearance.animation.elementMoveFast.duration } }
             }
 
-            // ── Bottom-right round corner decorator ────────────────────
+            // ── Right Round Corner Decorator ────────────────────
             RoundCorner {
                 anchors {
-                    right: parent.right
-                    top: barBg.bottom
+                    right: barWindow.isCentered ? barBg.left : parent.right
+                    top: barWindow.isCentered ? parent.top : barBg.bottom
                 }
                 implicitSize: barWindow.cornerRadius
                 color: barWindow.showBackground ? Appearance.colors.colStatusBarSolid : "transparent"
-                corner: RoundCorner.CornerEnum.TopRight
+                // Standard mode: Bottom-right corner (inverted)
+                // Centered mode: Top-right corner (inverted, adjacent to pill left side)
+                corner: barWindow.isCentered ? RoundCorner.CornerEnum.TopRight : RoundCorner.CornerEnum.TopRight
                 visible: barWindow.showBackground
 
-                Behavior on color {
-                    ColorAnimation { duration: Appearance.animation.elementMoveFast.duration }
-                }
+                Behavior on color { ColorAnimation { duration: Appearance.animation.elementMoveFast.duration } }
             }
 
             // ── Content ────────────────────────────────────────────────

@@ -18,6 +18,11 @@ Item {
     property int monitorIndex: 0
     readonly property HyprlandMonitor monitor: Hyprland.monitorFor(root.QsWindow.window ? root.QsWindow.window.screen : null)
 
+    readonly property bool isCentered: (Config.ready && Config.options.statusBar) ? Config.options.statusBar.layoutStyle === "centered" : false
+    readonly property real centeredWidth: (Config.ready && Config.options.statusBar) ? Config.options.statusBar.centeredWidth : 1200
+    
+    readonly property real sidePadding: isCentered ? Math.max(12, (root.width - centeredWidth) / 2) : 12
+
     // ── Click-to-close backdrop (invisible, catches unfocused clicks) ──
     MouseArea {
         anchors.fill: parent
@@ -47,6 +52,7 @@ Item {
             tooltipText: "Scroll to change brightness"
             side: "left"
             anchors.left: parent.left
+            anchors.leftMargin: root.sidePadding
             anchors.verticalCenter: parent.verticalCenter
         }
     }
@@ -73,6 +79,7 @@ Item {
             tooltipText: "Scroll to change volume"
             side: "right"
             anchors.right: parent.right
+            anchors.rightMargin: root.sidePadding
             anchors.verticalCenter: parent.verticalCenter
         }
     }
@@ -98,7 +105,7 @@ Item {
         anchors.left: parent.left
         anchors.top: parent.top
         anchors.bottom: parent.bottom
-        anchors.leftMargin: 12
+        anchors.leftMargin: root.sidePadding + (root.isCentered ? 12 : 0)
         spacing: 8
 
         Item {
@@ -312,7 +319,7 @@ Item {
     PrivacyIndicator {
         id: privacyIndicator
         anchors.right: parent.right
-        anchors.rightMargin: 8
+        anchors.rightMargin: root.sidePadding + (root.isCentered ? 8 : -4)
         anchors.verticalCenter: parent.verticalCenter
     }
 }

@@ -159,6 +159,73 @@ ColumnLayout {
                             }
                         }
                     }
+
+                    // ── Layout Style (Standard / Centered) ────────────
+                    SegmentedWrapper {
+                        Layout.fillWidth: true
+                        implicitHeight: layoutStyleRow.implicitHeight + 36
+                        orientation: Qt.Vertical
+                        maxRadius: 20
+                        color: Appearance.m3colors.m3surfaceContainerHigh
+                        RowLayout {
+                            id: layoutStyleRow
+                            anchors.fill: parent
+                            anchors.margins: 16
+                            spacing: 16
+                            MaterialSymbol { text: "center_focus_strong"; iconSize: 24; color: Appearance.colors.colPrimary }
+                            StyledText { text: "Layout Style"; Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
+                            RowLayout {
+                                spacing: 2
+                                Repeater {
+                                    model: [
+                                        { id: "standard", label: "Standard" },
+                                        { id: "centered", label: "Centered (HUD)" }
+                                    ]
+                                    delegate: SegmentedButton {
+                                        required property var modelData
+                                        buttonText: modelData.label
+                                        isHighlighted: Config.ready && Config.options.statusBar
+                                            ? Config.options.statusBar.layoutStyle === modelData.id
+                                            : modelData.id === "standard"
+                                        colActive: Appearance.m3colors.m3primary
+                                        colActiveText: Appearance.m3colors.m3onPrimary
+                                        colInactive: Appearance.m3colors.m3surfaceContainerLow
+                                        onClicked: if (Config.ready && Config.options.statusBar)
+                                            Config.options.statusBar.layoutStyle = modelData.id
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // ── Centered Width (only visible when centered is active) ──
+                    SegmentedWrapper {
+                        Layout.fillWidth: true
+                        implicitHeight: centeredWidthRow.implicitHeight + 32
+                        orientation: Qt.Vertical
+                        maxRadius: 20
+                        color: Appearance.m3colors.m3surfaceContainerHigh
+                        visible: Config.ready && Config.options.statusBar && Config.options.statusBar.layoutStyle === "centered"
+                        RowLayout {
+                            id: centeredWidthRow
+                            anchors.fill: parent; anchors.margins: 16
+                            spacing: 16
+                            MaterialSymbol { text: "width_full"; iconSize: 24; color: Appearance.colors.colPrimary }
+                            StyledText { text: "Centered width"; Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
+                            StyledSlider {
+                                Layout.preferredWidth: 160
+                                from: 800; to: 2000; stepSize: 50
+                                value: Config.ready && Config.options.statusBar ? (Config.options.statusBar.centeredWidth ?? 1200) : 1200
+                                onMoved: if (Config.ready && Config.options.statusBar)
+                                    Config.options.statusBar.centeredWidth = Math.round(value)
+                            }
+                            StyledText {
+                                text: Math.round(Config.ready && Config.options.statusBar
+                                    ? (Config.options.statusBar.centeredWidth ?? 1200) : 1200).toString() + "px"
+                                color: Appearance.colors.colOnLayer1
+                            }
+                        }
+                    }
     
                     // ── Corner Radius (only visible when background is active) ──
                     SegmentedWrapper {
