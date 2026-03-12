@@ -279,6 +279,8 @@ Singleton {
                 property list<string> pinnedApps: ["kitty", "org.kde.dolphin"]
                 property list<string> ignoredAppRegexes: ["^xwaylandvideobridge$"]
                 property int height: 70
+                property bool showLauncher: true
+                property bool showOverview: true
             }
 
             // --- Power Profile ---

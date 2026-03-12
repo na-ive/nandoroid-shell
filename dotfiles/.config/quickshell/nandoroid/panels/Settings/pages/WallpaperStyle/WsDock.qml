@@ -271,6 +271,46 @@ ColumnLayout {
                     }
                 }
             }
+
+            // ── Buttons Visibility ──────────────
+            SegmentedWrapper {
+                Layout.fillWidth: true
+                implicitHeight: buttonsCol.implicitHeight + 32
+                orientation: Qt.Vertical
+                maxRadius: 20
+                color: Appearance.m3colors.m3surfaceContainerHigh
+                enabled: Config.ready && Config.options.dock && Config.options.dock.enable
+                opacity: enabled ? 1 : 0.5
+                ColumnLayout {
+                    id: buttonsCol
+                    anchors.fill: parent; anchors.margins: 16
+                    spacing: 16
+
+                    RowLayout {
+                        spacing: 16
+                        MaterialSymbol { text: "widgets"; iconSize: 24; color: Appearance.colors.colPrimary }
+                        StyledText { text: "Show App Launcher"; Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
+                        AndroidToggle {
+                            checked: Config.ready && Config.options.dock ? (Config.options.dock.showLauncher ?? true) : true
+                            onToggled: if (Config.ready && Config.options.dock)
+                                Config.options.dock.showLauncher = !Config.options.dock.showLauncher
+                        }
+                    }
+
+                    Rectangle { Layout.fillWidth: true; height: 1; color: Appearance.colors.colOutlineVariant; opacity: 0.1 }
+
+                    RowLayout {
+                        spacing: 16
+                        MaterialSymbol { text: "grid_view"; iconSize: 24; color: Appearance.colors.colPrimary }
+                        StyledText { text: "Show Overview Button"; Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
+                        AndroidToggle {
+                            checked: Config.ready && Config.options.dock ? (Config.options.dock.showOverview ?? true) : true
+                            onToggled: if (Config.ready && Config.options.dock)
+                                Config.options.dock.showOverview = !Config.options.dock.showOverview
+                        }
+                    }
+                }
+            }
         }
     }
 }

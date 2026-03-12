@@ -11,7 +11,7 @@ import "../../widgets"
 
 /**
  * NAnDoroid Ported Dock
- * Optimized version: Perfect Shadows using DropShadow for better complex shape support.
+ * Optimized version: Stability, Performance, and Context-Aware UI.
  */
 Scope {
     id: root
@@ -120,11 +120,10 @@ Scope {
                         }
                         Behavior on opacity { NumberAnimation { duration: Appearance.animation.elementMoveFast.duration } }
 
-                        // --- THE PERFECT SHADOW (Using DropShadow for better corner rendering) ---
+                        // --- THE PERFECT SHADOW ---
                         DropShadow {
                             anchors.fill: dockVisualRect
                             horizontalOffset: 0
-                            // For Attached mode (bgStyle 2), shift shadow slightly up (-2) to emphasize the top edge
                             verticalOffset: dockWindow.bgStyle === 2 ? -2 : 1
                             radius: 12
                             samples: 25
@@ -137,12 +136,10 @@ Scope {
                         Rectangle {
                             id: dockVisualRect; anchors.fill: parent
                             radius: dockWindow.bgStyle === 1 ? height / 2 : 0
-                            
                             topLeftRadius: (dockWindow.bgStyle === 1 || dockWindow.bgStyle === 2) ? (dockWindow.bgStyle === 1 ? height/2 : 24) : 0
                             topRightRadius: (dockWindow.bgStyle === 1 || dockWindow.bgStyle === 2) ? (dockWindow.bgStyle === 1 ? height/2 : 24) : 0
                             bottomLeftRadius: (dockWindow.bgStyle === 1) ? height/2 : 0
                             bottomRightRadius: (dockWindow.bgStyle === 1) ? height/2 : 0
-                            
                             color: Appearance.colors.colStatusBarSolid; opacity: dockWindow.bgStyle === 0 ? 0 : 1.0; border.width: 0
                         }
 
@@ -187,8 +184,36 @@ Scope {
                                     }
                                 }
 
+                                // --- OPTIONAL OVERVIEW BUTTON ---
                                 DockButton {
-                                    id: launcherButton; pointingHandCursor: true; onClicked: GlobalStates.launcherOpen = !GlobalStates.launcherOpen; toggled: GlobalStates.launcherOpen; dockTopInset: 6; dockBottomInset: 6
+                                    id: overviewButton
+                                    visible: Config.ready && (Config.options.dock.showOverview ?? true)
+                                    pointingHandCursor: true
+                                    onClicked: GlobalStates.overviewOpen = !GlobalStates.overviewOpen
+                                    toggled: GlobalStates.overviewOpen
+                                    dockTopInset: 6; dockBottomInset: 6
+                                    
+                                    background: Item {
+                                        anchors.fill: parent
+                                        Rectangle { anchors.fill: parent; radius: Appearance.rounding.button; color: overviewButton.baseColor; visible: !(Config.ready && Config.options.dock.monochromeIcons) }
+                                        MaterialShape { anchors.fill: parent; anchors.margins: 4; visible: Config.ready && Config.options.dock.monochromeIcons; shapeString: Config.ready && Config.options.search ? Config.options.search.iconShape : "Circle"; color: overviewButton.down ? Appearance.colors.colPrimary : Appearance.colors.colPrimaryContainer }
+                                    }
+                                    contentItem: Item {
+                                        anchors.fill: parent
+                                        MaterialSymbol { id: overviewIcon; anchors.centerIn: parent; text: "grid_view"; iconSize: Config.ready && Config.options.dock.monochromeIcons ? 22 : 26; color: overviewButton.toggled ? Appearance.colors.colOnPrimary : Appearance.colors.colOnLayer0; visible: !(Config.ready && Config.options.dock.monochromeIcons) }
+                                        ColorOverlay { anchors.fill: overviewIcon; source: overviewIcon; color: Appearance.colors.colOnPrimaryContainer; visible: Config.ready && Config.options.dock.monochromeIcons }
+                                    }
+                                }
+
+                                // --- OPTIONAL LAUNCHER BUTTON ---
+                                DockButton {
+                                    id: launcherButton
+                                    visible: Config.ready && (Config.options.dock.showLauncher ?? true)
+                                    pointingHandCursor: true
+                                    onClicked: GlobalStates.launcherOpen = !GlobalStates.launcherOpen
+                                    toggled: GlobalStates.launcherOpen
+                                    dockTopInset: 6; dockBottomInset: 6
+                                    
                                     altAction: (event) => {
                                         const pos = launcherButton.mapToItem(null, event.x, event.y);
                                         dockContextMenu.openAt(pos.x, dockWindow.screenY + pos.y);
