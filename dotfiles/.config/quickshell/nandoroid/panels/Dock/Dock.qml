@@ -11,7 +11,7 @@ import "../../widgets"
 
 /**
  * NAnDoroid Ported Dock
- * Optimized version: Stability, Performance, and Context-Aware UI.
+ * Optimized version: Full Proportional Scaling support.
  */
 Scope {
     id: root
@@ -38,7 +38,7 @@ Scope {
                 exclusiveZone: {
                     if (!Config.ready) return 0;
                     if (!Config.options.dock.showOnlyInDesktop && !Config.options.dock.autoHide) {
-                        return dockHeight + (dockWindow.bgStyle === 2 ? 0 : Appearance.sizes.elevationMargin / 2);
+                        return dockHeight * dockScale + (dockWindow.bgStyle === 2 ? 0 : Appearance.sizes.elevationMargin / 2);
                     }
                     return 0;
                 }
@@ -48,11 +48,12 @@ Scope {
                 visible: Config.ready && Config.options.dock.enable && !GlobalStates.screenLocked
                 mask: Region { item: dockMouseArea }
                 
-                readonly property real dockHeight: Config.ready ? Config.options.dock.height : 70
+                readonly property real dockHeight: 70 // Fixed baseline height
+                readonly property real dockScale: Config.ready && Config.options.dock ? Config.options.dock.scale : 1.0
                 readonly property int bgStyle: Config.ready && Config.options.dock ? Config.options.dock.backgroundStyle : 1
                 
                 implicitWidth: modelData.width
-                implicitHeight: dockHeight + Appearance.sizes.elevationMargin
+                implicitHeight: (dockHeight * dockScale) + Appearance.sizes.elevationMargin
                 readonly property real screenY: modelData.height - height
 
                 readonly property bool hasActiveWindows: {
@@ -94,7 +95,7 @@ Scope {
 
                 MouseArea {
                     id: dockMouseArea
-                    width: visualContainer.width
+                    width: visualContainer.width * dockWindow.dockScale
                     anchors.horizontalCenter: parent.horizontalCenter
                     hoverEnabled: true
                     height: {
@@ -110,9 +111,14 @@ Scope {
                         anchors.horizontalCenter: parent.horizontalCenter
                         width: mainRowContainer.implicitWidth + 20
                         height: dockWindow.dockHeight
+                        
+                        // --- APPLY SCALE TRANSFORMATION ---
+                        scale: dockWindow.dockScale
+                        transformOrigin: Item.Bottom // Scale from the bottom edge
+                        
                         readonly property real bMargin: (dockWindow.bgStyle === 2) ? 0 : Appearance.sizes.elevationMargin / 2
                         anchors.bottom: parent.bottom
-                        anchors.bottomMargin: dockWindow.reveal ? bMargin : -height - 20
+                        anchors.bottomMargin: dockWindow.reveal ? bMargin : (-height * scale) - 20
                         opacity: dockWindow.reveal ? 1 : 0
 
                         Behavior on anchors.bottomMargin {
@@ -170,7 +176,7 @@ Scope {
                                     id: dockApps; buttonPadding: 6; spacing: 8; height: visualContainer.height
                                     backgroundStyle: dockWindow.bgStyle
                                     onRequestContextMenu: (appData, x, y) => {
-                                        dockContextMenu.openAt(x, dockWindow.screenY + y, appData);
+                                        dockContextMenu.openAt(x, (dockWindow.screenY + (y * dockWindow.dockScale)), appData);
                                     }
                                     onButtonHoverChanged: (button, appData, hovered) => {
                                         if (hovered) {
@@ -184,7 +190,6 @@ Scope {
                                     }
                                 }
 
-                                // --- OPTIONAL OVERVIEW BUTTON ---
                                 DockButton {
                                     id: overviewButton
                                     visible: Config.ready && (Config.options.dock.showOverview ?? true)
@@ -192,7 +197,6 @@ Scope {
                                     onClicked: GlobalStates.overviewOpen = !GlobalStates.overviewOpen
                                     toggled: GlobalStates.overviewOpen
                                     dockTopInset: 6; dockBottomInset: 6
-                                    
                                     background: Item {
                                         anchors.fill: parent
                                         Rectangle { anchors.fill: parent; radius: Appearance.rounding.button; color: overviewButton.baseColor; visible: !(Config.ready && Config.options.dock.monochromeIcons) }
@@ -205,7 +209,6 @@ Scope {
                                     }
                                 }
 
-                                // --- OPTIONAL LAUNCHER BUTTON ---
                                 DockButton {
                                     id: launcherButton
                                     visible: Config.ready && (Config.options.dock.showLauncher ?? true)
@@ -213,7 +216,6 @@ Scope {
                                     onClicked: GlobalStates.launcherOpen = !GlobalStates.launcherOpen
                                     toggled: GlobalStates.launcherOpen
                                     dockTopInset: 6; dockBottomInset: 6
-                                    
                                     altAction: (event) => {
                                         const pos = launcherButton.mapToItem(null, event.x, event.y);
                                         dockContextMenu.openAt(pos.x, dockWindow.screenY + pos.y);

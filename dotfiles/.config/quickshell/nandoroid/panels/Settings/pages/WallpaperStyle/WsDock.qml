@@ -192,35 +192,35 @@ ColumnLayout {
                 }
             }
 
-            // ── Dock Height ──────────────
+            // ── Dock Scale ──────────────
             SegmentedWrapper {
                 Layout.fillWidth: true
-                implicitHeight: heightRow.implicitHeight + 32
+                implicitHeight: scaleRow.implicitHeight + 32
                 orientation: Qt.Vertical
                 maxRadius: 20
                 color: Appearance.m3colors.m3surfaceContainerHigh
                 enabled: Config.ready && Config.options.dock && Config.options.dock.enable
                 opacity: enabled ? 1 : 0.5
                 RowLayout {
-                    id: heightRow
+                    id: scaleRow
                     anchors.fill: parent; anchors.margins: 16
                     spacing: 20
 
                     RowLayout {
                         spacing: 16
                         Layout.preferredWidth: 70
-                        MaterialSymbol { text: "height"; iconSize: 24; color: Appearance.colors.colPrimary }
-                        StyledText { text: "Height"; Layout.fillWidth: true; color: Appearance.colors.colOnLayer1; elide: Text.ElideRight }
+                        MaterialSymbol { text: "open_in_full"; iconSize: 24; color: Appearance.colors.colPrimary }
+                        StyledText { text: "Scale"; Layout.fillWidth: true; color: Appearance.colors.colOnLayer1; elide: Text.ElideRight }
                     }
 
                     StyledSlider {
-                        Layout.fillWidth: true; from: 48; to: 120; stepSize: 2
-                        value: Config.ready && Config.options.dock ? Config.options.dock.height : 70
-                        onMoved: if (Config.ready && Config.options.dock) Config.options.dock.height = value
+                        Layout.fillWidth: true; from: 0.5; to: 1.5; stepSize: 0.05
+                        value: Config.ready && Config.options.dock ? Config.options.dock.scale : 1.0
+                        onMoved: if (Config.ready && Config.options.dock) Config.options.dock.scale = value
                     }
                     
                     StyledText {
-                        text: (Config.ready && Config.options.dock ? Config.options.dock.height : 70).toString() + "px"
+                        text: Math.round((Config.ready && Config.options.dock ? Config.options.dock.scale : 1.0) * 100).toString() + "%"
                         color: Appearance.colors.colOnLayer1; Layout.preferredWidth: 50; horizontalAlignment: Text.AlignRight
                     }
                 }

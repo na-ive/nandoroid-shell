@@ -278,7 +278,7 @@ Singleton {
                 property bool monochromeIcons: false
                 property list<string> pinnedApps: ["kitty", "org.kde.dolphin"]
                 property list<string> ignoredAppRegexes: ["^xwaylandvideobridge$"]
-                property int height: 70
+                property real scale: 1.0
                 property bool showLauncher: true
                 property bool showOverview: true
             }
