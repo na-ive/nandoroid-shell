@@ -21,7 +21,7 @@ ColumnLayout {
     // ── Dock Section ──
     ColumnLayout {
         Layout.fillWidth: true
-        Layout.topMargin: 24
+        Layout.topMargin: 12
         spacing: 16
         
         // Section Header
@@ -44,12 +44,12 @@ ColumnLayout {
 
         ColumnLayout {
             Layout.fillWidth: true
-            spacing: 8
+            spacing: 4 // STANDAR GAP 4px
 
             // ── Enable Dock ──────────────
             SegmentedWrapper {
                 Layout.fillWidth: true
-                implicitHeight: enableRow.implicitHeight + 32
+                implicitHeight: enableRow.implicitHeight + 36
                 orientation: Qt.Vertical
                 maxRadius: 20
                 color: Appearance.m3colors.m3surfaceContainerHigh
@@ -70,7 +70,7 @@ ColumnLayout {
             // ── Show only in Desktop ──────────────
             SegmentedWrapper {
                 Layout.fillWidth: true
-                implicitHeight: showDesktopRow.implicitHeight + 32
+                implicitHeight: showDesktopRow.implicitHeight + 36
                 orientation: Qt.Vertical
                 maxRadius: 20
                 color: Appearance.m3colors.m3surfaceContainerHigh
@@ -84,74 +84,53 @@ ColumnLayout {
                     StyledText { text: "Show Only in Desktop"; Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
                     AndroidToggle {
                         checked: Config.ready && Config.options.dock ? Config.options.dock.showOnlyInDesktop : false
-                        onToggled: if (Config.ready && Config.options.dock)
-                            Config.options.dock.showOnlyInDesktop = !Config.options.dock.showOnlyInDesktop
+                        onToggled: {
+                            if (Config.ready && Config.options.dock) {
+                                const newState = !Config.options.dock.showOnlyInDesktop;
+                                Config.options.dock.showOnlyInDesktop = newState;
+                                if (newState && Config.options.dock.autoHide && Config.options.dock.autoHideMode === 0) {
+                                    Config.options.dock.autoHideMode = 1;
+                                }
+                            }
+                        }
                     }
                 }
             }
 
-            // ── Auto Hide Group ──────────────
+            // ── Auto Hide Mode ──────────────
             SegmentedWrapper {
                 Layout.fillWidth: true
-                implicitHeight: autoHideCol.implicitHeight + 32
+                implicitHeight: autoHideRow.implicitHeight + 36
                 orientation: Qt.Vertical
                 maxRadius: 20
                 color: Appearance.m3colors.m3surfaceContainerHigh
                 enabled: Config.ready && Config.options.dock && Config.options.dock.enable
                 opacity: enabled ? 1 : 0.5
-                
-                ColumnLayout {
-                    id: autoHideCol
+                RowLayout {
+                    id: autoHideRow
                     anchors.fill: parent; anchors.margins: 16
                     spacing: 16
-
+                    MaterialSymbol { text: "visibility_off"; iconSize: 24; color: Appearance.colors.colPrimary }
+                    StyledText { text: "Auto Hide"; Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
                     RowLayout {
-                        spacing: 16
-                        MaterialSymbol { text: "visibility_off"; iconSize: 24; color: Appearance.colors.colPrimary }
-                        StyledText { text: "Auto Hide (Hover to Reveal)"; Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
-                        AndroidToggle {
-                            checked: Config.ready && Config.options.dock ? Config.options.dock.autoHide : false
-                            onToggled: if (Config.ready && Config.options.dock)
-                                Config.options.dock.autoHide = !Config.options.dock.autoHide
-                        }
-                    }
-
-                    // Mode Selection (HANYA MUNCUL JIKA showOnlyInDesktop MATI)
-                    ColumnLayout {
-                        Layout.fillWidth: true
-                        visible: Config.ready && Config.options.dock && Config.options.dock.autoHide && !Config.options.dock.showOnlyInDesktop
-                        spacing: 8
-                        
-                        StyledText { 
-                            text: "Mode Sembunyi" 
-                            font.pixelSize: 12
-                            color: Appearance.colors.colSubtext 
-                            Layout.leftMargin: 40
-                        }
-
-                        SegmentedWrapper {
-                            Layout.fillWidth: true
-                            Layout.leftMargin: 40
-                            implicitHeight: 48
-                            color: Appearance.m3colors.m3surfaceContainer
-                            
-                            RowLayout {
-                                anchors.fill: parent
-                                spacing: 0
-                                
-                                SegmentedButton {
-                                    Layout.fillWidth: true
-                                    Layout.fillHeight: true
-                                    buttonText: "Intelligent"
-                                    checked: Config.options.dock.autoHideMode === 0
-                                    onClicked: Config.options.dock.autoHideMode = 0
+                        spacing: 2
+                        Repeater {
+                            model: {
+                                const onlyDesktop = Config.ready && Config.options.dock && Config.options.dock.showOnlyInDesktop;
+                                if (onlyDesktop) return [{ val: -1, label: "Off" }, { val: 1,  label: "Always" }];
+                                return [{ val: -1, label: "Off" }, { val: 0,  label: "Adaptive" }, { val: 1,  label: "Always" }];
+                            }
+                            delegate: SegmentedButton {
+                                required property var modelData
+                                buttonText: modelData.label
+                                isHighlighted: {
+                                    if (modelData.val === -1) return !Config.options.dock.autoHide;
+                                    return Config.options.dock.autoHide && Config.options.dock.autoHideMode === modelData.val;
                                 }
-                                SegmentedButton {
-                                    Layout.fillWidth: true
-                                    Layout.fillHeight: true
-                                    buttonText: "Always"
-                                    checked: Config.options.dock.autoHideMode === 1
-                                    onClicked: Config.options.dock.autoHideMode = 1
+                                colActive: Appearance.m3colors.m3primary; colActiveText: Appearance.m3colors.m3onPrimary; colInactive: Appearance.m3colors.m3surfaceContainerLow
+                                onClicked: {
+                                    if (modelData.val === -1) Config.options.dock.autoHide = false;
+                                    else { Config.options.dock.autoHide = true; Config.options.dock.autoHideMode = modelData.val; }
                                 }
                             }
                         }
@@ -162,53 +141,28 @@ ColumnLayout {
             // ── Background Style ──────────────
             SegmentedWrapper {
                 Layout.fillWidth: true
-                implicitHeight: bgStyleCol.implicitHeight + 32
+                implicitHeight: bgStyleRow.implicitHeight + 36
                 orientation: Qt.Vertical
                 maxRadius: 20
                 color: Appearance.m3colors.m3surfaceContainerHigh
                 enabled: Config.ready && Config.options.dock && Config.options.dock.enable
                 opacity: enabled ? 1 : 0.5
-                
-                ColumnLayout {
-                    id: bgStyleCol
+                RowLayout {
+                    id: bgStyleRow
                     anchors.fill: parent; anchors.margins: 16
-                    spacing: 12
-
+                    spacing: 16
+                    MaterialSymbol { text: "layers"; iconSize: 24; color: Appearance.colors.colPrimary }
+                    StyledText { text: "Background"; Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
                     RowLayout {
-                        spacing: 16
-                        MaterialSymbol { text: "layers"; iconSize: 24; color: Appearance.colors.colPrimary }
-                        StyledText { text: "Background Style"; Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
-                    }
-
-                    SegmentedWrapper {
-                        Layout.fillWidth: true
-                        implicitHeight: 48
-                        color: Appearance.m3colors.m3surfaceContainer
-                        
-                        RowLayout {
-                            anchors.fill: parent
-                            spacing: 0
-                            
-                            SegmentedButton {
-                                Layout.fillWidth: true
-                                Layout.fillHeight: true
-                                buttonText: "None"
-                                checked: Config.options.dock.backgroundStyle === 0
-                                onClicked: Config.options.dock.backgroundStyle = 0
-                            }
-                            SegmentedButton {
-                                Layout.fillWidth: true
-                                Layout.fillHeight: true
-                                buttonText: "Floating"
-                                checked: Config.options.dock.backgroundStyle === 1
-                                onClicked: Config.options.dock.backgroundStyle = 1
-                            }
-                            SegmentedButton {
-                                Layout.fillWidth: true
-                                Layout.fillHeight: true
-                                buttonText: "Attached"
-                                checked: Config.options.dock.backgroundStyle === 2
-                                onClicked: Config.options.dock.backgroundStyle = 2
+                        spacing: 2
+                        Repeater {
+                            model: [{ val: 0, label: "None" }, { val: 1, label: "Floating" }, { val: 2, label: "Attached" }]
+                            delegate: SegmentedButton {
+                                required property var modelData
+                                buttonText: modelData.label
+                                isHighlighted: Config.options.dock.backgroundStyle === modelData.val
+                                colActive: Appearance.m3colors.m3primary; colActiveText: Appearance.m3colors.m3onPrimary; colInactive: Appearance.m3colors.m3surfaceContainerLow
+                                onClicked: Config.options.dock.backgroundStyle = modelData.val
                             }
                         }
                     }
@@ -218,7 +172,7 @@ ColumnLayout {
             // ── Monochrome Icons ──────────────
             SegmentedWrapper {
                 Layout.fillWidth: true
-                implicitHeight: monoRow.implicitHeight + 32
+                implicitHeight: monoRow.implicitHeight + 36
                 orientation: Qt.Vertical
                 maxRadius: 20
                 color: Appearance.m3colors.m3surfaceContainerHigh
@@ -241,73 +195,79 @@ ColumnLayout {
             // ── Dock Height ──────────────
             SegmentedWrapper {
                 Layout.fillWidth: true
-                implicitHeight: heightCol.implicitHeight + 32
+                implicitHeight: heightRow.implicitHeight + 32
                 orientation: Qt.Vertical
                 maxRadius: 20
                 color: Appearance.m3colors.m3surfaceContainerHigh
                 enabled: Config.ready && Config.options.dock && Config.options.dock.enable
                 opacity: enabled ? 1 : 0.5
-                ColumnLayout {
-                    id: heightCol
+                RowLayout {
+                    id: heightRow
                     anchors.fill: parent; anchors.margins: 16
-                    spacing: 8
+                    spacing: 20
+
                     RowLayout {
                         spacing: 16
+                        Layout.preferredWidth: 70
                         MaterialSymbol { text: "height"; iconSize: 24; color: Appearance.colors.colPrimary }
-                        StyledText { text: "Dock Height"; Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
-                        StyledText { 
-                            text: (Config.ready && Config.options.dock ? Config.options.dock.height : 70) + "px"
-                            color: Appearance.colors.colPrimary
-                            font.weight: Font.Bold
-                        }
+                        StyledText { text: "Height"; Layout.fillWidth: true; color: Appearance.colors.colOnLayer1; elide: Text.ElideRight }
                     }
+
                     StyledSlider {
-                        Layout.fillWidth: true
-                        from: 48
-                        to: 120
-                        stepSize: 2
+                        Layout.fillWidth: true; from: 48; to: 120; stepSize: 2
                         value: Config.ready && Config.options.dock ? Config.options.dock.height : 70
                         onMoved: if (Config.ready && Config.options.dock) Config.options.dock.height = value
+                    }
+                    
+                    StyledText {
+                        text: (Config.ready && Config.options.dock ? Config.options.dock.height : 70).toString() + "px"
+                        color: Appearance.colors.colOnLayer1; Layout.preferredWidth: 50; horizontalAlignment: Text.AlignRight
                     }
                 }
             }
 
-            // ── Buttons Visibility ──────────────
+            // ── Show App Launcher ──────────────
             SegmentedWrapper {
                 Layout.fillWidth: true
-                implicitHeight: buttonsCol.implicitHeight + 32
+                implicitHeight: launcherRow.implicitHeight + 36
                 orientation: Qt.Vertical
                 maxRadius: 20
                 color: Appearance.m3colors.m3surfaceContainerHigh
                 enabled: Config.ready && Config.options.dock && Config.options.dock.enable
                 opacity: enabled ? 1 : 0.5
-                ColumnLayout {
-                    id: buttonsCol
+                RowLayout {
+                    id: launcherRow
                     anchors.fill: parent; anchors.margins: 16
                     spacing: 16
-
-                    RowLayout {
-                        spacing: 16
-                        MaterialSymbol { text: "widgets"; iconSize: 24; color: Appearance.colors.colPrimary }
-                        StyledText { text: "Show App Launcher"; Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
-                        AndroidToggle {
-                            checked: Config.ready && Config.options.dock ? (Config.options.dock.showLauncher ?? true) : true
-                            onToggled: if (Config.ready && Config.options.dock)
-                                Config.options.dock.showLauncher = !Config.options.dock.showLauncher
-                        }
+                    MaterialSymbol { text: "widgets"; iconSize: 24; color: Appearance.colors.colPrimary }
+                    StyledText { text: "Show App Launcher"; Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
+                    AndroidToggle {
+                        checked: Config.ready && Config.options.dock ? (Config.options.dock.showLauncher ?? true) : true
+                        onToggled: if (Config.ready && Config.options.dock)
+                            Config.options.dock.showLauncher = !Config.options.dock.showLauncher
                     }
+                }
+            }
 
-                    Rectangle { Layout.fillWidth: true; height: 1; color: Appearance.colors.colOutlineVariant; opacity: 0.1 }
-
-                    RowLayout {
-                        spacing: 16
-                        MaterialSymbol { text: "grid_view"; iconSize: 24; color: Appearance.colors.colPrimary }
-                        StyledText { text: "Show Overview Button"; Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
-                        AndroidToggle {
-                            checked: Config.ready && Config.options.dock ? (Config.options.dock.showOverview ?? true) : true
-                            onToggled: if (Config.ready && Config.options.dock)
-                                Config.options.dock.showOverview = !Config.options.dock.showOverview
-                        }
+            // ── Show Overview Button ──────────────
+            SegmentedWrapper {
+                Layout.fillWidth: true
+                implicitHeight: overviewRow.implicitHeight + 36
+                orientation: Qt.Vertical
+                maxRadius: 20
+                color: Appearance.m3colors.m3surfaceContainerHigh
+                enabled: Config.ready && Config.options.dock && Config.options.dock.enable
+                opacity: enabled ? 1 : 0.5
+                RowLayout {
+                    id: overviewRow
+                    anchors.fill: parent; anchors.margins: 16
+                    spacing: 16
+                    MaterialSymbol { text: "grid_view"; iconSize: 24; color: Appearance.colors.colPrimary }
+                    StyledText { text: "Show Overview Button"; Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
+                    AndroidToggle {
+                        checked: Config.ready && Config.options.dock ? (Config.options.dock.showOverview ?? true) : true
+                        onToggled: if (Config.ready && Config.options.dock)
+                            Config.options.dock.showOverview = !Config.options.dock.showOverview
                     }
                 }
             }
