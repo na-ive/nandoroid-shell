@@ -367,6 +367,9 @@ Flickable {
         // ── Launcher Settings Section ──
         WsLauncher { Layout.fillWidth: true }
 
+        // ── Dock Settings Section ──
+        WsDock { Layout.fillWidth: true }
+
         // ── Overview Settings Section ──
         WsOverview { Layout.fillWidth: true }
 

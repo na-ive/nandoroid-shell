@@ -28,6 +28,7 @@ Singleton {
     property bool systemMonitorOpen: false
     property bool regionSelectorOpen: false
     property bool overviewOpen: false
+    property bool dockMenuOpen: false
     property bool mediaNotchOpen: false
     property var activeMediaNotchScreen: null
     property var activeScreen: Quickshell.screens[0]

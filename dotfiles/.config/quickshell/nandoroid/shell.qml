@@ -22,6 +22,7 @@ import "panels/Polkit"
 import "panels/RegionSelector"
 import "panels/ScreenCorners"
 import "panels/Overview"
+import "panels/Dock"
 
 import QtQuick
 import Quickshell
@@ -84,6 +85,9 @@ ShellRoot {
 
     // ── Phase 8: Session Menu ──
     SessionPanel {}
+
+    // ── Phase 8.5: Dock ──
+    Dock {}
 
     // ── Phase 9: Launcher & Overview ──
     Launcher {}
