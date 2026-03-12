@@ -53,7 +53,7 @@ Scope {
             readonly property real dockHeight: Config.ready ? Config.options.dock.height : 70
             readonly property int bgStyle: Config.ready && Config.options.dock ? Config.options.dock.backgroundStyle : 1
             
-            width: modelData.width
+            implicitWidth: modelData.width
             implicitHeight: dockHeight + Appearance.sizes.elevationMargin
 
             // Calculate absolute screen position of the dock window
