@@ -29,7 +29,7 @@ PanelWindow {
     
     property var appToplevel: null
     property string appId: appToplevel ? appToplevel.appId : ""
-    property bool isPinned: TaskbarApps.pinnedAppIds.includes(root.appId)
+    property bool isPinned: (appToplevel && appId !== "") ? appToplevel.pinned : false
     property int windowCount: appToplevel ? appToplevel.toplevels.length : 0
     
     // Mode differentiator

@@ -12,6 +12,7 @@ Variants {
 
     Loader {
         id: panelLoader
+        required property var modelData
         active: GlobalStates.wallpaperSelectorOpen
         sourceComponent: PanelWindow {
             id: panelWindow
