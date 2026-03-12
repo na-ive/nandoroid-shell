@@ -10,7 +10,8 @@ import "../../widgets"
 
 /**
  * NAnDoroid Ported Dock
- * Optimized version with corrected Z-index and window hierarchy.
+ * Optimized version with Hover Guard to prevent premature popups during animation.
+ * Includes Auto-Reveal after timer finish for smoother UX.
  */
 Scope {
     id: root
@@ -30,8 +31,6 @@ Scope {
                 
                 WlrLayershell.layer: {
                     if (!Config.ready) return WlrLayer.Overlay;
-                    // Only use Overlay for auto-hide or desktop-only mode to stay above windows
-                    // DON'T use Overlay just because menu is open, to avoid Z-index conflicts
                     if (Config.options.dock.showOnlyInDesktop || Config.options.dock.autoHide) {
                         return WlrLayer.Overlay;
                     }
@@ -84,6 +83,24 @@ Scope {
                     return true;
                 }
 
+                // Hover Guard: Prevents hover popups during and immediately after dock animation
+                Timer {
+                    id: hoverGuardTimer
+                    interval: Appearance.animation.elementMoveFast.duration + 50
+                    repeat: false
+                    onTriggered: {
+                        // If user is already hovering an app when the timer finishes, reveal it immediately
+                        if (dockApps.buttonHovered && dockWindow.reveal) {
+                            dockPreview.show(dockApps.lastHoveredButton, dockApps.lastHoveredAppData);
+                        }
+                    }
+                }
+
+                onRevealChanged: {
+                    if (reveal) hoverGuardTimer.restart();
+                    else dockPreview.requestHide();
+                }
+
                 MouseArea {
                     id: dockMouseArea
                     width: visualContainer.width
@@ -106,14 +123,11 @@ Scope {
                         anchors.bottom: parent.bottom
                         anchors.bottomMargin: dockWindow.reveal ? bMargin : -height - 20
                         opacity: dockWindow.reveal ? 1 : 0
-                        property bool animationFinished: true
 
                         Behavior on anchors.bottomMargin {
                             NumberAnimation {
                                 duration: Appearance.animation.elementMoveFast.duration
                                 easing.type: Appearance.animation.elementMoveFast.type
-                                onFinished: visualContainer.animationFinished = true
-                                onStarted: visualContainer.animationFinished = false
                             }
                         }
                         Behavior on opacity { NumberAnimation { duration: Appearance.animation.elementMoveFast.duration } }
@@ -140,8 +154,14 @@ Scope {
                                     dockContextMenu.openAt(x, dockWindow.screenY + y, appData);
                                 }
                                 onButtonHoverChanged: (button, appData, hovered) => {
-                                    if (hovered && visualContainer.animationFinished) dockPreview.show(button, appData);
-                                    else dockPreview.requestHide();
+                                    if (hovered) {
+                                        dockApps.lastHoveredAppData = appData;
+                                        if (!hoverGuardTimer.running && dockWindow.reveal) {
+                                            dockPreview.show(button, appData);
+                                        }
+                                    } else {
+                                        dockPreview.requestHide();
+                                    }
                                 }
                             }
 
@@ -167,13 +187,13 @@ Scope {
                 }
             }
 
-            // 2. The Context Menu (Sibling to dockWindow, ensuring independent surface and z-index)
+            // 2. The Context Menu
             DockContextMenu {
                 id: dockContextMenu
                 screen: modelData
             }
 
-            // 3. The Preview (Sibling)
+            // 3. The Preview
             DockPreview {
                 id: dockPreview
                 parentWindow: dockWindow

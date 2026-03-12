@@ -15,6 +15,7 @@ Item {
     property real spacing: 8 
 
     property Item lastHoveredButton
+    property var lastHoveredAppData
     property bool buttonHovered: false
     
     signal requestContextMenu(var appData, real x, real y)
