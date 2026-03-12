@@ -5,12 +5,13 @@ import Quickshell
 import Quickshell.Wayland
 import Quickshell.Hyprland
 import "../../core"
+import "../../core/functions" as Functions
 import "../../services"
 import "../../widgets"
 
 /**
  * NAnDoroid Ported Dock
- * Masterpiece version: "Outer Div" island masking + pristine shadow layer.
+ * Optimized version: Perfect Shadows using DropShadow for better complex shape support.
  */
 Scope {
     id: root
@@ -119,25 +120,33 @@ Scope {
                         }
                         Behavior on opacity { NumberAnimation { duration: Appearance.animation.elementMoveFast.duration } }
 
-                        // 1. THE PRISTINE SHADOW (Outside the mask, never cut off)
-                        StyledRectangularShadow { 
-                            target: dockVisualRect
-                            opacity: 0.3
-                            visible: dockWindow.bgStyle !== 0 
+                        // --- THE PERFECT SHADOW (Using DropShadow for better corner rendering) ---
+                        DropShadow {
+                            anchors.fill: dockVisualRect
+                            horizontalOffset: 0
+                            // For Attached mode (bgStyle 2), shift shadow slightly up (-2) to emphasize the top edge
+                            verticalOffset: dockWindow.bgStyle === 2 ? -2 : 1
+                            radius: 12
+                            samples: 25
+                            color: Functions.ColorUtils.applyAlpha(Appearance.colors.colShadow, 0.4)
+                            source: dockVisualRect
+                            visible: dockWindow.bgStyle !== 0
                         }
 
-                        // 2. THE BACKGROUND ISLAND (Determines the shape)
+                        // --- BACKGROUND ISLAND ---
                         Rectangle {
                             id: dockVisualRect; anchors.fill: parent
                             radius: dockWindow.bgStyle === 1 ? height / 2 : 0
+                            
                             topLeftRadius: (dockWindow.bgStyle === 1 || dockWindow.bgStyle === 2) ? (dockWindow.bgStyle === 1 ? height/2 : 24) : 0
                             topRightRadius: (dockWindow.bgStyle === 1 || dockWindow.bgStyle === 2) ? (dockWindow.bgStyle === 1 ? height/2 : 24) : 0
                             bottomLeftRadius: (dockWindow.bgStyle === 1) ? height/2 : 0
                             bottomRightRadius: (dockWindow.bgStyle === 1) ? height/2 : 0
+                            
                             color: Appearance.colors.colStatusBarSolid; opacity: dockWindow.bgStyle === 0 ? 0 : 1.0; border.width: 0
                         }
 
-                        // 3. THE OUTER DIV MASK (Cuts all contents to match the island shape)
+                        // --- MASKED CONTENT LAYER ---
                         Item {
                             id: maskedIslandContent
                             anchors.fill: parent
@@ -160,9 +169,9 @@ Scope {
                                 anchors.centerIn: parent
                                 spacing: 8
                                 
-                                // The "Inner Div" (Apps)
                                 DockApps {
                                     id: dockApps; buttonPadding: 6; spacing: 8; height: visualContainer.height
+                                    backgroundStyle: dockWindow.bgStyle
                                     onRequestContextMenu: (appData, x, y) => {
                                         dockContextMenu.openAt(x, dockWindow.screenY + y, appData);
                                     }
@@ -178,7 +187,6 @@ Scope {
                                     }
                                 }
 
-                                // The Launcher
                                 DockButton {
                                     id: launcherButton; pointingHandCursor: true; onClicked: GlobalStates.launcherOpen = !GlobalStates.launcherOpen; toggled: GlobalStates.launcherOpen; dockTopInset: 6; dockBottomInset: 6
                                     altAction: (event) => {
