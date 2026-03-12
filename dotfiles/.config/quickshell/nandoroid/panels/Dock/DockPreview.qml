@@ -9,6 +9,7 @@ import "../../widgets"
 /**
  * DockPreview.qml
  * A stable, scrollable, and live-updating window preview for the dock.
+ * Updated: Supports single-window preview for better information display.
  */
 PopupWindow {
     id: root
@@ -19,12 +20,9 @@ PopupWindow {
     property var parentWindow: null 
     readonly property bool hovered: popupHoverHandler.hovered
     
-    // Internal state to lock coordinates
     property var _lockedRect: Qt.rect(0, 0, 0, 0)
 
     color: "transparent"
-    
-    // Fixed surface size to prevent Wayland resize lag
     implicitWidth: 240
     implicitHeight: 400
 
@@ -35,7 +33,6 @@ PopupWindow {
         gravity: Edges.Top
     }
 
-    // Reactive model: filters directly from the source of truth
     readonly property var liveToplevels: {
         if (!appId) return [];
         const lowerId = appId.toLowerCase();
@@ -44,9 +41,9 @@ PopupWindow {
         );
     }
 
-    // Auto-close when no more windows (or only 1)
+    // Auto-close when no more windows (0 windows)
     onLiveToplevelsChanged: {
-        if (visible && liveToplevels.length <= 1) {
+        if (visible && liveToplevels.length === 0) {
             root.close();
         }
     }
@@ -61,7 +58,6 @@ PopupWindow {
     Rectangle {
         id: previewContainer
         width: 210
-        // Dynamic height with a cap (Max 300px)
         implicitHeight: Math.min(300, previewListView.contentHeight + 12)
         height: implicitHeight
         
@@ -148,7 +144,8 @@ PopupWindow {
     }
 
     function show(button, appData) {
-        if (!appData || appData.toplevels.length <= 1) {
+        // Change: Allow showing if there is at least 1 window
+        if (!appData || appData.toplevels.length === 0) {
             close();
             return;
         }
@@ -157,8 +154,6 @@ PopupWindow {
         targetButton = button;
         appId = appData.appId;
         
-        // Use a positive Y offset (4) to move the anchor point DOWN into the 
-        // dock window's transparent margin, making the popup look much closer.
         const pos = targetButton.mapToItem(null, targetButton.width / 2, 4);
         root._lockedRect = Qt.rect(pos.x, pos.y, 0, 0);
         

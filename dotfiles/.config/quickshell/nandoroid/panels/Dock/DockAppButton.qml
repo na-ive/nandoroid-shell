@@ -11,20 +11,18 @@ import "../../widgets"
 /**
  * DockAppButton component for the dock.
  * Optimized for stability and GPU performance.
+ * Feature: Subtle magnification on hover.
  */
 DockButton {
     id: root
     property var appToplevel
     property var appListRoot
+    property int index: -1
     property int lastFocused: -1
     property real iconSize: Config.ready && Config.options.dock.monochromeIcons ? 24 : 32
     
-    // Check if any toplevel window of this app is active/activated
     property bool appIsActive: appToplevel && appToplevel.toplevels ? appToplevel.toplevels.some(t => t.activated) : false
-
     readonly property bool isSeparator: appToplevel && appToplevel.appId === "SEPARATOR"
-    
-    // Use cached lookup from TaskbarApps
     readonly property var desktopEntry: appToplevel ? TaskbarApps.getDesktopEntry(appToplevel.appId) : null
     
     enabled: !isSeparator
@@ -32,8 +30,6 @@ DockButton {
 
     background: Item {
         anchors.fill: parent
-        
-        // Standard background
         Rectangle {
             anchors.fill: parent
             anchors.topMargin: root.dockTopInset
@@ -41,23 +37,14 @@ DockButton {
             radius: root.buttonRadius
             color: root.baseColor
             visible: !(Config.ready && Config.options.dock.monochromeIcons)
-            
-            Behavior on color { 
-                animation: Appearance.animation.elementMoveFast.colorAnimation.createObject(this)
-            }
+            Behavior on color { animation: Appearance.animation.elementMoveFast.colorAnimation.createObject(this) }
         }
-
-        // Monochrome background
         MaterialShape {
-            anchors.fill: parent
-            anchors.margins: 4
+            anchors.fill: parent; anchors.margins: 4
             visible: Config.ready && Config.options.dock.monochromeIcons
             shapeString: Config.ready && Config.options.search ? Config.options.search.iconShape : "Circle"
             color: root.down ? Appearance.colors.colPrimary : Appearance.colors.colPrimaryContainer
-            
-            Behavior on color { 
-                animation: Appearance.animation.elementMoveFast.colorAnimation.createObject(this)
-            }
+            Behavior on color { animation: Appearance.animation.elementMoveFast.colorAnimation.createObject(this) }
         }
     }
     
@@ -67,7 +54,6 @@ DockButton {
 
     onClicked: {
         if (!appToplevel || !appToplevel.toplevels) return;
-        
         if (appToplevel.toplevels.length === 0) {
             if (root.desktopEntry) root.desktopEntry.execute();
             return;
@@ -81,8 +67,13 @@ DockButton {
     }
 
     contentItem: Item {
+        id: visualContent
         visible: !root.isSeparator
         anchors.fill: parent
+        
+        // Subtle Magnification Effect
+        scale: root.hovered ? 1.05 : 1.0
+        Behavior on scale { NumberAnimation { duration: 150; easing.type: Easing.OutCubic } }
 
         Item {
             id: iconContainer
@@ -97,7 +88,6 @@ DockButton {
                 visible: !(Config.ready && Config.options.dock.monochromeIcons)
             }
 
-            // GPU-Optimized Monochrome Effect
             ColorOverlay {
                 anchors.fill: parent
                 source: iconImage
@@ -105,7 +95,6 @@ DockButton {
                 visible: Config.ready && Config.options.dock.monochromeIcons
             }
 
-            // Notification Badge
             Rectangle {
                 id: badge
                 anchors { top: parent.top; right: parent.right; topMargin: -4; rightMargin: -4 }
@@ -113,26 +102,17 @@ DockButton {
                 color: Appearance.colors.colError
                 visible: appToplevel && notifCount > 0
                 z: 10
-                
                 readonly property int notifCount: appToplevel ? Notifications.getCountForApp(appToplevel.appId) : 0
-
-                StyledText {
-                    anchors.centerIn: parent
-                    text: parent.notifCount > 9 ? "!" : parent.notifCount
-                    font.pixelSize: 10; font.weight: Font.Bold; color: "white"
-                }
-
+                StyledText { anchors.centerIn: parent; text: parent.notifCount > 9 ? "!" : parent.notifCount; font.pixelSize: 10; font.weight: Font.Bold; color: "white" }
                 scale: visible ? 1 : 0
                 Behavior on scale { NumberAnimation { duration: 200; easing.type: Easing.OutBack } }
             }
         }
 
-        // Indicator dots for running windows
         Row {
             spacing: 2
             anchors { bottom: parent.bottom; bottomMargin: root.dockBottomInset + 6; horizontalCenter: parent.horizontalCenter }
             visible: appToplevel && appToplevel.toplevels && appToplevel.toplevels.length > 0
-            
             Repeater {
                 model: (appToplevel && appToplevel.toplevels) ? Math.min(appToplevel.toplevels.length, 3) : 0
                 delegate: Rectangle {
@@ -146,10 +126,9 @@ DockButton {
         }
     }
 
-    // Hover area for preview logic - Placed at the end for higher Z-index
     MouseArea {
         anchors.fill: parent
-        enabled: appToplevel && appToplevel.toplevels && appToplevel.toplevels.length > 0
+        enabled: appToplevel && appToplevel.toplevels && appToplevel.toplevels.length >= 0
         hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
         acceptedButtons: Qt.NoButton
