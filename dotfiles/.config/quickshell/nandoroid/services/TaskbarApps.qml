@@ -7,12 +7,22 @@ import "../core"
 
 /**
  * TaskbarApps Service
- * Manages the list of apps shown in the dock, including pinned apps
- * and currently running applications.
- * Ported from Illogical Impulse (ii) and adapted for NAnDoroid.
+ * Fixed version: Restored automatic binding for reliable app list updates.
  */
 Singleton {
     id: root
+
+    // Cache for desktop entries
+    readonly property var _entryCache: ({})
+
+    function getDesktopEntry(appId) {
+        if (!appId) return null;
+        if (_entryCache[appId]) return _entryCache[appId];
+        
+        const entry = DesktopEntries.byId(appId) || DesktopEntries.heuristicLookup(appId);
+        if (entry) _entryCache[appId] = entry;
+        return entry;
+    }
 
     function isPinned(appId) {
         if (!Config.ready) return false;
@@ -21,71 +31,91 @@ Singleton {
 
     function togglePin(appId) {
         if (!Config.ready) return;
+        let pinned = Config.options.dock.pinnedApps;
         if (root.isPinned(appId)) {
-            Config.options.dock.pinnedApps = Config.options.dock.pinnedApps.filter(id => id !== appId)
+            Config.options.dock.pinnedApps = pinned.filter(id => id !== appId);
         } else {
-            Config.options.dock.pinnedApps = Config.options.dock.pinnedApps.concat([appId])
+            Config.options.dock.pinnedApps = pinned.concat([appId]);
         }
     }
 
+    // --- The Model ---
+    // Using a binding-driven list for maximum reliability with pooling for stability
     property list<var> apps: {
         if (!Config.ready) return [];
         
-        var map = new Map();
-
-        // Pinned apps
+        // This triggers the binding when windows or pinned apps change
+        const _toplevels = ToplevelManager.toplevels.values;
         const pinnedApps = Config.options.dock.pinnedApps ?? [];
-        for (const appId of pinnedApps) {
-            if (!map.has(appId.toLowerCase())) map.set(appId.toLowerCase(), ({
-                pinned: true,
-                toplevels: []
-            }));
-        }
-
-        // Separator logic could go here, but let's keep it simple for now
-        // or add a special entry if needed.
-
-        // Ignored apps
         const ignoredRegexStrings = Config.options.dock.ignoredAppRegexes ?? [];
         const ignoredRegexes = ignoredRegexStrings.map(pattern => new RegExp(pattern, "i"));
-        
-        // Open windows (ToplevelManager.toplevels.values is the Quickshell Wayland API)
-        for (const toplevel of ToplevelManager.toplevels.values) {
+
+        const map = new Map();
+
+        // 1. Pinned Apps
+        for (const appId of pinnedApps) {
+            const lowerId = appId.toLowerCase();
+            if (!map.has(lowerId)) {
+                map.set(lowerId, { appId: lowerId, pinned: true, toplevels: [] });
+            }
+        }
+
+        // 2. Running Windows
+        for (const toplevel of _toplevels) {
+            if (!toplevel || !toplevel.appId) continue;
             if (ignoredRegexes.some(re => re.test(toplevel.appId))) continue;
             
-            const appId = (toplevel.appId || "unknown").toLowerCase();
-            
-            if (!map.has(appId)) {
-                map.set(appId, ({
-                    pinned: false,
-                    toplevels: []
-                }));
+            const lowerId = toplevel.appId.toLowerCase();
+            if (!map.has(lowerId)) {
+                map.set(lowerId, { appId: lowerId, pinned: false, toplevels: [] });
             }
-            map.get(appId).toplevels.push(toplevel);
+            map.get(lowerId).toplevels.push(toplevel);
         }
 
-        var values = [];
+        // 3. Sync with Pool
+        let newApps = [];
+        for (const [key, data] of map) {
+            let wrapper = null;
+            // Check existing pool
+            for (let i = 0; i < pool.length; i++) {
+                if (pool[i] && pool[i].appId === key) {
+                    wrapper = pool[i];
+                    break;
+                }
+            }
 
-        for (const [key, value] of map) {
-            values.push(appEntryComp.createObject(null, { 
-                appId: key, 
-                toplevels: value.toplevels, 
-                pinned: value.pinned 
-            }));
+            if (!wrapper) {
+                wrapper = appEntryComp.createObject(root, { appId: key });
+                pool.push(wrapper);
+            }
+
+            wrapper.toplevels = data.toplevels;
+            wrapper.pinned = data.pinned;
+            newApps.push(wrapper);
         }
 
-        return values;
+        // 4. Cleanup unused wrappers later to avoid disrupting current frame
+        Qt.callLater(() => {
+            for (let i = pool.length - 1; i >= 0; i--) {
+                if (!newApps.includes(pool[i])) {
+                    const old = pool.splice(i, 1)[0];
+                    if (old) old.destroy();
+                }
+            }
+        });
+
+        return newApps;
     }
 
-    component TaskbarAppEntry: QtObject {
-        id: wrapper
-        required property string appId
-        required property list<var> toplevels
-        required property bool pinned
-    }
-    
+    // Use 'var' for the pool to support JS array methods like push/splice
+    property var pool: []
+
     Component {
         id: appEntryComp
-        TaskbarAppEntry {}
+        QtObject {
+            property string appId: ""
+            property list<var> toplevels: []
+            property bool pinned: false
+        }
     }
 }

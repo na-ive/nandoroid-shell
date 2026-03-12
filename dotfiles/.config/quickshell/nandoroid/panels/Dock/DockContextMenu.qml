@@ -13,6 +13,7 @@ import "../../widgets"
 /**
  * DockContextMenu.qml
  * Unified context menu for apps and the launcher button.
+ * Optimized for stability and reliable closing.
  */
 PanelWindow {
     id: root
@@ -29,14 +30,13 @@ PanelWindow {
     
     property var appToplevel: null
     property string appId: appToplevel ? appToplevel.appId : ""
-    property bool isPinned: (appToplevel && appId !== "") ? appToplevel.pinned : false
-    property int windowCount: appToplevel ? appToplevel.toplevels.length : 0
     
-    // Mode differentiator
+    // Safety checks for properties
+    property bool isPinned: (appToplevel && appId !== "") ? (appToplevel.pinned ?? false) : false
+    property int windowCount: (appToplevel && appToplevel.toplevels) ? appToplevel.toplevels.length : 0
+    
     property bool isLauncher: false
-
-    // Fetch the desktop entry to get its actions (Jump List)
-    readonly property var desktopEntry: isLauncher ? null : (DesktopEntries.byId(root.appId) || DesktopEntries.heuristicLookup(root.appId))
+    readonly property var desktopEntry: isLauncher ? null : (appId ? TaskbarApps.getDesktopEntry(appId) : null)
 
     property real targetX: 0
     property real targetY: 0
@@ -45,7 +45,11 @@ PanelWindow {
 
     color: "transparent"
 
-    MouseArea { anchors.fill: parent; onPressed: root.close() }
+    // Backdrop to catch clicks
+    MouseArea { 
+        anchors.fill: parent
+        onPressed: root.close() 
+    }
 
     Rectangle {
         id: menuContainer
@@ -63,7 +67,10 @@ PanelWindow {
         Behavior on opacity { NumberAnimation { duration: root.isClosing ? Appearance.animation.elementMoveExit.duration : Appearance.animation.elementMoveEnter.duration; easing.type: Easing.OutCubic } }
         Behavior on scale { NumberAnimation { duration: root.isClosing ? Appearance.animation.elementMoveExit.duration : Appearance.animation.elementMoveEnter.duration; easing.type: Easing.OutBack } }
 
-        MouseArea { anchors.fill: parent; onPressed: (mouse) => mouse.accepted = true }
+        MouseArea { 
+            anchors.fill: parent
+            onPressed: (mouse) => mouse.accepted = true 
+        }
 
         ColumnLayout {
             id: menuLayout
@@ -81,11 +88,11 @@ PanelWindow {
                         Layout.preferredWidth: 20; Layout.preferredHeight: 20
                         IconImage {
                             anchors.fill: parent
-                            source: Quickshell.iconPath(AppSearch.guessIcon(root.appId), "application-x-executable")
+                            source: root.appId ? Quickshell.iconPath(AppSearch.guessIcon(root.appId), "application-x-executable") : ""
                         }
                     }
                     StyledText {
-                        text: root.desktopEntry ? root.desktopEntry.name : (root.appId.charAt(0).toUpperCase() + root.appId.slice(1))
+                        text: root.desktopEntry ? root.desktopEntry.name : (root.appId ? (root.appId.charAt(0).toUpperCase() + root.appId.slice(1)) : "Application")
                         font.pixelSize: Appearance.font.pixelSize.small
                         font.weight: Font.Bold; color: Appearance.colors.colOnLayer0
                         elide: Text.ElideRight; Layout.fillWidth: true
@@ -104,7 +111,6 @@ PanelWindow {
                     }
                 }
 
-                // New Window Fallback
                 MenuItem {
                     visible: root.appId !== "" && (!root.desktopEntry || !root.desktopEntry.actions || root.desktopEntry.actions.length === 0)
                     menuText: "New Window"; menuIcon: "add_box"
@@ -129,9 +135,11 @@ PanelWindow {
                     visible: root.windowCount > 0
                     menuText: root.windowCount > 1 ? "Close All Windows" : "Close Window"; menuIcon: "close"
                     onClicked: {
-                        if (root.appToplevel) {
+                        if (root.appToplevel && root.appToplevel.toplevels) {
                             const windows = root.appToplevel.toplevels;
-                            for (let i = 0; i < windows.length; i++) windows[i].close();
+                            for (let i = 0; i < windows.length; i++) {
+                                if (windows[i]) windows[i].close();
+                            }
                         }
                         root.close();
                     }
@@ -141,9 +149,12 @@ PanelWindow {
                     visible: root.windowCount > 0
                     menuText: "Force Close"; menuIcon: "gavel"
                     onClicked: {
-                        if (root.appToplevel && root.appToplevel.toplevels.length > 0) {
-                            killProc.command = ["kill", "-9", root.appToplevel.toplevels[0].pid.toString()];
-                            killProc.running = true;
+                        if (root.appToplevel && root.appToplevel.toplevels && root.appToplevel.toplevels.length > 0) {
+                            const tl = root.appToplevel.toplevels[0];
+                            if (tl && tl.pid) {
+                                killProc.command = ["kill", "-9", tl.pid.toString()];
+                                killProc.running = true;
+                            }
                         }
                         root.close();
                     }
@@ -157,7 +168,10 @@ PanelWindow {
 
                 MenuItem {
                     menuText: "Restart Shell"; menuIcon: "refresh"
-                    onClicked: { Quickshell.execDetached([Directories.home.replace("file://", "") + "/.config/quickshell/nandoroid/scripts/restartshell.sh"]); root.close() }
+                    onClicked: { 
+                        Quickshell.execDetached([Directories.home.replace("file://", "") + "/.config/quickshell/nandoroid/scripts/restartshell.sh"]); 
+                        root.close(); 
+                    }
                 }
 
                 MenuItem {
@@ -228,7 +242,6 @@ PanelWindow {
         hideTimer.stop();
         isClosing = false;
         
-        // Determine mode
         appToplevel = appData;
         isLauncher = (appData === null);
         
@@ -238,26 +251,23 @@ PanelWindow {
         root.visible = true;
         GlobalStates.dockMenuOpen = true;
         
+        // Stabilized positioning
         Qt.callLater(() => {
+            if (!root.visible) return;
+            
             const screenWidth = root.screen.width;
             const screenHeight = root.screen.height;
             const menuWidth = Appearance.sizes.contextMenuWidth;
             const menuHeight = menuLayout.implicitHeight + 12;
             
-            // X: Selalu mulai dari kursor, tapi jangan keluar pinggir kanan layar
             root.targetX = Math.min(root._mouseX, screenWidth - menuWidth - 10);
             
-            // Y: Secara default buka ke BAWAH (Top-Left kursor)
-            // TAPI, karena ini di dock (bawah), cek jika menabrak pinggir bawah:
             if (root._mouseY + menuHeight > screenHeight - 10) {
-                // FLIP UP (Bottom-Left kursor / Kanan-Atas kursor)
                 root.targetY = root._mouseY - menuHeight;
             } else {
-                // NORMAL DOWN (Top-Left kursor)
                 root.targetY = root._mouseY;
             }
             
-            // Pastikan tidak keluar pinggir atas juga
             root.targetY = Math.max(10, root.targetY);
             
             menuContainer.opacity = 0.98;
@@ -273,6 +283,7 @@ PanelWindow {
         hideTimer.restart();
     }
 
+    // Ensure focus grab for reliable closing
     HyprlandFocusGrab {
         active: root.visible && !root.isClosing
         windows: [root]
