@@ -71,8 +71,8 @@ DockButton {
         visible: !root.isSeparator
         anchors.fill: parent
         
-        // Subtle Magnification Effect
-        scale: root.hovered ? 1.05 : 1.0
+        // Subtle Magnification & Tactile Press Effect
+        scale: root.down ? 0.92 : (root.hovered ? 1.05 : 1.0)
         Behavior on scale { NumberAnimation { duration: 150; easing.type: Easing.OutCubic } }
 
         Item {

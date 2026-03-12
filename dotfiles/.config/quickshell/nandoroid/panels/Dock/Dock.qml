@@ -219,6 +219,8 @@ Scope {
                                     }
                                     contentItem: Item {
                                         anchors.fill: parent
+                                        scale: overviewButton.down ? 0.92 : (overviewButton.hovered ? 1.05 : 1.0)
+                                        Behavior on scale { NumberAnimation { duration: 150; easing.type: Easing.OutCubic } }
                                         MaterialSymbol { id: overviewIcon; anchors.centerIn: parent; text: "grid_view"; iconSize: Config.ready && Config.options.dock.monochromeIcons ? 22 : 26; color: overviewButton.toggled ? Appearance.colors.colPrimary : Appearance.colors.colOnLayer0; visible: !(Config.ready && Config.options.dock.monochromeIcons) }
                                         ColorOverlay { anchors.fill: overviewIcon; source: overviewIcon; color: Appearance.colors.colOnPrimaryContainer; visible: Config.ready && Config.options.dock.monochromeIcons }
                                     }
@@ -244,6 +246,8 @@ Scope {
                                     }
                                     contentItem: Item {
                                         anchors.fill: parent
+                                        scale: launcherButton.down ? 0.92 : (launcherButton.hovered ? 1.05 : 1.0)
+                                        Behavior on scale { NumberAnimation { duration: 150; easing.type: Easing.OutCubic } }
                                         MaterialSymbol { id: launcherIcon; anchors.centerIn: parent; text: "apps"; iconSize: Config.ready && Config.options.dock.monochromeIcons ? 24 : 28; color: launcherButton.toggled ? Appearance.colors.colPrimary : Appearance.colors.colOnLayer0; visible: !(Config.ready && Config.options.dock.monochromeIcons) }
                                         ColorOverlay { anchors.fill: launcherIcon; source: launcherIcon; color: Appearance.colors.colOnPrimaryContainer; visible: Config.ready && Config.options.dock.monochromeIcons }
                                     }
