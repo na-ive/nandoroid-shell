@@ -5,23 +5,26 @@ import Quickshell
 /**
  * AppSearch.qml
  * Service for matching Hyprland window classes to system icons.
+ * Case-insensitive optimized for performance and reliability.
  */
 Singleton {
     id: root
 
-    property var substitutions: ({
+    // Normalized substitutions (all keys must be lowercase)
+    readonly property var substitutions: ({
         "code-url-handler": "visual-studio-code",
-        "Code": "visual-studio-code",
+        "code": "visual-studio-code",
         "gnome-tweaks": "org.gnome.tweaks",
         "pavucontrol-qt": "pavucontrol",
         "wps": "wps-office2019-kprometheus",
         "wpsoffice": "wps-office2019-kprometheus",
         "footclient": "foot",
-        "Brave-browser": "brave-browser",
+        "brave-browser": "brave-browser",
         "google-chrome": "google-chrome",
-        "Microsoft-edge": "microsoft-edge",
+        "microsoft-edge": "microsoft-edge",
         "kitty": "kitty",
-        "org.wezfurlong.wezterm": "org.wezfurlong.wezterm"
+        "org.wezfurlong.wezterm": "org.wezfurlong.wezterm",
+        "upscayl": "org.upscayl.Upscayl"
     })
 
     function iconExists(iconName) {
@@ -34,58 +37,54 @@ Singleton {
         }
     }
 
-    // Reactive trigger to force re-evaluation when desktop entries are loaded
     readonly property int _entryCount: DesktopEntries.applications.values.length
 
     function guessIcon(clientClass, initialClass, title) {
-        // Accessing _entryCount makes this function reactive to DesktopEntries changes
         let dummy = root._entryCount; 
         
         if (!clientClass && !initialClass && !title) return "application-x-executable";
         
-        let cClass = clientClass || "";
-        let iClass = initialClass || "";
-        let tTitle = title || "";
+        // 1. Normalize all inputs to lowercase once (Better performance)
+        const lowClass = (clientClass || "").toLowerCase();
+        const lowInitial = (initialClass || "").toLowerCase();
+        const lowTitle = (title || "").toLowerCase();
 
-        // 1. Precise Desktop Entry Lookup
-        const entry = DesktopEntries.byId(cClass) || DesktopEntries.byId(iClass);
+        // 2. Precise Desktop Entry Lookup (Using normalized ID)
+        // Some systems store desktop IDs in mixed case, so we try raw first then lower
+        const entry = DesktopEntries.byId(clientClass) || 
+                      DesktopEntries.byId(initialClass) ||
+                      DesktopEntries.byId(lowClass) ||
+                      DesktopEntries.byId(lowInitial);
+        
         if (entry && entry.icon) return entry.icon;
 
-        // 2. Manual Substitutions
-        if (substitutions[cClass]) return substitutions[cClass];
-        if (substitutions[iClass]) return substitutions[iClass];
-        
-        let lowerClass = cClass.toLowerCase();
-        let lowerInitial = iClass.toLowerCase();
-        if (substitutions[lowerClass]) return substitutions[lowerClass];
-        if (substitutions[lowerInitial]) return substitutions[lowerInitial];
+        // 3. Manual Substitutions (Now lightning fast with single lookup)
+        if (substitutions[lowClass]) return substitutions[lowClass];
+        if (substitutions[lowInitial]) return substitutions[lowInitial];
 
-        // 3. Keyword Heuristics (Common Apps)
-        let allText = (cClass + " " + iClass + " " + tTitle).toLowerCase();
-        if (allText.includes("brave")) return "brave-browser";
-        if (allText.includes("chrome")) return "google-chrome";
-        if (allText.includes("edge")) return "microsoft-edge";
-        if (allText.includes("kitty")) return "kitty";
-        if (allText.includes("code") || allText.includes("vsc")) return "visual-studio-code";
-        if (allText.includes("discord")) return "discord";
-        if (allText.includes("terminal")) return "utilities-terminal";
-        if (allText.includes("thunar")) return "system-file-manager";
-        if (allText.includes("dolphin")) return "system-file-manager";
+        // 4. Reverse domain parts (e.g., "org.upscayl.Upscayl" -> "upscayl")
+        const parts = lowClass.split('.');
+        if (parts.length > 1) {
+            const lastPart = parts[parts.length - 1];
+            if (iconExists(lastPart)) return lastPart;
+        }
 
-        // 4. Case-insensitive variant of the class name
-        if (iconExists(cClass)) return cClass;
-        if (iconExists(lowerClass)) return lowerClass;
-        if (iconExists(iClass)) return iClass;
-        if (iconExists(lowerInitial)) return lowerInitial;
+        // 5. Common Keywords (Already normalized)
+        if (lowClass.includes("brave") || lowTitle.includes("brave")) return "brave-browser";
+        if (lowClass.includes("chrome") || lowTitle.includes("chrome")) return "google-chrome";
+        if (lowClass.includes("edge") || lowTitle.includes("edge")) return "microsoft-edge";
+        if (lowClass.includes("kitty")) return "kitty";
+        if (lowClass.includes("code") || lowClass.includes("vsc")) return "visual-studio-code";
+        if (lowClass.includes("discord")) return "discord";
+        if (lowClass.includes("terminal")) return "utilities-terminal";
+        if (lowClass.includes("thunar") || lowClass.includes("dolphin")) return "system-file-manager";
 
-        // 5. Reverse domain parts (e.g., "org.gnome.Nautilus" -> "Nautilus")
-        const parts = (cClass || iClass).split('.');
-        const lastPart = parts[parts.length - 1];
-        if (iconExists(lastPart)) return lastPart;
-        if (iconExists(lastPart.toLowerCase())) return lastPart.toLowerCase();
+        // 6. Direct Icon System Check
+        if (iconExists(lowClass)) return lowClass;
+        if (iconExists(lowInitial)) return lowInitial;
 
-        // 6. Last resort heuristic lookup
-        const entryAlt = DesktopEntries.heuristicLookup(cClass || tTitle || "");
+        // 7. Last resort: Heuristic lookup (Expensive but thorough)
+        const entryAlt = DesktopEntries.heuristicLookup(clientClass || initialClass || title || "");
         if (entryAlt && entryAlt.icon) return entryAlt.icon;
 
         return "application-x-executable";
