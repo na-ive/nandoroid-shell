@@ -210,6 +210,8 @@ Scope {
                                     onClicked: GlobalStates.overviewOpen = !GlobalStates.overviewOpen
                                     toggled: GlobalStates.overviewOpen
                                     dockTopInset: 6; dockBottomInset: 6
+                                    colBackgroundToggled: "transparent"
+                                    colBackgroundToggledHover: "transparent"
                                     background: Item {
                                         anchors.fill: parent
                                         Rectangle { anchors.fill: parent; radius: Appearance.rounding.button; color: overviewButton.baseColor; visible: !(Config.ready && Config.options.dock.monochromeIcons) }
@@ -217,7 +219,7 @@ Scope {
                                     }
                                     contentItem: Item {
                                         anchors.fill: parent
-                                        MaterialSymbol { id: overviewIcon; anchors.centerIn: parent; text: "grid_view"; iconSize: Config.ready && Config.options.dock.monochromeIcons ? 22 : 26; color: overviewButton.toggled ? Appearance.colors.colOnPrimary : Appearance.colors.colOnLayer0; visible: !(Config.ready && Config.options.dock.monochromeIcons) }
+                                        MaterialSymbol { id: overviewIcon; anchors.centerIn: parent; text: "grid_view"; iconSize: Config.ready && Config.options.dock.monochromeIcons ? 22 : 26; color: overviewButton.toggled ? Appearance.colors.colPrimary : Appearance.colors.colOnLayer0; visible: !(Config.ready && Config.options.dock.monochromeIcons) }
                                         ColorOverlay { anchors.fill: overviewIcon; source: overviewIcon; color: Appearance.colors.colOnPrimaryContainer; visible: Config.ready && Config.options.dock.monochromeIcons }
                                     }
                                 }
@@ -229,6 +231,8 @@ Scope {
                                     onClicked: GlobalStates.launcherOpen = !GlobalStates.launcherOpen
                                     toggled: GlobalStates.launcherOpen
                                     dockTopInset: 6; dockBottomInset: 6
+                                    colBackgroundToggled: "transparent"
+                                    colBackgroundToggledHover: "transparent"
                                     altAction: (event) => {
                                         const pos = launcherButton.mapToItem(null, event.x, event.y);
                                         dockContextMenu.openAt(pos.x, dockWindow.screenY + pos.y);
@@ -240,7 +244,7 @@ Scope {
                                     }
                                     contentItem: Item {
                                         anchors.fill: parent
-                                        MaterialSymbol { id: launcherIcon; anchors.centerIn: parent; text: "apps"; iconSize: Config.ready && Config.options.dock.monochromeIcons ? 24 : 28; color: launcherButton.toggled ? Appearance.colors.colOnPrimary : Appearance.colors.colOnLayer0; visible: !(Config.ready && Config.options.dock.monochromeIcons) }
+                                        MaterialSymbol { id: launcherIcon; anchors.centerIn: parent; text: "apps"; iconSize: Config.ready && Config.options.dock.monochromeIcons ? 24 : 28; color: launcherButton.toggled ? Appearance.colors.colPrimary : Appearance.colors.colOnLayer0; visible: !(Config.ready && Config.options.dock.monochromeIcons) }
                                         ColorOverlay { anchors.fill: launcherIcon; source: launcherIcon; color: Appearance.colors.colOnPrimaryContainer; visible: Config.ready && Config.options.dock.monochromeIcons }
                                     }
                                 }

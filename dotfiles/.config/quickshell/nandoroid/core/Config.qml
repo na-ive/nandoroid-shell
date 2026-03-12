@@ -269,13 +269,13 @@ Singleton {
             // --- Dock ---
             property JsonObject dock: JsonObject {
                 property bool enable: true
-                property bool autoHide: true
+                property bool autoHide: false
                 property int autoHideMode: 0 // 0: Intelligent, 1: Always
-                property bool showOnlyInDesktop: false
+                property bool showOnlyInDesktop: true
                 property int backgroundStyle: 1 // 0: None, 1: Floating, 2: Attached
-                property int hoverRegionHeight: 2
+                property int hoverRegionHeight: 5
                 property bool pinnedOnStartup: false
-                property bool monochromeIcons: false
+                property bool monochromeIcons: true
                 property list<string> pinnedApps: ["kitty", "org.kde.dolphin"]
                 property list<string> ignoredAppRegexes: ["^xwaylandvideobridge$"]
                 property real scale: 1.0
