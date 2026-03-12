@@ -43,7 +43,20 @@ Scope {
                 
                 anchors { bottom: true }
                 color: "transparent"
-                visible: Config.ready && Config.options.dock.enable && !GlobalStates.screenLocked
+                
+                // SIMPLIFIED VISIBILITY: Toggle the whole window for 'Show Only In Desktop'
+                visible: {
+                    if (!Config.ready || GlobalStates.screenLocked || !Config.options.dock.enable) return false;
+                    
+                    // If 'Show Only In Desktop' is ON, only show if no active windows on this monitor
+                    if (Config.options.dock.showOnlyInDesktop) {
+                        if (GlobalStates.launcherOpen || GlobalStates.dockMenuOpen || root.pinned) return true;
+                        return !hasActiveWindows;
+                    }
+                    
+                    return true;
+                }
+
                 mask: Region { item: dockMouseArea }
                 
                 readonly property real dockHeight: 70
@@ -56,21 +69,30 @@ Scope {
 
                 readonly property bool hasActiveWindows: {
                     if (!Config.ready || !HyprlandData.activeWorkspace) return false;
+                    
+                    // Get windows for THIS specific monitor on the active workspace
                     const wsId = HyprlandData.activeWorkspace.id;
-                    const windows = HyprlandData.windowList;
+                    const windows = HyprlandData.hyprlandClientsForWorkspace(wsId);
+                    
                     for (let i = 0; i < windows.length; i++) {
                         const w = windows[i];
-                        if (w.monitor === screenScope.monitorIndex && !w.floating && w.workspace.id === wsId) return true;
+                        if (w.monitor === screenScope.monitorIndex && !w.floating && w.mapped && !w.hidden) return true;
                     }
                     return false;
                 }
 
                 property bool reveal: {
                     if (!Config.ready) return true;
-                    if (root.pinned || GlobalStates.dockMenuOpen || dockPreview.visible || dockPreview.hovered || dockApps.buttonHovered) return true;
-                    if (dockMouseArea.containsMouse) return true;
-                    if (Config.options.dock.showOnlyInDesktop) return !hasActiveWindows && !Config.options.dock.autoHide;
-                    if (Config.options.dock.autoHide) return Config.options.dock.autoHideMode === 1 ? false : !hasActiveWindows;
+                    
+                    // Standard reveal logic (Menus, Hovers, Pinned)
+                    if (root.pinned || GlobalStates.dockMenuOpen || dockPreview.visible || dockPreview.hovered || dockApps.buttonHovered || dockMouseArea.containsMouse) return true;
+                    
+                    // Auto-hide logic
+                    if (Config.options.dock.autoHide) {
+                        if (Config.options.dock.autoHideMode === 1) return false; // Always hide mode
+                        return !hasActiveWindows; // Intelligent mode
+                    }
+                    
                     return true;
                 }
 
@@ -92,13 +114,13 @@ Scope {
 
                 MouseArea {
                     id: dockMouseArea
-                    width: visualContainer.width * dockWindow.dockScale
+                    // Standard interactive area
+                    width: Math.max(200, visualContainer.width * dockWindow.dockScale)
                     anchors.horizontalCenter: parent.horizontalCenter
                     hoverEnabled: true
                     height: {
                         if (!Config.ready) return parent.height;
                         if (dockPreview.visible || dockPreview.hovered) return parent.height;
-                        if (Config.options.dock.showOnlyInDesktop && hasActiveWindows && !GlobalStates.launcherOpen && !GlobalStates.dockMenuOpen) return 0;
                         return dockWindow.reveal ? parent.height : 3;
                     }
                     anchors.bottom: parent.bottom
@@ -106,7 +128,7 @@ Scope {
                     Item {
                         id: visualContainer
                         anchors.horizontalCenter: parent.horizontalCenter
-                        width: mainRowContainer.implicitWidth + 20
+                        width: Math.max(100, mainRowContainer.implicitWidth + 20)
                         height: dockWindow.dockHeight
                         scale: dockWindow.dockScale
                         transformOrigin: Item.Bottom
