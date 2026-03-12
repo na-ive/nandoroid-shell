@@ -21,6 +21,7 @@ PanelWindow {
     WlrLayershell.namespace: "quickshell:launcher"
     WlrLayershell.layer: WlrLayer.Overlay
     WlrLayershell.keyboardFocus: GlobalStates.launcherOpen ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
+    exclusionMode: ExclusionMode.Ignore
 
     HyprlandFocusGrab {
         id: grab
@@ -62,7 +63,7 @@ PanelWindow {
                 when: GlobalStates.launcherOpen
                 PropertyChanges {
                     target: content
-                    y: screen.height - height - 36
+                    y: screen.height - height // Flush to the bottom
                     opacity: 1
                 }
             }

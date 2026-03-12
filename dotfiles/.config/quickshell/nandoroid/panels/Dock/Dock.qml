@@ -46,6 +46,8 @@ Scope {
             anchors { bottom: true }
             color: "transparent"
             
+            visible: Config.ready && Config.options.dock.enable && !GlobalStates.screenLocked
+            
             mask: Region { item: dockMouseArea }
             
             readonly property real dockHeight: Config.ready ? Config.options.dock.height : 70
@@ -69,8 +71,11 @@ Scope {
 
             property bool reveal: {
                 if (!Config.ready) return true;
+                // Force visual hide when launcher is open to avoid clutter and interference
+                if (GlobalStates.launcherOpen) return false;
+                
                 const autoHide = Config.options.dock.autoHide;
-                if (root.pinned || GlobalStates.launcherOpen || GlobalStates.dashboardOpen || GlobalStates.overviewOpen || GlobalStates.dockMenuOpen || dockPreview.visible || dockPreview.hovered || dockApps.buttonHovered) return true;
+                if (root.pinned || GlobalStates.dashboardOpen || GlobalStates.overviewOpen || GlobalStates.dockMenuOpen || dockPreview.visible || dockPreview.hovered || dockApps.buttonHovered) return true;
                 if (dockMouseArea.containsMouse) return true;
                 
                 if (Config.options.dock.showOnlyInDesktop) {
