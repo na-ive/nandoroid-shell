@@ -7,18 +7,17 @@ import "../core"
 
 /**
  * TaskbarApps Service
- * Fixed version: Restored automatic binding for reliable app list updates.
+ * Fixed: Ensured new apps are immediately detected and added to the model.
  */
 Singleton {
     id: root
 
-    // Cache for desktop entries
     readonly property var _entryCache: ({})
+    property list<string> unpinnedOrder: []
 
     function getDesktopEntry(appId) {
         if (!appId) return null;
         if (_entryCache[appId]) return _entryCache[appId];
-        
         const entry = DesktopEntries.byId(appId) || DesktopEntries.heuristicLookup(appId);
         if (entry) _entryCache[appId] = entry;
         return entry;
@@ -31,83 +30,142 @@ Singleton {
 
     function togglePin(appId) {
         if (!Config.ready) return;
-        let pinned = Config.options.dock.pinnedApps;
-        if (root.isPinned(appId)) {
-            Config.options.dock.pinnedApps = pinned.filter(id => id !== appId);
+        let pinned = Array.from(Config.options.dock.pinnedApps);
+        const idx = pinned.indexOf(appId);
+        if (idx !== -1) pinned.splice(idx, 1);
+        else pinned.push(appId);
+        Config.options.dock.pinnedApps = pinned;
+    }
+
+    function moveApp(appId, direction) {
+        if (!appId || !Config.ready) return;
+        const pinnedApps = Array.from(Config.options.dock.pinnedApps);
+        const isPinned = pinnedApps.includes(appId);
+        
+        if (isPinned) {
+            const idx = pinnedApps.indexOf(appId);
+            const target = idx + direction;
+            if (target >= 0 && target < pinnedApps.length) {
+                pinnedApps.splice(idx, 1);
+                pinnedApps.splice(target, 0, appId);
+                Config.options.dock.pinnedApps = pinnedApps;
+            }
         } else {
-            Config.options.dock.pinnedApps = pinned.concat([appId]);
+            const unpinned = Array.from(root.unpinnedOrder);
+            const idx = unpinned.indexOf(appId.toLowerCase());
+            if (idx === -1) return;
+            const target = idx + direction;
+            if (target >= 0 && target < unpinned.length) {
+                unpinned.splice(idx, 1);
+                unpinned.splice(target, 0, appId.toLowerCase());
+                root.unpinnedOrder = unpinned;
+            }
         }
     }
 
-    // --- The Model ---
-    // Using a binding-driven list for maximum reliability with pooling for stability
+    // Main Model Binding
     property list<var> apps: {
         if (!Config.ready) return [];
         
-        // This triggers the binding when windows or pinned apps change
+        // FORCED TRIGGERS: Ensure any change in toplevels triggers a rebuild
+        const _count = ToplevelManager.toplevels.values.length; 
         const _toplevels = ToplevelManager.toplevels.values;
         const pinnedApps = Config.options.dock.pinnedApps ?? [];
         const ignoredRegexStrings = Config.options.dock.ignoredAppRegexes ?? [];
         const ignoredRegexes = ignoredRegexStrings.map(pattern => new RegExp(pattern, "i"));
 
         const map = new Map();
+        let currentRunningIds = [];
 
-        // 1. Pinned Apps
+        // 1. Process Pinned Apps
         for (const appId of pinnedApps) {
-            const lowerId = appId.toLowerCase();
-            if (!map.has(lowerId)) {
-                map.set(lowerId, { appId: lowerId, pinned: true, toplevels: [] });
+            const id = appId.toLowerCase();
+            if (!map.has(id)) {
+                map.set(id, { appId: id, pinned: true, toplevels: [] });
             }
         }
 
-        // 2. Running Windows
+        // 2. Process Running Windows (Wayland Toplevels)
         for (const toplevel of _toplevels) {
             if (!toplevel || !toplevel.appId) continue;
             if (ignoredRegexes.some(re => re.test(toplevel.appId))) continue;
             
-            const lowerId = toplevel.appId.toLowerCase();
-            if (!map.has(lowerId)) {
-                map.set(lowerId, { appId: lowerId, pinned: false, toplevels: [] });
+            const id = toplevel.appId.toLowerCase();
+            if (!currentRunningIds.includes(id)) currentRunningIds.push(id);
+
+            if (!map.has(id)) {
+                map.set(id, { appId: id, pinned: false, toplevels: [] });
             }
-            map.get(lowerId).toplevels.push(toplevel);
+            
+            // Add toplevel if not already present in the list for this appId
+            const existingToplevels = map.get(id).toplevels;
+            if (!existingToplevels.includes(toplevel)) {
+                existingToplevels.push(toplevel);
+            }
         }
 
-        // 3. Sync with Pool
-        let newApps = [];
-        for (const [key, data] of map) {
+        // 3. Sync unpinnedOrder
+        let updatedUnpinnedOrder = root.unpinnedOrder.filter(id => {
+            // Keep if still running and not pinned
+            return currentRunningIds.includes(id) && !pinnedApps.map(p => p.toLowerCase()).includes(id);
+        });
+
+        // Add any NEWLY opened apps to the end of the unpinned order
+        for (const id of currentRunningIds) {
+            if (!pinnedApps.map(p => p.toLowerCase()).includes(id) && !updatedUnpinnedOrder.includes(id)) {
+                updatedUnpinnedOrder.push(id);
+            }
+        }
+
+        // Apply unpinned order update if it changed
+        if (JSON.stringify(updatedUnpinnedOrder) !== JSON.stringify(root.unpinnedOrder)) {
+            Qt.callLater(() => { root.unpinnedOrder = updatedUnpinnedOrder; });
+        }
+
+        // 4. Final Ordered List of IDs
+        let orderedIds = [];
+        for (const id of pinnedApps) orderedIds.push(id.toLowerCase());
+        for (const id of updatedUnpinnedOrder) {
+            if (!orderedIds.includes(id)) orderedIds.push(id);
+        }
+
+        // 5. Map to persistent Pool Objects
+        let finalResult = [];
+        for (const id of orderedIds) {
+            const data = map.get(id);
+            if (!data) continue;
+
             let wrapper = null;
-            // Check existing pool
             for (let i = 0; i < pool.length; i++) {
-                if (pool[i] && pool[i].appId === key) {
+                if (pool[i] && pool[i].appId === id) {
                     wrapper = pool[i];
                     break;
                 }
             }
 
             if (!wrapper) {
-                wrapper = appEntryComp.createObject(root, { appId: key });
+                wrapper = appEntryComp.createObject(root, { appId: id });
                 pool.push(wrapper);
             }
 
             wrapper.toplevels = data.toplevels;
             wrapper.pinned = data.pinned;
-            newApps.push(wrapper);
+            finalResult.push(wrapper);
         }
 
-        // 4. Cleanup unused wrappers later to avoid disrupting current frame
+        // 6. Cleanup Pool (Deferred)
         Qt.callLater(() => {
             for (let i = pool.length - 1; i >= 0; i--) {
-                if (!newApps.includes(pool[i])) {
+                if (pool[i] && !finalResult.includes(pool[i])) {
                     const old = pool.splice(i, 1)[0];
                     if (old) old.destroy();
                 }
             }
         });
 
-        return newApps;
+        return finalResult;
     }
 
-    // Use 'var' for the pool to support JS array methods like push/splice
     property var pool: []
 
     Component {

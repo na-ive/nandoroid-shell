@@ -101,7 +101,7 @@ DockButton {
             ColorOverlay {
                 anchors.fill: parent
                 source: iconImage
-                color: Appearance.colors.colOnPrimaryContainer
+                color: Functions.ColorUtils.applyAlpha(Appearance.colors.colOnPrimaryContainer, 0.5)
                 visible: Config.ready && Config.options.dock.monochromeIcons
             }
 

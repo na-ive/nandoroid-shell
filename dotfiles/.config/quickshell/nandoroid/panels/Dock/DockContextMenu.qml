@@ -12,16 +12,13 @@ import "../../widgets"
 
 /**
  * DockContextMenu.qml
- * Unified context menu for apps and the launcher button.
- * Optimized for stability and reliable closing.
+ * Optimized for stability with reordering buttons.
  */
 PanelWindow {
     id: root
     visible: false
     
-    anchors {
-        top: true; bottom: true; left: true; right: true
-    }
+    anchors { top: true; bottom: true; left: true; right: true }
     
     WlrLayershell.layer: WlrLayer.Overlay
     WlrLayershell.namespace: "nandoroid:dock-context-menu"
@@ -31,7 +28,6 @@ PanelWindow {
     property var appToplevel: null
     property string appId: appToplevel ? appToplevel.appId : ""
     
-    // Safety checks for properties
     property bool isPinned: (appToplevel && appId !== "") ? (appToplevel.pinned ?? false) : false
     property int windowCount: (appToplevel && appToplevel.toplevels) ? appToplevel.toplevels.length : 0
     
@@ -45,11 +41,7 @@ PanelWindow {
 
     color: "transparent"
 
-    // Backdrop to catch clicks
-    MouseArea { 
-        anchors.fill: parent
-        onPressed: root.close() 
-    }
+    MouseArea { anchors.fill: parent; onPressed: root.close() }
 
     Rectangle {
         id: menuContainer
@@ -67,10 +59,7 @@ PanelWindow {
         Behavior on opacity { NumberAnimation { duration: root.isClosing ? Appearance.animation.elementMoveExit.duration : Appearance.animation.elementMoveEnter.duration; easing.type: Easing.OutCubic } }
         Behavior on scale { NumberAnimation { duration: root.isClosing ? Appearance.animation.elementMoveExit.duration : Appearance.animation.elementMoveEnter.duration; easing.type: Easing.OutBack } }
 
-        MouseArea { 
-            anchors.fill: parent
-            onPressed: (mouse) => mouse.accepted = true 
-        }
+        MouseArea { anchors.fill: parent; onPressed: (mouse) => mouse.accepted = true }
 
         ColumnLayout {
             id: menuLayout
@@ -81,6 +70,43 @@ PanelWindow {
                 visible: !root.isLauncher
                 Layout.fillWidth: true; spacing: 1
                 
+                // Reordering Row
+                RowLayout {
+                    Layout.fillWidth: true; Layout.margins: 0; spacing: 1
+                    
+                    RippleButton {
+                        Layout.fillWidth: true; Layout.preferredHeight: 24
+                        buttonRadius: Appearance.rounding.verysmall; colBackground: "transparent"
+                        contentItem: Item {
+                            anchors.fill: parent
+                            MaterialSymbol { 
+                                text: "arrow_back"; iconSize: 18; color: Appearance.colors.colOnLayer0; 
+                                anchors.verticalCenter: parent.verticalCenter
+                                anchors.left: parent.left; anchors.leftMargin: 16
+                            }
+                        }
+                        onClicked: TaskbarApps.moveApp(root.appId, -1)
+                    }
+                    
+                    Rectangle { Layout.preferredWidth: 1; Layout.preferredHeight: 16; color: Appearance.colors.colOutlineVariant; opacity: 0.1 }
+                    
+                    RippleButton {
+                        Layout.fillWidth: true; Layout.preferredHeight: 24
+                        buttonRadius: Appearance.rounding.verysmall; colBackground: "transparent"
+                        contentItem: Item {
+                            anchors.fill: parent
+                            MaterialSymbol { 
+                                text: "arrow_forward"; iconSize: 18; color: Appearance.colors.colOnLayer0; 
+                                anchors.verticalCenter: parent.verticalCenter
+                                anchors.right: parent.right; anchors.rightMargin: 16
+                            }
+                        }
+                        onClicked: TaskbarApps.moveApp(root.appId, 1)
+                    }
+                }
+
+                Rectangle { Layout.fillWidth: true; Layout.preferredHeight: 1; Layout.margins: 4; color: Appearance.colors.colOutlineVariant; opacity: 0.1 }
+
                 // Header
                 RowLayout {
                     Layout.fillWidth: true; Layout.leftMargin: 8; Layout.rightMargin: 8; Layout.topMargin: 4; Layout.bottomMargin: 4; spacing: 8
@@ -101,12 +127,11 @@ PanelWindow {
 
                 Rectangle { Layout.fillWidth: true; Layout.preferredHeight: 1; Layout.margins: 4; color: Appearance.colors.colOutlineVariant; opacity: 0.1 }
 
-                // Jump List Actions
+                // Jump List
                 Repeater {
                     model: (root.desktopEntry && root.desktopEntry.actions) ? root.desktopEntry.actions : []
                     delegate: MenuItem {
-                        menuText: modelData.name
-                        menuIcon: modelData.icon || "bolt"
+                        menuText: modelData.name; menuIcon: modelData.icon || "bolt"
                         onClicked: { modelData.execute(); root.close() }
                     }
                 }
@@ -137,9 +162,7 @@ PanelWindow {
                     onClicked: {
                         if (root.appToplevel && root.appToplevel.toplevels) {
                             const windows = root.appToplevel.toplevels;
-                            for (let i = 0; i < windows.length; i++) {
-                                if (windows[i]) windows[i].close();
-                            }
+                            for (let i = 0; i < windows.length; i++) { if (windows[i]) windows[i].close(); }
                         }
                         root.close();
                     }
@@ -165,46 +188,23 @@ PanelWindow {
             ColumnLayout {
                 visible: root.isLauncher
                 Layout.fillWidth: true; spacing: 1
-
                 MenuItem {
                     menuText: "Restart Shell"; menuIcon: "refresh"
-                    onClicked: { 
-                        Quickshell.execDetached([Directories.home.replace("file://", "") + "/.config/quickshell/nandoroid/scripts/restartshell.sh"]); 
-                        root.close(); 
-                    }
+                    onClicked: { Quickshell.execDetached([Directories.home.replace("file://", "") + "/.config/quickshell/nandoroid/scripts/restartshell.sh"]); root.close() }
                 }
-
                 MenuItem {
                     menuText: "Settings"; menuIcon: "settings"
                     onClicked: { GlobalStates.activateSettings(); root.close() }
                 }
-
                 MenuItem {
                     menuText: "System Monitor"; menuIcon: "monitoring"
                     onClicked: { GlobalStates.activateSystemMonitor(); root.close() }
                 }
-
                 Rectangle { Layout.fillWidth: true; Layout.preferredHeight: 1; Layout.margins: 4; color: Appearance.colors.colOutlineVariant; opacity: 0.1 }
-
-                MenuItem {
-                    menuText: "Lock Session"; menuIcon: "lock"
-                    onClicked: { Session.lock(); root.close() }
-                }
-
-                MenuItem {
-                    menuText: "Logout"; menuIcon: "logout"
-                    onClicked: { Session.logout(); root.close() }
-                }
-
-                MenuItem {
-                    menuText: "Reboot"; menuIcon: "restart_alt"
-                    onClicked: { Session.reboot(); root.close() }
-                }
-
-                MenuItem {
-                    menuText: "Power Off"; menuIcon: "power_settings_new"
-                    onClicked: { Session.poweroff(); root.close() }
-                }
+                MenuItem { menuText: "Lock Session"; menuIcon: "lock"; onClicked: { Session.lock(); root.close() } }
+                MenuItem { menuText: "Logout"; menuIcon: "logout"; onClicked: { Session.logout(); root.close() } }
+                MenuItem { menuText: "Reboot"; menuIcon: "restart_alt"; onClicked: { Session.reboot(); root.close() } }
+                MenuItem { menuText: "Power Off"; menuIcon: "power_settings_new"; onClicked: { Session.poweroff(); root.close() } }
             }
         }
     }
@@ -241,49 +241,33 @@ PanelWindow {
     function openAt(mouseX, mouseY, appData = null) {
         hideTimer.stop();
         isClosing = false;
-        
         appToplevel = appData;
         isLauncher = (appData === null);
-        
-        root._mouseX = mouseX;
-        root._mouseY = mouseY;
-        
+        root._mouseX = mouseX; root._mouseY = mouseY;
         root.visible = true;
         GlobalStates.dockMenuOpen = true;
         
-        // Stabilized positioning
         Qt.callLater(() => {
             if (!root.visible) return;
-            
             const screenWidth = root.screen.width;
             const screenHeight = root.screen.height;
             const menuWidth = Appearance.sizes.contextMenuWidth;
             const menuHeight = menuLayout.implicitHeight + 12;
-            
             root.targetX = Math.min(root._mouseX, screenWidth - menuWidth - 10);
-            
-            if (root._mouseY + menuHeight > screenHeight - 10) {
-                root.targetY = root._mouseY - menuHeight;
-            } else {
-                root.targetY = root._mouseY;
-            }
-            
+            if (root._mouseY + menuHeight > screenHeight - 10) root.targetY = root._mouseY - menuHeight;
+            else root.targetY = root._mouseY;
             root.targetY = Math.max(10, root.targetY);
-            
-            menuContainer.opacity = 0.98;
-            menuContainer.scale = 1;
+            menuContainer.opacity = 0.98; menuContainer.scale = 1;
         });
     }
 
     function close() {
         if (!visible || isClosing) return;
         isClosing = true;
-        menuContainer.opacity = 0;
-        menuContainer.scale = 0.95;
+        menuContainer.opacity = 0; menuContainer.scale = 0.95;
         hideTimer.restart();
     }
 
-    // Ensure focus grab for reliable closing
     HyprlandFocusGrab {
         active: root.visible && !root.isClosing
         windows: [root]

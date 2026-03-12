@@ -30,6 +30,10 @@ Item {
         anchors.fill: parent
         
         interactive: false 
+        
+        displaced: Transition {
+            NumberAnimation { properties: "x,y"; duration: 250; easing.type: Easing.OutCubic }
+        }
 
         Behavior on implicitWidth {
             animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(this)
