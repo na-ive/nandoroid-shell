@@ -106,7 +106,17 @@ Scope {
                     anchors.bottomMargin: dockWindow.reveal ? bMargin : -height - 20
                     opacity: dockWindow.reveal ? 1 : 0
                     
-                    Behavior on anchors.bottomMargin { animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(visualContainer) }
+                    property bool animationFinished: !dockWindow.reveal // Start true if hidden, or follow reveal
+
+                    NumberAnimation on anchors.bottomMargin {
+                        id: revealAnim
+                        duration: Appearance.animation.elementMoveFast.duration
+                        easing.type: Appearance.animation.elementMoveFast.type
+                        easing.bezierCurve: Appearance.animation.elementMoveFast.bezierCurve
+                        onFinished: visualContainer.animationFinished = true
+                        onStarted: visualContainer.animationFinished = false
+                    }
+                    
                     Behavior on opacity { animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(visualContainer) }
 
                     StyledRectangularShadow {
@@ -138,7 +148,7 @@ Scope {
                             }
 
                             onButtonHoverChanged: (button, appData, hovered) => {
-                                if (hovered) dockPreview.show(button, appData);
+                                if (hovered && visualContainer.animationFinished) dockPreview.show(button, appData);
                                 else dockPreview.requestHide();
                             }
                         }

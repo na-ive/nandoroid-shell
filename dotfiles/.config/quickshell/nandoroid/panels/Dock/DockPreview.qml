@@ -8,112 +8,132 @@ import "../../widgets"
 
 /**
  * DockPreview.qml
- * A compact, vertically stacked window preview for the dock.
+ * A stable, scrollable, and live-updating window preview for the dock.
  */
 PopupWindow {
     id: root
     visible: false
     
-    property var appToplevel: null
+    property string appId: ""
     property Item targetButton: null
     property var parentWindow: null 
     readonly property bool hovered: popupHoverHandler.hovered
     
+    // Internal state to lock coordinates
+    property var _lockedRect: Qt.rect(0, 0, 0, 0)
+
     color: "transparent"
     
+    // Fixed surface size to prevent Wayland resize lag
+    implicitWidth: 240
+    implicitHeight: 400
+
     anchor {
         window: parentWindow
-        // Map the entire button rect to the window coordinates
-        rect: targetButton ? targetButton.mapToItem(null, 0, 0, targetButton.width, targetButton.height) : Qt.rect(0, 0, 0, 0)
+        rect: root._lockedRect
         edges: Edges.Top
         gravity: Edges.Top
     }
 
-    implicitWidth: previewContainer.implicitWidth
-    implicitHeight: previewContainer.implicitHeight
+    // Reactive model: filters directly from the source of truth
+    readonly property var liveToplevels: {
+        if (!appId) return [];
+        const lowerId = appId.toLowerCase();
+        return Array.from(ToplevelManager.toplevels.values).filter(t => 
+            (t.appId && t.appId.toLowerCase() === lowerId)
+        );
+    }
+
+    // Auto-close when no more windows (or only 1)
+    onLiveToplevelsChanged: {
+        if (visible && liveToplevels.length <= 1) {
+            root.close();
+        }
+    }
 
     function close() {
         if (!visible) return;
         visible = false;
         targetButton = null;
+        appId = "";
     }
 
     Rectangle {
         id: previewContainer
-        implicitWidth: Math.max(180, previewLayout.implicitWidth + 16)
-        implicitHeight: previewLayout.implicitHeight + 12
+        width: 210
+        // Dynamic height with a cap (Max 300px)
+        implicitHeight: Math.min(300, previewListView.contentHeight + 12)
+        height: implicitHeight
+        
+        anchors.bottom: parent.bottom
+        anchors.horizontalCenter: parent.horizontalCenter
+        
         radius: Appearance.rounding.normal
         color: Appearance.colors.colLayer0
         border.color: Appearance.colors.colOutlineVariant
         border.width: 1
-
+        
         opacity: root.visible ? 0.98 : 0
         scale: root.visible ? 1 : 0.95
+        
+        Behavior on height { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
         Behavior on opacity { NumberAnimation { duration: 150; easing.type: Easing.OutCubic } }
         Behavior on scale { NumberAnimation { duration: 150; easing.type: Easing.OutBack } }
 
-        // Use HoverHandler for reliable hover detection
         HoverHandler {
             id: popupHoverHandler
             onHoveredChanged: {
-                if (hovered) {
-                    hideTimer.stop();
-                } else {
-                    root.requestHide();
-                }
+                if (hovered) hideTimer.stop();
+                else root.requestHide();
             }
         }
 
-        ColumnLayout {
-            id: previewLayout
-            anchors.fill: parent; anchors.margins: 6; spacing: 2
+        StyledListView {
+            id: previewListView
+            anchors.fill: parent
+            anchors.margins: 6
+            spacing: 2
+            clip: true
+            interactive: contentHeight > height
+            model: root.liveToplevels
+            
+            delegate: Rectangle {
+                width: ListView.view.width
+                height: 36
+                color: itemMouseArea.containsMouse ? Appearance.colors.colLayer1 : "transparent"
+                radius: Appearance.rounding.verysmall
+                Behavior on color { ColorAnimation { duration: 100 } }
 
+                MouseArea {
+                    id: itemMouseArea
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    onClicked: {
+                        modelData.activate();
+                        root.close();
+                    }
+                }
 
-            Repeater {
-                model: root.appToplevel ? root.appToplevel.toplevels : []
-                delegate: Rectangle {
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: 36
-                    color: itemMouseArea.containsMouse ? Appearance.colors.colLayer1 : "transparent"
-                    radius: Appearance.rounding.verysmall
-                    
-                    Behavior on color { ColorAnimation { duration: 100 } }
+                RowLayout {
+                    anchors.fill: parent; anchors.leftMargin: 10; anchors.rightMargin: 6; spacing: 8
 
-                    MouseArea {
-                        id: itemMouseArea
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        onClicked: {
-                            modelData.activate();
-                            root.close();
-                        }
+                    StyledText {
+                        text: modelData.title || "Window"
+                        font.pixelSize: Appearance.font.pixelSize.small
+                        color: Appearance.colors.colOnLayer0
+                        elide: Text.ElideRight
+                        Layout.fillWidth: true
                     }
 
-                    RowLayout {
-                        anchors.fill: parent; anchors.leftMargin: 10; anchors.rightMargin: 6; spacing: 8
+                    RippleButton {
+                        Layout.preferredWidth: 28; Layout.preferredHeight: 28
+                        buttonRadius: Appearance.rounding.verysmall
+                        colBackground: hovered ? Appearance.colors.colErrorContainer : "transparent"
+                        onClicked: modelData.close()
 
-                        StyledText {
-                            text: modelData.title || "Window"
-                            font.pixelSize: Appearance.font.pixelSize.small
-                            color: Appearance.colors.colOnLayer0
-                            elide: Text.ElideRight
-                            Layout.fillWidth: true
-                        }
-
-                        RippleButton {
-                            Layout.preferredWidth: 28; Layout.preferredHeight: 28
-                            buttonRadius: Appearance.rounding.verysmall
-                            colBackground: hovered ? Appearance.colors.colErrorContainer : "transparent"
-                            onClicked: (mouse) => {
-                                modelData.close();
-                                // If no more windows, close the preview
-                                if (root.appToplevel.toplevels.length <= 1) root.close();
-                            }
-
-                            contentItem: MaterialSymbol {
-                                text: "close"; iconSize: 16
-                                color: parent.hovered ? Appearance.colors.colOnErrorContainer : Appearance.colors.colOnLayer0
-                            }
+                        contentItem: MaterialSymbol {
+                            text: "close"; iconSize: 16
+                            color: parent.hovered ? Appearance.colors.colOnErrorContainer : Appearance.colors.colOnLayer0
                         }
                     }
                 }
@@ -123,7 +143,7 @@ PopupWindow {
 
     Timer {
         id: hideTimer
-        interval: 500 
+        interval: 250 
         onTriggered: root.close()
     }
 
@@ -135,12 +155,17 @@ PopupWindow {
         
         hideTimer.stop();
         targetButton = button;
-        appToplevel = appData;
+        appId = appData.appId;
+        
+        // Use a positive Y offset (4) to move the anchor point DOWN into the 
+        // dock window's transparent margin, making the popup look much closer.
+        const pos = targetButton.mapToItem(null, targetButton.width / 2, 4);
+        root._lockedRect = Qt.rect(pos.x, pos.y, 0, 0);
+        
         root.visible = true;
     }
 
     function requestHide() {
-        // Only start the timer if the mouse is not currently over the popup
         if (!popupHoverHandler.hovered) {
             hideTimer.restart();
         }
