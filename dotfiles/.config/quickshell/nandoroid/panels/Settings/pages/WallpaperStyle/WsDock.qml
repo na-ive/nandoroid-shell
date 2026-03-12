@@ -169,7 +169,7 @@ ColumnLayout {
                 }
             }
 
-            // ── Monochrome Icons ──────────────
+            // ── Themed Icons ──────────────
             SegmentedWrapper {
                 Layout.fillWidth: true
                 implicitHeight: monoRow.implicitHeight + 36
@@ -183,7 +183,7 @@ ColumnLayout {
                     anchors.fill: parent; anchors.margins: 16
                     spacing: 16
                     MaterialSymbol { text: "palette"; iconSize: 24; color: Appearance.colors.colPrimary }
-                    StyledText { text: "Monochrome Icons"; Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
+                    StyledText { text: "Themed Icons"; Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
                     AndroidToggle {
                         checked: Config.ready && Config.options.dock ? Config.options.dock.monochromeIcons : false
                         onToggled: if (Config.ready && Config.options.dock)

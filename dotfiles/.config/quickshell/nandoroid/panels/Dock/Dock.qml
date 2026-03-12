@@ -11,7 +11,7 @@ import "../../widgets"
 
 /**
  * NAnDoroid Ported Dock
- * Optimized version: Full Proportional Scaling support.
+ * Masterpiece version: Optimized, Stable, and Correct Layering.
  */
 Scope {
     id: root
@@ -28,17 +28,15 @@ Scope {
                 id: dockWindow
                 screen: modelData
                 
-                WlrLayershell.layer: {
-                    if (!Config.ready) return WlrLayer.Overlay;
-                    if (Config.options.dock.showOnlyInDesktop || Config.options.dock.autoHide) return WlrLayer.Overlay;
-                    return WlrLayer.Top;
-                }
-
+                // --- LAYER FIX: Sits at 'Top' layer so 'Overlay' panels stay in front ---
+                WlrLayershell.layer: WlrLayer.Top
                 WlrLayershell.namespace: "nandoroid:dock"
+                
                 exclusiveZone: {
                     if (!Config.ready) return 0;
+                    const scale = Config.options.dock.scale ?? 1.0;
                     if (!Config.options.dock.showOnlyInDesktop && !Config.options.dock.autoHide) {
-                        return dockHeight * dockScale + (dockWindow.bgStyle === 2 ? 0 : Appearance.sizes.elevationMargin / 2);
+                        return 70 * scale + (dockWindow.bgStyle === 2 ? 0 : Appearance.sizes.elevationMargin / 2);
                     }
                     return 0;
                 }
@@ -48,7 +46,7 @@ Scope {
                 visible: Config.ready && Config.options.dock.enable && !GlobalStates.screenLocked
                 mask: Region { item: dockMouseArea }
                 
-                readonly property real dockHeight: 70 // Fixed baseline height
+                readonly property real dockHeight: 70
                 readonly property real dockScale: Config.ready && Config.options.dock ? Config.options.dock.scale : 1.0
                 readonly property int bgStyle: Config.ready && Config.options.dock ? Config.options.dock.backgroundStyle : 1
                 
@@ -69,8 +67,7 @@ Scope {
 
                 property bool reveal: {
                     if (!Config.ready) return true;
-                    if (GlobalStates.launcherOpen) return false;
-                    if (root.pinned || GlobalStates.dashboardOpen || GlobalStates.overviewOpen || GlobalStates.dockMenuOpen || dockPreview.visible || dockPreview.hovered || dockApps.buttonHovered) return true;
+                    if (root.pinned || GlobalStates.dockMenuOpen || dockPreview.visible || dockPreview.hovered || dockApps.buttonHovered) return true;
                     if (dockMouseArea.containsMouse) return true;
                     if (Config.options.dock.showOnlyInDesktop) return !hasActiveWindows && !Config.options.dock.autoHide;
                     if (Config.options.dock.autoHide) return Config.options.dock.autoHideMode === 1 ? false : !hasActiveWindows;
@@ -111,10 +108,8 @@ Scope {
                         anchors.horizontalCenter: parent.horizontalCenter
                         width: mainRowContainer.implicitWidth + 20
                         height: dockWindow.dockHeight
-                        
-                        // --- APPLY SCALE TRANSFORMATION ---
                         scale: dockWindow.dockScale
-                        transformOrigin: Item.Bottom // Scale from the bottom edge
+                        transformOrigin: Item.Bottom
                         
                         readonly property real bMargin: (dockWindow.bgStyle === 2) ? 0 : Appearance.sizes.elevationMargin / 2
                         anchors.bottom: parent.bottom
@@ -126,7 +121,6 @@ Scope {
                         }
                         Behavior on opacity { NumberAnimation { duration: Appearance.animation.elementMoveFast.duration } }
 
-                        // --- THE PERFECT SHADOW ---
                         DropShadow {
                             anchors.fill: dockVisualRect
                             horizontalOffset: 0
@@ -138,7 +132,6 @@ Scope {
                             visible: dockWindow.bgStyle !== 0
                         }
 
-                        // --- BACKGROUND ISLAND ---
                         Rectangle {
                             id: dockVisualRect; anchors.fill: parent
                             radius: dockWindow.bgStyle === 1 ? height / 2 : 0
@@ -149,11 +142,9 @@ Scope {
                             color: Appearance.colors.colStatusBarSolid; opacity: dockWindow.bgStyle === 0 ? 0 : 1.0; border.width: 0
                         }
 
-                        // --- MASKED CONTENT LAYER ---
                         Item {
                             id: maskedIslandContent
                             anchors.fill: parent
-                            
                             layer.enabled: true
                             layer.effect: OpacityMask {
                                 maskSource: Rectangle {
