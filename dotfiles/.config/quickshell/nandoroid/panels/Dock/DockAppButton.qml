@@ -93,12 +93,14 @@ DockButton {
             if (appListRoot) {
                 appListRoot.lastHoveredButton = root
                 appListRoot.buttonHovered = true
+                appListRoot.buttonHoverChanged(root, appToplevel, true)
             }
             lastFocused = appToplevel.toplevels.length - 1
         }
         onExited: {
             if (appListRoot && appListRoot.lastHoveredButton === root) {
                 appListRoot.buttonHovered = false
+                appListRoot.buttonHoverChanged(root, appToplevel, false)
             }
         }
     }

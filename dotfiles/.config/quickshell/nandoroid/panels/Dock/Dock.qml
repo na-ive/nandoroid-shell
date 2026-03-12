@@ -68,7 +68,7 @@ Scope {
             property bool reveal: {
                 if (!Config.ready) return true;
                 const autoHide = Config.options.dock.autoHide;
-                if (root.pinned || GlobalStates.launcherOpen || GlobalStates.dashboardOpen || GlobalStates.overviewOpen || GlobalStates.dockMenuOpen) return true;
+                if (root.pinned || GlobalStates.launcherOpen || GlobalStates.dashboardOpen || GlobalStates.overviewOpen || GlobalStates.dockMenuOpen || dockPreview.visible || dockPreview.hovered || dockApps.buttonHovered) return true;
                 if (dockMouseArea.containsMouse) return true;
                 
                 if (Config.options.dock.showOnlyInDesktop) {
@@ -88,6 +88,8 @@ Scope {
                 
                 height: {
                     if (!Config.ready) return parent.height;
+                    // Keep full height if preview is visible or being interacted with
+                    if (dockPreview.visible || dockPreview.hovered) return parent.height;
                     if (Config.options.dock.showOnlyInDesktop && hasActiveWindows && !GlobalStates.launcherOpen && !GlobalStates.dockMenuOpen) return 0;
                     return dockWindow.reveal ? parent.height : 10;
                 }
@@ -134,6 +136,11 @@ Scope {
                                 // x and y are already window-relative from mapToItem(null, ...) in DockApps.qml
                                 dockContextMenu.openAt(dockWindow.screenX + x, dockWindow.screenY + y, appData);
                             }
+
+                            onButtonHoverChanged: (button, appData, hovered) => {
+                                if (hovered) dockPreview.show(button, appData);
+                                else dockPreview.requestHide();
+                            }
                         }
 
                         DockButton {
@@ -156,6 +163,11 @@ Scope {
             DockContextMenu {
                 id: dockContextMenu
                 screen: modelData
+            }
+
+            DockPreview {
+                id: dockPreview
+                parentWindow: dockWindow
             }
         }
     }

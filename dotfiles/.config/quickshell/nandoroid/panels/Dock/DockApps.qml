@@ -18,6 +18,7 @@ Item {
     property bool buttonHovered: false
     
     signal requestContextMenu(var appData, real x, real y)
+    signal buttonHoverChanged(Item button, var appData, bool hovered)
 
     Layout.fillHeight: true
     implicitWidth: listView.contentWidth
