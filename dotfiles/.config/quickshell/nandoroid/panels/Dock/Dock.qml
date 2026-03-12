@@ -10,8 +10,7 @@ import "../../widgets"
 
 /**
  * NAnDoroid Ported Dock
- * Optimized version with Hover Guard to prevent premature popups during animation.
- * Includes Auto-Reveal after timer finish for smoother UX.
+ * Masterpiece version: "Outer Div" island masking + pristine shadow layer.
  */
 Scope {
     id: root
@@ -24,21 +23,17 @@ Scope {
             required property var modelData
             readonly property int monitorIndex: modelData.index ?? 0
 
-            // 1. The Dock Window
             PanelWindow {
                 id: dockWindow
                 screen: modelData
                 
                 WlrLayershell.layer: {
                     if (!Config.ready) return WlrLayer.Overlay;
-                    if (Config.options.dock.showOnlyInDesktop || Config.options.dock.autoHide) {
-                        return WlrLayer.Overlay;
-                    }
+                    if (Config.options.dock.showOnlyInDesktop || Config.options.dock.autoHide) return WlrLayer.Overlay;
                     return WlrLayer.Top;
                 }
 
                 WlrLayershell.namespace: "nandoroid:dock"
-                
                 exclusiveZone: {
                     if (!Config.ready) return 0;
                     if (!Config.options.dock.showOnlyInDesktop && !Config.options.dock.autoHide) {
@@ -50,7 +45,6 @@ Scope {
                 anchors { bottom: true }
                 color: "transparent"
                 visible: Config.ready && Config.options.dock.enable && !GlobalStates.screenLocked
-                
                 mask: Region { item: dockMouseArea }
                 
                 readonly property real dockHeight: Config.ready ? Config.options.dock.height : 70
@@ -66,9 +60,7 @@ Scope {
                     const windows = HyprlandData.windowList;
                     for (let i = 0; i < windows.length; i++) {
                         const w = windows[i];
-                        if (w.monitor === screenScope.monitorIndex && !w.floating && w.workspace.id === wsId) {
-                            return true;
-                        }
+                        if (w.monitor === screenScope.monitorIndex && !w.floating && w.workspace.id === wsId) return true;
                     }
                     return false;
                 }
@@ -83,13 +75,11 @@ Scope {
                     return true;
                 }
 
-                // Hover Guard: Prevents hover popups during and immediately after dock animation
                 Timer {
                     id: hoverGuardTimer
                     interval: Appearance.animation.elementMoveFast.duration + 50
                     repeat: false
                     onTriggered: {
-                        // If user is already hovering an app when the timer finishes, reveal it immediately
                         if (dockApps.buttonHovered && dockWindow.reveal) {
                             dockPreview.show(dockApps.lastHoveredButton, dockApps.lastHoveredAppData);
                         }
@@ -125,15 +115,18 @@ Scope {
                         opacity: dockWindow.reveal ? 1 : 0
 
                         Behavior on anchors.bottomMargin {
-                            NumberAnimation {
-                                duration: Appearance.animation.elementMoveFast.duration
-                                easing.type: Appearance.animation.elementMoveFast.type
-                            }
+                            NumberAnimation { duration: Appearance.animation.elementMoveFast.duration; easing.type: Appearance.animation.elementMoveFast.type }
                         }
                         Behavior on opacity { NumberAnimation { duration: Appearance.animation.elementMoveFast.duration } }
 
-                        StyledRectangularShadow { target: dockVisualRect; opacity: 0.3; visible: dockWindow.bgStyle !== 0 }
+                        // 1. THE PRISTINE SHADOW (Outside the mask, never cut off)
+                        StyledRectangularShadow { 
+                            target: dockVisualRect
+                            opacity: 0.3
+                            visible: dockWindow.bgStyle !== 0 
+                        }
 
+                        // 2. THE BACKGROUND ISLAND (Determines the shape)
                         Rectangle {
                             id: dockVisualRect; anchors.fill: parent
                             radius: dockWindow.bgStyle === 1 ? height / 2 : 0
@@ -144,59 +137,72 @@ Scope {
                             color: Appearance.colors.colStatusBarSolid; opacity: dockWindow.bgStyle === 0 ? 0 : 1.0; border.width: 0
                         }
 
-                        RowLayout {
-                            id: mainRowContainer
-                            anchors.centerIn: parent
-                            spacing: 8
-                            DockApps {
-                                id: dockApps; buttonPadding: 6; spacing: 8; height: visualContainer.height
-                                onRequestContextMenu: (appData, x, y) => {
-                                    dockContextMenu.openAt(x, dockWindow.screenY + y, appData);
-                                }
-                                onButtonHoverChanged: (button, appData, hovered) => {
-                                    if (hovered) {
-                                        dockApps.lastHoveredAppData = appData;
-                                        if (!hoverGuardTimer.running && dockWindow.reveal) {
-                                            dockPreview.show(button, appData);
-                                        }
-                                    } else {
-                                        dockPreview.requestHide();
-                                    }
+                        // 3. THE OUTER DIV MASK (Cuts all contents to match the island shape)
+                        Item {
+                            id: maskedIslandContent
+                            anchors.fill: parent
+                            
+                            layer.enabled: true
+                            layer.effect: OpacityMask {
+                                maskSource: Rectangle {
+                                    width: maskedIslandContent.width
+                                    height: maskedIslandContent.height
+                                    radius: dockVisualRect.radius
+                                    topLeftRadius: dockVisualRect.topLeftRadius
+                                    topRightRadius: dockVisualRect.topRightRadius
+                                    bottomLeftRadius: dockVisualRect.bottomLeftRadius
+                                    bottomRightRadius: dockVisualRect.bottomRightRadius
                                 }
                             }
 
-                            DockButton {
-                                id: launcherButton; pointingHandCursor: true; onClicked: GlobalStates.launcherOpen = !GlobalStates.launcherOpen; toggled: GlobalStates.launcherOpen; dockTopInset: 6; dockBottomInset: 6
-                                altAction: (event) => {
-                                    const pos = launcherButton.mapToItem(null, event.x, event.y);
-                                    dockContextMenu.openAt(pos.x, dockWindow.screenY + pos.y);
+                            RowLayout {
+                                id: mainRowContainer
+                                anchors.centerIn: parent
+                                spacing: 8
+                                
+                                // The "Inner Div" (Apps)
+                                DockApps {
+                                    id: dockApps; buttonPadding: 6; spacing: 8; height: visualContainer.height
+                                    onRequestContextMenu: (appData, x, y) => {
+                                        dockContextMenu.openAt(x, dockWindow.screenY + y, appData);
+                                    }
+                                    onButtonHoverChanged: (button, appData, hovered) => {
+                                        if (hovered) {
+                                            dockApps.lastHoveredAppData = appData;
+                                            if (!hoverGuardTimer.running && dockWindow.reveal) {
+                                                dockPreview.show(button, appData);
+                                            }
+                                        } else {
+                                            dockPreview.requestHide();
+                                        }
+                                    }
                                 }
-                                background: Item {
-                                    anchors.fill: parent
-                                    Rectangle { anchors.fill: parent; radius: Appearance.rounding.button; color: launcherButton.baseColor; visible: !(Config.ready && Config.options.dock.monochromeIcons) }
-                                    MaterialShape { anchors.fill: parent; anchors.margins: 4; visible: Config.ready && Config.options.dock.monochromeIcons; shapeString: Config.ready && Config.options.search ? Config.options.search.iconShape : "Circle"; color: launcherButton.down ? Appearance.colors.colPrimary : Appearance.colors.colPrimaryContainer }
-                                }
-                                contentItem: Item {
-                                    anchors.fill: parent
-                                    MaterialSymbol { id: launcherIcon; anchors.centerIn: parent; text: "apps"; iconSize: Config.ready && Config.options.dock.monochromeIcons ? 24 : 28; color: launcherButton.toggled ? Appearance.colors.colOnPrimary : Appearance.colors.colOnLayer0; visible: !(Config.ready && Config.options.dock.monochromeIcons) }
-                                    ColorOverlay { anchors.fill: launcherIcon; source: launcherIcon; color: Appearance.colors.colOnPrimaryContainer; visible: Config.ready && Config.options.dock.monochromeIcons }
+
+                                // The Launcher
+                                DockButton {
+                                    id: launcherButton; pointingHandCursor: true; onClicked: GlobalStates.launcherOpen = !GlobalStates.launcherOpen; toggled: GlobalStates.launcherOpen; dockTopInset: 6; dockBottomInset: 6
+                                    altAction: (event) => {
+                                        const pos = launcherButton.mapToItem(null, event.x, event.y);
+                                        dockContextMenu.openAt(pos.x, dockWindow.screenY + pos.y);
+                                    }
+                                    background: Item {
+                                        anchors.fill: parent
+                                        Rectangle { anchors.fill: parent; radius: Appearance.rounding.button; color: launcherButton.baseColor; visible: !(Config.ready && Config.options.dock.monochromeIcons) }
+                                        MaterialShape { anchors.fill: parent; anchors.margins: 4; visible: Config.ready && Config.options.dock.monochromeIcons; shapeString: Config.ready && Config.options.search ? Config.options.search.iconShape : "Circle"; color: launcherButton.down ? Appearance.colors.colPrimary : Appearance.colors.colPrimaryContainer }
+                                    }
+                                    contentItem: Item {
+                                        anchors.fill: parent
+                                        MaterialSymbol { id: launcherIcon; anchors.centerIn: parent; text: "apps"; iconSize: Config.ready && Config.options.dock.monochromeIcons ? 24 : 28; color: launcherButton.toggled ? Appearance.colors.colOnPrimary : Appearance.colors.colOnLayer0; visible: !(Config.ready && Config.options.dock.monochromeIcons) }
+                                        ColorOverlay { anchors.fill: launcherIcon; source: launcherIcon; color: Appearance.colors.colOnPrimaryContainer; visible: Config.ready && Config.options.dock.monochromeIcons }
+                                    }
                                 }
                             }
                         }
                     }
                 }
-            }
 
-            // 2. The Context Menu
-            DockContextMenu {
-                id: dockContextMenu
-                screen: modelData
-            }
-
-            // 3. The Preview
-            DockPreview {
-                id: dockPreview
-                parentWindow: dockWindow
+                DockContextMenu { id: dockContextMenu; screen: modelData }
+                DockPreview { id: dockPreview; parentWindow: dockWindow }
             }
         }
     }
