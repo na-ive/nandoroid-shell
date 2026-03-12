@@ -46,14 +46,16 @@ Scope {
             anchors { bottom: true }
             color: "transparent"
             
+            mask: Region { item: dockMouseArea }
+            
             readonly property real dockHeight: Config.ready ? Config.options.dock.height : 70
             readonly property int bgStyle: Config.ready && Config.options.dock ? Config.options.dock.backgroundStyle : 1
             
-            implicitWidth: mainRowContainer.implicitWidth + 40
+            width: modelData.width
             implicitHeight: dockHeight + Appearance.sizes.elevationMargin
 
             // Calculate absolute screen position of the dock window
-            readonly property real screenX: (modelData.width - width) / 2
+            readonly property real screenX: (modelData.width - visualContainer.width) / 2
             readonly property real screenY: modelData.height - height
 
             readonly property bool hasActiveWindows: {
@@ -83,7 +85,8 @@ Scope {
 
             MouseArea {
                 id: dockMouseArea
-                anchors.fill: parent
+                width: visualContainer.width
+                anchors.horizontalCenter: parent.horizontalCenter
                 hoverEnabled: true
                 
                 height: {
@@ -91,7 +94,9 @@ Scope {
                     // Keep full height if preview is visible or being interacted with
                     if (dockPreview.visible || dockPreview.hovered) return parent.height;
                     if (Config.options.dock.showOnlyInDesktop && hasActiveWindows && !GlobalStates.launcherOpen && !GlobalStates.dockMenuOpen) return 0;
-                    return dockWindow.reveal ? parent.height : 10;
+                    
+                    // Increased to 3px for better physical detection
+                    return dockWindow.reveal ? parent.height : 3;
                 }
                 anchors.bottom: parent.bottom
 
