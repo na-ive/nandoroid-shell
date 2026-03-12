@@ -79,6 +79,22 @@ Singleton {
     property var appNameList: sortApps(Object.keys(groupsByAppName), groupsByAppName)
     property var popupAppNameList: sortApps(Object.keys(popupGroupsByAppName), popupGroupsByAppName)
 
+    function getCountForApp(appId) {
+        if (!appId) return 0;
+        let count = 0;
+        const lowerId = appId.toLowerCase();
+        
+        for (let i = 0; i < list.length; i++) {
+            const n = list[i];
+            const name = (n.appName || "").toLowerCase();
+            // Fuzzy match: check if appName is in appId or vice versa
+            if (name !== "" && (lowerId.includes(name) || name.includes(lowerId))) {
+                count++;
+            }
+        }
+        return count;
+    }
+
     // ── Notification wrapper component ──
     // ── Notification wrapper component ──
     component Notif: QtObject {

@@ -160,6 +160,36 @@ DockButton {
                     }
                 }
             }
+
+            // Notification Badge
+            Rectangle {
+                id: badge
+                anchors {
+                    top: parent.top
+                    right: parent.right
+                    topMargin: -4
+                    rightMargin: -4
+                }
+                width: 16; height: 16
+                radius: 8
+                color: Appearance.colors.colError
+                visible: notifCount > 0
+                z: 10
+                
+                readonly property int notifCount: Notifications.getCountForApp(appToplevel.appId)
+
+                StyledText {
+                    anchors.centerIn: parent
+                    text: parent.notifCount > 9 ? "!" : parent.notifCount
+                    font.pixelSize: 10
+                    font.weight: Font.Bold
+                    color: "white"
+                }
+
+                // Animation for badge appearing
+                scale: visible ? 1 : 0
+                Behavior on scale { NumberAnimation { duration: 200; easing.type: Easing.OutBack } }
+            }
         }
 
         // Indicator dots for running windows
