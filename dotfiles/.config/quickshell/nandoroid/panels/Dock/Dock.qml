@@ -153,8 +153,9 @@ Scope {
                             id: dockApps; buttonPadding: 6; spacing: 8; height: visualContainer.height
                             
                             onRequestContextMenu: (appData, x, y) => {
-                                // x and y are already window-relative from mapToItem(null, ...) in DockApps.qml
-                                dockContextMenu.openAt(dockWindow.screenX + x, dockWindow.screenY + y, appData);
+                                // x and y are already window-relative from mapToItem in DockApps.qml
+                                // Since window is full width, x is already the screen-relative X.
+                                dockContextMenu.openAt(x, dockWindow.screenY + y, appData);
                             }
 
                             onButtonHoverChanged: (button, appData, hovered) => {
@@ -165,6 +166,13 @@ Scope {
 
                         DockButton {
                             id: launcherButton; pointingHandCursor: true; onClicked: GlobalStates.launcherOpen = !GlobalStates.launcherOpen; toggled: GlobalStates.launcherOpen; dockTopInset: 6; dockBottomInset: 6
+                            
+                            altAction: (event) => {
+                                // Map the ACTUAL click position to window coordinates
+                                const pos = launcherButton.mapToItem(null, event.x, event.y);
+                                dockContextMenu.openAt(pos.x, dockWindow.screenY + pos.y);
+                            }
+
                             background: Item {
                                 anchors.fill: parent
                                 Rectangle { anchors.fill: parent; radius: Appearance.rounding.button; color: launcherButton.baseColor; visible: !(Config.ready && Config.options.dock.monochromeIcons) }

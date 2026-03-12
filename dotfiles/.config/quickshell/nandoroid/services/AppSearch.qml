@@ -34,7 +34,13 @@ Singleton {
         }
     }
 
+    // Reactive trigger to force re-evaluation when desktop entries are loaded
+    readonly property int _entryCount: DesktopEntries.applications.values.length
+
     function guessIcon(clientClass, initialClass, title) {
+        // Accessing _entryCount makes this function reactive to DesktopEntries changes
+        let dummy = root._entryCount; 
+        
         if (!clientClass && !initialClass && !title) return "application-x-executable";
         
         let cClass = clientClass || "";

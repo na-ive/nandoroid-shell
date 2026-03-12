@@ -51,7 +51,7 @@ Item {
 
             // Use the altAction property from RippleButton
             altAction: (event) => {
-                // Map the mouse position to the window coordinates
+                // Map the ACTUAL click position to the window coordinates
                 const pos = appButton.mapToItem(null, event.x, event.y);
                 root.requestContextMenu(modelData, pos.x, pos.y);
             }

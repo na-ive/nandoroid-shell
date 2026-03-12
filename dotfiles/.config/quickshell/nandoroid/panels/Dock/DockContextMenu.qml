@@ -12,8 +12,7 @@ import "../../widgets"
 
 /**
  * DockContextMenu.qml
- * A premium full-screen overlay context menu.
- * Supports Desktop Actions (Jump Lists).
+ * Unified context menu for apps and the launcher button.
  */
 PanelWindow {
     id: root
@@ -26,14 +25,18 @@ PanelWindow {
     WlrLayershell.layer: WlrLayer.Overlay
     WlrLayershell.namespace: "nandoroid:dock-context-menu"
     WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
+    exclusionMode: ExclusionMode.Ignore
     
     property var appToplevel: null
     property string appId: appToplevel ? appToplevel.appId : ""
-    property bool isPinned: TaskbarApps.isPinned(appId)
+    property bool isPinned: TaskbarApps.pinnedAppIds.includes(root.appId)
     property int windowCount: appToplevel ? appToplevel.toplevels.length : 0
     
+    // Mode differentiator
+    property bool isLauncher: false
+
     // Fetch the desktop entry to get its actions (Jump List)
-    readonly property var desktopEntry: DesktopEntries.byId(root.appId) || DesktopEntries.heuristicLookup(root.appId)
+    readonly property var desktopEntry: isLauncher ? null : (DesktopEntries.byId(root.appId) || DesktopEntries.heuristicLookup(root.appId))
 
     property real targetX: 0
     property real targetY: 0
@@ -48,12 +51,14 @@ PanelWindow {
         id: menuContainer
         x: root.targetX; y: root.targetY
         implicitWidth: Appearance.sizes.contextMenuWidth
-        implicitHeight: menuLayout.implicitHeight + 8
+        implicitHeight: menuLayout.implicitHeight + 12
         radius: Appearance.rounding.small
         color: Appearance.colors.colLayer0
         border.color: Appearance.colors.colOutlineVariant
         border.width: 1
-        opacity: 0; scale: 0.95
+        opacity: root.visible ? 0.98 : 0
+        scale: root.visible ? 1 : 0.95
+        visible: opacity > 0
 
         Behavior on opacity { NumberAnimation { duration: root.isClosing ? Appearance.animation.elementMoveExit.duration : Appearance.animation.elementMoveEnter.duration; easing.type: Easing.OutCubic } }
         Behavior on scale { NumberAnimation { duration: root.isClosing ? Appearance.animation.elementMoveExit.duration : Appearance.animation.elementMoveEnter.duration; easing.type: Easing.OutBack } }
@@ -62,82 +67,129 @@ PanelWindow {
 
         ColumnLayout {
             id: menuLayout
-            anchors.fill: parent; anchors.margins: 4; spacing: 1 // Tight spacing
+            anchors.fill: parent; anchors.margins: 4; spacing: 1
 
-            // Header
-            RowLayout {
-                Layout.fillWidth: true; Layout.leftMargin: 8; Layout.rightMargin: 8; Layout.topMargin: 4; Layout.bottomMargin: 4; spacing: 8
-                Item {
-                    Layout.preferredWidth: 20; Layout.preferredHeight: 20
-                    IconImage {
-                        anchors.fill: parent
-                        source: "image://icon/" + AppSearch.guessIcon(root.appId)
+            // --- APP MODE ---
+            ColumnLayout {
+                visible: !root.isLauncher
+                Layout.fillWidth: true; spacing: 1
+                
+                // Header
+                RowLayout {
+                    Layout.fillWidth: true; Layout.leftMargin: 8; Layout.rightMargin: 8; Layout.topMargin: 4; Layout.bottomMargin: 4; spacing: 8
+                    Item {
+                        Layout.preferredWidth: 20; Layout.preferredHeight: 20
+                        IconImage {
+                            anchors.fill: parent
+                            source: Quickshell.iconPath(AppSearch.guessIcon(root.appId), "application-x-executable")
+                        }
+                    }
+                    StyledText {
+                        text: root.desktopEntry ? root.desktopEntry.name : (root.appId.charAt(0).toUpperCase() + root.appId.slice(1))
+                        font.pixelSize: Appearance.font.pixelSize.small
+                        font.weight: Font.Bold; color: Appearance.colors.colOnLayer0
+                        elide: Text.ElideRight; Layout.fillWidth: true
                     }
                 }
-                StyledText {
-                    text: root.desktopEntry ? root.desktopEntry.name : (root.appId.charAt(0).toUpperCase() + root.appId.slice(1))
-                    font.pixelSize: Appearance.font.pixelSize.small
-                    font.weight: Font.Bold; color: Appearance.colors.colOnLayer0
-                    elide: Text.ElideRight; Layout.fillWidth: true
+
+                Rectangle { Layout.fillWidth: true; Layout.preferredHeight: 1; Layout.margins: 4; color: Appearance.colors.colOutlineVariant; opacity: 0.1 }
+
+                // Jump List Actions
+                Repeater {
+                    model: (root.desktopEntry && root.desktopEntry.actions) ? root.desktopEntry.actions : []
+                    delegate: MenuItem {
+                        menuText: modelData.name
+                        menuIcon: modelData.icon || "bolt"
+                        onClicked: { modelData.execute(); root.close() }
+                    }
                 }
-            }
 
-            Rectangle { Layout.fillWidth: true; Layout.preferredHeight: 1; Layout.margins: 4; color: Appearance.colors.colOutlineVariant; opacity: 0.1 }
+                // New Window Fallback
+                MenuItem {
+                    visible: root.appId !== "" && (!root.desktopEntry || !root.desktopEntry.actions || root.desktopEntry.actions.length === 0)
+                    menuText: "New Window"; menuIcon: "add_box"
+                    onClicked: { 
+                        if (root.desktopEntry) root.desktopEntry.execute();
+                        else Quickshell.execDetached([root.appId]);
+                        root.close();
+                    }
+                }
 
-            // --- Desktop Actions (Jump List) ---
-            Repeater {
-                model: (root.desktopEntry && root.desktopEntry.actions) ? root.desktopEntry.actions : []
-                delegate: MenuItem {
-                    menuText: modelData.name
-                    menuIcon: modelData.icon || "bolt"
+                Rectangle { Layout.fillWidth: true; Layout.preferredHeight: 1; Layout.margins: 4; color: Appearance.colors.colOutlineVariant; opacity: 0.1 }
+
+                MenuItem {
+                    menuText: root.isPinned ? "Unpin from Dock" : "Pin to Dock"
+                    menuIcon: root.isPinned ? "keep_off" : "keep"
+                    onClicked: { TaskbarApps.togglePin(root.appId); root.close() }
+                }
+
+                Rectangle { visible: root.windowCount > 0; Layout.fillWidth: true; Layout.preferredHeight: 1; Layout.margins: 4; color: Appearance.colors.colOutlineVariant; opacity: 0.1 }
+
+                MenuItem {
+                    visible: root.windowCount > 0
+                    menuText: root.windowCount > 1 ? "Close All Windows" : "Close Window"; menuIcon: "close"
                     onClicked: {
-                        modelData.execute();
+                        if (root.appToplevel) {
+                            const windows = root.appToplevel.toplevels;
+                            for (let i = 0; i < windows.length; i++) windows[i].close();
+                        }
+                        root.close();
+                    }
+                }
+
+                MenuItem {
+                    visible: root.windowCount > 0
+                    menuText: "Force Close"; menuIcon: "gavel"
+                    onClicked: {
+                        if (root.appToplevel && root.appToplevel.toplevels.length > 0) {
+                            killProc.command = ["kill", "-9", root.appToplevel.toplevels[0].pid.toString()];
+                            killProc.running = true;
+                        }
                         root.close();
                     }
                 }
             }
 
-            // Always show "New Window" as a fallback if no specific actions are found
-            MenuItem {
-                visible: root.appId !== "" && (!root.desktopEntry || !root.desktopEntry.actions || root.desktopEntry.actions.length === 0)
-                menuText: "New Window"
-                menuIcon: "add_box"
-                onClicked: { 
-                    if (root.desktopEntry) root.desktopEntry.execute();
-                    else Quickshell.execDetached([root.appId]);
-                    root.close();
+            // --- LAUNCHER MODE ---
+            ColumnLayout {
+                visible: root.isLauncher
+                Layout.fillWidth: true; spacing: 1
+
+                MenuItem {
+                    menuText: "Restart Shell"; menuIcon: "refresh"
+                    onClicked: { Quickshell.execDetached([Directories.home.replace("file://", "") + "/.config/quickshell/nandoroid/scripts/restartshell.sh"]); root.close() }
                 }
-            }
 
-            Rectangle { Layout.fillWidth: true; Layout.preferredHeight: 1; Layout.margins: 8; color: Appearance.colors.colOutlineVariant; opacity: 0.2 }
+                MenuItem {
+                    menuText: "Settings"; menuIcon: "settings"
+                    onClicked: { GlobalStates.activateSettings(); root.close() }
+                }
 
-            // --- Standard Actions ---
-            MenuItem {
-                menuText: root.isPinned ? "Unpin from Dock" : "Pin to Dock"
-                menuIcon: root.isPinned ? "keep_off" : "keep"
-                onClicked: { TaskbarApps.togglePin(root.appId); root.close() }
-            }
+                MenuItem {
+                    menuText: "System Monitor"; menuIcon: "monitoring"
+                    onClicked: { GlobalStates.activateSystemMonitor(); root.close() }
+                }
 
-            Rectangle { visible: root.windowCount > 0; Layout.fillWidth: true; Layout.preferredHeight: 1; Layout.margins: 8; color: Appearance.colors.colOutlineVariant; opacity: 0.2 }
+                Rectangle { Layout.fillWidth: true; Layout.preferredHeight: 1; Layout.margins: 4; color: Appearance.colors.colOutlineVariant; opacity: 0.1 }
 
-            MenuItem {
-                visible: root.windowCount > 0
-                menuText: root.windowCount > 1 ? "Close All Windows" : "Close Window"; menuIcon: "close"
-                onClicked: { for (let i = 0; i < root.appToplevel.toplevels.length; i++) root.appToplevel.toplevels[i].close(); root.close() }
-            }
+                MenuItem {
+                    menuText: "Lock Session"; menuIcon: "lock"
+                    onClicked: { Session.lock(); root.close() }
+                }
 
-            MenuItem {
-                visible: root.appId !== ""
-                menuText: "Force Close"; menuIcon: "gavel"
-                onClicked: {
-                    if (root.appToplevel && root.appToplevel.toplevels) {
-                        for (let i = 0; i < root.appToplevel.toplevels.length; i++) {
-                            const tl = root.appToplevel.toplevels[i];
-                            if (tl.pid && tl.pid > 0) killProc.exec(["kill", "-9", tl.pid.toString()]);
-                        }
-                    }
-                    if (root.appId !== "") killProc.exec(["pkill", "-9", "-f", root.appId]);
-                    root.close();
+                MenuItem {
+                    menuText: "Logout"; menuIcon: "logout"
+                    onClicked: { Session.logout(); root.close() }
+                }
+
+                MenuItem {
+                    menuText: "Reboot"; menuIcon: "restart_alt"
+                    onClicked: { Session.reboot(); root.close() }
+                }
+
+                MenuItem {
+                    menuText: "Power Off"; menuIcon: "power_settings_new"
+                    onClicked: { Session.poweroff(); root.close() }
                 }
             }
         }
@@ -148,17 +200,19 @@ PanelWindow {
     component MenuItem : RippleButton {
         id: itemRoot
         property string menuText: ""; property string menuIcon: ""
-        Layout.fillWidth: true; Layout.preferredHeight: 32 // Thinner items
+        Layout.fillWidth: true; Layout.preferredHeight: 32
         buttonRadius: Appearance.rounding.verysmall; colBackground: "transparent"
         contentItem: RowLayout {
             anchors.fill: parent; anchors.leftMargin: 8; anchors.rightMargin: 8; spacing: 8
             MaterialSymbol {
                 text: itemRoot.menuIcon; iconSize: 18
-                color: (itemRoot.menuIcon === "close" || itemRoot.menuIcon === "gavel") ? Appearance.colors.colError : Appearance.colors.colOnLayer0
+                Layout.preferredWidth: 18; Layout.preferredHeight: 18
+                fill: (itemRoot.menuIcon === "power_settings_new" || itemRoot.menuIcon === "logout" || itemRoot.menuIcon === "restart_alt") ? 1 : 0
+                color: (itemRoot.menuIcon === "close" || itemRoot.menuIcon === "gavel" || itemRoot.menuIcon === "power_settings_new" || itemRoot.menuIcon === "logout" || itemRoot.menuIcon === "restart_alt") ? Appearance.colors.colError : Appearance.colors.colOnLayer0
             }
             StyledText {
                 text: itemRoot.menuText; font.pixelSize: Appearance.font.pixelSize.small
-                color: (itemRoot.menuIcon === "close" || itemRoot.menuIcon === "gavel") ? Appearance.colors.colError : Appearance.colors.colOnLayer0
+                color: (itemRoot.menuIcon === "close" || itemRoot.menuIcon === "gavel" || itemRoot.menuIcon === "power_settings_new" || itemRoot.menuIcon === "logout" || itemRoot.menuIcon === "restart_alt") ? Appearance.colors.colError : Appearance.colors.colOnLayer0
                 Layout.fillWidth: true
             }
         }
@@ -170,10 +224,14 @@ PanelWindow {
         onTriggered: { root.visible = false; root.isClosing = false; GlobalStates.dockMenuOpen = false }
     }
 
-    function openAt(mouseX, mouseY, appData) {
+    function openAt(mouseX, mouseY, appData = null) {
         hideTimer.stop();
         isClosing = false;
+        
+        // Determine mode
         appToplevel = appData;
+        isLauncher = (appData === null);
+        
         root._mouseX = mouseX;
         root._mouseY = mouseY;
         
@@ -186,8 +244,21 @@ PanelWindow {
             const menuWidth = Appearance.sizes.contextMenuWidth;
             const menuHeight = menuLayout.implicitHeight + 12;
             
-            root.targetX = Math.min(Math.max(10, root._mouseX - 15), screenWidth - menuWidth - 10);
-            root.targetY = Math.min(Math.max(10, root._mouseY - menuHeight - 45), screenHeight - menuHeight - 10);
+            // X: Selalu mulai dari kursor, tapi jangan keluar pinggir kanan layar
+            root.targetX = Math.min(root._mouseX, screenWidth - menuWidth - 10);
+            
+            // Y: Secara default buka ke BAWAH (Top-Left kursor)
+            // TAPI, karena ini di dock (bawah), cek jika menabrak pinggir bawah:
+            if (root._mouseY + menuHeight > screenHeight - 10) {
+                // FLIP UP (Bottom-Left kursor / Kanan-Atas kursor)
+                root.targetY = root._mouseY - menuHeight;
+            } else {
+                // NORMAL DOWN (Top-Left kursor)
+                root.targetY = root._mouseY;
+            }
+            
+            // Pastikan tidak keluar pinggir atas juga
+            root.targetY = Math.max(10, root.targetY);
             
             menuContainer.opacity = 0.98;
             menuContainer.scale = 1;

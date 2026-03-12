@@ -131,8 +131,8 @@ DockButton {
             IconImage {
                 id: iconImage
                 anchors.fill: parent
-                // Use image://icon/ which handles theme lookups automatically in Quickshell
-                source: "image://icon/" + AppSearch.guessIcon(appToplevel.appId)
+                // Use Quickshell.iconPath for more robust theme lookups
+                source: Quickshell.iconPath(AppSearch.guessIcon(appToplevel.appId), "application-x-executable")
                 
                 // Hide original when monochrome is active
                 visible: !(Config.ready && Config.options.dock.monochromeIcons)
