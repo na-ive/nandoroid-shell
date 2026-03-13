@@ -169,7 +169,7 @@ Item {
         anchors.fill: parent
         opacity: panelBg.opacity
 
-        layer.enabled: true
+        layer.enabled: root.showShoulders
         layer.effect: DropShadow {
             horizontalOffset: 0
             verticalOffset: 2
@@ -201,9 +201,13 @@ Item {
                 topRightRadius: root.showShoulders ? 0 : Appearance.rounding.large
                 bottomLeftRadius: Appearance.rounding.large
                 bottomRightRadius: Appearance.rounding.large
-                border.width: 0
+
+                // MD3 Outline Style (Active when not fused with status bar)
+                border.width: root.showShoulders ? 0 : 1
+                border.color: Functions.ColorUtils.applyAlpha(Appearance.m3colors.m3onSurface, 0.12)
 
                 // Prevent clicks inside the panel from falling through to the background closer
+
                 MouseArea {
                     anchors.fill: parent
                     hoverEnabled: true

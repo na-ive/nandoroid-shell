@@ -88,7 +88,7 @@ Scope {
             Keys.onEscapePressed: GlobalStates.settingsOpen = false
 
             color: Appearance.colors.colLayer0
-            border.color: Appearance.colors.colOutlineVariant
+            border.color: Functions.ColorUtils.applyAlpha(Appearance.m3colors.m3onSurface, 0.12)
             border.width: 1
 
             // Trap clicks inside
