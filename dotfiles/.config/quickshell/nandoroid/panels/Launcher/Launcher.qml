@@ -49,7 +49,8 @@ PanelWindow {
         id: content
         
         width: screen.width * 0.5
-        height: screen.height * 0.7
+        // Added 1px to hide the bottom border off-screen
+        height: screen.height * 0.7 + 1
         x: (screen.width - width) / 2
         
         // Default state: below screen
@@ -63,7 +64,8 @@ PanelWindow {
                 when: GlobalStates.launcherOpen
                 PropertyChanges {
                     target: content
-                    y: screen.height - height // Flush to the bottom
+                    // Pushed 2px below screen to hide the border and avoid gaps
+                    y: screen.height - height + 2
                     opacity: 1
                 }
             }
