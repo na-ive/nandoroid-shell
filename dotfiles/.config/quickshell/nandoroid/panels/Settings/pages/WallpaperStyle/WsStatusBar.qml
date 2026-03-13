@@ -282,7 +282,47 @@ ColumnLayout {
                                 horizontalAlignment: Text.AlignRight
                             }
                         }
-                    }    
+                    }
+
+                    // ── Workspace Style ──
+                    SegmentedWrapper {
+                        Layout.fillWidth: true
+                        implicitHeight: wsStyleRow.implicitHeight + 36
+                        orientation: Qt.Vertical
+                        maxRadius: 20
+                        color: Appearance.m3colors.m3surfaceContainerHigh
+                        RowLayout {
+                            id: wsStyleRow
+                            anchors.fill: parent
+                            anchors.margins: 16
+                            spacing: 16
+                            MaterialSymbol { text: "layers"; iconSize: 24; color: Appearance.colors.colPrimary }
+                            StyledText { text: "Workspace Style"; Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
+                            RowLayout {
+                                spacing: 2
+                                Repeater {
+                                    model: [
+                                        { id: "pill", label: "Pill" },
+                                        { id: "numbers", label: "Numeric" },
+                                        { id: "japanese", label: "Japanese" }
+                                    ]
+                                    delegate: SegmentedButton {
+                                        required property var modelData
+                                        buttonText: modelData.label
+                                        isHighlighted: Config.ready && Config.options.workspaces
+                                            ? Config.options.workspaces.indicatorStyle === modelData.id
+                                            : modelData.id === "pill"
+                                        colActive: Appearance.m3colors.m3primary
+                                        colActiveText: Appearance.m3colors.m3onPrimary
+                                        colInactive: Appearance.m3colors.m3surfaceContainerLow
+                                        onClicked: if (Config.ready && Config.options.workspaces)
+                                            Config.options.workspaces.indicatorStyle = modelData.id
+                                    }
+                                }
+                            }
+                        }
+                    }
+
                     // ── Workspace count ──────────────────────────────────────────
                     SegmentedWrapper {
                         Layout.fillWidth: true

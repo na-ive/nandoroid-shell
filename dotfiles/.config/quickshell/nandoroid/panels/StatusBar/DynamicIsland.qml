@@ -97,7 +97,7 @@ Item {
         }
 
         Behavior on width { NumberAnimation { duration: 300; easing.type: Easing.OutQuint } }
-        Behavior on anchors.rightMargin { NumberAnimation { duration: 300 } }
+        Behavior on anchors.rightMargin { NumberAnimation { duration: 300; easing.type: Easing.OutQuint } }
 
         // Notification Icon
         NotificationAppIcon {
@@ -287,7 +287,7 @@ Item {
         }
 
         Behavior on width { NumberAnimation { duration: 300; easing.type: Easing.OutQuint } }
-        Behavior on anchors.leftMargin { NumberAnimation { duration: 300 } }
+        Behavior on anchors.leftMargin { NumberAnimation { duration: 300; easing.type: Easing.OutQuint } }
 
         StyledText {
             id: notifSummaryLabel

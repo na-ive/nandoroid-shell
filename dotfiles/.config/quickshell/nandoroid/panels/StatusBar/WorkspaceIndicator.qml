@@ -61,7 +61,10 @@ Item {
     Row {
         id: pillRow
         anchors.verticalCenter: parent.verticalCenter
-        spacing: 4
+        spacing: indicatorStyle === "pill" ? 4 : 6
+
+        readonly property string indicatorStyle: Config.options.workspaces?.indicatorStyle ?? "pill"
+        readonly property var japaneseNumbers: ["一", "二", "三", "四", "五", "六", "七", "八", "九", "十", "十一", "十二", "十三", "十四", "十五", "十六", "十七", "十八", "十九", "二十"]
 
         Repeater {
             model: root.workspacesShown
@@ -72,10 +75,25 @@ Item {
                 property int wsId: index + 1
                 property bool isActive: wsId === root.activeWsId
                 property bool isOccupied: root.workspaceOccupied[index] ?? false
+                property bool isHovered: mouseArea.containsMouse
 
-                // Active workspace = wider pill, occupied = medium dot, empty = small dot
-                implicitWidth: isActive ? 16 : (isOccupied ? 8 : 6)
-                implicitHeight: isActive ? 8 : (isOccupied ? 8 : 6)
+                // Mode-aware sizing
+                readonly property bool isTextMode: pillRow.indicatorStyle !== "pill"
+
+                implicitWidth: {
+                    if (isTextMode) {
+                        return isActive ? 28 : (isHovered ? 20 : (isOccupied ? 8 : 6))
+                    }
+                    return isActive ? 16 : (isOccupied ? 8 : 6)
+                }
+                
+                implicitHeight: {
+                    if (isTextMode) {
+                        return isActive ? 18 : (isHovered ? 18 : (isOccupied ? 8 : 6))
+                    }
+                    return isActive ? 8 : (isOccupied ? 8 : 6)
+                }
+
                 radius: height / 2
                 anchors.verticalCenter: parent.verticalCenter
 
@@ -86,18 +104,41 @@ Item {
                     return isOccupied ? Appearance.colors.colNotchText : Appearance.colors.colNotchSubtext
                 }
 
+                border.width: (!isActive && !isOccupied && !isHovered) ? 1 : 0
+                border.color: Appearance.colors.colNotchSubtext
+
+                // Label container with clip to hide text when dot is small
+                Item {
+                    anchors.fill: parent
+                    clip: true
+                    visible: dot.isTextMode
+
+                    StyledText {
+                        anchors.centerIn: parent
+                        text: {
+                            if (pillRow.japaneseNumbers && pillRow.indicatorStyle === "japanese") {
+                                return pillRow.japaneseNumbers[index] || (index + 1).toString()
+                            }
+                            return (index + 1).toString()
+                        }
+                        font.pixelSize: 10
+                        font.weight: isActive ? Font.Bold : Font.Normal
+                        color: "#1E1E1E" // Always dark text regardless of mode
+                        opacity: (isActive || isHovered) ? 1 : 0
+                        Behavior on opacity { NumberAnimation { duration: 150 } }
+                    }
+                }
+
                 Behavior on implicitWidth {
                     NumberAnimation {
-                        duration: Appearance.animation.elementMoveFast.duration
-                        easing.type: Easing.BezierSpline
-                        easing.bezierCurve: Appearance.animation.elementMoveFast.bezierCurve
+                        duration: 250
+                        easing.type: Easing.OutExpo
                     }
                 }
                 Behavior on implicitHeight {
                     NumberAnimation {
-                        duration: Appearance.animation.elementMoveFast.duration
-                        easing.type: Easing.BezierSpline
-                        easing.bezierCurve: Appearance.animation.elementMoveFast.bezierCurve
+                        duration: 250
+                        easing.type: Easing.OutExpo
                     }
                 }
                 Behavior on color {
@@ -109,8 +150,10 @@ Item {
 
                 // Click to switch workspace
                 MouseArea {
+                    id: mouseArea
                     anchors.fill: parent
-                    anchors.margins: -2
+                    anchors.margins: -4
+                    hoverEnabled: true
                     cursorShape: Qt.PointingHandCursor
                     onClicked: Hyprland.dispatch(`workspace ${dot.wsId}`)
                 }
