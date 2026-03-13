@@ -3,6 +3,7 @@ import Quickshell
 import QtQuick.Layouts
 import "../../widgets"
 import "../../core"
+import "../../core/functions" as Functions
 import "../../services"
 
 Rectangle {
