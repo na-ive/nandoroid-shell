@@ -55,6 +55,25 @@ Item {
         return "idle"
     }
 
+    // Media Width Synchronization Logic
+    readonly property real mediaLeftNaturalWidth: {
+        let w = 0
+        if (mediaLogo.visible) w += 18 + 6 // Icon width + margin
+        if (mediaArtistLabel.visible) w += mediaArtistLabel.implicitWidth + 4
+        return w > 0 ? w + 4 : 0
+    }
+
+    readonly property real mediaRightNaturalWidth: {
+        return (mediaTitleLabel.visible && mediaTitleLabel.text !== "") ? mediaTitleLabel.implicitWidth + 12 : 0
+    }
+
+    // Shared width: minimum of both, capped at 150
+    readonly property real sharedMediaWidth: {
+        if (islandState !== "media") return 0
+        let minW = Math.min(mediaLeftNaturalWidth, mediaRightNaturalWidth)
+        return Math.min(Math.max(minW, 40), 150)
+    }
+
     // Gap width: 4px in idle, tight 2px in active states.
     readonly property real gapHalf: (indicatorWidth / 2) + (islandState === "idle" ? 4 : 2)
 
@@ -86,12 +105,7 @@ Item {
                 return w > 0 ? w + 4 : 0
             }
             if (islandState === "recording") return 24
-            if (islandState === "media") {
-                let w = 0
-                if (mediaLogo.visible) w += 20 + 6 // Icon + margin
-                if (mediaArtistLabel.visible) w += Math.min(mediaArtistLabel.implicitWidth, 150) + 4
-                return w > 0 ? w + 4 : 0
-            }
+            if (islandState === "media") return root.sharedMediaWidth
             if (islandState === "pomodoro") return pomoModeLabel.implicitWidth + 8
             return 0
         }
@@ -229,7 +243,7 @@ Item {
             Behavior on opacity { NumberAnimation { duration: 200 } }
             font.pixelSize: 12; font.weight: Font.Medium
             color: Appearance.colors.colNotchText
-            width: Math.min(implicitWidth, 150)
+            width: islandState === "media" ? Math.min(implicitWidth, parent.width - (mediaLogo.visible ? 28 : 8)) : Math.min(implicitWidth, 150)
             elide: Text.ElideRight
             horizontalAlignment: Text.AlignRight
         }
@@ -281,7 +295,7 @@ Item {
         width: {
             if (islandState === "notification") return notifSummaryLabel.visible ? Math.min(notifSummaryLabel.implicitWidth, 200) + 8 : 0
             if (islandState === "recording") return recordTimeLabel.implicitWidth + 8
-            if (islandState === "media") return mediaTitleLabel.visible ? Math.min(mediaTitleLabel.implicitWidth, 150) + 8 : 0
+            if (islandState === "media") return root.sharedMediaWidth
             if (islandState === "pomodoro") return pomoTimeLabel.implicitWidth + 8
             return 0
         }
@@ -300,7 +314,7 @@ Item {
             Behavior on opacity { NumberAnimation { duration: 200 } }
             font.pixelSize: 12; font.weight: Font.DemiBold
             color: Appearance.colors.colNotchText
-            width: Math.min(implicitWidth, 200)
+            width: Math.min(implicitWidth, parent.width - 8)
             elide: Text.ElideRight
         }
 
@@ -330,7 +344,7 @@ Item {
             Behavior on opacity { NumberAnimation { duration: 200 } }
             font.pixelSize: 12; font.weight: Font.DemiBold
             color: Appearance.colors.colNotchText
-            width: Math.min(implicitWidth, 150)
+            width: islandState === "media" ? Math.min(implicitWidth, parent.width - 8) : Math.min(implicitWidth, 150)
             elide: Text.ElideRight
         }
 
