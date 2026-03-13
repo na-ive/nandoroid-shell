@@ -1,6 +1,7 @@
 pragma ComponentBehavior: Bound
 
 import "../../core"
+import "../../core/functions" as Functions
 import "../../services"
 import "../../widgets"
 import QtQuick
@@ -43,7 +44,7 @@ Scope {
                 // ── Scrim ──
                 Rectangle {
                     anchors.fill: parent
-                    color: Appearance.colors.colScrim
+                    color: Functions.ColorUtils.applyAlpha(Appearance.colors.colLayer0, 0.6)
                     opacity: (PolkitService.active && isActive) ? 1 : 0
                     Behavior on opacity { NumberAnimation { duration: 200 } }
                 }
@@ -57,15 +58,6 @@ Scope {
                     radius: Appearance.rounding.card
                     color: Appearance.m3colors.m3surfaceContainerHigh
                     
-                    // Shadow
-                    StyledRectangularShadow {
-                        target: parent
-                        z: -1
-                        offset: Qt.vector2d(0, 8)
-                        blur: 20
-                        color: Qt.rgba(0, 0, 0, 0.3)
-                    }
-
                     ColumnLayout {
                         id: contentCol
                         anchors.fill: parent

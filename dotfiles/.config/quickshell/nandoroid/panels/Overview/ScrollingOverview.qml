@@ -5,11 +5,9 @@ import Quickshell
 import Quickshell.Wayland
 import Quickshell.Hyprland
 import "../../core"
-import "../../core"
-
+import "../../core/functions" as Functions
 import "../../services"
 import "../../widgets"
-import "../../core"
 
 Item {
     id: scrollingOverviewRoot
@@ -314,7 +312,7 @@ Item {
                 width: workspaceWidth
                 height: workspaceHeight
                 color: "transparent"
-                radius: (1)
+                radius: Appearance.rounding.verysmall
                 border.width: 2
                 border.color: scrollingOverviewRoot.activeBorderColor
                 z: 10

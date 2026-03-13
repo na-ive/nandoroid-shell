@@ -6,6 +6,7 @@ import Quickshell.Widgets
 import Quickshell.Wayland
 import Quickshell.Hyprland
 import "../../core"
+import "../../core/functions" as Functions
 import "../../services"
 import "../../widgets"
 
@@ -59,7 +60,7 @@ Item {
     readonly property real targetWindowHeight: Math.round((windowData?.size[1] || 100) * scale)
     readonly property bool compactMode: targetWindowHeight < 60 || targetWindowWidth < 60
     readonly property string iconPath: AppSearch && typeof AppSearch.guessIcon === 'function' ? AppSearch.guessIcon(windowData?.class || "") : "application-x-executable"
-    readonly property int calculatedRadius: Appearance.rounding.normal
+    readonly property int calculatedRadius: Appearance.rounding.small
 
     signal dragStarted
     signal dragFinished(int targetWorkspace)
@@ -127,7 +128,7 @@ Item {
         anchors.fill: parent
         radius: root.calculatedRadius
         antialiasing: true
-        border.color: Appearance.colors.colBackground
+        border.color: Appearance.colors.colLayer0
         border.width: 0
         z: 2
 
@@ -146,8 +147,8 @@ Item {
         anchors.fill: parent
         radius: root.calculatedRadius
         color: pressed ? Appearance.colors.colLayer1Active : hovered ? Appearance.colors.colLayer1Hover : Appearance.colors.colLayer1
-        border.color: root.isSearchSelected ? Appearance.m3colors.m3tertiary : root.isSearchMatch ? Appearance.colors.colPrimary : Appearance.colors.colOutlineVariant
-        border.width: root.isSearchSelected ? 3 : root.isSearchMatch ? 2 : (hovered ? 2 : 1)
+        border.color: root.isSearchSelected ? Appearance.m3colors.m3tertiary : root.isSearchMatch ? Appearance.colors.colPrimary : Functions.ColorUtils.applyAlpha(Appearance.m3colors.m3onSurface, 0.12)
+        border.width: root.isSearchSelected ? 3 : (root.isSearchMatch || hovered ? 2 : 1)
         visible: !windowPreview.hasContent
         z: 0
 
@@ -187,8 +188,8 @@ Item {
         anchors.fill: parent
         radius: root.calculatedRadius
         color: pressed ? Functions.ColorUtils.applyAlpha(Appearance.colors.colLayer1Active, 0.5) : hovered ? Functions.ColorUtils.applyAlpha(Appearance.colors.colLayer1Hover, 0.4) : "transparent"
-        border.color: root.isSearchSelected ? Appearance.m3colors.m3tertiary : root.isSearchMatch ? Appearance.colors.colPrimary : Appearance.colors.colOutlineVariant
-        border.width: root.isSearchSelected ? 3 : root.isSearchMatch ? 2 : (hovered ? 2 : 1)
+        border.color: root.isSearchSelected ? Appearance.m3colors.m3tertiary : root.isSearchMatch ? Appearance.colors.colPrimary : Functions.ColorUtils.applyAlpha(Appearance.m3colors.m3onSurface, 0.12)
+        border.width: root.isSearchSelected ? 3 : (root.isSearchMatch || hovered ? 2 : 1)
         visible: windowPreview.hasContent
         z: 5
 

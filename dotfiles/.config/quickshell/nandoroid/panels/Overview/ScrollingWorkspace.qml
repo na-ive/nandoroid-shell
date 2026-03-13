@@ -1,12 +1,12 @@
-pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Controls
-import QtQuick.Effects
+import Qt5Compat.GraphicalEffects
 import Quickshell
 import Quickshell.Widgets
 import Quickshell.Wayland
 import Quickshell.Hyprland
 import "../../core"
+import "../../core/functions" as Functions
 import "../../services"
 import "../../widgets"
 
@@ -166,13 +166,23 @@ Item {
                 fillMode: Image.PreserveAspectCrop
                 source: Config.options?.appearance?.background?.wallpaperPath || ""
             }
-        } // ADDED MISSING BRACE for backgroundLayer Item
+            
+            // Mask the background to match rounding
+            layer.enabled: true
+            layer.effect: OpacityMask {
+                maskSource: Rectangle {
+                    width: backgroundLayer.width
+                    height: backgroundLayer.height
+                    radius: Appearance.rounding.verysmall
+                }
+            }
+        }
 
         // Semi-transparent overlay
         Rectangle {
             anchors.fill: parent
-            radius: (1)
-            color: Appearance.colors.colBackground || "transparent"
+            radius: Appearance.rounding.verysmall
+            color: Appearance.colors.colLayer0
             opacity: 0.3
         }
 
@@ -180,7 +190,7 @@ Item {
         Rectangle {
             anchors.fill: parent
             color: "transparent"
-            radius: (1)
+            radius: Appearance.rounding.verysmall
             border.width: root.draggingTargetWorkspace === root.workspaceId && root.draggingFromWorkspace !== root.workspaceId ? 2 : 0
             border.color: Appearance.m3colors.m3outline
             z: 100
@@ -300,7 +310,7 @@ Item {
                     readonly property real targetHeight: Math.round((windowData?.size[1] || 100) * scale_)
                     readonly property bool compactMode: targetHeight < 60 || targetWidth < 60
                     readonly property string iconPath: AppSearch && typeof AppSearch.guessIcon === 'function' ? AppSearch.guessIcon(windowData?.class || "") : "application-x-executable"
-                    readonly property int calculatedRadius: (-2)
+                    readonly property int calculatedRadius: Appearance.rounding.small
                     readonly property bool isMatched: root.checkWindowMatched(windowData?.address)
                     readonly property bool isSelected: root.checkWindowSelected(windowData?.address)
 
@@ -378,8 +388,8 @@ Item {
                         anchors.fill: parent
                         radius: windowDelegate.calculatedRadius
                         color: windowDelegate.dragging ? (Appearance.m3colors.m3surfaceBright || "transparent") : windowDelegate.hovered ? (Appearance.m3colors.m3surface || "transparent") : (Appearance.colors.colBackground || "transparent")
-                        border.color: windowDelegate.isSelected ? Appearance.m3colors.m3tertiary : windowDelegate.isMatched ? Appearance.colors.colPrimary : Appearance.colors.colPrimary
-                        border.width: windowDelegate.isSelected ? 3 : windowDelegate.isMatched ? 2 : (windowDelegate.hovered ? 2 : 0)
+                        border.color: windowDelegate.isSelected ? Appearance.m3colors.m3tertiary : windowDelegate.isMatched ? Appearance.colors.colPrimary : Functions.ColorUtils.applyAlpha(Appearance.m3colors.m3onSurface, 0.12)
+                        border.width: windowDelegate.isSelected ? 3 : (windowDelegate.isMatched || windowDelegate.hovered ? 2 : 1)
                         visible: !windowPreview.hasContent
                         z: 0 // Keep behind preview
 
@@ -412,8 +422,8 @@ Item {
                         anchors.fill: parent
                         radius: windowDelegate.calculatedRadius
                         color: windowDelegate.dragging ? Qt.rgba(Appearance.m3colors.m3surfaceContainerHighest.r, Appearance.m3colors.m3surfaceContainerHighest.g, Appearance.m3colors.m3surfaceContainerHighest.b, 0.5) : windowDelegate.hovered ? Qt.rgba(Appearance.m3colors.m3surfaceContainer.r, Appearance.m3colors.m3surfaceContainer.g, Appearance.m3colors.m3surfaceContainer.b, 0.2) : "transparent"
-                        border.color: windowDelegate.isSelected ? Appearance.m3colors.m3tertiary : windowDelegate.isMatched ? Appearance.colors.colPrimary : Appearance.colors.colPrimary
-                        border.width: windowDelegate.isSelected ? 3 : windowDelegate.isMatched ? 2 : (windowDelegate.hovered ? 2 : 0)
+                        border.color: windowDelegate.isSelected ? Appearance.m3colors.m3tertiary : windowDelegate.isMatched ? Appearance.colors.colPrimary : Functions.ColorUtils.applyAlpha(Appearance.m3colors.m3onSurface, 0.12)
+                        border.width: windowDelegate.isSelected ? 3 : (windowDelegate.isMatched || windowDelegate.hovered ? 2 : 1)
                         visible: windowPreview.hasContent && (windowDelegate.hovered || windowDelegate.dragging || windowDelegate.isMatched || windowDelegate.isSelected)
                         z: 5
                     }

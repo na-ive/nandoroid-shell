@@ -2,15 +2,14 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Effects
+import Qt5Compat.GraphicalEffects
 import Quickshell
 import Quickshell.Wayland
 import Quickshell.Hyprland
 import "../../core"
-import "../../core"
+import "../../core/functions" as Functions
 import "../../widgets"
-
 import "../../services"
-import "../../core"
 
 Item {
     id: overviewRoot
@@ -240,10 +239,20 @@ Item {
                             implicitWidth: overviewRoot.workspaceImplicitWidth + workspacePadding
                             implicitHeight: overviewRoot.workspaceImplicitHeight + workspacePadding
                             color: defaultWorkspaceColor
-                            radius: 0
+                            radius: Appearance.rounding.verysmall
                             border.width: isActiveWorkspace || hoveredWhileDragging ? 2 : 1
                             border.color: hoveredWhileDragging ? hoveredBorderColor : (isActiveWorkspace ? Appearance.colors.colPrimary : Appearance.colors.colOutlineVariant)
                             clip: true
+
+                            // Mask the workspace to match rounding
+                            layer.enabled: true
+                            layer.effect: OpacityMask {
+                                maskSource: Rectangle {
+                                    width: workspace.width
+                                    height: workspace.height
+                                    radius: workspace.radius
+                                }
+                            }
 
                             // Wallpaper background for each workspace
                             Image {
@@ -370,7 +379,7 @@ Item {
                 width: Math.round(overviewRoot.workspaceImplicitWidth + workspacePadding)
                 height: Math.round(overviewRoot.workspaceImplicitHeight + workspacePadding)
                 color: "transparent"
-                radius: (2)
+                radius: Appearance.rounding.verysmall
                 border.width: 2
                 border.color: overviewRoot.activeBorderColor
                 z: -1 // Prevent grabbing mouse events inside the active workspace

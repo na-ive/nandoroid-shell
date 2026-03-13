@@ -6,10 +6,9 @@ import Quickshell
 import Quickshell.Wayland
 import Quickshell.Hyprland
 import "../../core"
-import "../../core"
+import "../../core/functions" as Functions
 import "../../services"
 import "../../widgets"
-import "../../core"
 import "."
 
 Variants {
@@ -50,6 +49,12 @@ Variants {
         Item {
             id: fullMask
             anchors.fill: parent
+            
+            // Close when clicking empty space
+            MouseArea {
+                anchors.fill: parent
+                onClicked: GlobalStates.closeAllPanels()
+            }
         }
 
         // Empty mask when hidden
@@ -74,11 +79,12 @@ Variants {
             }
         }
 
-        // Semi-transparent backdrop
+        // Backdrop removed for a cleaner 'floating' look
+        // Re-adding a very subtle tonal scrim for focus and contrast
         Rectangle {
             id: backdrop
             anchors.fill: parent
-            color: Appearance.colors.colScrim
+            color: Functions.ColorUtils.applyAlpha(Appearance.colors.colLayer0, 0.2)
             opacity: (GlobalStates.overviewOpen && isActive) ? 1 : 0
 
             Behavior on opacity {
@@ -130,6 +136,10 @@ Variants {
                 width: Math.min(480, Math.max(300, overviewContainer.width * 0.6))
                 height: 56
                 radius: 28
+                
+                // MD3 Outline Style
+                border.width: 1
+                border.color: Functions.ColorUtils.applyAlpha(Appearance.m3colors.m3onSurface, 0.12)
 
                 RowLayout {
                     anchors.fill: parent
@@ -336,6 +346,10 @@ Variants {
                     color: Appearance.colors.colLayer1
                     anchors.fill: parent
                     radius: Appearance.rounding.panel
+                    
+                    // MD3 Outline Style
+                    border.width: 1
+                    border.color: Functions.ColorUtils.applyAlpha(Appearance.m3colors.m3onSurface, 0.12)
                 }
 
                 // Loader for Overview to prevent issues during destruction

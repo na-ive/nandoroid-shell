@@ -3,6 +3,7 @@ import Quickshell
 import QtQuick.Layouts
 import "../../widgets"
 import "../../core"
+import "../../core/functions" as Functions
 import "../../services"
 
 Rectangle {
@@ -13,6 +14,10 @@ Rectangle {
     
     color: Appearance.colors.colLayer1
     radius: 20
+    
+    // MD3 Outline Style
+    border.width: 1
+    border.color: Functions.ColorUtils.applyAlpha(Appearance.m3colors.m3onSurface, 0.12)
     
     readonly property var resultsProxy: LauncherSearch.results
     property int selectedIndex: 0
