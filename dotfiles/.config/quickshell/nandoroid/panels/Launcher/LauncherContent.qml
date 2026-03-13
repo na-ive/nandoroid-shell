@@ -16,6 +16,10 @@ Rectangle {
     bottomLeftRadius: 0
     bottomRightRadius: 0
     
+    // MD3 Outline Style
+    border.width: 1
+    border.color: Functions.ColorUtils.applyAlpha(Appearance.m3colors.m3onSurface, 0.12)
+    
     readonly property var resultsProxy: LauncherSearch.results
     property int selectedIndex: 0
     property int gridColumns: Math.max(1, Math.floor(appGrid.width / 100))

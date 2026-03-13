@@ -53,6 +53,10 @@ Item {
         radius: Appearance.rounding.normal
         color: Appearance.m3colors.m3surfaceContainer
         clip: true
+        
+        // MD3 Outline Style
+        border.width: 1
+        border.color: Functions.ColorUtils.applyAlpha(Appearance.m3colors.m3onSurface, 0.12)
 
         anchors.leftMargin: 0
         Behavior on anchors.leftMargin {

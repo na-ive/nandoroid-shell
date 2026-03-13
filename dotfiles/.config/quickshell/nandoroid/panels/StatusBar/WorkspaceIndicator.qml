@@ -79,9 +79,12 @@ Item {
                 radius: height / 2
                 anchors.verticalCenter: parent.verticalCenter
 
-                color: isActive ? Appearance.colors.colNotchPrimary
-                     : isOccupied ? Appearance.colors.colNotchText
-                     : Appearance.colors.colNotchSubtext
+                color: {
+                    if (isActive) {
+                        return Appearance.m3colors.darkmode ? Appearance.colors.colNotchPrimary : Appearance.colors.colPrimaryContainer
+                    }
+                    return isOccupied ? Appearance.colors.colNotchText : Appearance.colors.colNotchSubtext
+                }
 
                 Behavior on implicitWidth {
                     NumberAnimation {

@@ -1,4 +1,5 @@
 import "../../core"
+import "../../core/functions" as Functions
 import "../../services"
 import "../../widgets"
 import QtQuick
@@ -34,12 +35,18 @@ Item {
         radius: Appearance.rounding.panel
         color: Appearance.colors.colLayer0 
         
+        // MD3 Outline Style (instead of shadow)
+        border.width: 1
+        border.color: Functions.ColorUtils.applyAlpha(Appearance.m3colors.m3onSurface, 0.12)
+        
+        // Very subtle ambient shadow (optional, keep it extremely thin)
         layer.enabled: true
         layer.effect: DropShadow {
-            radius: 16
+            radius: 12
             samples: 24
-            color: "#aa000000"
-            verticalOffset: 8
+            color: Functions.ColorUtils.applyAlpha(Appearance.colors.colShadow, 0.1)
+            verticalOffset: 2
+            transparentBorder: true
         }
 
         ColumnLayout {

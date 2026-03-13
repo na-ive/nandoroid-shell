@@ -45,6 +45,10 @@ Item {
         anchors.fill: parent
         color: Appearance.colors.colLayer0
         radius: Appearance.rounding.panel
+        
+        // MD3 Outline Style
+        border.width: 1
+        border.color: Functions.ColorUtils.applyAlpha(Appearance.m3colors.m3onSurface, 0.12)
     }
 
     ColumnLayout {

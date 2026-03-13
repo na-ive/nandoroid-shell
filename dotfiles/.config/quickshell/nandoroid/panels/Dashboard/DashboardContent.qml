@@ -1,8 +1,10 @@
 import "../../core"
+import "../../core/functions" as Functions
 import "../../widgets"
 import "../../services"
 import QtQuick
 import QtQuick.Layouts
+import Qt5Compat.GraphicalEffects
 
 /**
  * Dashboard panel — redesigned from the old CalendarContent.
@@ -161,272 +163,289 @@ Item {
         if (GlobalStates.dashboardOpen) root.forceActiveFocus()
     }
 
-    // ── Main Panel Rectangle ──
-    Rectangle {
-        id: clipRect
-        anchors.horizontalCenter: parent.horizontalCenter
-        y: 0
-        width: root.panelWidth
-        height: root.panelHeight
-        clip: true
-        color: "transparent"
+    // ── Visual Container for Shadow ──
+    Item {
+        id: visualContainer
+        anchors.fill: parent
+        opacity: panelBg.opacity
 
+        layer.enabled: true
+        layer.effect: DropShadow {
+            horizontalOffset: 0
+            verticalOffset: 2
+            radius: 24
+            samples: 32
+            color: Functions.ColorUtils.applyAlpha(Appearance.colors.colShadow, 0.12)
+            transparentBorder: true
+        }
+
+        // ── Main Panel Rectangle ──
         Rectangle {
-            id: panelBg
+            id: clipRect
+            anchors.horizontalCenter: parent.horizontalCenter
+            y: 0
             width: root.panelWidth
             height: root.panelHeight
-            // y starts at -height (hidden above), and opacity 0
-            y: -root.panelHeight
-            opacity: 0
-            color: Appearance.m3colors.m3surfaceContainerLow
-            topLeftRadius: root.showShoulders ? 0 : Appearance.rounding.large
-            topRightRadius: root.showShoulders ? 0 : Appearance.rounding.large
-            bottomLeftRadius: Appearance.rounding.large
-            bottomRightRadius: Appearance.rounding.large
-            border.width: 0
+            clip: true
+            color: "transparent"
 
-            // Prevent clicks inside the panel from falling through to the background closer
-            MouseArea {
-                anchors.fill: parent
-                hoverEnabled: true
-            }
+            Rectangle {
+                id: panelBg
+                width: root.panelWidth
+                height: root.panelHeight
+                // y starts at -height (hidden above), and opacity 0
+                y: -root.panelHeight
+                opacity: 0
+                color: Appearance.m3colors.m3surfaceContainerLow
+                topLeftRadius: root.showShoulders ? 0 : Appearance.rounding.large
+                topRightRadius: root.showShoulders ? 0 : Appearance.rounding.large
+                bottomLeftRadius: Appearance.rounding.large
+                bottomRightRadius: Appearance.rounding.large
+                border.width: 0
 
-            Row {
-                id: mainLayout
-                anchors.fill: parent
-                // Inner padding
-                leftPadding: 16
-                rightPadding: 16
-                topPadding: 16
-                bottomPadding: 16
-                spacing: 16
+                // Prevent clicks inside the panel from falling through to the background closer
+                MouseArea {
+                    anchors.fill: parent
+                    hoverEnabled: true
+                }
 
-                // ── Vertical Tab Strip ──
-        Item {
-            id: tabStrip
-            width: root.tabStripWidth
-            height: parent.height
+                Row {
+                    id: mainLayout
+                    anchors.fill: parent
+                    // Inner padding
+                    leftPadding: 16
+                    rightPadding: 16
+                    topPadding: 16
+                    bottomPadding: 16
+                    spacing: 16
 
-            // Scroll to change tab - restricted to tabStrip area
-            MouseArea {
-                anchors.fill: parent
-                onWheel: (wheel) => {
-                    if (wheel.angleDelta.y > 0) {
-                        root.currentTab = (root.currentTab - 1 + root.tabCount) % root.tabCount
-                    } else if (wheel.angleDelta.y < 0) {
-                        root.currentTab = (root.currentTab + 1) % root.tabCount
+                    // ── Vertical Tab Strip ──
+            Item {
+                id: tabStrip
+                width: root.tabStripWidth
+                height: parent.height
+
+                // Scroll to change tab - restricted to tabStrip area
+                MouseArea {
+                    anchors.fill: parent
+                    onWheel: (wheel) => {
+                        if (wheel.angleDelta.y > 0) {
+                            root.currentTab = (root.currentTab - 1 + root.tabCount) % root.tabCount
+                        } else if (wheel.angleDelta.y < 0) {
+                            root.currentTab = (root.currentTab + 1) % root.tabCount
+                        }
                     }
                 }
-            }
 
-            // Y-offset where the button group starts (vertically centered)
-            readonly property real buttonsTop: Math.round(
-                (height - root.tabCount * (root.tabButtonSize + 6) + 6) / 2
-            )
+                // Y-offset where the button group starts (vertically centered)
+                readonly property real buttonsTop: Math.round(
+                    (height - root.tabCount * (root.tabButtonSize + 6) + 6) / 2
+                )
 
-            // Card background for the tab buttons
-            Rectangle {
-                id: tabButtonsCard
-                anchors.horizontalCenter: parent.horizontalCenter
-                y: tabStrip.buttonsTop - 8
-                width: root.tabButtonSize + 16
-                height: (root.tabButtonSize + 6) * root.tabCount + 10
-                radius: Appearance.rounding.large
-                color: Appearance.colors.colLayer2
-                opacity: 0.8
-            }
-
-            // Animated stretch-highlight pill (Ambxst style)
-            Rectangle {
-                id: tabHighlight
-                // Centered within the strip, same as the Column's horizontalCenter
-                x: Math.round((tabStrip.width - root.tabButtonSize) / 2)
-                width: root.tabButtonSize
-                radius: 16
-
-                // Elastic stretch: idx1 snaps fast, idx2 follows slowly
-                property int idx1: 0
-                property int idx2: 0
-                
-                function reset() {
-                    idx1 = 0
-                    idx2 = 0
+                // Card background for the tab buttons
+                Rectangle {
+                    id: tabButtonsCard
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    y: tabStrip.buttonsTop - 8
+                    width: root.tabButtonSize + 16
+                    height: (root.tabButtonSize + 6) * root.tabCount + 10
+                    radius: Appearance.rounding.large
+                    color: Appearance.colors.colLayer2
+                    opacity: 0.8
                 }
 
-                function getYForIndex(i) {
-                    return tabStrip.buttonsTop + i * (root.tabButtonSize + 6)
+                // Animated stretch-highlight pill (Ambxst style)
+                Rectangle {
+                    id: tabHighlight
+                    // Centered within the strip, same as the Column's horizontalCenter
+                    x: Math.round((tabStrip.width - root.tabButtonSize) / 2)
+                    width: root.tabButtonSize
+                    radius: 16
+
+                    // Elastic stretch: idx1 snaps fast, idx2 follows slowly
+                    property int idx1: 0
+                    property int idx2: 0
+                    
+                    function reset() {
+                        idx1 = 0
+                        idx2 = 0
+                    }
+
+                    function getYForIndex(i) {
+                        return tabStrip.buttonsTop + i * (root.tabButtonSize + 6)
+                    }
+
+                    property real targetY1: getYForIndex(idx1)
+                    property real targetY2: getYForIndex(idx2)
+                    property real animY1: targetY1
+                    property real animY2: targetY2
+
+                    y: Math.min(animY1, animY2)
+                    height: Math.abs(animY2 - animY1) + root.tabButtonSize
+
+                    color: Appearance.colors.colPrimaryContainer
+
+                    Behavior on animY1 {
+                        NumberAnimation { duration: 120; easing.type: Easing.OutSine }
+                    }
+                    Behavior on animY2 {
+                        NumberAnimation { duration: 380; easing.type: Easing.OutCubic }
+                    }
+
+                    onTargetY1Changed: animY1 = targetY1
+                    onTargetY2Changed: animY2 = targetY2
+
+                    onIdx1Changed: { targetY1 = getYForIndex(idx1) }
+                    onIdx2Changed: { targetY2 = getYForIndex(idx2) }
                 }
 
-                property real targetY1: getYForIndex(idx1)
-                property real targetY2: getYForIndex(idx2)
-                property real animY1: targetY1
-                property real animY2: targetY2
+                // Tab buttons (vertically centered, matching buttonsTop used by highlight)
+                Column {
+                    anchors.top: parent.top
+                    anchors.topMargin: tabStrip.buttonsTop
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    spacing: 6
 
-                y: Math.min(animY1, animY2)
-                height: Math.abs(animY2 - animY1) + root.tabButtonSize
+                    Repeater {
+                        model: [
+                            { icon: "calendar_today",  tooltip: "Calendar & Pomodoro" },
+                            { icon: "event_note",       tooltip: "Schedule" },
+                            { icon: "edit_note",        tooltip: "Notepad" },
+                            { icon: "code",             tooltip: "GitHub" }
+                        ]
+                        delegate: Item {
+                            required property int index
+                            required property var modelData
+                            width: root.tabButtonSize
+                            height: root.tabButtonSize
 
-                color: Appearance.colors.colPrimaryContainer
+                            // Hover ripple
+                            Rectangle {
+                                anchors.fill: parent
+                                radius: Appearance.rounding.small
+                                color: Appearance.colors.colLayer1
+                                opacity: btnMouse.containsMouse && root.currentTab !== index ? 0.7 : 0
+                                Behavior on opacity { NumberAnimation { duration: 150 } }
+                            }
 
-                Behavior on animY1 {
-                    NumberAnimation { duration: 120; easing.type: Easing.OutSine }
-                }
-                Behavior on animY2 {
-                    NumberAnimation { duration: 380; easing.type: Easing.OutCubic }
-                }
+                            MaterialSymbol {
+                                anchors.centerIn: parent
+                                text: modelData.icon
+                                iconSize: 22
+                                color: root.currentTab === index
+                                    ? Appearance.colors.colOnPrimaryContainer
+                                    : Appearance.colors.colSubtext
+                                Behavior on color { ColorAnimation { duration: 200 } }
+                            }
 
-                onTargetY1Changed: animY1 = targetY1
-                onTargetY2Changed: animY2 = targetY2
+                            StyledToolTip { text: modelData.tooltip }
 
-                onIdx1Changed: { targetY1 = getYForIndex(idx1) }
-                onIdx2Changed: { targetY2 = getYForIndex(idx2) }
-            }
-
-            // Tab buttons (vertically centered, matching buttonsTop used by highlight)
-            Column {
-                anchors.top: parent.top
-                anchors.topMargin: tabStrip.buttonsTop
-                anchors.horizontalCenter: parent.horizontalCenter
-                spacing: 6
-
-                Repeater {
-                    model: [
-                        { icon: "calendar_today",  tooltip: "Calendar & Pomodoro" },
-                        { icon: "event_note",       tooltip: "Schedule" },
-                        { icon: "edit_note",        tooltip: "Notepad" },
-                        { icon: "code",             tooltip: "GitHub" }
-                    ]
-                    delegate: Item {
-                        required property int index
-                        required property var modelData
-                        width: root.tabButtonSize
-                        height: root.tabButtonSize
-
-                        // Hover ripple
-                        Rectangle {
-                            anchors.fill: parent
-                            radius: Appearance.rounding.small
-                            color: Appearance.colors.colLayer1
-                            opacity: btnMouse.containsMouse && root.currentTab !== index ? 0.7 : 0
-                            Behavior on opacity { NumberAnimation { duration: 150 } }
-                        }
-
-                        MaterialSymbol {
-                            anchors.centerIn: parent
-                            text: modelData.icon
-                            iconSize: 22
-                            color: root.currentTab === index
-                                ? Appearance.colors.colOnPrimaryContainer
-                                : Appearance.colors.colSubtext
-                            Behavior on color { ColorAnimation { duration: 200 } }
-                        }
-
-                        StyledToolTip { text: modelData.tooltip }
-
-                        MouseArea {
-                            id: btnMouse
-                            anchors.fill: parent
-                            hoverEnabled: true
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: {
-                                root.currentTab = index
+                            MouseArea {
+                                id: btnMouse
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: {
+                                    root.currentTab = index
+                                }
                             }
                         }
                     }
                 }
-            }
 
-        } // End tabStrip
+            } // End tabStrip
 
-        // ── Content Area ──
-        Item {
-            id: contentArea
-            // panelWidth minus (leftPadding+rightPadding=32) minus tabStripWidth minus spacing(16)
-            width: root.panelWidth - 48 - root.tabStripWidth
-            height: root.panelHeight - 32
+            // ── Content Area ──
+            Item {
+                id: contentArea
+                // panelWidth minus (leftPadding+rightPadding=32) minus tabStripWidth minus spacing(16)
+                width: root.panelWidth - 48 - root.tabStripWidth
+                height: root.panelHeight - 32
 
-            // Tab 0: Calendar + Pomodoro
-            Loader {
-                anchors.fill: parent
-                active: true
-                visible: root.currentTab === 0
-                opacity: visible ? 1 : 0
-                transform: Translate { y: root.currentTab === 0 ? 0 : (root.currentTab > 0 ? -12 : 12)
-                    Behavior on y { NumberAnimation { duration: 250; easing.type: Easing.OutQuart } }
-                }
-                Behavior on opacity { NumberAnimation { duration: 200; easing.type: Easing.OutQuart } }
-                
-                onVisibleChanged: {
-                    if (visible && item && typeof item.reloadSchedule === "function") {
-                        item.reloadSchedule()
+                // Tab 0: Calendar + Pomodoro
+                Loader {
+                    anchors.fill: parent
+                    active: true
+                    visible: root.currentTab === 0
+                    opacity: visible ? 1 : 0
+                    transform: Translate { y: root.currentTab === 0 ? 0 : (root.currentTab > 0 ? -12 : 12)
+                        Behavior on y { NumberAnimation { duration: 250; easing.type: Easing.OutQuart } }
                     }
+                    Behavior on opacity { NumberAnimation { duration: 200; easing.type: Easing.OutQuart } }
+                    
+                    onVisibleChanged: {
+                        if (visible && item && typeof item.reloadSchedule === "function") {
+                            item.reloadSchedule()
+                        }
+                    }
+                    
+                    sourceComponent: DashCalendar { width: contentArea.width; height: contentArea.height }
                 }
-                
-                sourceComponent: DashCalendar { width: contentArea.width; height: contentArea.height }
-            }
 
-            // Tab 1: Schedule
-            Loader {
-                anchors.fill: parent
-                active: root.currentTab === 1
-                visible: root.currentTab === 1
-                opacity: visible ? 1 : 0
-                transform: Translate { y: root.currentTab === 1 ? 0 : (root.currentTab > 1 ? -12 : 12)
-                    Behavior on y { NumberAnimation { duration: 250; easing.type: Easing.OutQuart } }
+                // Tab 1: Schedule
+                Loader {
+                    anchors.fill: parent
+                    active: root.currentTab === 1
+                    visible: root.currentTab === 1
+                    opacity: visible ? 1 : 0
+                    transform: Translate { y: root.currentTab === 1 ? 0 : (root.currentTab > 1 ? -12 : 12)
+                        Behavior on y { NumberAnimation { duration: 250; easing.type: Easing.OutQuart } }
+                    }
+                    Behavior on opacity { NumberAnimation { duration: 200; easing.type: Easing.OutQuart } }
+                    sourceComponent: DashSchedule { width: contentArea.width; height: contentArea.height }
                 }
-                Behavior on opacity { NumberAnimation { duration: 200; easing.type: Easing.OutQuart } }
-                sourceComponent: DashSchedule { width: contentArea.width; height: contentArea.height }
-            }
 
-            // Tab 2: Notepad
-            Loader {
-                anchors.fill: parent
-                active: root.currentTab === 2
-                visible: root.currentTab === 2
-                opacity: visible ? 1 : 0
-                transform: Translate { y: root.currentTab === 2 ? 0 : (root.currentTab > 2 ? -12 : 12)
-                    Behavior on y { NumberAnimation { duration: 250; easing.type: Easing.OutQuart } }
+                // Tab 2: Notepad
+                Loader {
+                    anchors.fill: parent
+                    active: root.currentTab === 2
+                    visible: root.currentTab === 2
+                    opacity: visible ? 1 : 0
+                    transform: Translate { y: root.currentTab === 2 ? 0 : (root.currentTab > 2 ? -12 : 12)
+                        Behavior on y { NumberAnimation { duration: 250; easing.type: Easing.OutQuart } }
+                    }
+                    Behavior on opacity { NumberAnimation { duration: 200; easing.type: Easing.OutQuart } }
+                    sourceComponent: DashNotepad { width: contentArea.width; height: contentArea.height }
                 }
-                Behavior on opacity { NumberAnimation { duration: 200; easing.type: Easing.OutQuart } }
-                sourceComponent: DashNotepad { width: contentArea.width; height: contentArea.height }
-            }
 
-            // Tab 3: GitHub  (fetches data when selected because Loader recreates it)
-            Loader {
-                anchors.fill: parent
-                active: true
-                visible: root.currentTab === 3
-                opacity: visible ? 1 : 0
-                transform: Translate { y: root.currentTab === 3 ? 0 : (root.currentTab > 3 ? -12 : 12)
-                    Behavior on y { NumberAnimation { duration: 250; easing.type: Easing.OutQuart } }
+                // Tab 3: GitHub  (fetches data when selected because Loader recreates it)
+                Loader {
+                    anchors.fill: parent
+                    active: true
+                    visible: root.currentTab === 3
+                    opacity: visible ? 1 : 0
+                    transform: Translate { y: root.currentTab === 3 ? 0 : (root.currentTab > 3 ? -12 : 12)
+                        Behavior on y { NumberAnimation { duration: 250; easing.type: Easing.OutQuart } }
+                    }
+                    Behavior on opacity { NumberAnimation { duration: 200; easing.type: Easing.OutQuart } }
+                    sourceComponent: DashGitHub { width: contentArea.width; height: contentArea.height }
                 }
-                Behavior on opacity { NumberAnimation { duration: 200; easing.type: Easing.OutQuart } }
-                sourceComponent: DashGitHub { width: contentArea.width; height: contentArea.height }
-            }
-        } // End contentArea
-            } // End mainLayout
-        } // End panelBg
-    } // End clipRect
+            } // End contentArea
+                } // End mainLayout
+            } // End panelBg
+        } // End clipRect
 
-    // ── Concave shoulder corners (flush with statusbar) ──
-    RoundCorner {
-        id: rightShoulder
-        anchors.right: clipRect.left
-        y: panelBg.y
-        implicitSize: root.shoulderRadius
-        corner: RoundCorner.CornerEnum.TopRight
-        color: Appearance.colors.colStatusBarSolid
-        opacity: 0
-        visible: root.showShoulders
-    }
-    RoundCorner {
-        id: leftShoulder
-        anchors.left: clipRect.right
-        y: panelBg.y
-        implicitSize: root.shoulderRadius
-        corner: RoundCorner.CornerEnum.TopLeft
-        color: Appearance.colors.colStatusBarSolid
-        opacity: 0
-        visible: root.showShoulders
+        // ── Concave shoulder corners (flush with statusbar) ──
+        RoundCorner {
+            id: rightShoulder
+            anchors.right: clipRect.left
+            y: panelBg.y
+            implicitSize: root.shoulderRadius
+            corner: RoundCorner.CornerEnum.TopRight
+            color: Appearance.colors.colStatusBarSolid
+            opacity: 0
+            visible: root.showShoulders
+        }
+        RoundCorner {
+            id: leftShoulder
+            anchors.left: clipRect.right
+            y: panelBg.y
+            implicitSize: root.shoulderRadius
+            corner: RoundCorner.CornerEnum.TopLeft
+            color: Appearance.colors.colStatusBarSolid
+            opacity: 0
+            visible: root.showShoulders
+        }
     }
 
 }

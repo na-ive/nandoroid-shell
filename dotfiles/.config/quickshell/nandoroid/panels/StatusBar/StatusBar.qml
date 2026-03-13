@@ -1,9 +1,11 @@
 import "../../core"
+import "../../core/functions" as Functions
 import "../../services"
 import "../../widgets"
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Shapes
+import Qt5Compat.GraphicalEffects
 import Quickshell
 import Quickshell.Wayland
 import Quickshell.Hyprland
@@ -71,83 +73,97 @@ Scope {
             readonly property bool isCentered: (Config.ready && Config.options.statusBar) ? Config.options.statusBar.layoutStyle === "centered" : false
             readonly property real centeredWidth: (Config.ready && Config.options.statusBar) ? Config.options.statusBar.centeredWidth : 1200
 
-            // ── Solid background rectangle ─────────────────────────────
-            Rectangle {
-                id: barBg
-                
-                readonly property real targetHeight: Appearance.sizes.statusBarHeight + (barWindow.isCentered ? barWindow.cornerRadius : 0)
-                readonly property real targetY: barWindow.showBackground 
-                    ? (barWindow.isCentered ? -barWindow.cornerRadius : 0)
-                    : -targetHeight - 10
+            // ── Background Layer (Full area to prevent shadow clipping) ──
+            Item {
+                id: barBackgroundLayer
+                anchors.fill: parent
+                visible: barWindow.showBackground
+                opacity: barBg.opacity
 
-                y: targetY
-                anchors.horizontalCenter: parent.horizontalCenter
-                
-                width: barWindow.isCentered ? Math.min(barWindow.centeredWidth, parent.width - 40) : parent.width
-                height: targetHeight
-                color: Appearance.colors.colStatusBarSolid
-                
-                radius: barWindow.isCentered ? barWindow.cornerRadius : 0
-
-                Behavior on y { NumberAnimation { duration: 550; easing.type: Easing.OutQuint } }
-                Behavior on width { NumberAnimation { duration: 450; easing.type: Easing.OutQuint } }
-                Behavior on height { NumberAnimation { duration: 450; easing.type: Easing.OutQuint } }
-                Behavior on radius { NumberAnimation { duration: 400; easing.type: Easing.OutQuint } }
-
-                // ── Standard Mode Corners (Bottom) ──
-                RoundCorner {
-                    id: stdLeftCorner
-                    parent: barBg
-                    anchors.top: parent.bottom
-                    anchors.left: parent.left
-                    implicitSize: barWindow.cornerRadius
-                    color: parent.color
-                    corner: RoundCorner.CornerEnum.TopLeft
-                    opacity: !barWindow.isCentered && barWindow.showBackground ? 1.0 : 0.0
-                    visible: opacity > 0
-                    Behavior on opacity { NumberAnimation { duration: 300 } }
+                layer.enabled: true
+                layer.effect: DropShadow {
+                    horizontalOffset: 0
+                    verticalOffset: 2
+                    radius: 24
+                    samples: 32
+                    color: Functions.ColorUtils.applyAlpha(Appearance.colors.colShadow, 0.12)
+                    transparentBorder: true
                 }
 
-                RoundCorner {
-                    id: stdRightCorner
-                    parent: barBg
-                    anchors.top: parent.bottom
-                    anchors.right: parent.right
-                    implicitSize: barWindow.cornerRadius
-                    color: parent.color
-                    corner: RoundCorner.CornerEnum.TopRight
-                    opacity: !barWindow.isCentered && barWindow.showBackground ? 1.0 : 0.0
-                    visible: opacity > 0
-                    Behavior on opacity { NumberAnimation { duration: 300 } }
-                }
+                // ── Solid background rectangle ─────────────────────────────
+                Rectangle {
+                    id: barBg
+                    
+                    readonly property real targetHeight: Appearance.sizes.statusBarHeight + (barWindow.isCentered ? barWindow.cornerRadius : 0)
+                    readonly property real targetY: barWindow.showBackground 
+                        ? (barWindow.isCentered ? -barWindow.cornerRadius : 0)
+                        : -targetHeight - 10
 
-                // ── HUD Mode Corners (Top sides of the pill) ──
-                RoundCorner {
-                    id: hudLeftCorner
-                    parent: barBg
-                    anchors.top: parent.top
-                    anchors.topMargin: barWindow.cornerRadius
-                    anchors.right: parent.left
-                    implicitSize: barWindow.cornerRadius
-                    color: parent.color
-                    corner: RoundCorner.CornerEnum.TopRight
-                    opacity: barWindow.isCentered && barWindow.showBackground ? 1.0 : 0.0
-                    visible: opacity > 0
-                    Behavior on opacity { NumberAnimation { duration: 300 } }
-                }
+                    y: targetY
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    
+                    width: barWindow.isCentered ? Math.min(barWindow.centeredWidth, parent.width - 40) : parent.width
+                    height: targetHeight
+                    color: Appearance.colors.colStatusBarSolid
+                    
+                    radius: barWindow.isCentered ? barWindow.cornerRadius : 0
 
-                RoundCorner {
-                    id: hudRightCorner
-                    parent: barBg
-                    anchors.top: parent.top
-                    anchors.topMargin: barWindow.cornerRadius
-                    anchors.left: parent.right
-                    implicitSize: barWindow.cornerRadius
-                    color: parent.color
-                    corner: RoundCorner.CornerEnum.TopLeft
-                    opacity: barWindow.isCentered && barWindow.showBackground ? 1.0 : 0.0
-                    visible: opacity > 0
-                    Behavior on opacity { NumberAnimation { duration: 300 } }
+                    Behavior on y { NumberAnimation { duration: 550; easing.type: Easing.OutQuint } }
+                    Behavior on width { NumberAnimation { duration: 450; easing.type: Easing.OutQuint } }
+                    Behavior on height { NumberAnimation { duration: 450; easing.type: Easing.OutQuint } }
+                    Behavior on radius { NumberAnimation { duration: 400; easing.type: Easing.OutQuint } }
+
+                    // ── Standard Mode Corners (Bottom) ──
+                    RoundCorner {
+                        id: stdLeftCorner
+                        anchors.top: parent.bottom
+                        anchors.left: parent.left
+                        implicitSize: barWindow.cornerRadius
+                        color: parent.color
+                        corner: RoundCorner.CornerEnum.TopLeft
+                        opacity: !barWindow.isCentered && barWindow.showBackground ? 1.0 : 0.0
+                        visible: opacity > 0
+                        Behavior on opacity { NumberAnimation { duration: 300 } }
+                    }
+
+                    RoundCorner {
+                        id: stdRightCorner
+                        anchors.top: parent.bottom
+                        anchors.right: parent.right
+                        implicitSize: barWindow.cornerRadius
+                        color: parent.color
+                        corner: RoundCorner.CornerEnum.TopRight
+                        opacity: !barWindow.isCentered && barWindow.showBackground ? 1.0 : 0.0
+                        visible: opacity > 0
+                        Behavior on opacity { NumberAnimation { duration: 300 } }
+                    }
+
+                    // ── HUD Mode Corners (Top sides of the pill) ──
+                    RoundCorner {
+                        id: hudLeftCorner
+                        anchors.top: parent.top
+                        anchors.topMargin: barWindow.cornerRadius
+                        anchors.right: parent.left
+                        implicitSize: barWindow.cornerRadius
+                        color: parent.color
+                        corner: RoundCorner.CornerEnum.TopRight
+                        opacity: barWindow.isCentered && barWindow.showBackground ? 1.0 : 0.0
+                        visible: opacity > 0
+                        Behavior on opacity { NumberAnimation { duration: 300 } }
+                    }
+
+                    RoundCorner {
+                        id: hudRightCorner
+                        anchors.top: parent.top
+                        anchors.topMargin: barWindow.cornerRadius
+                        anchors.left: parent.right
+                        implicitSize: barWindow.cornerRadius
+                        color: parent.color
+                        corner: RoundCorner.CornerEnum.TopLeft
+                        opacity: barWindow.isCentered && barWindow.showBackground ? 1.0 : 0.0
+                        visible: opacity > 0
+                        Behavior on opacity { NumberAnimation { duration: 300 } }
+                    }
                 }
             }
 
