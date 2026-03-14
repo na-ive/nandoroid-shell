@@ -162,7 +162,7 @@ Singleton {
                 root.processWeatherData(data);
             }
         } catch (e) {
-            console.warn("[Weather] Sync cache read failed, falling back to process");
+
             readCacheProc.running = true;
         }
         
@@ -202,7 +202,7 @@ Singleton {
 
         onExited: (exitCode) => {
             if (exitCode !== 0) {
-                console.warn("[Weather] wttr.in failed (exit "+exitCode+"), marking down");
+
                 root.wttrInHealthy = false;
                 root.lastWttrInFail = new Date().getTime();
                 fallbackTrigger();
@@ -285,7 +285,7 @@ Singleton {
                             const displayName = res.admin1 ? (res.name + ", " + res.admin1) : res.name;
                             root.fetchOpenMeteo(res.latitude.toString(), res.longitude.toString(), displayName);
                         } else {
-                            console.warn("[Weather] Step: Geocoding no results, trying IP fallback");
+
                             ipLocProc.running = false;
                             ipLocProc.running = true;
                         }
@@ -299,7 +299,7 @@ Singleton {
         }
         onExited: (exitCode) => {
             if (exitCode !== 0) {
-                console.warn("[Weather] Step: Geocoding process failed (exit " + exitCode + "), trying IP fallback");
+
                 ipLocProc.running = false;
                 ipLocProc.running = true;
             }
@@ -344,7 +344,7 @@ Singleton {
                 Qt.callLater(() => {
                     try {
                         if (!results) {
-                            console.warn("[Weather] Step: Open-Meteo returned empty stdout");
+
                             return;
                         }
                         const data = JSON.parse(results);

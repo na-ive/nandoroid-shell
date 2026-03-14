@@ -21,10 +21,10 @@ Item {
     readonly property bool focusingThisMonitor: HyprlandData.activeWorkspace?.monitor == monitor?.name
 
     property string appClassText: root.focusingThisMonitor && root.activeWindow?.activated ?
-                root.activeWindow?.appId : (HyprlandData.activeWindow?.class) ?? "Desktop"
+                (root.activeWindow?.appId ?? "Desktop") : (HyprlandData.activeWindow?.class ?? "Desktop")
 
     property string appTitleText: root.focusingThisMonitor && root.activeWindow?.activated ?
-                root.activeWindow?.title : (HyprlandData.activeWindow?.title) ?? `Workspace ${monitor?.activeWorkspace?.id ?? 1}`
+                (root.activeWindow?.title ?? "Overview") : (HyprlandData.activeWindow?.title ?? `Workspace ${monitor?.activeWorkspace?.id ?? 1}`)
 
     implicitWidth: titleColumn.implicitWidth
     implicitHeight: titleColumn.implicitHeight

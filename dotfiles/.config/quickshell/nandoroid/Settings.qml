@@ -31,7 +31,7 @@ Scope {
         const targetPage = result.pageIndex;
         const query = result.matchedString || lastQuery;
         
-        console.log("[Settings] Navigating to result index:", index, "Page:", targetPage, "Query:", query);
+
 
         if (GlobalStates.settingsPageIndex === targetPage) {
             // Trigger search handler in the current page

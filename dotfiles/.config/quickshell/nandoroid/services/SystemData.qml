@@ -270,7 +270,7 @@ Singleton {
                             root.availableGpus = []; // Clear when not monitoring
                         }
                     } catch (e) {
-                         console.warn("[SystemData] Parse error:", e);
+
                     }
                 });
             }

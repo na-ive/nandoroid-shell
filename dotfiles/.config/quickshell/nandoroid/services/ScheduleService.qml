@@ -43,7 +43,7 @@ Singleton {
                     if (Array.isArray(parsed)) root.events = parsed
                 }
             } catch(e) {
-                console.log("[ScheduleService] Parse error:", e)
+
             }
         }
     }

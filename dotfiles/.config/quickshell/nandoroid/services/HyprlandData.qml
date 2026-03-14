@@ -89,7 +89,7 @@ Singleton {
 
     Timer {
         id: refreshTimer
-        interval: 100
+        interval: 250
         repeat: false
         onTriggered: updateAll()
     }

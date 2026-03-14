@@ -59,6 +59,7 @@ Rectangle {
             layer.effect: GaussianBlur {
                 radius: 64 
                 samples: 48
+                cached: true
             }
 
             Rectangle {

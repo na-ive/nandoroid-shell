@@ -143,7 +143,7 @@ Singleton {
                     saveCache.command = ["sh", "-c", `echo '${JSON.stringify(hwData)}' > ${root.hwCachePath}`]
                     saveCache.running = true
                 } catch (e) {
-                    console.warn("SystemInfo parse error:", e);
+
                 }
             }
         }

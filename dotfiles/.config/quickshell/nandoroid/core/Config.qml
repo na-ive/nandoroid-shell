@@ -63,7 +63,7 @@ Singleton {
         onFileChanged: fileReloadTimer.restart()
         onAdapterUpdated: fileWriteTimer.restart()
         onLoaded: {
-            console.log("[Config] FileView onLoaded. quickSettings present:", !!configOptionsJsonAdapter.quickSettings);
+
             root.ready = true;
         }
         onLoadFailed: error => {

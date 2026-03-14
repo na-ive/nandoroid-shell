@@ -274,7 +274,7 @@ Singleton {
         
         allApps = mapped;
         _triggerVal++;
-        console.log("[LauncherSearch] Updated. allApps count: " + allApps.length);
+
     }
     
     property int _triggerVal: 0

@@ -463,7 +463,7 @@ Singleton {
                     };
                 }).filter(n => n.ssid && n.ssid.length > 0);
 
-                console.log("Network: Scan finished, found", allNetworks.length, "networks");
+
                 const networkMap = new Map();
                 for (const network of allNetworks) {
                     const existing = networkMap.get(network.ssid);
@@ -479,7 +479,8 @@ Singleton {
                 for (let i = currentNetworks.length - 1; i >= 0; i--) {
                     const rn = currentNetworks[i];
                     if (!wifiNetworksData.find(n => n.ssid === rn.ssid)) {
-                        currentNetworks.splice(i, 1).forEach(n => n.destroy());
+                        let removed = currentNetworks.splice(i, 1);
+                        removed.forEach(n => Qt.callLater(() => { if(n) n.destroy(); }));
                     }
                 }
 

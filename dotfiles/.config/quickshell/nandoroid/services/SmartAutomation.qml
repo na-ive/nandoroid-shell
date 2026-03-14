@@ -49,7 +49,7 @@ Singleton {
         if (Config.ready && Config.options.system) {
             const lastCheck = Config.options.system.lastUpdateCheckDate || "";
             if (lastCheck !== nowDateStr) {
-                console.log("[SmartAutomation] Running daily update check...");
+
                 updateCheckProc.running = true;
                 Config.options.system.lastUpdateCheckDate = nowDateStr;
             }
@@ -116,7 +116,7 @@ Singleton {
 
         // Cleanup Expired Events
         expiredEventIds.forEach(id => {
-            console.log("[SmartAutomation] Deleting expired once-event:", id);
+
             ScheduleService.deleteEvent(id);
         });
     }

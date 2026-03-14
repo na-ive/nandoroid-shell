@@ -68,13 +68,13 @@ ShellRoot {
     IpcHandler {
         target: "wallpaper"
         function openDesktop() {
-            console.log("IPC: Received openDesktop");
+
             GlobalStates.wallpaperSelectorTarget = "desktop";
             GlobalStates.wallpaperSelectorOpen = true;
         }
 
         function openLock() {
-            console.log("IPC: Received openLock");
+
             GlobalStates.wallpaperSelectorTarget = "lock";
             GlobalStates.wallpaperSelectorOpen = true;
         }

@@ -100,7 +100,7 @@ Singleton {
 
     Timer {
         id: timer
-        interval: 16 // 60fps for maximum smoothness
+        interval: 1000 // 1 tick per second optimization
         repeat: true
         running: root.active
         onTriggered: {

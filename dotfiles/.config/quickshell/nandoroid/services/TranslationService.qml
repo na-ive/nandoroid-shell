@@ -35,7 +35,7 @@ Singleton {
             + ` -t '${Functions.StringUtils.shellSingleQuoteEscape(t)}'`
             + ` '${Functions.StringUtils.shellSingleQuoteEscape(cleanText)}'`;
         
-        console.log(`[TranslationService] [${s} -> ${t}] Command: ${cmd}`);
+
         translateProc.command = ["bash", "-c", cmd];
         translateProc.buffer = "";
         
@@ -62,7 +62,7 @@ Singleton {
         onExited: (exitCode, exitStatus) => {
             if (exitCode === 0) {
                 root.translatedText = translateProc.buffer.trim();
-                console.log("[TranslationService] Finished. Result length:", root.translatedText.length);
+
             } else {
                 console.error("[TranslationService] Process exited with code:", exitCode);
             }
@@ -77,7 +77,7 @@ Singleton {
         stdout: StdioCollector {
             onStreamFinished: {
                 const output = this.text.trim();
-                console.log("[TranslationService] Fetched language list, length:", output.length);
+
                 if (output.length > 0) {
                     // Extract codes: trans -list-codes often outputs in columns
                     // We look for 2-3 letter codes at the start of lines or separated by whitespace
@@ -88,7 +88,7 @@ Singleton {
                     
                     if (codes.length > 5) {
                         root.availableLanguages = ["auto", ...codes];
-                        console.log("[TranslationService] Loaded", codes.length, "languages");
+
                     }
                 }
             }

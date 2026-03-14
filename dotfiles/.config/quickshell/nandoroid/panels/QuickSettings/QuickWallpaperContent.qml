@@ -123,7 +123,7 @@ Item {
         stderr: StdioCollector {
             onStreamFinished: {
                 if (this.text.includes("Error:") || this.text.includes("Invalid")) {
-                    console.log("[QuickWallpaper] Matugen Preview Error (stderr):", this.text);
+
                     root.sendNotification("Preview Error", "Failed to generate preview for this wallpaper.");
                 }
             }
@@ -147,7 +147,7 @@ Item {
                         batchUpdateTimer.restart();
                     }
                 } catch(e) {
-                    console.log("QuickWallpaper Matugen Preview Error:", e);
+
                 }
                 previewIterateTimer.start();
             }

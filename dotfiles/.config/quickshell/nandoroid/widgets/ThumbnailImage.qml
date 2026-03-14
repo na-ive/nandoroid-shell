@@ -60,7 +60,7 @@ Item {
         // Error handling fallback
         onStatusChanged: {
             if (status === Image.Error) {
-                console.warn("[ThumbnailImage] Failed to load:", root.sourcePath);
+
             }
         }
     }

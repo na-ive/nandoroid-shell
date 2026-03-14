@@ -65,7 +65,7 @@ Singleton {
 
         const onBatteryChanged = () => {
             if (device.batteryAvailable && device.connected) {
-                console.log("[BluetoothStatus] Battery info received, finalizing pairing.");
+
                 root.finishPairing();
             }
         };
@@ -157,10 +157,10 @@ Singleton {
             
             if (root.retryCount < 6) { // Increased retries for TWS
                 root.retryCount++;
-                console.log(`[BluetoothStatus] Retry connection attempt ${root.retryCount} for ${dev.address}`);
+
                 dev.connect();
             } else {
-                console.log(`[BluetoothStatus] All connection retries failed for ${dev.address}`);
+
                 stop();
                 safetyTimer.cleanup();
             }
@@ -172,7 +172,7 @@ Singleton {
         interval: 10000 // 10s stability check for TWS
         repeat: false
         onTriggered: {
-            console.log("[BluetoothStatus] Connection stabilized after 10s timeout.");
+
             BluetoothStatus.finishPairing();
         }
     }

@@ -30,7 +30,7 @@ Singleton {
             }
         }
         Appearance.m3colors.darkmode = Functions.ColorUtils.isDark(Appearance.m3colors.m3background)
-        console.log("[MaterialThemeLoader] Theme applied successfully")
+
     }
 
     Timer {
@@ -43,7 +43,7 @@ Singleton {
             if (Config.ready && Config.options.appearance.background.matugen) {
                 root.applyColors(themeFileView.text())
             } else {
-                console.log("[MaterialThemeLoader] Matugen file changed, but skipping Shell apply (Basic Color mode active)")
+
             }
         }
     }
@@ -67,7 +67,7 @@ Singleton {
         }
         onLoadFailed: error => {
             if (error == FileViewError.FileNotFound) {
-                console.log("[MaterialThemeLoader] Theme file not found, triggering initial generation...")
+
                 Wallpapers.initializeMatugen()
             }
         }

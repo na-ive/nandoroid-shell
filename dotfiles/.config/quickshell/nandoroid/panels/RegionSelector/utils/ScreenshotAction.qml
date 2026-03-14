@@ -50,7 +50,7 @@ Singleton {
         const annotationCommand = `${useSatty ? "satty" : "swappy"} -f -`;
         const recordScript = Quickshell.shellPath("scripts/videos/record.sh");
         
-        console.log(`[ScreenshotAction] Built command for action ${action}: ${annotationCommand}`)
+
 
         switch (action) {
             case ScreenshotAction.Action.Copy:
@@ -86,7 +86,7 @@ Singleton {
                 return ["bash", "-c", `'${recordScript}' --fullscreen --sound`]
                 
             default:
-                console.warn("[Region Selector] Unknown snip action, skipping snip.");
+
                 return [];
         }
     }

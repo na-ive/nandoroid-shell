@@ -81,7 +81,7 @@ CAVACONF`]
                     }
                     root.values = points;
                 } else if (data.length > 0) {
-                    console.log("[Cava] Received malformed data, parts:", parts.length, "expected:", root.barCount);
+
                 }
             }
         }

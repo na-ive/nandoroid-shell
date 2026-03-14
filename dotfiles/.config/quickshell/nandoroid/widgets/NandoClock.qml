@@ -81,7 +81,7 @@ Item {
 
         onStatusChanged: {
             if (status === Loader.Error) {
-                console.warn("[NandoClock] Clock loader error for source:", source)
+
             }
         }
     }

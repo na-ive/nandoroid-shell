@@ -49,7 +49,7 @@ Singleton {
         
         // Handle Mirroring
         if (opts.mirror) {
-            console.log(`[DisplayService] Mirroring ${name} to ${opts.mirror}`);
+
             Quickshell.execDetached(["hyprctl", "keyword", "monitor", `${name},preferred,auto,1,mirror,${opts.mirror}`]);
             return;
         }
@@ -76,14 +76,14 @@ Singleton {
             cmd += `,transform,${transform}`;
         }
         
-        console.log(`[DisplayService] Applying: hyprctl keyword monitor "${cmd}"`);
+
         
         // Use full path or ensuring environment
         Quickshell.execDetached(["hyprctl", "keyword", "monitor", cmd]);
     }
 
     function batchApply(allChanges) {
-        console.log(`[DisplayService] Batch applying changes for ${Object.keys(allChanges).length} monitors`);
+
         for (const name in allChanges) {
             const opts = allChanges[name];
             opts.name = name;

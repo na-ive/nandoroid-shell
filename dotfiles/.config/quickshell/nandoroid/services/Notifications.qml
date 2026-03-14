@@ -143,7 +143,7 @@ Singleton {
             const notif = root.list[index];
             if (notif?.isTransient) root.discardNotification(notificationId);
             else root.timeoutNotification(notificationId);
-            destroy();
+            Qt.callLater(() => destroy());
         }
     }
 
@@ -198,7 +198,7 @@ Singleton {
                 root.unread++;
             }
 
-            console.log("[Notifications] Received:", newNotif.appName, "-", newNotif.summary);
+
             notifFileView.setText(stringifyList(root.list));
         }
     }
@@ -212,7 +212,11 @@ Singleton {
 
         if (root.unread > 0) root.unread--;
         const notif = root.list[index];
-        if (notif.timer) { notif.timer.stop(); notif.timer.destroy(); }
+        if (notif.timer) { 
+            notif.timer.stop(); 
+            let t = notif.timer; 
+            Qt.callLater(() => { if(t) t.destroy(); }); 
+        }
 
         // Dismiss from D-Bus server
         const serverId = notif.notificationId - root.idOffset;
@@ -316,19 +320,19 @@ Singleton {
                 let maxId = 0;
                 root.list.forEach(n => { maxId = Math.max(maxId, n.notificationId); });
                 root.idOffset = maxId;
-                console.log("[Notifications] Loaded", root.list.length, "from file, idOffset:", root.idOffset);
+
             } catch (e) {
-                console.log("[Notifications] Parse error, starting fresh");
+
                 root.list = [];
             }
         }
         onLoadFailed: (error) => {
             if (error == FileViewError.FileNotFound) {
-                console.log("[Notifications] File not found, creating");
+
                 root.list = [];
                 notifFileView.setText("[]");
             } else {
-                console.log("[Notifications] Load error:", error);
+
             }
         }
     }

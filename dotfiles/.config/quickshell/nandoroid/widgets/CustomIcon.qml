@@ -36,7 +36,7 @@ Item {
 
     onResolvedSourceChanged: {
         if (resolvedSource !== "") {
-            console.log("[CustomIcon] Resolved source for '" + root.source + "': " + resolvedSource);
+
         }
     }
 

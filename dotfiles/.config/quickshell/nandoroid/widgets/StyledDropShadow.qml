@@ -10,4 +10,5 @@ DropShadow {
     samples: 24
     color: Functions.ColorUtils.applyAlpha(Appearance.colors.colShadow, 0.1)
     transparentBorder: true
+    cached: true
 }

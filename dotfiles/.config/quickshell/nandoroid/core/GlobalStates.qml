@@ -306,10 +306,10 @@ Singleton {
                     const parsed = JSON.parse(data);
                     if (parsed.str && root.availableLayouts.includes(parsed.str)) {
                         root.hyprlandLayout = parsed.str;
-                        console.log("GlobalStates: Layout inicial desde Hyprland: " + parsed.str);
+
                     }
                 } catch (e) {
-                    console.warn("GlobalStates: Error parsing layout from hyprctl: " + e);
+
                 }
                 root.hyprlandLayoutReady = true;
             }
