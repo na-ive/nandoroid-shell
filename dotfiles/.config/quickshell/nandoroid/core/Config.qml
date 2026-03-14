@@ -241,6 +241,7 @@ Singleton {
                 property int backgroundStyle: 0
                 property int backgroundCornerRadius: 20
                 property string islandStyle: "pill" // pill, waterdrop
+                property bool autoHide: false
             }
 
             // --- Quick Settings ---

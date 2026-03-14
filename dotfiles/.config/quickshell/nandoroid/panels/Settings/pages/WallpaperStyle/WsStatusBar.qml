@@ -60,6 +60,27 @@ ColumnLayout {
                     Layout.fillWidth: true
                     spacing: 4
     
+                    // ── Auto Hide ──────────────────────────────────────────────
+                    SegmentedWrapper {
+                        Layout.fillWidth: true
+                        implicitHeight: autoHideRow.implicitHeight + 32
+                        orientation: Qt.Vertical
+                        maxRadius: 20
+                        color: Appearance.m3colors.m3surfaceContainerHigh
+                        RowLayout {
+                            id: autoHideRow
+                            anchors.fill: parent; anchors.margins: 16
+                            spacing: 16
+                            MaterialSymbol { text: "visibility_off"; iconSize: 24; color: Appearance.colors.colPrimary }
+                            StyledText { text: "Auto hide"; Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
+                            AndroidToggle {
+                                checked: Config.ready && Config.options.statusBar ? (Config.options.statusBar.autoHide ?? false) : false
+                                onToggled: if (Config.ready && Config.options.statusBar)
+                                    Config.options.statusBar.autoHide = !Config.options.statusBar.autoHide
+                            }
+                        }
+                    }
+
                     // ── Text color mode (disabled when bg is active) ────────────
                     SegmentedWrapper {
                         Layout.fillWidth: true
