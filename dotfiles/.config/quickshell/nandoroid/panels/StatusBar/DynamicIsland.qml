@@ -86,6 +86,17 @@ Item {
         height: 28
         clip: true
         
+        HoverHandler {
+            enabled: islandState === "media"
+            onHoveredChanged: {
+                if (hovered && Config.options.media.enableMediaHover) {
+                    GlobalStates.openMediaNotch(root.QsWindow.window.screen);
+                } else {
+                    GlobalStates.closeMediaNotchWithDelay();
+                }
+            }
+        }
+        
         width: {
             if (islandState === "notification") {
                 let w = 0
@@ -195,6 +206,17 @@ Item {
         y: 6
         height: 28
         clip: true
+        
+        HoverHandler {
+            enabled: islandState === "media"
+            onHoveredChanged: {
+                if (hovered && Config.options.media.enableMediaHover) {
+                    GlobalStates.openMediaNotch(root.QsWindow.window.screen);
+                } else {
+                    GlobalStates.closeMediaNotchWithDelay();
+                }
+            }
+        }
         
         width: {
             if (islandState === "notification") return notifSummaryLabel.visible ? Math.min(notifSummaryLabel.implicitWidth, 200) + 8 : 0
