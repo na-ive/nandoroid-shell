@@ -40,7 +40,7 @@ Singleton {
     Process {
         id: cavaProcess
         running: root.cavaAvailable && root.refCount > 0
-        command: ["sh", "-c", `cat <<'CAVACONF' | cava -p /dev/stdin
+        command: ["bash", "-c", `cat <<'CAVACONF' | cava -p /dev/stdin
 [general]
 framerate=60
 bars=${root.barCount}

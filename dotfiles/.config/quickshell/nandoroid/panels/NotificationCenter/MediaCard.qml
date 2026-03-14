@@ -20,7 +20,18 @@ Rectangle {
     visible: MprisController.activePlayer !== null
     clip: true
 
+    property bool showVisualizer: true
     readonly property var player: MprisController.activePlayer
+
+    // --- Cava Lifecycle Management ---
+    readonly property bool shouldVisualize: root.visible && MprisController.isPlaying && root.showVisualizer
+    onShouldVisualizeChanged: {
+        if (shouldVisualize) CavaService.refCount++;
+        else CavaService.refCount--;
+    }
+    Component.onDestruction: {
+        if (shouldVisualize) CavaService.refCount--;
+    }
 
     // Background Art (Blurred)
     Item {
@@ -54,6 +65,15 @@ Rectangle {
                 anchors.fill: parent
                 color: Functions.ColorUtils.transparentize(MprisController.dynLayer0, 0.3)
             }
+        }
+
+        // --- Wave Visualizer Overlay ---
+        WaveVisualizer {
+            anchors.fill: parent
+            anchors.topMargin: parent.height * 0.4 // Position it towards the bottom half
+            color: MprisController.dynPrimary
+            opacityMultiplier: 0.2
+            visible: root.shouldVisualize
         }
     }
 

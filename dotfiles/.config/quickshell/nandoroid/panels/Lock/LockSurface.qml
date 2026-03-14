@@ -85,22 +85,27 @@ MouseArea {
         }
     }
     
-    // ── Background Cava ──
-    CavaWidget {
-        id: lockCava
+    // ── Background Cava (v1.2 Wave Visualizer) ──
+    readonly property bool shouldVisualize: root.visible && MprisController.isPlaying && (Config.ready && Config.options.lock.showCava)
+    onShouldVisualizeChanged: {
+        if (shouldVisualize) CavaService.refCount++;
+        else CavaService.refCount--;
+    }
+    Component.onDestruction: {
+        if (shouldVisualize) CavaService.refCount--;
+    }
+
+    WaveVisualizer {
+        id: lockWave
         anchors.bottom: parent.bottom
-        anchors.horizontalCenter: parent.horizontalCenter
-        width: parent.width
+        anchors.left: parent.left
+        anchors.right: parent.right
+        height: parent.height * 0.6
         z: -1 // Behind Jam and Password input
         
-        maxHeight: root.height * 0.75
-        barCount: 128
-        spacing: 2
-        barWidth: (root.width - (barCount - 1) * spacing) / barCount
-        
-        barColor: Appearance.m3colors.m3primary
-        
-        opacity: (Config.ready && Config.options.lock.showCava) ? 0.15 * root.islandOpacity * (MprisController.isPlaying ? 1 : 0) : 0
+        color: Appearance.m3colors.m3primary
+        opacityMultiplier: 0.15
+        opacity: root.shouldVisualize ? root.islandOpacity : 0
         visible: opacity > 0
         
         Behavior on opacity { NumberAnimation { duration: 800; easing.type: Easing.InOutQuad } }
@@ -443,6 +448,7 @@ MouseArea {
     // ── Media Card ──
     MediaCard {
         id: lockMediaCard
+        showVisualizer: false
         anchors.bottom: bottomIsland.top
         anchors.bottomMargin: 24
         anchors.horizontalCenter: parent.horizontalCenter
