@@ -374,6 +374,7 @@ Singleton {
                 property string priority: ""
                 property bool showMediaCard: true
                 property bool enableMediaHover: true
+                property bool balancedEars: true
             }
 
             // --- Privacy ---

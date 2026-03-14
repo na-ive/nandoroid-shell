@@ -106,7 +106,10 @@ Item {
                 return w > 0 ? w + 4 : 0
             }
             if (islandState === "recording") return 24
-            if (islandState === "media") return root.sharedMediaWidth
+            if (islandState === "media") {
+                return (Config.ready && Config.options.media && Config.options.media.balancedEars) 
+                    ? root.sharedMediaWidth : root.mediaLeftNaturalWidth
+            }
             if (islandState === "pomodoro") return pomoModeLabel.implicitWidth + 8
             return 0
         }
@@ -296,7 +299,10 @@ Item {
         width: {
             if (islandState === "notification") return notifSummaryLabel.visible ? Math.min(notifSummaryLabel.implicitWidth, 200) + 8 : 0
             if (islandState === "recording") return recordTimeLabel.implicitWidth + 8
-            if (islandState === "media") return root.sharedMediaWidth
+            if (islandState === "media") {
+                return (Config.ready && Config.options.media && Config.options.media.balancedEars) 
+                    ? root.sharedMediaWidth : root.mediaRightNaturalWidth
+            }
             if (islandState === "pomodoro") return pomoTimeLabel.implicitWidth + 8
             return 0
         }
