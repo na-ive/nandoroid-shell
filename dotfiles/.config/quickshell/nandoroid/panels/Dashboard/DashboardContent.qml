@@ -57,6 +57,11 @@ Item {
             name: "visible"
             when: GlobalStates.dashboardOpen
             PropertyChanges {
+                target: visualContainer
+                y: 0
+                opacity: 1
+            }
+            PropertyChanges {
                 target: panelBg
                 y: 0
                 opacity: 1
@@ -78,13 +83,21 @@ Item {
             to: "visible"
             ParallelAnimation {
                 NumberAnimation {
+                    target: visualContainer
+                    property: "y"
+                    from: -20
+                    to: 0
+                    duration: 300
+                    easing.type: Easing.OutQuart
+                }
+                NumberAnimation {
                     target: panelBg
                     property: "y"
                     duration: root.showShoulders ? 300 : (Appearance.animation.elementMove.duration || 400)
                     easing.bezierCurve: root.showShoulders ? Appearance.animationCurves.emphasizedDecel : (Appearance.animationCurves.expressiveDefaultSpatial || [0.38, 1.21, 0.22, 1])
                 }
                 NumberAnimation {
-                    targets: [panelBg, rightShoulder, leftShoulder]
+                    targets: [panelBg, rightShoulder, leftShoulder, visualContainer]
                     property: "opacity"
                     duration: 300
                 }
@@ -95,17 +108,24 @@ Item {
             to: ""
             ParallelAnimation {
                 NumberAnimation {
-                    target: panelBg
+                    target: visualContainer
                     property: "y"
-                    to: -root.panelHeight
-                    duration: Appearance.animation.elementMoveExit.duration || 500
+                    to: -root.panelHeight - 40 // Move the whole container far up
+                    duration: Appearance.animation.elementMoveExit.duration || 400
                     easing.bezierCurve: Appearance.animationCurves.emphasized || [0.2, 0.0, 0.0, 1.0]
                 }
                 NumberAnimation {
-                    targets: [panelBg, rightShoulder, leftShoulder]
+                    target: panelBg
+                    property: "y"
+                    to: -root.panelHeight
+                    duration: Appearance.animation.elementMoveExit.duration || 400
+                    easing.bezierCurve: Appearance.animationCurves.emphasized || [0.2, 0.0, 0.0, 1.0]
+                }
+                NumberAnimation {
+                    targets: [panelBg, rightShoulder, leftShoulder, visualContainer]
                     property: "opacity"
                     to: 0
-                    duration: 400
+                    duration: Appearance.animation.elementMoveExit.duration || 400
                 }
             }
         }
