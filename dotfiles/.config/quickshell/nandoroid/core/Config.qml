@@ -218,6 +218,7 @@ Singleton {
             // --- Workspaces ---
             property JsonObject workspaces: JsonObject {
                 property int max_shown: 5
+                property string indicatorStyle: "pill" // pill, numbers, japanese, roman
             }
 
             // --- Bar ---
@@ -239,6 +240,7 @@ Singleton {
                 // 0 = None (transparent), 1 = Always (solid), 2 = Adaptive (show when window active)
                 property int backgroundStyle: 0
                 property int backgroundCornerRadius: 20
+                property string islandStyle: "pill" // pill, waterdrop
             }
 
             // --- Quick Settings ---
@@ -373,6 +375,7 @@ Singleton {
                 property string priority: ""
                 property bool showMediaCard: true
                 property bool enableMediaHover: true
+                property bool balancedEars: true
             }
 
             // --- Privacy ---

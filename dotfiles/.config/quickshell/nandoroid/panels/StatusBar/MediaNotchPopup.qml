@@ -129,9 +129,9 @@ Variants {
                     configuration: StyledSlider.Configuration.Wavy
                     wavy: MprisController.isPlaying
                     value: MprisController.length > 0 ? (MprisController.position / MprisController.length) : 0
-                    highlightColor: Appearance.colors.colPrimary
-                    trackColor: Appearance.colors.colLayer3
-                    handleColor: "white"
+                    highlightColor: MprisController.dynPrimary
+                    trackColor: MprisController.dynSecondaryContainer
+                    handleColor: MprisController.dynPrimary
                     onMoved: if (MprisController.activePlayer) MprisController.activePlayer.position = value * MprisController.activePlayer.length
                     
                     Connections {

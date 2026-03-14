@@ -193,13 +193,43 @@ MouseArea {
         }
 
         // 3. Center: Dynamic Island Wannabe (Locked Indicator)
+        readonly property string islandStyle: Config.options.statusBar?.islandStyle ?? "pill"
+        readonly property bool isWaterdrop: islandStyle === "waterdrop"
+
         Rectangle {
             id: lockIndicatorPill
-            anchors.centerIn: parent
-            height: 28
+            anchors.horizontalCenter: parent.horizontalCenter
+            
+            // Idle: y=6, height=28. Waterdrop: y=0, height=34.
+            y: lockStatusBarContainer.isWaterdrop ? 0 : 6
+            height: lockStatusBarContainer.isWaterdrop ? 34 : 28
             width: lockedContent.implicitWidth + 24
             color: "black"
             radius: height / 2
+
+            // The "Flattener" - Square off the top part for Waterdrop
+            Rectangle {
+                anchors.left: parent.left; anchors.right: parent.right; anchors.top: parent.top
+                height: parent.radius
+                color: "black"
+                visible: lockStatusBarContainer.isWaterdrop
+            }
+
+            // Concave Corners for Waterdrop
+            RoundCorner {
+                anchors.right: parent.left; anchors.top: parent.top
+                implicitSize: 12; color: "black"; corner: RoundCorner.CornerEnum.TopRight
+                visible: lockStatusBarContainer.isWaterdrop
+            }
+
+            RoundCorner {
+                anchors.left: parent.right; anchors.top: parent.top
+                implicitSize: 12; color: "black"; corner: RoundCorner.CornerEnum.TopLeft
+                visible: lockStatusBarContainer.isWaterdrop
+            }
+
+            Behavior on y { NumberAnimation { duration: 400; easing.type: Easing.OutBack } }
+            Behavior on height { NumberAnimation { duration: 400; easing.type: Easing.OutBack } }
 
             RowLayout {
                 id: lockedContent

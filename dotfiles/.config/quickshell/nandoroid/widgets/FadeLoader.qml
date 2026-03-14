@@ -1,18 +1,20 @@
 import QtQuick
 
-
-
+/**
+ * A Loader that automatically fades its content in and out
+ * when the 'shown' or 'active' properties change.
+ */
 Loader {
     id: root
     property bool shown: true
     property alias fade: opacityBehavior.enabled
-    property alias animation: opacityBehavior.animation
-    opacity: shown ? 1 : 0
+    
+    opacity: (shown && active) ? 1 : 0
     visible: opacity > 0
-    active: opacity > 0
+    active: true // Standard Loader active property
 
     Behavior on opacity {
         id: opacityBehavior
-        animation: ({duration: 300})
+        NumberAnimation { duration: 300; easing.type: Easing.OutCubic }
     }
 }

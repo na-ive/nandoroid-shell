@@ -1,35 +1,33 @@
 import "../../core"
 import "../../widgets"
+import "../../core/functions" as Functions
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
 
 /**
  * Refactored OSD Value Indicator (Volume/Brightness)
- * Scaled down to be less "fat" and more aligned with Android 16 proportions.
+ * Simplified structure to eliminate rendering noise.
  */
 Item {
     id: root
-    required property real value
-    required property string icon
-    required property string name
+    
+    // Required properties
+    property real value: 0
+    property string icon: ""
+    property string name: ""
     property var shape
     property bool rotateIcon: false
     property bool scaleIcon: false
 
-    // More compact dimensions
-    readonly property real osdWidth: 340
-    readonly property real osdHeight: 48 // Reduced from 64
-    readonly property real elevationMargin: 10
-
-    implicitWidth: osdWidth + 2 * elevationMargin
-    implicitHeight: osdHeight + 2 * elevationMargin
+    // Root dimensions for the Loader/PanelWindow
+    implicitWidth: 340
+    implicitHeight: 48
 
     Rectangle {
         id: valueIndicator
         anchors.fill: parent
-        anchors.margins: root.elevationMargin
-        radius: Appearance.rounding.full
+        radius: height / 2
         color: Appearance.m3colors.m3surfaceContainer
 
         RowLayout {
@@ -56,7 +54,7 @@ Item {
                     
                     shapeString: (typeof root.shape === "string") ? root.shape : "Circle"
                     text: root.icon
-                    iconSize: 18 // Smaller icon
+                    iconSize: 18
                     
                     color: Appearance.m3colors.m3primaryContainer
                     colSymbol: Appearance.m3colors.m3onPrimaryContainer
@@ -66,7 +64,7 @@ Item {
             // ── Slot Tengah: Main Content (Sleeker StyledSlider) ──
             Item {
                 Layout.fillWidth: true
-                Layout.preferredHeight: 32 // Matches icon wrapper height
+                Layout.preferredHeight: 32
                 Layout.alignment: Qt.AlignVCenter
                 
                 StyledSlider {
@@ -79,7 +77,6 @@ Item {
                     to: 1
                     enabled: false
                     
-                    // Use M configuration (Medium) for a sleeker look
                     configuration: StyledSlider.Configuration.M
                     animateValue: true
                     
@@ -94,7 +91,7 @@ Item {
             Rectangle {
                 id: valueSlot
                 Layout.preferredWidth: 44
-                Layout.preferredHeight: 32 // Matches slider/icon height
+                Layout.preferredHeight: 32
                 Layout.alignment: Qt.AlignVCenter
                 
                 radius: 12
@@ -103,7 +100,7 @@ Item {
                 Text {
                     anchors.centerIn: parent
                     text: Math.round(root.value * 100)
-                    font.pixelSize: 13 // Slightly smaller font
+                    font.pixelSize: 13
                     font.family: Appearance.font.family.numbers
                     font.weight: Font.Bold
                     color: Appearance.m3colors.m3onSecondaryContainer

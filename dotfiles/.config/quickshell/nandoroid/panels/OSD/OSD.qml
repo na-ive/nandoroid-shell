@@ -119,8 +119,6 @@ Scope {
 
             anchors {
                 bottom: true
-                // Layer shell will center horizontally by default if only bottom is anchored
-                // and a fixed width is matched by content.
             }
             
             margins {
@@ -138,44 +136,35 @@ Scope {
             WlrLayershell.layer: WlrLayer.Overlay
             exclusiveZone: -1 // Floating
 
-            implicitWidth: contentWrapper.implicitWidth
-            implicitHeight: contentWrapper.implicitHeight
+            // Window is 40px wider than the OSD pill to provide 'rendering air' and prevent noise
+            implicitWidth: osdIndicatorLoader.implicitWidth + 40
+            implicitHeight: osdIndicatorLoader.implicitHeight + 20
             visible: osdLoader.active
 
             // Animation for appearance
             onVisibleChanged: {
                 if (visible) {
-                    contentWrapper.opacity = 0;
-                    contentWrapper.scale = 0.95;
+                    osdIndicatorLoader.opacity = 0;
+                    osdIndicatorLoader.scale = 0.95;
                     contentAnim.restart();
                 }
             }
 
             ParallelAnimation {
                 id: contentAnim
-                NumberAnimation { target: contentWrapper; property: "opacity"; from: 0; to: 1; duration: 250; easing.type: Easing.OutQuint }
-                NumberAnimation { target: contentWrapper; property: "scale"; from: 0.95; to: 1; duration: 350; easing.type: Easing.OutQuint }
+                NumberAnimation { target: osdIndicatorLoader; property: "opacity"; from: 0; to: 1; duration: 250; easing.type: Easing.OutQuint }
+                NumberAnimation { target: osdIndicatorLoader; property: "scale"; from: 0.95; to: 1; duration: 350; easing.type: Easing.OutQuint }
             }
 
-            Item {
-                id: contentWrapper
+            Loader {
+                id: osdIndicatorLoader
                 anchors.centerIn: parent
-                implicitWidth: osdIndicatorLoader.implicitWidth
-                implicitHeight: osdIndicatorLoader.implicitHeight
-                
-                // OpacityMask or Shadow could be added here if needed,
-                // but the Indicator already provides its own background.
+                source: root.indicators.find(i => i.id === root.currentIndicator)?.sourceUrl
                 
                 MouseArea {
                     anchors.fill: parent
                     hoverEnabled: true
                     onEntered: osdLoader.active = false // Quick hide on hover
-                }
-
-                Loader {
-                    id: osdIndicatorLoader
-                    anchors.centerIn: parent
-                    source: root.indicators.find(i => i.id === root.currentIndicator)?.sourceUrl
                 }
             }
         }
