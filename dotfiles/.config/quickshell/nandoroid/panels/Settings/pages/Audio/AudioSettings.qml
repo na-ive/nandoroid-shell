@@ -6,6 +6,8 @@ import "."
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
+import Quickshell
+import Quickshell.Widgets
 
 /**
  * Functional Audio Settings page.
@@ -120,6 +122,85 @@ Flickable {
                             value: Audio.microphoneVolume
                             stopIndicatorValues: []
                             onMoved: Audio.setMicrophoneVolume(value)
+                        }
+                    }
+                }
+            }
+        }
+
+        // ── Per-App Volume Section ──
+        ColumnLayout {
+            Layout.fillWidth: true
+            spacing: 16
+            visible: Audio.streamNodes.length > 0
+
+            StyledText {
+                text: "Volume per Application"
+                font.pixelSize: Appearance.font.pixelSize.large
+                font.weight: Font.DemiBold
+                color: Appearance.colors.colOnLayer1
+            }
+
+            Rectangle {
+                Layout.fillWidth: true
+                implicitHeight: perAppCol.implicitHeight + 32
+                radius: 16
+                color: Appearance.colors.colLayer1
+
+                ColumnLayout {
+                    id: perAppCol
+                    anchors.fill: parent
+                    anchors.margins: 16
+                    spacing: 24
+
+                    Repeater {
+                        model: Audio.streamNodes
+                        delegate: ColumnLayout {
+                            required property var modelData
+                            Layout.fillWidth: true
+                            spacing: 8
+                            RowLayout {
+                                spacing: 8
+                                
+                                Item {
+                                    width: 20
+                                    height: 20
+                                    
+                                    IconImage {
+                                        id: appIcon
+                                        anchors.fill: parent
+                                        source: Quickshell.iconPath(Audio.appNodeIconName(modelData), "image-missing")
+                                        visible: status === Image.Ready
+                                    }
+
+                                    MaterialSymbol {
+                                        anchors.centerIn: parent
+                                        text: "settings_input_component"
+                                        iconSize: 20
+                                        color: Appearance.colors.colPrimary
+                                        visible: appIcon.status !== Image.Ready
+                                    }
+                                }
+
+                                StyledText {
+                                    text: Audio.appNodeDisplayName(modelData)
+                                    font.pixelSize: Appearance.font.pixelSize.small
+                                    font.weight: Font.DemiBold
+                                    color: Appearance.colors.colOnLayer1
+                                    Layout.fillWidth: true
+                                }
+                                StyledText {
+                                    text: Math.round(modelData.audio.volume * 100) + "%"
+                                    font.pixelSize: Appearance.font.pixelSize.small
+                                    color: Appearance.colors.colSubtext
+                                }
+                            }
+                            StyledSlider {
+                                Layout.fillWidth: true
+                                value: modelData.audio.volume
+                                stopIndicatorValues: []
+                                onMoved: Audio.setNodeVolume(modelData, value)
+                            }
                         }
                     }
                 }

@@ -27,6 +27,7 @@ Singleton {
     function setMicrophoneVolume(v) { if (source && source.audio) source.audio.volume = v }
     function setMuted(m) { if (sink && sink.audio) sink.audio.muted = m }
     function setMicrophoneMuted(m) { if (source && source.audio) source.audio.muted = m }
+    function setNodeVolume(node, v) { if (node && node.audio) node.audio.volume = v }
 
     readonly property real hardMaxValue: 2.00 
     property string audioTheme: (Config.options.sounds && Config.options.sounds.theme) ? Config.options.sounds.theme : "freedesktop"
@@ -38,7 +39,28 @@ Singleton {
         return (node.nickname || node.description || qsTr("Unknown"));
     }
     function appNodeDisplayName(node) {
-        return (node.properties["application.name"] || node.description || node.name)
+        const name = (node.properties["application.name"] || node.description || node.name);
+        if (name && name.length > 0) {
+            return name.charAt(0).toUpperCase() + name.slice(1);
+        }
+        return name;
+    }
+
+    function appNodeIconName(node) {
+        if (!node) return "settings_input_component";
+
+        // Get all possible identifiers
+        const iconMetadata = node.properties["application.icon-name"] 
+                          || node.properties["app.icon"] 
+                          || node.properties["window.icon"]
+                          || node.properties["icon-name"];
+        const appName = node.properties["application.name"];
+        const nodeName = node.name;
+        const appProcessName = node.properties["application.process.binary"];
+
+        // Always pass through AppSearch.guessIcon to apply substitutions (like brave-browser -> brave-desktop)
+        // We pass the metadata icon as the primary search key
+        return AppSearch.guessIcon(iconMetadata || appName || nodeName || appProcessName, appProcessName, appName);
     }
 
     // Lists for UI
@@ -48,8 +70,16 @@ Singleton {
         })
     }
 
+    function getStreamNodesByType(isSink) {
+        return Pipewire.nodes.values.filter(node => {
+            return (node.isSink === isSink) && node.audio && node.isStream
+        })
+    }
+
     readonly property list<var> outputDevices: getNodesByType(true)
     readonly property list<var> inputDevices: getNodesByType(false)
+    readonly property list<var> streamNodes: getStreamNodesByType(true)
+    readonly property list<var> micStreamNodes: getStreamNodesByType(false)
     readonly property list<var> sinks: outputDevices // alias
     readonly property list<var> sources: inputDevices // alias
 

@@ -369,7 +369,7 @@ Item {
                 // Tab 0: Calendar + Pomodoro
                 Loader {
                     anchors.fill: parent
-                    active: true
+                    active: root.currentTab === 0
                     visible: root.currentTab === 0
                     opacity: visible ? 1 : 0
                     transform: Translate { y: root.currentTab === 0 ? 0 : (root.currentTab > 0 ? -12 : 12)
@@ -402,7 +402,7 @@ Item {
                 // Tab 2: Notepad
                 Loader {
                     anchors.fill: parent
-                    active: root.currentTab === 2
+                    active: true
                     visible: root.currentTab === 2
                     opacity: visible ? 1 : 0
                     transform: Translate { y: root.currentTab === 2 ? 0 : (root.currentTab > 2 ? -12 : 12)
