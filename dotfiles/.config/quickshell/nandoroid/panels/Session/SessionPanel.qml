@@ -1,4 +1,5 @@
 import "../../core"
+import "../../core/functions" as Functions
 import QtQuick
 import Qt5Compat.GraphicalEffects
 import Quickshell
@@ -32,10 +33,24 @@ Variants {
 
             color: "transparent"
 
-            // Click outside to close
-            MouseArea {
+            // ── Tonal Scrim (Backdrop) ──
+            Rectangle {
+                id: backdrop
                 anchors.fill: parent
-                onClicked: GlobalStates.sessionOpen = false
+                color: Functions.ColorUtils.applyAlpha(Appearance.colors.colLayer0, 0.2)
+                opacity: GlobalStates.sessionOpen ? 1 : 0
+
+                Behavior on opacity {
+                    NumberAnimation {
+                        duration: 250
+                        easing.type: Easing.OutQuart
+                    }
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: GlobalStates.sessionOpen = false
+                }
             }
 
             // Content centered
