@@ -11,10 +11,14 @@ import "../../core/functions" as Functions
 import "../../widgets"
 import "../../services"
 
-Item {
+/**
+ * Standard Grid Overview
+ * Integrated Search Bar (Launcher/Spotlight style)
+ */
+Rectangle {
     id: overviewRoot
-
-    // Cache config values to avoid repeated lookups
+    
+    // --- Layout Properties ---
     readonly property real scale: Config.options.overview.scale
     readonly property int rows: Config.options.overview.rows
     readonly property int columns: Config.options.overview.columns
@@ -23,380 +27,308 @@ Item {
     readonly property real workspacePadding: 8
     readonly property color activeBorderColor: Appearance.colors.colPrimary
 
-    // Use the screen's monitor instead of focused monitor for multi-monitor support
-    property var currentScreen: null  // This will be set from parent
+    property var currentScreen: null
     readonly property var monitor: currentScreen ? Hyprland.monitorFor(currentScreen) : Hyprland.focusedMonitor
     readonly property int workspaceGroup: Math.floor((monitor?.activeWorkspace?.id - 1 || 0) / workspacesShown)
 
-    // Cache these references
-    readonly property var windowList: HyprlandData.windowList
     readonly property var monitors: HyprlandData.monitors
     readonly property int monitorId: monitor?.id ?? -1
     readonly property var monitorData: monitors.find(m => m.id === monitorId) ?? null
 
-    readonly property string barPosition: ({position: "top", pinnedOnStartup: false}).position
-    readonly property var barPanel: monitor ? null : null
-    readonly property bool isBarPinned: barPanel ? barPanel.pinned : (({position: "top", pinnedOnStartup: false}).pinnedOnStartup ?? true)
-    readonly property int barReserved: isBarPinned ? (false ? 44 : 40) : 0
+    readonly property string barPosition: "top"
+    readonly property int barReserved: 40
 
-    // Search functionality (controlled from parent)
+    // --- Search Logic ---
     property string searchQuery: ""
     property var matchingWindows: []
     property int selectedMatchIndex: 0
 
-    // Reset search state
     function resetSearch() {
         searchQuery = "";
+        searchInput.text = "";
         matchingWindows = [];
         selectedMatchIndex = 0;
     }
 
-    // Update matching windows when search query or window list changes
     onSearchQueryChanged: updateMatchingWindows()
-    onWindowListChanged: updateMatchingWindows()
+    
+    Connections {
+        target: HyprlandData
+        function onWindowListChanged() { overviewRoot.updateMatchingWindows(); }
+    }
 
-    // Fuzzy match: checks if all characters of query appear in order in target
     function fuzzyMatch(query, target) {
-        if (query.length === 0)
-            return true;
-        if (target.length === 0)
-            return false;
-
+        if (query.length === 0) return true;
         let queryIndex = 0;
         for (let i = 0; i < target.length && queryIndex < query.length; i++) {
-            if (target[i] === query[queryIndex]) {
-                queryIndex++;
-            }
+            if (target[i] === query[queryIndex]) queryIndex++;
         }
         return queryIndex === query.length;
     }
 
-    // Score a fuzzy match (higher is better)
     function fuzzyScore(query, target) {
-        if (query.length === 0)
-            return 0;
-        if (target.length === 0)
-            return -1;
-
-        // Exact match gets highest score
-        if (target.includes(query))
-            return 1000 + (100 - target.length);
-
-        // Check for fuzzy match
-        let queryIndex = 0;
-        let consecutiveMatches = 0;
-        let maxConsecutive = 0;
-        let score = 0;
-
+        if (query.length === 0) return 0;
+        if (target.includes(query)) return 1000 + (100 - target.length);
+        let queryIndex = 0, consecutiveMatches = 0, maxConsecutive = 0, score = 0;
         for (let i = 0; i < target.length && queryIndex < query.length; i++) {
             if (target[i] === query[queryIndex]) {
-                queryIndex++;
-                consecutiveMatches++;
+                queryIndex++; consecutiveMatches++;
                 maxConsecutive = Math.max(maxConsecutive, consecutiveMatches);
-                // Bonus for matches at word boundaries
-                if (i === 0 || target[i - 1] === ' ' || target[i - 1] === '-' || target[i - 1] === '_') {
-                    score += 10;
-                }
-            } else {
-                consecutiveMatches = 0;
-            }
+                if (i === 0 || target[i - 1] === ' ' || target[i - 1] === '-' || target[i - 1] === '_') score += 10;
+            } else { consecutiveMatches = 0; }
         }
-
-        if (queryIndex !== query.length)
-            return -1; // No match
-
-        return score + maxConsecutive * 5;
+        return queryIndex === query.length ? score + maxConsecutive * 5 : -1;
     }
 
     function updateMatchingWindows() {
         if (searchQuery.length === 0) {
-            matchingWindows = [];
-            selectedMatchIndex = 0;
-            return;
+            matchingWindows = []; selectedMatchIndex = 0; return;
         }
-
         const query = searchQuery.toLowerCase();
-        const matches = windowList.filter(win => {
-            if (!win)
-                return false;
-            const title = (win.title || "").toLowerCase();
-            const windowClass = (win.class || "").toLowerCase();
-            return fuzzyMatch(query, title) || fuzzyMatch(query, windowClass);
+        matchingWindows = HyprlandData.windowList.filter(win => {
+            if (!win) return false;
+            return fuzzyMatch(query, (win.title || "").toLowerCase()) || fuzzyMatch(query, (win.class || "").toLowerCase());
         }).map(win => ({
-                    window: win,
-                    score: Math.max(fuzzyScore(query, (win.title || "").toLowerCase()), fuzzyScore(query, (win.class || "").toLowerCase()))
-                })).sort((a, b) => b.score - a.score).map(item => item.window);
-
-        matchingWindows = matches;
-        selectedMatchIndex = matches.length > 0 ? 0 : -1;
+            window: win,
+            score: Math.max(fuzzyScore(query, (win.title || "").toLowerCase()), fuzzyScore(query, (win.class || "").toLowerCase()))
+        })).sort((a, b) => b.score - a.score).map(item => item.window);
+        selectedMatchIndex = matchingWindows.length > 0 ? 0 : -1;
     }
 
     function navigateToSelectedWindow() {
-        if (matchingWindows.length === 0 || selectedMatchIndex < 0)
-            return;
-
+        if (matchingWindows.length === 0 || selectedMatchIndex < 0) return;
         const win = matchingWindows[selectedMatchIndex];
-        if (!win)
-            return;
-
-        // Close overview and focus the matched window
+        if (!win) return;
         GlobalStates.closeAllPanels();
-        Qt.callLater(() => {
-            Hyprland.dispatch(`focuswindow address:${win.address}`);
-        });
+        Qt.callLater(() => { Hyprland.dispatch(`focuswindow address:${win.address}`); });
     }
 
-    function selectNextMatch() {
-        if (matchingWindows.length === 0)
-            return;
-        selectedMatchIndex = (selectedMatchIndex + 1) % matchingWindows.length;
-    }
+    function selectNextMatch() { if (matchingWindows.length > 0) selectedMatchIndex = (selectedMatchIndex + 1) % matchingWindows.length; }
+    function selectPrevMatch() { if (matchingWindows.length > 0) selectedMatchIndex = (selectedMatchIndex - 1 + matchingWindows.length) % matchingWindows.length; }
+    function isWindowMatched(addr) { return searchQuery.length > 0 && matchingWindows.some(win => win?.address === addr); }
+    function isWindowSelected(addr) { return matchingWindows.length > 0 && selectedMatchIndex >= 0 && matchingWindows[selectedMatchIndex]?.address === addr; }
 
-    function selectPrevMatch() {
-        if (matchingWindows.length === 0)
-            return;
-        selectedMatchIndex = (selectedMatchIndex - 1 + matchingWindows.length) % matchingWindows.length;
-    }
-
-    function isWindowMatched(windowAddress) {
-        if (searchQuery.length === 0)
-            return false;
-        return matchingWindows.some(win => win?.address === windowAddress);
-    }
-
-    function isWindowSelected(windowAddress) {
-        if (matchingWindows.length === 0 || selectedMatchIndex < 0)
-            return false;
-        return matchingWindows[selectedMatchIndex]?.address === windowAddress;
-    }
-
-    // Pre-calculate workspace dimensions once
+    // --- Workspace Dimensions ---
     readonly property real workspaceImplicitWidth: {
-        if (!monitorData)
-            return 200;
-        const isRotated = (monitorData.transform % 2 === 1);
-        const monitorScale = monitorData.scale || 1.0;
-        const width = isRotated ? (monitor?.height || 1920) : (monitor?.width || 1920);
-        let scaledWidth = (width / monitorScale) * scale;
-        if (barPosition === "left" || barPosition === "right") {
-            scaledWidth -= barReserved * scale;
-        }
-        return Math.max(0, Math.round(scaledWidth));
+        if (!monitorData) return 200;
+        const width = (monitorData.transform % 2 === 1) ? (monitor?.height || 1920) : (monitor?.width || 1920);
+        return Math.max(0, Math.round((width / (monitorData.scale || 1.0)) * scale));
     }
 
     readonly property real workspaceImplicitHeight: {
-        if (!monitorData)
-            return 150;
-        const isRotated = (monitorData.transform % 2 === 1);
-        const monitorScale = monitorData.scale || 1.0;
-        const height = isRotated ? (monitor?.width || 1080) : (monitor?.height || 1080);
-        let scaledHeight = (height / monitorScale) * scale;
-        if (barPosition === "top" || barPosition === "bottom") {
-            scaledHeight -= barReserved * scale;
-        }
-        return Math.max(0, Math.round(scaledHeight));
+        if (!monitorData) return 150;
+        const height = (monitorData.transform % 2 === 1) ? (monitor?.width || 1080) : (monitor?.height || 1080);
+        return Math.max(0, Math.round((height / (monitorData.scale || 1.0)) * scale));
     }
 
     property int draggingFromWorkspace: -1
     property int draggingTargetWorkspace: -1
 
-    implicitWidth: overviewBackground.implicitWidth
-    implicitHeight: overviewBackground.implicitHeight
+    // --- Panel Styling ---
+    implicitWidth: mainLayout.implicitWidth + 48
+    implicitHeight: mainLayout.implicitHeight + 48
+    color: Appearance.colors.colLayer1
+    radius: Appearance.rounding.panel
+    border.width: 1
+    border.color: Functions.ColorUtils.applyAlpha(Appearance.m3colors.m3onSurface, 0.12)
 
-    Item {
-        id: overviewBackground
+    ColumnLayout {
+        id: mainLayout
         anchors.centerIn: parent
+        spacing: 24
 
-        implicitWidth: workspaceColumnLayout.implicitWidth
-        implicitHeight: workspaceColumnLayout.implicitHeight
+        // ── Search Bar Section ──
+        Rectangle {
+            id: searchContainer
+            Layout.preferredWidth: 480 // Fixed sensible width for standard overview
+            Layout.preferredHeight: 48
+            Layout.alignment: Qt.AlignHCenter
+            radius: 12
+            color: Appearance.m3colors.m3surfaceContainerHigh
+            border.width: 1
+            border.color: Functions.ColorUtils.applyAlpha(Appearance.m3colors.m3onSurface, 0.12)
 
-        ColumnLayout {
-            id: workspaceColumnLayout
-            anchors.centerIn: parent
-            spacing: workspaceSpacing
+            RowLayout {
+                anchors.fill: parent
+                anchors.leftMargin: 16; anchors.rightMargin: 16
+                spacing: 12
 
-            Repeater {
-                model: overviewRoot.rows
-                delegate: RowLayout {
-                    id: row
-                    property int rowIndex: index
-                    spacing: workspaceSpacing
+                MaterialSymbol {
+                    Layout.alignment: Qt.AlignVCenter
+                    text: "search"; iconSize: 20; color: Appearance.m3colors.m3onSurfaceVariant
+                }
 
-                    Repeater {
-                        model: overviewRoot.columns
-                        Rectangle {
-                            id: workspace
-                            property int colIndex: index
-                            property int workspaceValue: overviewRoot.workspaceGroup * workspacesShown + rowIndex * overviewRoot.columns + colIndex + 1
-                            property bool isActiveWorkspace: Hyprland.focusedWorkspace?.id === workspaceValue
-                            
-                            // Nandoroid Styling
-                            property color defaultWorkspaceColor: isActiveWorkspace ? Functions.ColorUtils.applyAlpha(Appearance.colors.colPrimaryContainer, 0.4) : Appearance.colors.colLayer0
-                            property color hoveredWorkspaceColor: Appearance.m3colors.m3surfaceContainer
-                            property color hoveredBorderColor: Appearance.m3colors.m3outline
-                            property bool hoveredWhileDragging: false
+                TextInput {
+                    id: searchInput
+                    Layout.fillWidth: true
+                    Layout.alignment: Qt.AlignVCenter
+                    font.pixelSize: 16
+                    color: Appearance.m3colors.m3onSurface
+                    focus: GlobalStates.overviewOpen
 
-                            implicitWidth: overviewRoot.workspaceImplicitWidth + workspacePadding
-                            implicitHeight: overviewRoot.workspaceImplicitHeight + workspacePadding
-                            color: defaultWorkspaceColor
-                            radius: Appearance.rounding.verysmall
-                            border.width: isActiveWorkspace || hoveredWhileDragging ? 2 : 1
-                            border.color: hoveredWhileDragging ? hoveredBorderColor : (isActiveWorkspace ? Appearance.colors.colPrimary : Appearance.colors.colOutlineVariant)
-                            clip: true
+                    Text {
+                        text: "Search windows..."
+                        visible: !searchInput.text
+                        color: Appearance.m3colors.m3onSurfaceVariant
+                        opacity: 0.6; font: searchInput.font
+                    }
 
-                            // Mask the workspace to match rounding
-                            layer.enabled: true
-                            layer.effect: OpacityMask {
-                                maskSource: Rectangle {
-                                    width: workspace.width
-                                    height: workspace.height
-                                    radius: workspace.radius
-                                }
-                            }
+                    onTextChanged: overviewRoot.searchQuery = text
+                    onAccepted: overviewRoot.navigateToSelectedWindow()
 
-                            // Wallpaper background for each workspace
-                            Image {
-                                id: workspaceWallpaper
-                                anchors.fill: parent
-                                fillMode: Image.PreserveAspectCrop
-                                source: Config.options?.appearance?.background?.wallpaperPath || ""
-                            }
+                    // Match counter
+                    Text {
+                        visible: overviewRoot.searchQuery.length > 0
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: {
+                            const matches = overviewRoot.matchingWindows.length;
+                            return matches > 0 ? `${overviewRoot.selectedMatchIndex + 1}/${matches}` : "0";
+                        }
+                        font: searchInput.font
+                        color: overviewRoot.matchingWindows.length > 0 ? Appearance.colors.colPrimary : Appearance.m3colors.m3error
+                        opacity: 0.8
+                    }
 
-                            MouseArea {
-                                anchors.fill: parent
-                                acceptedButtons: Qt.LeftButton
-                                onClicked: {
-                                    if (overviewRoot.draggingTargetWorkspace === -1) {
-                                        // Only switch workspace, don't close overview
-                                        Hyprland.dispatch(`workspace ${workspaceValue}`);
-                                    }
-                                }
-                                onDoubleClicked: {
-                                    if (overviewRoot.draggingTargetWorkspace === -1) {
-                                        // Double click closes overview and switches workspace
-                                        GlobalStates.closeAllPanels();
-                                        Hyprland.dispatch(`workspace ${workspaceValue}`);
-                                    }
-                                }
-                            }
+                    Keys.onPressed: (event) => {
+                        if (event.key === Qt.Key_Tab || event.key === Qt.Key_Down || event.key === Qt.Key_Right) {
+                            if (searchInput.text === "") Hyprland.dispatch("workspace r+1");
+                            else overviewRoot.selectNextMatch();
+                            event.accepted = true;
+                        } else if (event.key === Qt.Key_Backtab || event.key === Qt.Key_Up || event.key === Qt.Key_Left) {
+                            if (searchInput.text === "") Hyprland.dispatch("workspace r-1");
+                            else overviewRoot.selectPrevMatch();
+                            event.accepted = true;
+                        } else if (event.key === Qt.Key_Escape) {
+                            if (searchInput.text !== "") searchInput.text = "";
+                            else GlobalStates.closeAllPanels();
+                            event.accepted = true;
+                        }
+                    }
 
-                            DropArea {
-                                anchors.fill: parent
-                                onEntered: {
-                                    overviewRoot.draggingTargetWorkspace = workspaceValue;
-                                    if (overviewRoot.draggingFromWorkspace == overviewRoot.draggingTargetWorkspace)
-                                        return;
-                                    hoveredWhileDragging = true;
-                                }
-                                onExited: {
-                                    hoveredWhileDragging = false;
-                                    if (overviewRoot.draggingTargetWorkspace == workspaceValue)
-                                        overviewRoot.draggingTargetWorkspace = -1;
-                                }
-                            }
+                    Connections {
+                        target: GlobalStates
+                        function onOverviewOpenChanged() {
+                            if (GlobalStates.overviewOpen) { searchInput.text = ""; searchInput.forceActiveFocus(); }
                         }
                     }
                 }
             }
         }
 
+        // ── Workspaces Section ──
         Item {
-            id: windowSpace
-            anchors.centerIn: parent
-            implicitWidth: workspaceColumnLayout.implicitWidth
-            implicitHeight: workspaceColumnLayout.implicitHeight
+            id: overviewContent
+            Layout.preferredWidth: workspaceColumnLayout.implicitWidth
+            Layout.preferredHeight: workspaceColumnLayout.implicitHeight
+            Layout.alignment: Qt.AlignHCenter
 
-            // Pre-filter windows for this monitor and workspace group
-            readonly property var filteredWindowData: {
-                const minWs = overviewRoot.workspaceGroup * overviewRoot.workspacesShown;
-                const maxWs = (overviewRoot.workspaceGroup + 1) * overviewRoot.workspacesShown;
-                const monId = overviewRoot.monitorId;
-                const toplevels = ToplevelManager.toplevels.values;
+            ColumnLayout {
+                id: workspaceColumnLayout
+                anchors.centerIn: parent
+                spacing: workspaceSpacing
 
-                return overviewRoot.windowList.filter(win => {
-                    const wsId = win?.workspace?.id;
-                    return wsId > minWs && wsId <= maxWs && win.monitor === monId;
-                }).map(win => ({
-                            windowData: win,
-                            toplevel: toplevels.find(t => `0x${t.HyprlandToplevel.address}` === win.address) || null
-                        }));
-            }
+                Repeater {
+                    model: overviewRoot.rows
+                    delegate: RowLayout {
+                        id: row
+                        property int rowIndex: index
+                        spacing: workspaceSpacing
+                        Repeater {
+                            model: overviewRoot.columns
+                            Rectangle {
+                                id: workspace
+                                property int colIndex: index
+                                property int workspaceValue: overviewRoot.workspaceGroup * workspacesShown + rowIndex * overviewRoot.columns + colIndex + 1
+                                property bool isActiveWorkspace: Hyprland.focusedWorkspace?.id === workspaceValue
+                                
+                                implicitWidth: overviewRoot.workspaceImplicitWidth + workspacePadding
+                                implicitHeight: overviewRoot.workspaceImplicitHeight + workspacePadding
+                                color: isActiveWorkspace ? Functions.ColorUtils.applyAlpha(Appearance.colors.colPrimaryContainer, 0.4) : Appearance.colors.colLayer0
+                                radius: Appearance.rounding.verysmall
+                                border.width: isActiveWorkspace || hoveredWhileDragging ? 2 : 1
+                                border.color: hoveredWhileDragging ? Appearance.m3colors.m3outline : (isActiveWorkspace ? Appearance.colors.colPrimary : Appearance.colors.colOutlineVariant)
+                                property bool hoveredWhileDragging: false
 
-            Repeater {
-                model: windowSpace.filteredWindowData
+                                layer.enabled: true
+                                layer.effect: OpacityMask { maskSource: Rectangle { width: workspace.width; height: workspace.height; radius: workspace.radius } }
 
-                delegate: OverviewWindow {
-                    id: window
-                    required property var modelData
-                    windowData: modelData.windowData
-                    toplevel: modelData.toplevel
-                    scale: overviewRoot.scale
-                    availableWorkspaceWidth: overviewRoot.workspaceImplicitWidth
-                    availableWorkspaceHeight: overviewRoot.workspaceImplicitHeight
-                    monitorData: overviewRoot.monitorData
-                    barPosition: overviewRoot.barPosition
-                    barReserved: overviewRoot.barReserved
+                                Image {
+                                    id: workspaceWallpaper; anchors.fill: parent; fillMode: Image.PreserveAspectCrop
+                                    source: Config.options?.appearance?.background?.wallpaperPath || ""
+                                }
 
-                    // Search highlighting
-                    isSearchMatch: overviewRoot.isWindowMatched(windowData?.address)
-                    isSearchSelected: overviewRoot.isWindowSelected(windowData?.address)
+                                MouseArea {
+                                    anchors.fill: parent; acceptedButtons: Qt.LeftButton
+                                    onClicked: if (overviewRoot.draggingTargetWorkspace === -1) Hyprland.dispatch(`workspace ${workspaceValue}`);
+                                    onDoubleClicked: if (overviewRoot.draggingTargetWorkspace === -1) { GlobalStates.closeAllPanels(); Hyprland.dispatch(`workspace ${workspaceValue}`); }
+                                }
 
-                    property int workspaceColIndex: (windowData?.workspace.id - 1) % overviewRoot.columns
-                    property int workspaceRowIndex: Math.floor((windowData?.workspace.id - 1) % overviewRoot.workspacesShown / overviewRoot.columns)
-
-                    xOffset: Math.round((overviewRoot.workspaceImplicitWidth + workspacePadding + workspaceSpacing) * workspaceColIndex + workspacePadding / 2)
-                    yOffset: Math.round((overviewRoot.workspaceImplicitHeight + workspacePadding + workspaceSpacing) * workspaceRowIndex + workspacePadding / 2)
-
-                    onDragStarted: overviewRoot.draggingFromWorkspace = windowData?.workspace.id || -1
-                    onDragFinished: targetWorkspace => {
-                        overviewRoot.draggingFromWorkspace = -1;
-                        if (targetWorkspace !== -1 && targetWorkspace !== windowData?.workspace.id) {
-                            Hyprland.dispatch(`movetoworkspacesilent ${targetWorkspace}, address:${windowData?.address}`);
+                                DropArea {
+                                    anchors.fill: parent
+                                    onEntered: { overviewRoot.draggingTargetWorkspace = workspaceValue; if (overviewRoot.draggingFromWorkspace != overviewRoot.draggingTargetWorkspace) hoveredWhileDragging = true; }
+                                    onExited: { hoveredWhileDragging = false; if (overviewRoot.draggingTargetWorkspace == workspaceValue) overviewRoot.draggingTargetWorkspace = -1; }
+                                }
+                            }
                         }
                     }
-                    onWindowClicked: {
-                        // Close overview and focus the specific clicked window
-                        // Skip generic focus restoration since we're handling it specifically
-                        GlobalStates.closeAllPanels();
-                        Qt.callLater(() => {
-                            Hyprland.dispatch(`focuswindow address:${windowData.address}`);
-                        });
-                    }
-                    onWindowClosed: {
-                        Hyprland.dispatch(`closewindow address:${windowData.address}`);
-                    }
                 }
             }
 
-            Rectangle {
-                id: focusedWorkspaceIndicator
-                property int activeWorkspaceInGroup: (monitor?.activeWorkspace?.id || 1) - (overviewRoot.workspaceGroup * overviewRoot.workspacesShown)
-                property int activeWorkspaceRowIndex: Math.floor((activeWorkspaceInGroup - 1) / overviewRoot.columns)
-                property int activeWorkspaceColIndex: (activeWorkspaceInGroup - 1) % overviewRoot.columns
+            Item {
+                id: windowSpace
+                anchors.centerIn: parent
+                implicitWidth: workspaceColumnLayout.implicitWidth
+                implicitHeight: workspaceColumnLayout.implicitHeight
 
-                x: Math.round((overviewRoot.workspaceImplicitWidth + workspacePadding + workspaceSpacing) * activeWorkspaceColIndex)
-                y: Math.round((overviewRoot.workspaceImplicitHeight + workspacePadding + workspaceSpacing) * activeWorkspaceRowIndex)
-                width: Math.round(overviewRoot.workspaceImplicitWidth + workspacePadding)
-                height: Math.round(overviewRoot.workspaceImplicitHeight + workspacePadding)
-                color: "transparent"
-                radius: Appearance.rounding.verysmall
-                border.width: 2
-                border.color: overviewRoot.activeBorderColor
-                z: -1 // Prevent grabbing mouse events inside the active workspace
+                readonly property var filteredWindowData: {
+                    const minWs = overviewRoot.workspaceGroup * overviewRoot.workspacesShown;
+                    const maxWs = (overviewRoot.workspaceGroup + 1) * overviewRoot.workspacesShown;
+                    const monId = overviewRoot.monitorId;
+                    const toplevels = ToplevelManager.toplevels.values;
+                    return HyprlandData.windowList.filter(win => {
+                        const wsId = win?.workspace?.id;
+                        return wsId > minWs && wsId <= maxWs && win.monitor === monId;
+                    }).map(win => ({
+                        windowData: win,
+                        toplevel: toplevels.find(t => `0x${t.HyprlandToplevel.address}` === win.address) || null
+                    }));
+                }
 
-                Behavior on x {
-                    enabled: 250 > 0
-                    NumberAnimation {
-                        duration: 250
-                        easing.type: Easing.OutQuart
+                Repeater {
+                    model: windowSpace.filteredWindowData
+                    delegate: OverviewWindow {
+                        id: window
+                        required property var modelData
+                        windowData: modelData.windowData; toplevel: modelData.toplevel
+                        scale: overviewRoot.scale; availableWorkspaceWidth: overviewRoot.workspaceImplicitWidth
+                        availableWorkspaceHeight: overviewRoot.workspaceImplicitHeight; monitorData: overviewRoot.monitorData
+                        barPosition: overviewRoot.barPosition; barReserved: overviewRoot.barReserved
+                        isSearchMatch: overviewRoot.isWindowMatched(windowData?.address)
+                        isSearchSelected: overviewRoot.isWindowSelected(windowData?.address)
+                        property int workspaceColIndex: (windowData?.workspace.id - 1) % overviewRoot.columns
+                        property int workspaceRowIndex: Math.floor((windowData?.workspace.id - 1) % overviewRoot.workspacesShown / overviewRoot.columns)
+                        xOffset: Math.round((overviewRoot.workspaceImplicitWidth + workspacePadding + workspaceSpacing) * workspaceColIndex + workspacePadding / 2)
+                        yOffset: Math.round((overviewRoot.workspaceImplicitHeight + workspacePadding + workspaceSpacing) * workspaceRowIndex + workspacePadding / 2)
+                        onDragStarted: overviewRoot.draggingFromWorkspace = windowData?.workspace.id || -1
+                        onDragFinished: targetWorkspace => { overviewRoot.draggingFromWorkspace = -1; if (targetWorkspace !== -1 && targetWorkspace !== windowData?.workspace.id) Hyprland.dispatch(`movetoworkspacesilent ${targetWorkspace}, address:${windowData?.address}`); }
+                        onWindowClicked: { GlobalStates.closeAllPanels(); Qt.callLater(() => { Hyprland.dispatch(`focuswindow address:${windowData.address}`); }); }
+                        onWindowClosed: { Hyprland.dispatch(`closewindow address:${windowData.address}`); }
                     }
                 }
-                Behavior on y {
-                    enabled: 250 > 0
-                    NumberAnimation {
-                        duration: 250
-                        easing.type: Easing.OutQuart
-                    }
+
+                Rectangle {
+                    id: focusedWorkspaceIndicator
+                    property int activeWorkspaceInGroup: (monitor?.activeWorkspace?.id || 1) - (overviewRoot.workspaceGroup * overviewRoot.workspacesShown)
+                    property int activeWorkspaceRowIndex: Math.floor((activeWorkspaceInGroup - 1) / overviewRoot.columns)
+                    property int activeWorkspaceColIndex: (activeWorkspaceInGroup - 1) % overviewRoot.columns
+                    x: Math.round((overviewRoot.workspaceImplicitWidth + workspacePadding + workspaceSpacing) * activeWorkspaceColIndex)
+                    y: Math.round((overviewRoot.workspaceImplicitHeight + workspacePadding + workspaceSpacing) * activeWorkspaceRowIndex)
+                    width: Math.round(overviewRoot.workspaceImplicitWidth + workspacePadding)
+                    height: Math.round(overviewRoot.workspaceImplicitHeight + workspacePadding)
+                    color: "transparent"; radius: Appearance.rounding.verysmall; border.width: 2; border.color: overviewRoot.activeBorderColor; z: -1
+                    Behavior on x { enabled: 250 > 0; NumberAnimation { duration: 250; easing.type: Easing.OutQuart } }
+                    Behavior on y { enabled: 250 > 0; NumberAnimation { duration: 250; easing.type: Easing.OutQuart } }
                 }
             }
         }
