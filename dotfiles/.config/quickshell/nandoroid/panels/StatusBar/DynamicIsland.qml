@@ -182,10 +182,27 @@ Item {
             Loader {
                 id: mediaLogo; width: 18; height: 18; visible: islandState === "media"
                 opacity: parent.parent.width > 24 ? 1 : 0; Behavior on opacity { NumberAnimation { duration: 200 } }
-                property string activeEntryStr: MprisController.activePlayer ? MprisController.activePlayer.desktopEntry.toString() : ""
-                sourceComponent: (activeEntryStr !== "") ? imageIconComp : fallbackIconComp
-                Component { id: imageIconComp; CustomIcon { width: 18; height: 18; source: Quickshell.iconPath(mediaLogo.activeEntryStr) } }
-                Component { id: fallbackIconComp; MaterialSymbol { text: "music_note"; iconSize: 18; color: Appearance.colors.colNotchText } }
+                property string activeEntryStr: {
+                    if (!MprisController.activePlayer) return "";
+                    let entry = MprisController.activePlayer.desktopEntry.toString();
+                    let identity = MprisController.activePlayer.identity ? MprisController.activePlayer.identity.toString() : "";
+                    return AppSearch.guessIcon(entry, "", identity);
+                }
+                
+                sourceComponent: Component { 
+                    Item {
+                        width: 18; height: 18
+                        IconImage { 
+                            id: innerImg; anchors.fill: parent; 
+                            source: Quickshell.iconPath(mediaLogo.activeEntryStr, "") 
+                            visible: status === Image.Ready
+                        }
+                        MaterialSymbol {
+                            anchors.centerIn: parent; text: "music_note"; iconSize: 18
+                            color: Appearance.colors.colNotchText; visible: innerImg.status !== Image.Ready
+                        }
+                    }
+                }
             }
             StyledText {
                 id: mediaArtistLabel; text: MprisController.trackArtist || "Unknown Artist"
