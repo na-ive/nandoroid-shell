@@ -106,21 +106,31 @@ Item {
 
             // Title (Summary) dihapus agar jadi bubble message murni
             
-            // Body Text
+            // Body Text (Combined [Header]: [Body] when collapsed)
             StyledText {
                 id: bodyText
-                width: parent.width
-                text: notificationObject ? (root.expanded ? NotificationUtils.processNotificationBody(notificationObject.body, notificationObject.summary) : notificationObject.body) : ""
+                anchors.left: parent.left
+                anchors.right: parent.right
+                text: {
+                    if (!notificationObject) return "";
+                    if (root.expanded) {
+                        return NotificationUtils.processNotificationBody(notificationObject.body, notificationObject.summary);
+                    } else {
+                        let summary = notificationObject.summary || "";
+                        let body = notificationObject.body || "";
+                        if (summary !== "" && body !== "") return "<b>" + summary + ":</b> " + body;
+                        return summary !== "" ? summary : body;
+                    }
+                }
                 font.pixelSize: 14
                 
-                // PENTING: Gunakan NoWrap dan PlainText pas collapsed biar titik-titik (...) muncul
                 wrapMode: root.expanded ? Text.Wrap : Text.NoWrap
                 maximumLineCount: root.expanded ? 40 : 1
                 elide: Text.ElideRight 
                 
                 visible: text !== ""
                 color: Appearance.m3colors.m3onSurface
-                textFormat: root.expanded ? Text.RichText : Text.PlainText
+                textFormat: Text.StyledText // Better eliding support for simple HTML like <b>
 
                 Behavior on maximumLineCount {
                     NumberAnimation { duration: 200 }

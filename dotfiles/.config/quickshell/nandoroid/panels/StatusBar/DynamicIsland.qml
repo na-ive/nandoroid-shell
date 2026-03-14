@@ -233,12 +233,18 @@ Item {
         Behavior on anchors.leftMargin { NumberAnimation { duration: 300; easing.type: Easing.OutQuint } }
 
         StyledText {
-            id: notifSummaryLabel; anchors.left: parent.left; anchors.leftMargin: 4
-            anchors.verticalCenter: parent.verticalCenter; text: Notifications.activePopup?.summary || ""
-            visible: islandState === "notification"; opacity: parent.width > 20 ? 1 : 0
+            id: notifSummaryLabel
+            anchors.left: parent.left
+            anchors.leftMargin: 4
+            anchors.verticalCenter: parent.verticalCenter
+            text: Notifications.activePopup?.summary || ""
+            visible: islandState === "notification"
+            opacity: parent.width > 20 ? 1 : 0
             Behavior on opacity { NumberAnimation { duration: 200 } }
-            font.pixelSize: 12; font.weight: Font.DemiBold; color: Appearance.colors.colNotchText
-            width: Math.min(implicitWidth, parent.width - 8); elide: Text.ElideRight
+            font.pixelSize: 12; font.weight: Font.DemiBold
+            color: Appearance.colors.colNotchText
+            width: Math.min(implicitWidth, 200)
+            elide: Text.ElideRight
         }
 
         StyledText {
