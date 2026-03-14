@@ -1,32 +1,31 @@
 import "../../core"
 import "../../widgets"
+import "../../core/functions" as Functions
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
 
 /**
  * Refactored OSD Toggle Indicator (Power Mode/Layout/Charging)
- * Matching the new sleeker OSD dimensions.
+ * Simplified structure to eliminate rendering noise.
  */
 Item {
     id: root
-    required property string icon
-    required property string name
+    
+    // Required properties
+    property string icon: ""
+    property string name: ""
     property string statusText: ""
     property var shape
     
-    readonly property real osdWidth: 340
-    readonly property real osdHeight: 48 // Reduced from 64
-    readonly property real elevationMargin: 10
-
-    implicitWidth: osdWidth + 2 * elevationMargin
-    implicitHeight: osdHeight + 2 * elevationMargin
+    // Root dimensions for the Loader/PanelWindow
+    implicitWidth: 340
+    implicitHeight: 48
 
     Rectangle {
         id: valueIndicator
         anchors.fill: parent
-        anchors.margins: root.elevationMargin
-        radius: Appearance.rounding.full
+        radius: height / 2
         color: Appearance.m3colors.m3surfaceContainer
 
         RowLayout {
