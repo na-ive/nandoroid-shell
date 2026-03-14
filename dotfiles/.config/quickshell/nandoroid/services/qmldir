@@ -33,3 +33,4 @@ singleton AppSearch AppSearch.qml
 singleton SearchRegistry SearchRegistry.qml
 singleton ScheduleService ScheduleService.qml
 singleton SmartAutomation SmartAutomation.qml
+singleton TranslationService TranslationService.qml

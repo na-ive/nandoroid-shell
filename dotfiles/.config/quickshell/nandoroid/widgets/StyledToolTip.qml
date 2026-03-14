@@ -10,26 +10,32 @@ ToolTip {
     property bool alternativeVisibleCondition: false
 
     readonly property bool internalVisibleCondition: (extraVisibleCondition && (parent && (parent.hovered || parent.realHovered))) || alternativeVisibleCondition
-    verticalPadding: 5
-    horizontalPadding: 10
-    background: null
+    
+    // Minimal padding to match ToggleDelegate
+    padding: 0
+    verticalPadding: 0
+    horizontalPadding: 0
+    
+    background: Rectangle {
+        color: Appearance.m3colors.m3surfaceContainerHigh
+        radius: 8
+        border.color: Appearance.m3colors.m3outlineVariant
+        border.width: 1
+    }
+    
     font {
         family: Appearance.font.family.main
         variableAxes: Appearance.font.variableAxes.main
         pixelSize: Appearance.font.pixelSize.smaller
-        hintingPreference: Font.PreferNoHinting // Prevent shaky text
+        hintingPreference: Font.PreferNoHinting
     }
-    
 
-    delay: 0
+    delay: 300
     visible: internalVisibleCondition
     
     contentItem: StyledToolTipContent {
         id: contentItem
-        font: root.font
         text: root.text
         shown: root.internalVisibleCondition
-        horizontalPadding: root.horizontalPadding
-        verticalPadding: root.verticalPadding
     }
 }

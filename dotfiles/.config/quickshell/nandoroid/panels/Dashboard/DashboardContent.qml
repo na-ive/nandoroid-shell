@@ -34,7 +34,7 @@ Item {
         tabHighlight.idx1 = currentTab
         Qt.callLater(() => { tabHighlight.idx2 = currentTab })
     }
-    readonly property int tabCount: 4
+    readonly property int tabCount: 5
     readonly property int tabButtonSize: 44
     readonly property int tabStripWidth: tabButtonSize + 16 // button + side padding
 
@@ -315,6 +315,7 @@ Item {
                             { icon: "calendar_today",  tooltip: "Calendar & Pomodoro" },
                             { icon: "event_note",       tooltip: "Schedule" },
                             { icon: "edit_note",        tooltip: "Notepad" },
+                            { icon: "translate",        tooltip: "Translator" },
                             { icon: "code",             tooltip: "GitHub" }
                         ]
                         delegate: Item {
@@ -412,13 +413,26 @@ Item {
                     sourceComponent: DashNotepad { width: contentArea.width; height: contentArea.height }
                 }
 
-                // Tab 3: GitHub  (fetches data when selected because Loader recreates it)
+                // Tab 3: Translator
                 Loader {
                     anchors.fill: parent
                     active: true
                     visible: root.currentTab === 3
                     opacity: visible ? 1 : 0
                     transform: Translate { y: root.currentTab === 3 ? 0 : (root.currentTab > 3 ? -12 : 12)
+                        Behavior on y { NumberAnimation { duration: 250; easing.type: Easing.OutQuart } }
+                    }
+                    Behavior on opacity { NumberAnimation { duration: 200; easing.type: Easing.OutQuart } }
+                    sourceComponent: DashTranslation { width: contentArea.width; height: contentArea.height }
+                }
+
+                // Tab 4: GitHub  (fetches data when selected because Loader recreates it)
+                Loader {
+                    anchors.fill: parent
+                    active: true
+                    visible: root.currentTab === 4
+                    opacity: visible ? 1 : 0
+                    transform: Translate { y: root.currentTab === 4 ? 0 : (root.currentTab > 4 ? -12 : 12)
                         Behavior on y { NumberAnimation { duration: 250; easing.type: Easing.OutQuart } }
                     }
                     Behavior on opacity { NumberAnimation { duration: 200; easing.type: Easing.OutQuart } }

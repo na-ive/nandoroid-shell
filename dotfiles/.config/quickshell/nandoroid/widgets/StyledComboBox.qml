@@ -251,7 +251,10 @@ Item {
                         break;
                     }
                 }
-                listView.currentIndex = idx;
+                if (idx !== -1) {
+                    listView.currentIndex = idx;
+                    listView.positionViewAtIndex(idx, ListView.Center);
+                }
             });
         } else {
             if (GlobalStates.activeComboBox === root) {
