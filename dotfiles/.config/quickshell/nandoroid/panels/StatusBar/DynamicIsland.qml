@@ -388,28 +388,6 @@ Item {
         
         x: leftEar.x - margin
         width: (rightEar.x + rightEar.width) - leftEar.x + (2 * margin)
-
-        // --- Battery Charging Border ---
-        Rectangle {
-            id: chargingBorder
-            anchors.fill: parent
-            anchors.margins: -1.5
-            radius: parent.radius + 1.5
-            color: "transparent"
-            border.width: 1.5
-            visible: Battery.isCharging
-            z: -1
-
-            readonly property color chargingColor: (Battery.percentage < 0.2) ? Appearance.m3colors.m3error : "#4CAF50"
-            border.color: chargingColor
-
-            SequentialAnimation on opacity {
-                running: chargingBorder.visible
-                loops: Animation.Infinite
-                NumberAnimation { from: 1.0; to: 0.3; duration: 1500; easing.type: Easing.InOutSine }
-                NumberAnimation { from: 0.3; to: 1.0; duration: 1500; easing.type: Easing.InOutSine }
-            }
-        }
         
         // Click and Scroll handler for the notch
         FocusedScrollMouseArea {
