@@ -68,10 +68,16 @@ Item {
         return (mediaTitleLabel.visible && mediaTitleLabel.text !== "") ? mediaTitleLabel.implicitWidth + 12 : 0
     }
 
+    // Dynamic Max Width Logic - HUD mode is tighter because Clock/Date are centered
+    readonly property real earMaxWidthNormal: 150
+    readonly property real earMaxWidthHud: 100 
+    readonly property real currentEarMaxWidth: (islandState === "idle") ? earMaxWidthNormal : earMaxWidthHud
+
+    // Balanced Width Calculation - Use the LARGER side as reference, clamped by max width
     readonly property real sharedMediaWidth: {
         if (islandState !== "media") return 0
-        let minW = Math.min(mediaLeftNaturalWidth, mediaRightNaturalWidth)
-        return Math.min(Math.max(minW, 40), 150)
+        let maxNatural = Math.max(mediaLeftNaturalWidth, mediaRightNaturalWidth)
+        return Math.min(maxNatural, root.currentEarMaxWidth)
     }
 
     // Gap width: 4px in idle, tight 2px in active states.
@@ -82,7 +88,7 @@ Item {
         id: leftEar
         anchors.right: root.left
         anchors.rightMargin: root.gapHalf
-        y: 6 // Center vertically in the 28px pill (which starts at y=6 in standard mode)
+        y: 6 
         height: 28
         clip: true
         
@@ -101,58 +107,57 @@ Item {
             if (islandState === "notification") {
                 let w = 0
                 if (notifLogo.visible) w += 20 + 6
-                if (notifAppNameLabel.visible) w += Math.min(notifAppNameLabel.implicitWidth, 100) + 4
-                return w > 0 ? w + 4 : 0
+                if (notifAppNameLabel.visible) w += Math.min(notifAppNameLabel.implicitWidth, 80) + 4
+                let finalW = w > 0 ? w + 4 : 0
+                return Math.min(finalW, root.currentEarMaxWidth)
             }
-            if (islandState === "recording") return 24
+            if (islandState === "recording") return Math.min(24, root.currentEarMaxWidth)
             if (islandState === "media") {
-                return (Config.ready && Config.options.media && Config.options.media.balancedEars) 
+                let w = (Config.ready && Config.options.media && Config.options.media.balancedEars) 
                     ? root.sharedMediaWidth : root.mediaLeftNaturalWidth
+                return Math.min(w, root.currentEarMaxWidth)
             }
-            if (islandState === "pomodoro") return pomoModeLabel.implicitWidth + 8
+            if (islandState === "pomodoro") return Math.min(pomoModeLabel.implicitWidth + 8, root.currentEarMaxWidth)
             return 0
         }
 
         Behavior on width { NumberAnimation { duration: 300; easing.type: Easing.OutQuint } }
         Behavior on anchors.rightMargin { NumberAnimation { duration: 300; easing.type: Easing.OutQuint } }
 
-        NotificationAppIcon {
-            id: notifLogo
-            anchors.right: notifAppNameLabel.visible ? notifAppNameLabel.left : parent.right
-            anchors.rightMargin: notifAppNameLabel.visible ? 6 : 4
-            anchors.verticalCenter: parent.verticalCenter
-            width: 18; height: 18
-            implicitSize: 18
+        // Container for notification content - centered
+        Row {
+            anchors.centerIn: parent
             visible: islandState === "notification"
-            opacity: parent.width > 24 ? 1 : 0
-            Behavior on opacity { NumberAnimation { duration: 200 } }
-            appIcon: Notifications.activePopup?.appIcon || Notifications.activePopup?.appName || ""
-            image: Notifications.activePopup?.image || ""
-            summary: Notifications.activePopup?.summary || ""
-            urgency: Notifications.activePopup?.urgency || "normal"
-            color: "transparent"
+            spacing: 6
+            NotificationAppIcon {
+                id: notifLogo
+                width: 18; height: 18; implicitSize: 18
+                visible: islandState === "notification"
+                opacity: parent.parent.width > 24 ? 1 : 0
+                Behavior on opacity { NumberAnimation { duration: 200 } }
+                appIcon: Notifications.activePopup?.appIcon || Notifications.activePopup?.appName || ""
+                image: Notifications.activePopup?.image || ""
+                summary: Notifications.activePopup?.summary || ""
+                urgency: Notifications.activePopup?.urgency || "normal"
+                color: "transparent"
+            }
+            StyledText {
+                id: notifAppNameLabel
+                text: Notifications.activePopup?.appName || "Notification"
+                visible: islandState === "notification"
+                opacity: parent.parent.width > 30 ? 1 : 0
+                Behavior on opacity { NumberAnimation { duration: 200 } }
+                font.pixelSize: 12; font.weight: Font.Medium
+                color: Appearance.colors.colNotchText
+                width: Math.min(implicitWidth, root.currentEarMaxWidth - (notifLogo.visible ? 28 : 8))
+                elide: Text.ElideRight
+                verticalAlignment: Text.AlignVCenter
+            }
         }
 
-        StyledText {
-            id: notifAppNameLabel
-            anchors.right: parent.right
-            anchors.rightMargin: 4
-            anchors.verticalCenter: parent.verticalCenter
-            text: Notifications.activePopup?.appName || "Notification"
-            visible: islandState === "notification"
-            opacity: parent.width > 30 ? 1 : 0
-            Behavior on opacity { NumberAnimation { duration: 200 } }
-            font.pixelSize: 12; font.weight: Font.Medium
-            color: Appearance.colors.colNotchText
-            width: Math.min(implicitWidth, 100)
-            elide: Text.ElideRight
-            horizontalAlignment: Text.AlignRight
-        }
-
+        // Recording Icon - centered
         Item {
-            anchors.right: parent.right
-            anchors.rightMargin: 4
-            anchors.verticalCenter: parent.verticalCenter
+            anchors.centerIn: parent
             visible: islandState === "recording"
             opacity: parent.width > 12 ? 1 : 0
             width: 16; height: 16
@@ -168,30 +173,34 @@ Item {
             }
         }
 
-        Loader {
-            id: mediaLogo; anchors.right: mediaArtistLabel.visible ? mediaArtistLabel.left : parent.right
-            anchors.rightMargin: mediaArtistLabel.visible ? 6 : 4; anchors.verticalCenter: parent.verticalCenter
-            width: 18; height: 18; visible: islandState === "media"
-            opacity: parent.width > 24 ? 1 : 0; Behavior on opacity { NumberAnimation { duration: 200 } }
-            property string activeEntryStr: MprisController.activePlayer ? MprisController.activePlayer.desktopEntry.toString() : ""
-            sourceComponent: (activeEntryStr !== "") ? imageIconComp : fallbackIconComp
-            Component { id: imageIconComp; CustomIcon { width: 18; height: 18; source: Quickshell.iconPath(mediaLogo.activeEntryStr) } }
-            Component { id: fallbackIconComp; MaterialSymbol { text: "music_note"; iconSize: 18; color: Appearance.colors.colNotchText } }
+        // Media Group - centered
+        Row {
+            id: leftMediaGroup
+            anchors.centerIn: parent
+            visible: islandState === "media"
+            spacing: 6
+            Loader {
+                id: mediaLogo; width: 18; height: 18; visible: islandState === "media"
+                opacity: parent.parent.width > 24 ? 1 : 0; Behavior on opacity { NumberAnimation { duration: 200 } }
+                property string activeEntryStr: MprisController.activePlayer ? MprisController.activePlayer.desktopEntry.toString() : ""
+                sourceComponent: (activeEntryStr !== "") ? imageIconComp : fallbackIconComp
+                Component { id: imageIconComp; CustomIcon { width: 18; height: 18; source: Quickshell.iconPath(mediaLogo.activeEntryStr) } }
+                Component { id: fallbackIconComp; MaterialSymbol { text: "music_note"; iconSize: 18; color: Appearance.colors.colNotchText } }
+            }
+            StyledText {
+                id: mediaArtistLabel; text: MprisController.trackArtist || "Unknown Artist"
+                visible: islandState === "media"; opacity: parent.parent.width > 30 ? 1 : 0
+                Behavior on opacity { NumberAnimation { duration: 200 } }
+                font.pixelSize: 12; font.weight: Font.Medium; color: Appearance.colors.colNotchText
+                width: Math.min(implicitWidth, parent.parent.width - (mediaLogo.visible ? 28 : 8))
+                elide: Text.ElideRight; verticalAlignment: Text.AlignVCenter
+            }
         }
 
+        // Pomodoro - centered
         StyledText {
-            id: mediaArtistLabel; anchors.right: parent.right; anchors.rightMargin: 4
-            anchors.verticalCenter: parent.verticalCenter; text: MprisController.trackArtist || "Unknown Artist"
-            visible: islandState === "media"; opacity: parent.width > 30 ? 1 : 0
-            Behavior on opacity { NumberAnimation { duration: 200 } }
-            font.pixelSize: 12; font.weight: Font.Medium; color: Appearance.colors.colNotchText
-            width: islandState === "media" ? Math.min(implicitWidth, parent.width - (mediaLogo.visible ? 28 : 8)) : Math.min(implicitWidth, 150)
-            elide: Text.ElideRight; horizontalAlignment: Text.AlignRight
-        }
-
-        StyledText {
-            id: pomoModeLabel; anchors.right: parent.right; anchors.rightMargin: 4
-            anchors.verticalCenter: parent.verticalCenter; text: PomodoroService.modeName
+            id: pomoModeLabel; anchors.centerIn: parent
+            text: PomodoroService.modeName
             opacity: parent.width > 20 ? 1 : 0; Behavior on opacity { NumberAnimation { duration: 200 } }
             font.pixelSize: 12; font.weight: Font.DemiBold; color: Appearance.colors.colNotchText
             visible: islandState === "pomodoro"
@@ -219,13 +228,14 @@ Item {
         }
         
         width: {
-            if (islandState === "notification") return notifSummaryLabel.visible ? Math.min(notifSummaryLabel.implicitWidth, 200) + 8 : 0
-            if (islandState === "recording") return recordTimeLabel.implicitWidth + 8
+            if (islandState === "notification") return notifSummaryLabel.visible ? Math.min(notifSummaryLabel.implicitWidth, root.currentEarMaxWidth - 8) + 8 : 0
+            if (islandState === "recording") return Math.min(recordTimeLabel.implicitWidth + 8, root.currentEarMaxWidth)
             if (islandState === "media") {
-                return (Config.ready && Config.options.media && Config.options.media.balancedEars) 
+                let w = (Config.ready && Config.options.media && Config.options.media.balancedEars) 
                     ? root.sharedMediaWidth : root.mediaRightNaturalWidth
+                return Math.min(w, root.currentEarMaxWidth)
             }
-            if (islandState === "pomodoro") return pomoTimeLabel.implicitWidth + 8
+            if (islandState === "pomodoro") return Math.min(pomoTimeLabel.implicitWidth + 8, root.currentEarMaxWidth)
             return 0
         }
 
@@ -233,41 +243,38 @@ Item {
         Behavior on anchors.leftMargin { NumberAnimation { duration: 300; easing.type: Easing.OutQuint } }
 
         StyledText {
-            id: notifSummaryLabel
-            anchors.left: parent.left
-            anchors.leftMargin: 4
-            anchors.verticalCenter: parent.verticalCenter
+            id: notifSummaryLabel; anchors.centerIn: parent
             text: Notifications.activePopup?.summary || ""
             visible: islandState === "notification"
             opacity: parent.width > 20 ? 1 : 0
             Behavior on opacity { NumberAnimation { duration: 200 } }
             font.pixelSize: 12; font.weight: Font.DemiBold
             color: Appearance.colors.colNotchText
-            width: Math.min(implicitWidth, 200)
+            width: Math.min(implicitWidth, root.currentEarMaxWidth - 8)
             elide: Text.ElideRight
         }
 
         StyledText {
-            id: recordTimeLabel; anchors.left: parent.left; anchors.leftMargin: 4
-            anchors.verticalCenter: parent.verticalCenter; text: Functions.General.formatDuration(ScreenRecord.seconds)
+            id: recordTimeLabel; anchors.centerIn: parent
+            text: Functions.General.formatDuration(ScreenRecord.seconds)
             opacity: parent.width > 10 ? 1 : 0; Behavior on opacity { NumberAnimation { duration: 200 } }
             font.pixelSize: 12; font.weight: Font.DemiBold; color: Appearance.colors.colNotchText
             font.family: Appearance.font.family.numbers; visible: islandState === "recording"
         }
 
         StyledText {
-            id: mediaTitleLabel; anchors.left: parent.left; anchors.leftMargin: 4
-            anchors.verticalCenter: parent.verticalCenter; text: MprisController.trackTitle || ""
+            id: mediaTitleLabel; anchors.centerIn: parent
+            text: MprisController.trackTitle || ""
             visible: text !== "" && islandState === "media"; opacity: parent.width > 20 ? 1 : 0
             Behavior on opacity { NumberAnimation { duration: 200 } }
             font.pixelSize: 12; font.weight: Font.DemiBold; color: Appearance.colors.colNotchText
-            width: islandState === "media" ? Math.min(implicitWidth, parent.width - 8) : Math.min(implicitWidth, 150)
+            width: Math.min(implicitWidth, parent.width - 8)
             elide: Text.ElideRight
         }
 
         StyledText {
-            id: pomoTimeLabel; anchors.left: parent.left; anchors.leftMargin: 4
-            anchors.verticalCenter: parent.verticalCenter; text: PomodoroService.timeString
+            id: pomoTimeLabel; anchors.centerIn: parent
+            text: PomodoroService.timeString
             opacity: parent.width > 10 ? 1 : 0; Behavior on opacity { NumberAnimation { duration: 200 } }
             font.pixelSize: 12; font.weight: Font.Bold; color: Appearance.colors.colNotchText
             font.family: Appearance.font.family.numbers; visible: islandState === "pomodoro"
