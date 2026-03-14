@@ -218,7 +218,7 @@ Singleton {
             // --- Workspaces ---
             property JsonObject workspaces: JsonObject {
                 property int max_shown: 5
-                property string indicatorStyle: "pill" // pill, numbers, japanese
+                property string indicatorStyle: "pill" // pill, numbers, japanese, roman
             }
 
             // --- Bar ---

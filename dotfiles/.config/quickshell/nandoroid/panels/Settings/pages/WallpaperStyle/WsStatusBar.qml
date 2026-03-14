@@ -304,7 +304,8 @@ ColumnLayout {
                                     model: [
                                         { id: "pill", label: "Pill" },
                                         { id: "numbers", label: "Numeric" },
-                                        { id: "japanese", label: "Japanese" }
+                                        { id: "japanese", label: "Japanese" },
+                                        { id: "roman", label: "Roman" }
                                     ]
                                     delegate: SegmentedButton {
                                         required property var modelData

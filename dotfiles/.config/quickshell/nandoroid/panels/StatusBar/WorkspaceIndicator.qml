@@ -65,6 +65,7 @@ Item {
 
         readonly property string indicatorStyle: Config.options.workspaces?.indicatorStyle ?? "pill"
         readonly property var japaneseNumbers: ["一", "二", "三", "四", "五", "六", "七", "八", "九", "十", "十一", "十二", "十三", "十四", "十五", "十六", "十七", "十八", "十九", "二十"]
+        readonly property var romanNumbers: ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII", "XIV", "XV", "XVI", "XVII", "XVIII", "XIX", "XX"]
 
         Repeater {
             model: root.workspacesShown
@@ -116,8 +117,11 @@ Item {
                     StyledText {
                         anchors.centerIn: parent
                         text: {
-                            if (pillRow.japaneseNumbers && pillRow.indicatorStyle === "japanese") {
+                            if (pillRow.indicatorStyle === "japanese") {
                                 return pillRow.japaneseNumbers[index] || (index + 1).toString()
+                            }
+                            if (pillRow.indicatorStyle === "roman") {
+                                return pillRow.romanNumbers[index] || (index + 1).toString()
                             }
                             return (index + 1).toString()
                         }
