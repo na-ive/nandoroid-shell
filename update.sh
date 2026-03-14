@@ -51,6 +51,13 @@ else
 fi
 
 # Copying files based on mode
+CONFIG_PATH="$HOME/.config/quickshell/nandoroid/core/Config.qml"
+if [ -f "$CONFIG_PATH" ]; then
+    BACKUP_NAME="Config_$(date +%Y%m%d_%H%M%S).bak"
+    echo "Backing up existing configuration to $BACKUP_NAME..."
+    cp "$CONFIG_PATH" "$(dirname "$CONFIG_PATH")/$BACKUP_NAME"
+fi
+
 if [ "$MODE" == "all" ]; then
     echo "Updating all configs..."
     cp -r dotfiles/.config/* "$HOME/.config/"
