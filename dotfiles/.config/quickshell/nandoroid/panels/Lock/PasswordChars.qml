@@ -159,9 +159,8 @@ StyledFlickable {
                             properties: "color"
                             from: Appearance.colors.colPrimary
                             to: Appearance.colors.colOnLayer1
-                            duration: 1000
-                            easing.type: Appearance.animation.elementMoveFast.type
-                            easing.bezierCurve: Appearance.animation.elementMoveFast.bezierCurve
+                            duration: 1500 // Snappy yet smooth transition
+                            easing.type: Easing.InOutCubic
                         }
                     }
                 }
