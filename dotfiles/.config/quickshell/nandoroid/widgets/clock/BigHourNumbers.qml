@@ -8,7 +8,7 @@ Item {
     id: root
     property real numberSize: 80
     property real margins: 10
-    property color color: Appearance.colors.colOnSecondaryContainer
+    property color color: Appearance.colors.colOnSecondaryContainer || "#FFFFFF"
 
     property int hours: 12
     property int numbers: 4
@@ -38,7 +38,7 @@ Item {
                     rotation: -numberItem.rotation
 
                     font {
-                        family: Appearance.font.family.reading
+                        family: Appearance.font.family.numbers
                         pixelSize: root.fontSize
                         weight: Font.Black
                     }
