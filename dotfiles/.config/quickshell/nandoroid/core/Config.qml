@@ -378,6 +378,7 @@ Singleton {
                 property bool showMediaCard: true
                 property bool enableMediaHover: true
                 property bool balancedEars: true
+                property string notchMediaStyle: "mini" // mini, full
             }
 
             // --- Privacy ---

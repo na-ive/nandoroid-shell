@@ -7,9 +7,11 @@ import "../../core"
 import "../../services"
 import "../../widgets"
 import "../../core/functions" as Functions
+import "../NotificationCenter" as NotificationCenter
 
 /**
  * Media Notch Popup — The expanded HUD that appears below the Dynamic Island.
+ * Supports "mini" (original HUD) and "full" (MediaCard) styles.
  */
 Variants {
     id: root
@@ -20,6 +22,9 @@ Variants {
         required property var modelData
         screen: modelData
         
+        readonly property string notchStyle: Config.ready && Config.options.media ? (Config.options.media.notchMediaStyle ?? "mini") : "mini"
+        readonly property bool isFull: notchStyle === "full"
+
         // Positioning: Center top, below status bar
         WlrLayershell.layer: WlrLayer.Top
         WlrLayershell.namespace: "nandoroid:media-hud"
@@ -34,7 +39,7 @@ Variants {
         }
 
         // Responsive window width
-        implicitWidth: Math.min(320, modelData.width * 0.9)
+        implicitWidth: isFull ? Math.min(450, modelData.width * 0.9) : Math.min(320, modelData.width * 0.9)
         implicitHeight: contentRect.height + 20
         color: "transparent"
 
@@ -45,15 +50,16 @@ Variants {
             // Responsive pill width
             width: parent.width - 20
             anchors.horizontalCenter: parent.horizontalCenter
-            height: mainLayout.implicitHeight + 12
-            color: "black"
-            radius: Appearance.rounding.button // Use token for consistency
+            height: isFull ? (fullLoader.item ? fullLoader.item.implicitHeight : 118) : (miniLayout.implicitHeight + 12)
+            color: isFull ? "transparent" : "black"
+            radius: Appearance.rounding.button
 
             // Animation for entry
             opacity: (GlobalStates.mediaNotchOpen && (GlobalStates.activeMediaNotchScreen === null || GlobalStates.activeMediaNotchScreen === modelData)) ? 1 : 0
             scale: (GlobalStates.mediaNotchOpen && (GlobalStates.activeMediaNotchScreen === null || GlobalStates.activeMediaNotchScreen === modelData)) ? 1 : 0.95
             Behavior on opacity { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
             Behavior on scale { NumberAnimation { duration: 300; easing.type: Easing.OutBack } }
+            Behavior on height { NumberAnimation { duration: 350; easing.type: Easing.OutQuart } }
 
             // Hover tracking area
             HoverHandler {
@@ -64,8 +70,10 @@ Variants {
                 }
             }
 
+            // --- Style 1: Mini HUD ---
             RowLayout {
-                id: mainLayout
+                id: miniLayout
+                visible: !popupWindow.isFull
                 anchors.fill: parent
                 anchors.margins: 8
                 spacing: 10
@@ -152,6 +160,18 @@ Variants {
                         anchors.fill: parent; cursorShape: Qt.PointingHandCursor;
                         onClicked: MprisController.next() 
                     }
+                }
+            }
+
+            // --- Style 2: Full Media Card ---
+            Loader {
+                id: fullLoader
+                anchors.fill: parent
+                active: popupWindow.isFull
+                visible: popupWindow.isFull
+                sourceComponent: NotificationCenter.MediaCard {
+                    // Force a slightly different styling if needed
+                    radius: Appearance.rounding.button
                 }
             }
         }

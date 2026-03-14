@@ -87,7 +87,7 @@ ColumnLayout {
         }
     }
 
-    // --- Show Media Card Toggle ---
+    // --- Show Media Card Toggle (Notification Center) ---
     SegmentedWrapper {
         Layout.fillWidth: true
         implicitHeight: showMediaCardRow.implicitHeight + 40
@@ -120,7 +120,7 @@ ColumnLayout {
             }
             Item { Layout.fillWidth: true }
 
-            // Custom Switch (matching Weather settings style)
+            // Custom Switch
             Rectangle {
                 implicitWidth: 52
                 implicitHeight: 28
@@ -154,16 +154,16 @@ ColumnLayout {
         }
     }
 
-    // --- Dynamic Island Media Hover Toggle ---
+    // --- Dynamic Island Hover Toggle ---
     SegmentedWrapper {
         Layout.fillWidth: true
-        implicitHeight: showMediaHoverRow.implicitHeight + 40
+        implicitHeight: dynamicIslandHoverRow.implicitHeight + 40
         orientation: Qt.Vertical
         maxRadius: 20
         color: Appearance.m3colors.m3surfaceContainerHigh
 
         RowLayout {
-            id: showMediaHoverRow
+            id: dynamicIslandHoverRow
             anchors.fill: parent
             anchors.margins: 20
             spacing: 20
@@ -215,6 +215,63 @@ ColumnLayout {
                         if (Config.ready && Config.options.media) {
                             Config.options.media.enableMediaHover = !Config.options.media.enableMediaHover;
                         }
+                    }
+                }
+            }
+        }
+    }
+
+    // --- Notch Media Style (Only visible if Hover is enabled) ---
+    SegmentedWrapper {
+        Layout.fillWidth: true
+        implicitHeight: notchMediaStyleRow.implicitHeight + 40
+        orientation: Qt.Vertical
+        maxRadius: 20
+        color: Appearance.m3colors.m3surfaceContainerHigh
+        visible: Config.ready && Config.options.media && Config.options.media.enableMediaHover
+
+        RowLayout {
+            id: notchMediaStyleRow
+            anchors.fill: parent
+            anchors.margins: 20
+            spacing: 20
+
+            ColumnLayout {
+                spacing: 2
+                Layout.fillWidth: true
+                StyledText {
+                    text: "Notch Media Style"
+                    font.pixelSize: Appearance.font.pixelSize.normal
+                    font.weight: Font.Medium
+                    color: Appearance.colors.colOnLayer1
+                }
+                StyledText {
+                    text: "Choose between a compact mini HUD or a full-featured media card."
+                    font.pixelSize: Appearance.font.pixelSize.small
+                    color: Appearance.colors.colSubtext
+                    wrapMode: Text.Wrap
+                    Layout.fillWidth: true
+                }
+            }
+
+            RowLayout {
+                spacing: 2
+                Repeater {
+                    model: [
+                        { id: "mini", label: "Mini HUD" },
+                        { id: "full", label: "Full Card" }
+                    ]
+                    delegate: SegmentedButton {
+                        required property var modelData
+                        buttonText: modelData.label
+                        isHighlighted: Config.ready && Config.options.media
+                            ? (Config.options.media.notchMediaStyle ?? "mini") === modelData.id
+                            : modelData.id === "mini"
+                        colActive: Appearance.m3colors.m3primary
+                        colActiveText: Appearance.m3colors.m3onPrimary
+                        colInactive: Appearance.m3colors.m3surfaceContainerLow
+                        onClicked: if (Config.ready && Config.options.media)
+                            Config.options.media.notchMediaStyle = modelData.id
                     }
                 }
             }
