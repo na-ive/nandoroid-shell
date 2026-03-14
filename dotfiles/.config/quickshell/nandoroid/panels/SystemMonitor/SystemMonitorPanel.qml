@@ -138,6 +138,7 @@ Scope {
                                 Repeater {
                                     model: [
                                         { name: "Performance", icon: "monitoring" },
+                                        { name: "Battery", icon: "battery_charging_full" },
                                         { name: "Processes", icon: "list" }
                                     ]
                                     
@@ -202,6 +203,7 @@ Scope {
                         currentIndex: GlobalStates.systemMonitorIndex
                         
                         PerformancePage {}
+                        BatteryPage {}
                         ProcessesPage {}
                     } // End contentContainer Loader
                 } // End Main Content RowLayout
