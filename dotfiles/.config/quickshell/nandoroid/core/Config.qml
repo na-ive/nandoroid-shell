@@ -240,6 +240,7 @@ Singleton {
                 // 0 = None (transparent), 1 = Always (solid), 2 = Adaptive (show when window active)
                 property int backgroundStyle: 0
                 property int backgroundCornerRadius: 20
+                property string islandStyle: "pill" // pill, waterdrop
             }
 
             // --- Quick Settings ---

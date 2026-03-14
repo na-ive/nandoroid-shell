@@ -324,6 +324,44 @@ ColumnLayout {
                         }
                     }
 
+                    // ── Island Style ──
+                    SegmentedWrapper {
+                        Layout.fillWidth: true
+                        implicitHeight: islandStyleRow.implicitHeight + 36
+                        orientation: Qt.Vertical
+                        maxRadius: 20
+                        color: Appearance.m3colors.m3surfaceContainerHigh
+                        RowLayout {
+                            id: islandStyleRow
+                            anchors.fill: parent
+                            anchors.margins: 16
+                            spacing: 16
+                            MaterialSymbol { text: "animation"; iconSize: 24; color: Appearance.colors.colPrimary }
+                            StyledText { text: "Island Style"; Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
+                            RowLayout {
+                                spacing: 2
+                                Repeater {
+                                    model: [
+                                        { id: "pill", label: "Pill" },
+                                        { id: "waterdrop", label: "Waterdrop" }
+                                    ]
+                                    delegate: SegmentedButton {
+                                        required property var modelData
+                                        buttonText: modelData.label
+                                        isHighlighted: Config.ready && Config.options.statusBar
+                                            ? Config.options.statusBar.islandStyle === modelData.id
+                                            : modelData.id === "pill"
+                                        colActive: Appearance.m3colors.m3primary
+                                        colActiveText: Appearance.m3colors.m3onPrimary
+                                        colInactive: Appearance.m3colors.m3surfaceContainerLow
+                                        onClicked: if (Config.ready && Config.options.statusBar)
+                                            Config.options.statusBar.islandStyle = modelData.id
+                                    }
+                                }
+                            }
+                        }
+                    }
+
                     // ── Workspace count ──────────────────────────────────────────
                     SegmentedWrapper {
                         Layout.fillWidth: true

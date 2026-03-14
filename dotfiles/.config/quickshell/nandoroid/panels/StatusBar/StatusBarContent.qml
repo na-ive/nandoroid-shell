@@ -175,7 +175,8 @@ Item {
     // ── Center Cluster (Dynamic Island host) ──
     DynamicIsland {
         id: dynamicIsland
-        anchors.centerIn: parent
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: parent.top
         monitor: root.monitor
         indicatorWidth: wsIndicator.implicitWidth
     }
