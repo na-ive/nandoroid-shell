@@ -4,6 +4,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Bluetooth
 import Quickshell.Io
+import "../core"
 
 /**
  * Real Bluetooth status service using Quickshell.Bluetooth.
@@ -11,6 +12,32 @@ import Quickshell.Io
  */
 Singleton {
     id: root
+
+    // ENFORCEMENT: On startup, make reality match the user's last preference
+    function enforcePreference() {
+        if (Config.ready && Config.options.system && Bluetooth.defaultAdapter) {
+            const shouldBeEnabled = Config.options.system.bluetoothEnabled;
+            if (Bluetooth.defaultAdapter.enabled !== shouldBeEnabled) {
+                // Use internal logic to set state without potentially creating a loop if we add more listeners
+                if (!shouldBeEnabled) {
+                    Bluetooth.devices.values.forEach(d => {
+                        if (d.connected) d.disconnect();
+                    });
+                }
+                Bluetooth.defaultAdapter.enabled = shouldBeEnabled;
+            }
+        }
+    }
+
+    Connections {
+        target: Config
+        function onReadyChanged() { root.enforcePreference(); }
+    }
+
+    Connections {
+        target: Bluetooth
+        function onDefaultAdapterChanged() { root.enforcePreference(); }
+    }
 
     signal deviceConnected(var device)
     property string pairingAddress: ""
@@ -167,6 +194,10 @@ Singleton {
 
     // Control
     function enable(enabled = true) {
+        if (Config.ready && Config.options.system) {
+            Config.options.system.bluetoothEnabled = enabled;
+        }
+
         if (Bluetooth.defaultAdapter) {
             if (!enabled) {
                 // Gracefully disconnect connected devices before powering off
