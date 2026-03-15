@@ -18,14 +18,9 @@ This update focuses on significant performance enhancements, massive stability i
 - Add support for auto-hide status bar with precise hover detection
 
 **System Monitor**
-- Add detailed battery statistics and health page
-- Enhance fidelity and data accuracy across all monitor pages
-
-**Performance & Stability**
-- Introduce UI caching for Blur and DropShadow effects to drastically reduce CPU and GPU loads
-- Implement safe deferred destruction for dynamic objects (e.g., Notifications, Networks) to prevent SIGSEGV crashes
-- Tune debounce intervals for heavy IPC polling (e.g., Hyprland, Audio)
-- Safely clean up and remove unused debug logs and reference errors across the codebase
+- Redesign the System Monitor panel with a clean Android-style aesthetic
+- Integrate real-time CPU, RAM, GPU, and Storage tracking with smooth animations
+- Add per-core frequency and temperature monitoring
 
 **Notifications & Settings**
 - Refine Notification system UI/UX with smooth dismissal and reliable memory management
@@ -52,16 +47,26 @@ This update focuses on significant performance enhancements, massive stability i
 # Nandoroid Shell v1.2.1 Release Notes
 
 ## Overview
-This update introduces an expandable system tray with multiple display styles (All, Adaptive, and Hide) and resolves several QML warnings to improve overall shell stability.
+This maintenance update introduces an expandable system tray with multiple styles, restores core Overview functionality, and focuses on cleaning up internal QML warnings to improve shell performance and reliability.
 
 ## Changelog
 
 **Status Bar & System Tray**
 - Implement expandable system tray with pop-up overflow
-- Add 'All', 'Adaptive' (show max 3 icons), and 'Hide' tray styles
-- Integrate tray style settings into the status bar settings page
+- Add three tray display modes: 'All', 'Adaptive' (show max 3 icons), and 'Hide'
+- Integrate tray style selection into Status Bar settings
 
-**System Stability**
-- Resolve several QML warnings related to missing icons and shader effects
-- Improve Brave Browser icon resolution with fallback support
-- Clean up console logs to focus on critical errors
+**Overview & Workspace**
+- Restore standard grid window layout and fix drag-and-drop logic
+- Refine centering math for workspace previews
+- Prevent accidental panel closure when interacting with workspace cards
+
+**System Stability & Fixes**
+- Resolve numerous QML warnings related to missing icons and shader effects
+- Improve Brave Browser icon resolution with additional fallback logic
+- Fix appearance property references and refine the shell restart script
+- Fix Image Search (Google Lens) reliability by improving URL handling and preventing browser download prompts
+
+**Dashboard & Productivity**
+- Clean up HTML tags in Notepad summaries to prevent empty list items in the sidebar
+- Improve reliability of image uploads for search functions

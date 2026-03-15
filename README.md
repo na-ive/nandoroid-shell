@@ -15,11 +15,11 @@ A Quickshell-based desktop shell for Hyprland adopting Android 16 design element
 
 ## Screenshots
 
-|                                  Desktop with stacked clock                                   |                                  Settings and System monitor                                  |
+|                                  Stacked Clock & Centered Bar                                 |                                  Dynamic Island & Spotlight                                   |
 | :-------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------: |
-| <img src="https://github.com/user-attachments/assets/34d9e88e-dcf7-4916-9797-38b6429dfbae" /> | <img src="https://github.com/user-attachments/assets/ea81d8aa-ecf0-4fd8-8d23-3619f01a35f7" /> |
-|                                      **Quick Settings**                                       |                                    **Notification Center**                                    |
-| <img src="https://github.com/user-attachments/assets/35d98451-e5d3-44ad-9872-8efc4394ff1c" /> | <img src="https://github.com/user-attachments/assets/b968526c-f6e8-4220-8dd9-0acb86a3dc0c" /> |
+| <img src="https://github.com/user-attachments/assets/2f2aab8c-5420-43e1-b5da-dfe3a7f014d1" /> | <img src="https://github.com/user-attachments/assets/58850360-0ca7-4b0b-9fb1-19008abb51b8" /> |
+|                                 **Settings & System Monitor**                                 |                                    **Minimal Lockscreen**                                     |
+| <img src="https://github.com/user-attachments/assets/952f0c90-28a2-46a1-9bd2-f12a995893bd" /> | <img src="https://github.com/user-attachments/assets/3685b0fc-92d3-4182-9134-3e10d1469d7b" /> |
 
 ## Installation
 
