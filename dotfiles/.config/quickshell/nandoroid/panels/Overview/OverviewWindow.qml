@@ -21,6 +21,7 @@ Item {
     property real availableWorkspaceHeight
     property real xOffset: 0
     property real yOffset: 0
+    property Item overviewRoot: null
 
     property bool hovered: false
     property bool pressed: false
@@ -73,7 +74,7 @@ Item {
     height: targetWindowHeight
     z: atInitPosition ? 1 : 99999
 
-    Drag.active: false
+    Drag.active: root.pressed
     Drag.hotSpot.x: width / 2
     Drag.hotSpot.y: height / 2
 
@@ -257,21 +258,17 @@ Item {
 
         onPressed: mouse => {
             root.pressed = true;
-            root.Drag.active = true;
-            root.Drag.source = root;
             root.dragStarted();
         }
 
         onReleased: mouse => {
-            const overviewRoot = parent.parent.parent.parent;
-            let targetWorkspace = overviewRoot.draggingTargetWorkspace;
+            let targetWorkspace = overviewRoot ? overviewRoot.draggingTargetWorkspace : -1;
 
             root.pressed = false;
-            root.Drag.active = false;
 
             if (mouse.button === Qt.LeftButton) {
                 // If targetWorkspace is -1, calculate it from current position
-                if (targetWorkspace === -1) {
+                if (targetWorkspace === -1 && overviewRoot) {
                     // Calculate which workspace we're over based on position
                     const workspaceColIndex = Math.floor((root.x - root.xOffset + root.availableWorkspaceWidth / 2) / (root.availableWorkspaceWidth + overviewRoot.workspacePadding + overviewRoot.workspaceSpacing));
                     const workspaceRowIndex = Math.floor((root.y - root.yOffset + root.availableWorkspaceHeight / 2) / (root.availableWorkspaceHeight + overviewRoot.workspacePadding + overviewRoot.workspaceSpacing));
@@ -287,12 +284,12 @@ Item {
                 }
 
                 root.dragFinished(targetWorkspace);
-                overviewRoot.draggingTargetWorkspace = -1;
+                if (overviewRoot) overviewRoot.draggingTargetWorkspace = -1;
 
                 // Check if moving to different workspace
                 if (targetWorkspace !== -1 && targetWorkspace !== windowData?.workspace.id) {
                     // Moving to different workspace
-                    if (windowData?.floating && (root.x !== root.initX || root.y !== root.initY)) {
+                    if (windowData?.floating && (root.x !== root.initX || root.y !== root.initY) && overviewRoot) {
                         // Calculate position in the target workspace
                         // Get target workspace offset
                         const targetColIndex = (targetWorkspace - 1) % overviewRoot.columns;
@@ -308,7 +305,7 @@ Item {
                         const percentageX = Math.round((relativeX / root.availableWorkspaceWidth) * 100);
                         const percentageY = Math.round((relativeY / root.availableWorkspaceHeight) * 100);
                         
-                        // Move to workspace and set position
+                        // Set position in target workspace
                         Hyprland.dispatch(`movetoworkspacesilent ${targetWorkspace}, address:${windowData?.address}`);
                         Hyprland.dispatch(`movewindowpixel exact ${percentageX}% ${percentageY}%, address:${windowData?.address}`);
                         
@@ -317,8 +314,6 @@ Item {
                     } else {
                         // Just move workspace without repositioning
                         Hyprland.dispatch(`movetoworkspacesilent ${targetWorkspace}, address:${windowData?.address}`);
-                        
-                        // Force immediate window data update
                         HyprlandData.updateWindowList();
                     }
                     

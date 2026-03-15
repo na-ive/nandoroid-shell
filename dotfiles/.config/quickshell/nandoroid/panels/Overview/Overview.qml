@@ -16,7 +16,7 @@ import "../../services"
  * Integrated Search Bar (Launcher/Spotlight style)
  */
 Rectangle {
-    id: overviewRoot
+    id: standardOverviewRoot
     
     // --- Layout Properties ---
     readonly property real scale: Config.options.overview.scale
@@ -54,7 +54,7 @@ Rectangle {
     
     Connections {
         target: HyprlandData
-        function onWindowListChanged() { overviewRoot.updateMatchingWindows(); }
+        function onWindowListChanged() { standardOverviewRoot.updateMatchingWindows(); }
     }
 
     function fuzzyMatch(query, target) {
@@ -125,6 +125,8 @@ Rectangle {
     property int draggingTargetWorkspace: -1
 
     // --- Panel Styling ---
+    width: implicitWidth
+    height: implicitHeight
     implicitWidth: mainLayout.implicitWidth + 48
     implicitHeight: mainLayout.implicitHeight + 48
     color: Appearance.colors.colLayer1
@@ -134,7 +136,8 @@ Rectangle {
 
     ColumnLayout {
         id: mainLayout
-        anchors.centerIn: parent
+        anchors.fill: parent
+        anchors.margins: 24
         spacing: 24
 
         // ── Search Bar Section ──
@@ -173,31 +176,31 @@ Rectangle {
                         opacity: 0.6; font: searchInput.font
                     }
 
-                    onTextChanged: overviewRoot.searchQuery = text
-                    onAccepted: overviewRoot.navigateToSelectedWindow()
+                    onTextChanged: standardOverviewRoot.searchQuery = text
+                    onAccepted: standardOverviewRoot.navigateToSelectedWindow()
 
                     // Match counter
                     Text {
-                        visible: overviewRoot.searchQuery.length > 0
+                        visible: standardOverviewRoot.searchQuery.length > 0
                         anchors.right: parent.right
                         anchors.verticalCenter: parent.verticalCenter
                         text: {
-                            const matches = overviewRoot.matchingWindows.length;
-                            return matches > 0 ? `${overviewRoot.selectedMatchIndex + 1}/${matches}` : "0";
+                            const matches = standardOverviewRoot.matchingWindows.length;
+                            return matches > 0 ? `${standardOverviewRoot.selectedMatchIndex + 1}/${matches}` : "0";
                         }
                         font: searchInput.font
-                        color: overviewRoot.matchingWindows.length > 0 ? Appearance.colors.colPrimary : Appearance.m3colors.m3error
+                        color: standardOverviewRoot.matchingWindows.length > 0 ? Appearance.colors.colPrimary : Appearance.m3colors.m3error
                         opacity: 0.8
                     }
 
                     Keys.onPressed: (event) => {
                         if (event.key === Qt.Key_Tab || event.key === Qt.Key_Down || event.key === Qt.Key_Right) {
                             if (searchInput.text === "") Hyprland.dispatch("workspace r+1");
-                            else overviewRoot.selectNextMatch();
+                            else standardOverviewRoot.selectNextMatch();
                             event.accepted = true;
                         } else if (event.key === Qt.Key_Backtab || event.key === Qt.Key_Up || event.key === Qt.Key_Left) {
                             if (searchInput.text === "") Hyprland.dispatch("workspace r-1");
-                            else overviewRoot.selectPrevMatch();
+                            else standardOverviewRoot.selectPrevMatch();
                             event.accepted = true;
                         } else if (event.key === Qt.Key_Escape) {
                             if (searchInput.text !== "") searchInput.text = "";
@@ -229,29 +232,26 @@ Rectangle {
                 spacing: workspaceSpacing
 
                 Repeater {
-                    model: overviewRoot.rows
+                    model: standardOverviewRoot.rows
                     delegate: RowLayout {
                         id: row
                         property int rowIndex: index
                         spacing: workspaceSpacing
                         Repeater {
-                            model: overviewRoot.columns
+                            model: standardOverviewRoot.columns
                             Rectangle {
                                 id: workspace
                                 property int colIndex: index
-                                property int workspaceValue: overviewRoot.workspaceGroup * workspacesShown + rowIndex * overviewRoot.columns + colIndex + 1
+                                property int workspaceValue: standardOverviewRoot.workspaceGroup * workspacesShown + rowIndex * standardOverviewRoot.columns + colIndex + 1
                                 property bool isActiveWorkspace: Hyprland.focusedWorkspace?.id === workspaceValue
                                 
-                                implicitWidth: overviewRoot.workspaceImplicitWidth + workspacePadding
-                                implicitHeight: overviewRoot.workspaceImplicitHeight + workspacePadding
+                                implicitWidth: standardOverviewRoot.workspaceImplicitWidth + workspacePadding
+                                implicitHeight: standardOverviewRoot.workspaceImplicitHeight + workspacePadding
                                 color: isActiveWorkspace ? Functions.ColorUtils.applyAlpha(Appearance.colors.colPrimaryContainer, 0.4) : Appearance.colors.colLayer0
                                 radius: Appearance.rounding.verysmall
                                 border.width: isActiveWorkspace || hoveredWhileDragging ? 2 : 1
                                 border.color: hoveredWhileDragging ? Appearance.m3colors.m3outline : (isActiveWorkspace ? Appearance.colors.colPrimary : Appearance.colors.colOutlineVariant)
                                 property bool hoveredWhileDragging: false
-
-                                layer.enabled: true
-                                layer.effect: OpacityMask { maskSource: Rectangle { width: workspace.width; height: workspace.height; radius: workspace.radius } }
 
                                 Image {
                                     id: workspaceWallpaper; anchors.fill: parent; fillMode: Image.PreserveAspectCrop
@@ -260,14 +260,14 @@ Rectangle {
 
                                 MouseArea {
                                     anchors.fill: parent; acceptedButtons: Qt.LeftButton
-                                    onClicked: if (overviewRoot.draggingTargetWorkspace === -1) Hyprland.dispatch(`workspace ${workspaceValue}`);
-                                    onDoubleClicked: if (overviewRoot.draggingTargetWorkspace === -1) { GlobalStates.closeAllPanels(); Hyprland.dispatch(`workspace ${workspaceValue}`); }
+                                    onClicked: if (standardOverviewRoot.draggingTargetWorkspace === -1) Hyprland.dispatch(`workspace ${workspaceValue}`);
+                                    onDoubleClicked: if (standardOverviewRoot.draggingTargetWorkspace === -1) { GlobalStates.closeAllPanels(); Hyprland.dispatch(`workspace ${workspaceValue}`); }
                                 }
 
                                 DropArea {
                                     anchors.fill: parent
-                                    onEntered: { overviewRoot.draggingTargetWorkspace = workspaceValue; if (overviewRoot.draggingFromWorkspace != overviewRoot.draggingTargetWorkspace) hoveredWhileDragging = true; }
-                                    onExited: { hoveredWhileDragging = false; if (overviewRoot.draggingTargetWorkspace == workspaceValue) overviewRoot.draggingTargetWorkspace = -1; }
+                                    onEntered: { standardOverviewRoot.draggingTargetWorkspace = workspaceValue; if (standardOverviewRoot.draggingFromWorkspace != standardOverviewRoot.draggingTargetWorkspace) hoveredWhileDragging = true; }
+                                    onExited: { hoveredWhileDragging = false; if (standardOverviewRoot.draggingTargetWorkspace == workspaceValue) standardOverviewRoot.draggingTargetWorkspace = -1; }
                                 }
                             }
                         }
@@ -282,17 +282,27 @@ Rectangle {
                 implicitHeight: workspaceColumnLayout.implicitHeight
 
                 readonly property var filteredWindowData: {
-                    const minWs = overviewRoot.workspaceGroup * overviewRoot.workspacesShown;
-                    const maxWs = (overviewRoot.workspaceGroup + 1) * overviewRoot.workspacesShown;
-                    const monId = overviewRoot.monitorId;
+                    const minWs = standardOverviewRoot.workspaceGroup * standardOverviewRoot.workspacesShown;
+                    const maxWs = (standardOverviewRoot.workspaceGroup + 1) * standardOverviewRoot.workspacesShown;
+                    const monId = standardOverviewRoot.monitorId;
                     const toplevels = ToplevelManager.toplevels.values;
+                    
                     return HyprlandData.windowList.filter(win => {
                         const wsId = win?.workspace?.id;
-                        return wsId > minWs && wsId <= maxWs && win.monitor === monId;
-                    }).map(win => ({
-                        windowData: win,
-                        toplevel: toplevels.find(t => `0x${t.HyprlandToplevel.address}` === win.address) || null
-                    }));
+                        // Use loose equality for monitor ID as it might be string vs int
+                        return wsId > minWs && wsId <= maxWs && win.monitor == monId;
+                    }).map(win => {
+                        const addr = win.address.toLowerCase();
+                        // Find matching toplevel by address (case-insensitive and handling 0x)
+                        const tl = toplevels.find(t => {
+                            const tAddr = "0x" + t.HyprlandToplevel.address.toLowerCase();
+                            return tAddr === addr;
+                        });
+                        return {
+                            windowData: win,
+                            toplevel: tl || null
+                        };
+                    });
                 }
 
                 Repeater {
@@ -301,17 +311,18 @@ Rectangle {
                         id: window
                         required property var modelData
                         windowData: modelData.windowData; toplevel: modelData.toplevel
-                        scale: overviewRoot.scale; availableWorkspaceWidth: overviewRoot.workspaceImplicitWidth
-                        availableWorkspaceHeight: overviewRoot.workspaceImplicitHeight; monitorData: overviewRoot.monitorData
-                        barPosition: overviewRoot.barPosition; barReserved: overviewRoot.barReserved
-                        isSearchMatch: overviewRoot.isWindowMatched(windowData?.address)
-                        isSearchSelected: overviewRoot.isWindowSelected(windowData?.address)
-                        property int workspaceColIndex: (windowData?.workspace.id - 1) % overviewRoot.columns
-                        property int workspaceRowIndex: Math.floor((windowData?.workspace.id - 1) % overviewRoot.workspacesShown / overviewRoot.columns)
-                        xOffset: Math.round((overviewRoot.workspaceImplicitWidth + workspacePadding + workspaceSpacing) * workspaceColIndex + workspacePadding / 2)
-                        yOffset: Math.round((overviewRoot.workspaceImplicitHeight + workspacePadding + workspaceSpacing) * workspaceRowIndex + workspacePadding / 2)
-                        onDragStarted: overviewRoot.draggingFromWorkspace = windowData?.workspace.id || -1
-                        onDragFinished: targetWorkspace => { overviewRoot.draggingFromWorkspace = -1; if (targetWorkspace !== -1 && targetWorkspace !== windowData?.workspace.id) Hyprland.dispatch(`movetoworkspacesilent ${targetWorkspace}, address:${windowData?.address}`); }
+                        overviewRoot: standardOverviewRoot
+                        scale: standardOverviewRoot.scale; availableWorkspaceWidth: standardOverviewRoot.workspaceImplicitWidth
+                        availableWorkspaceHeight: standardOverviewRoot.workspaceImplicitHeight; monitorData: standardOverviewRoot.monitorData
+                        barPosition: standardOverviewRoot.barPosition; barReserved: standardOverviewRoot.barReserved
+                        isSearchMatch: standardOverviewRoot.isWindowMatched(windowData?.address)
+                        isSearchSelected: standardOverviewRoot.isWindowSelected(windowData?.address)
+                        property int workspaceColIndex: (windowData?.workspace.id - 1) % standardOverviewRoot.columns
+                        property int workspaceRowIndex: Math.floor((windowData?.workspace.id - 1) % standardOverviewRoot.workspacesShown / standardOverviewRoot.columns)
+                        xOffset: Math.round((standardOverviewRoot.workspaceImplicitWidth + workspacePadding + workspaceSpacing) * workspaceColIndex + workspacePadding / 2)
+                        yOffset: Math.round((standardOverviewRoot.workspaceImplicitHeight + workspacePadding + workspaceSpacing) * workspaceRowIndex + workspacePadding / 2)
+                        onDragStarted: standardOverviewRoot.draggingFromWorkspace = windowData?.workspace.id || -1
+                        onDragFinished: targetWorkspace => { standardOverviewRoot.draggingFromWorkspace = -1; if (targetWorkspace !== -1 && targetWorkspace !== windowData?.workspace.id) Hyprland.dispatch(`movetoworkspacesilent ${targetWorkspace}, address:${windowData?.address}`); }
                         onWindowClicked: { GlobalStates.closeAllPanels(); Qt.callLater(() => { Hyprland.dispatch(`focuswindow address:${windowData.address}`); }); }
                         onWindowClosed: { Hyprland.dispatch(`closewindow address:${windowData.address}`); }
                     }
@@ -319,14 +330,14 @@ Rectangle {
 
                 Rectangle {
                     id: focusedWorkspaceIndicator
-                    property int activeWorkspaceInGroup: (monitor?.activeWorkspace?.id || 1) - (overviewRoot.workspaceGroup * overviewRoot.workspacesShown)
-                    property int activeWorkspaceRowIndex: Math.floor((activeWorkspaceInGroup - 1) / overviewRoot.columns)
-                    property int activeWorkspaceColIndex: (activeWorkspaceInGroup - 1) % overviewRoot.columns
-                    x: Math.round((overviewRoot.workspaceImplicitWidth + workspacePadding + workspaceSpacing) * activeWorkspaceColIndex)
-                    y: Math.round((overviewRoot.workspaceImplicitHeight + workspacePadding + workspaceSpacing) * activeWorkspaceRowIndex)
-                    width: Math.round(overviewRoot.workspaceImplicitWidth + workspacePadding)
-                    height: Math.round(overviewRoot.workspaceImplicitHeight + workspacePadding)
-                    color: "transparent"; radius: Appearance.rounding.verysmall; border.width: 2; border.color: overviewRoot.activeBorderColor; z: -1
+                    property int activeWorkspaceInGroup: (monitor?.activeWorkspace?.id || 1) - (standardOverviewRoot.workspaceGroup * standardOverviewRoot.workspacesShown)
+                    property int activeWorkspaceRowIndex: Math.floor((activeWorkspaceInGroup - 1) / standardOverviewRoot.columns)
+                    property int activeWorkspaceColIndex: (activeWorkspaceInGroup - 1) % standardOverviewRoot.columns
+                    x: Math.round((standardOverviewRoot.workspaceImplicitWidth + workspacePadding + workspaceSpacing) * activeWorkspaceColIndex)
+                    y: Math.round((standardOverviewRoot.workspaceImplicitHeight + workspacePadding + workspaceSpacing) * activeWorkspaceRowIndex)
+                    width: Math.round(standardOverviewRoot.workspaceImplicitWidth + workspacePadding)
+                    height: Math.round(standardOverviewRoot.workspaceImplicitHeight + workspacePadding)
+                    color: "transparent"; radius: Appearance.rounding.verysmall; border.width: 2; border.color: standardOverviewRoot.activeBorderColor; z: -1
                     Behavior on x { enabled: 250 > 0; NumberAnimation { duration: 250; easing.type: Easing.OutQuart } }
                     Behavior on y { enabled: 250 > 0; NumberAnimation { duration: 250; easing.type: Easing.OutQuart } }
                 }

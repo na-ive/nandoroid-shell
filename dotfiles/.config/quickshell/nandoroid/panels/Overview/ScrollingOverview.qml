@@ -109,6 +109,8 @@ Rectangle {
     property int draggingFromWorkspace: -1
     property int draggingTargetWorkspace: -1
 
+    width: implicitWidth
+    height: implicitHeight
     implicitWidth: mainLayout.implicitWidth + 48
     implicitHeight: mainLayout.implicitHeight + 48
     color: Appearance.colors.colLayer1
@@ -116,9 +118,20 @@ Rectangle {
     border.width: 1
     border.color: Functions.ColorUtils.applyAlpha(Appearance.m3colors.m3onSurface, 0.12)
 
+    function getWorkspaceAtY(globalY) {
+        if (!workspaceFlickable) return -1;
+        const localPos = workspaceFlickable.mapFromItem(null, 0, globalY);
+        const contentY = localPos.y + workspaceFlickable.contentY;
+        const itemHeight = workspaceHeight + workspaceSpacing;
+        const index = Math.floor(contentY / itemHeight);
+        if (index >= 0 && index < totalWorkspaces) return index + 1;
+        return -1;
+    }
+
     ColumnLayout {
         id: mainLayout
-        anchors.centerIn: parent
+        anchors.fill: parent
+        anchors.margins: 24
         spacing: 24
 
         // ── Search Bar Section ──

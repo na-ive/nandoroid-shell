@@ -12,6 +12,8 @@ Item {
 
     readonly property bool isScrollingLayout: GlobalStates.hyprlandLayout === "scrolling"
 
+    width: implicitWidth
+    height: implicitHeight
     implicitWidth: overviewLoader.item ? overviewLoader.item.implicitWidth : 400
     implicitHeight: overviewLoader.item ? overviewLoader.item.implicitHeight : 300
 
@@ -30,7 +32,7 @@ Item {
 
     Loader {
         id: overviewLoader
-        anchors.centerIn: parent
+        anchors.fill: parent
         active: true
         sourceComponent: isScrollingLayout ? scrollingOverviewComponent : standardOverviewComponent
     }
