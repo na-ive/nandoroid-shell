@@ -23,6 +23,27 @@ Item {
     property real yOffset: 0
     property Item overviewRoot: null
 
+    // Alignment calculations
+    readonly property real yReservedOffset: {
+        if (!monitorData || !monitorData.reserved) return 0;
+        return monitorData.reserved[0]; // Top reserved space
+    }
+
+    readonly property real xCenterOffset: {
+        if (!monitorData || !monitorData.reserved) return 0;
+        const left = monitorData.reserved[2];
+        const right = monitorData.reserved[3];
+        return - (left + right) / 2;
+    }
+
+    readonly property real yCenterOffset: {
+        if (!monitorData || !monitorData.reserved) return 0;
+        const top = monitorData.reserved[0];
+        const bottom = monitorData.reserved[1];
+        // Center by shifting opposite of the average of reserved spaces
+        return - (top + bottom) / 2;
+    }
+
     property bool hovered: false
     property bool pressed: false
     property bool atInitPosition: (initX == x && initY == y)
@@ -45,17 +66,13 @@ Item {
             return overrideX;
 
         let base = (windowData?.at?.[0] || 0) - (monitorData?.x || 0);
-        if (barPosition === "left")
-            base -= barReserved;
-        return Math.round(Math.max(base * scale, 0) + xOffset);
+        return Math.round(Math.max((base + xCenterOffset) * scale, 0) + xOffset);
     }
     readonly property real initY: {
         if (useOverridePosition && overrideY >= 0)
             return overrideY;
         let base = (windowData?.at?.[1] || 0) - (monitorData?.y || 0);
-        if (barPosition === "top")
-            base -= barReserved;
-        return Math.round(Math.max(base * scale, 0) + yOffset);
+        return Math.round(Math.max((base + yCenterOffset) * scale, 0) + yOffset);
     }
     readonly property real targetWindowWidth: Math.round((windowData?.size[0] || 100) * scale)
     readonly property real targetWindowHeight: Math.round((windowData?.size[1] || 100) * scale)

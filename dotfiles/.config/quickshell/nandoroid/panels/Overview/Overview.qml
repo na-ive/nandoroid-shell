@@ -261,7 +261,7 @@ Rectangle {
                                 MouseArea {
                                     anchors.fill: parent; acceptedButtons: Qt.LeftButton
                                     onClicked: if (standardOverviewRoot.draggingTargetWorkspace === -1) Hyprland.dispatch(`workspace ${workspaceValue}`);
-                                    onDoubleClicked: if (standardOverviewRoot.draggingTargetWorkspace === -1) { GlobalStates.closeAllPanels(); Hyprland.dispatch(`workspace ${workspaceValue}`); }
+                                    onDoubleClicked: if (standardOverviewRoot.draggingTargetWorkspace === -1) { Hyprland.dispatch(`workspace ${workspaceValue}`); }
                                 }
 
                                 DropArea {

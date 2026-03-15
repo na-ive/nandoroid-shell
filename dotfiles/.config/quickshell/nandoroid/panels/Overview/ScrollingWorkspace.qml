@@ -267,7 +267,6 @@ Item {
                 acceptedButtons: Qt.LeftButton
                 onDoubleTapped: {
                     Hyprland.dispatch(`workspace ${root.workspaceId}`);
-                    GlobalStates.closeAllPanels();
                 }
             }
 
@@ -289,22 +288,33 @@ Item {
                     property real overrideBaseY: -1
                     property bool useOverridePosition: false
 
+                    // Alignment calculations
+                    readonly property real xCenterOffset: {
+                        if (!monitorData || !monitorData.reserved) return 0;
+                        const left = monitorData.reserved[2];
+                        const right = monitorData.reserved[3];
+                        return - (left + right) / 2;
+                    }
+
+                    readonly property real yCenterOffset: {
+                        if (!monitorData || !monitorData.reserved) return 0;
+                        const top = monitorData.reserved[0];
+                        const bottom = monitorData.reserved[1];
+                        return - (top + bottom) / 2;
+                    }
+
                     // Position calculations relative to center viewport
                     readonly property real baseX: {
                         if (useOverridePosition && overrideBaseX >= 0)
                             return overrideBaseX;
                         let base = (windowData?.at?.[0] || 0) - (monitorData?.x || 0);
-                        if (barPosition === "left")
-                            base -= barReserved;
-                        return (base * scale_) + root.viewportOffset + root.horizontalScrollOffset;
+                        return ((base + xCenterOffset) * scale_) + root.viewportOffset + root.horizontalScrollOffset;
                     }
                     readonly property real baseY: {
                         if (useOverridePosition && overrideBaseY >= 0)
                             return overrideBaseY;
                         let base = (windowData?.at?.[1] || 0) - (monitorData?.y || 0);
-                        if (barPosition === "top")
-                            base -= barReserved;
-                        return Math.max(base * scale_, 0);
+                        return Math.round(Math.max((base + yCenterOffset) * scale_, 0));
                     }
                     readonly property real targetWidth: Math.round((windowData?.size[0] || 100) * scale_)
                     readonly property real targetHeight: Math.round((windowData?.size[1] || 100) * scale_)

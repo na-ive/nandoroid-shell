@@ -43,7 +43,7 @@ Variants {
 
         Item {
             id: fullMask; anchors.fill: parent
-            MouseArea { anchors.fill: parent; onClicked: GlobalStates.closeAllPanels() }
+            TapHandler { onTapped: GlobalStates.closeAllPanels() }
         }
 
         Item { id: emptyMask; width: 0; height: 0 }
@@ -61,7 +61,11 @@ Variants {
             color: Functions.ColorUtils.applyAlpha(Appearance.colors.colLayer0, 0.2)
             opacity: (GlobalStates.overviewOpen && isActive) ? 1 : 0
             Behavior on opacity { NumberAnimation { duration: 250; easing.type: Easing.OutQuart } }
-            MouseArea { anchors.fill: parent; onClicked: GlobalStates.closeAllPanels() }
+            
+            // Close when clicking outside (on the backdrop)
+            TapHandler {
+                onTapped: GlobalStates.closeAllPanels()
+            }
         }
 
         // Main content
@@ -76,6 +80,12 @@ Variants {
 
             Behavior on opacity { NumberAnimation { duration: 250; easing.type: Easing.OutQuart } }
             Behavior on scale { NumberAnimation { duration: 250; easing.type: Easing.OutBack; easing.overshoot: 1.2 } }
+
+            // Intercept clicks on the card to prevent backdrop from receiving them
+            MouseArea {
+                anchors.fill: parent
+                onClicked: (mouse) => { /* Intercept and do nothing */ }
+            }
 
             Loader {
                 id: overviewLoader
