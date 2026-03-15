@@ -383,6 +383,45 @@ ColumnLayout {
                         }
                     }
 
+                    // ── Tray Style ──
+                    SegmentedWrapper {
+                        Layout.fillWidth: true
+                        implicitHeight: trayStyleRow.implicitHeight + 36
+                        orientation: Qt.Vertical
+                        maxRadius: 20
+                        color: Appearance.m3colors.m3surfaceContainerHigh
+                        RowLayout {
+                            id: trayStyleRow
+                            anchors.fill: parent
+                            anchors.margins: 16
+                            spacing: 16
+                            MaterialSymbol { text: "apps"; iconSize: 24; color: Appearance.colors.colPrimary }
+                            StyledText { text: "Tray Style"; Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
+                            RowLayout {
+                                spacing: 2
+                                Repeater {
+                                    model: [
+                                        { id: "all", label: "All" },
+                                        { id: "adaptive", label: "Adaptive" },
+                                        { id: "hide", label: "Hide" }
+                                    ]
+                                    delegate: SegmentedButton {
+                                        required property var modelData
+                                        buttonText: modelData.label
+                                        isHighlighted: Config.ready && Config.options.statusBar
+                                            ? (Config.options.statusBar.trayStyle ?? "adaptive") === modelData.id
+                                            : modelData.id === "adaptive"
+                                        colActive: Appearance.m3colors.m3primary
+                                        colActiveText: Appearance.m3colors.m3onPrimary
+                                        colInactive: Appearance.m3colors.m3surfaceContainerLow
+                                        onClicked: if (Config.ready && Config.options.statusBar)
+                                            Config.options.statusBar.trayStyle = modelData.id
+                                    }
+                                }
+                            }
+                        }
+                    }
+
                     // ── Workspace count ──────────────────────────────────────────
                     SegmentedWrapper {
                         Layout.fillWidth: true

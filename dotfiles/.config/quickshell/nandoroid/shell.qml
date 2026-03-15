@@ -47,6 +47,7 @@ ShellRoot {
 
     // ── Phase 2: Status Bar ──
     StatusBar {}
+    StatusBarTrayOverflow { id: trayOverflow }
     MediaNotchPopup {}
 
     // ── Phase 3: Popups ──

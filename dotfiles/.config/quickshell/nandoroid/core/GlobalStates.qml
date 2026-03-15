@@ -30,6 +30,8 @@ Singleton {
     property bool overviewOpen: false
     property bool dockMenuOpen: false
     property bool mediaNotchOpen: false
+    property bool trayOverflowOpen: false
+    property real trayPosX: 0
     property var activeMediaNotchScreen: null
     property var activeScreen: Quickshell.screens[0]
     property string wallpaperSelectorTarget: "desktop" // "desktop" or "lock"
@@ -209,6 +211,7 @@ Singleton {
         sessionOpen = false
         overviewOpen = false
         mediaNotchOpen = false
+        trayOverflowOpen = false
         // Note: wallpaperSelectorOpen and regionSelectorOpen are excluded
     }
 
