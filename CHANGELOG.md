@@ -47,3 +47,21 @@ This update focuses on significant performance enhancements, massive stability i
 ## Dependency Updates
 - **Added:** `adw-gtk-theme` (replaces adw-gtk3), `qt5ct`, `qt6ct`, `nwg-look`, `plasma-integration`, `breeze`, `breeze-icons`
 - **Optional:** `nandoroid-cli` (GitHub installer added to `install.sh`)
+
+
+# Nandoroid Shell v1.2.1 Release Notes
+
+## Overview
+This update introduces an expandable system tray with multiple display styles (All, Adaptive, and Hide) and resolves several QML warnings to improve overall shell stability.
+
+## Changelog
+
+**Status Bar & System Tray**
+- Implement expandable system tray with pop-up overflow
+- Add 'All', 'Adaptive' (show max 3 icons), and 'Hide' tray styles
+- Integrate tray style settings into the status bar settings page
+
+**System Stability**
+- Resolve several QML warnings related to missing icons and shader effects
+- Improve Brave Browser icon resolution with fallback support
+- Clean up console logs to focus on critical errors

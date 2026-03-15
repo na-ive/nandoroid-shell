@@ -20,6 +20,11 @@ Item {
 
     function makeId() { return Date.now().toString(36) + Math.random().toString(36).substr(2,5) }
 
+    function stripHtml(html) {
+        if (!html) return "";
+        return html.replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
+    }
+
     function save() {
         notesFile.setText(JSON.stringify(root.notes, null, 2))
     }
@@ -148,7 +153,8 @@ Item {
                             }
                             StyledText {
                                 Layout.fillWidth: true
-                                text: modelData.body.split("\n")[0] || "Empty note"
+                                property string plainBody: root.stripHtml(modelData.body)
+                                text: plainBody.split("\n")[0] || (modelData.body && modelData.body.trim() !== "" ? "Rich content" : "Empty note")
                                 font.pixelSize: Appearance.font.pixelSize.smaller
                                 color: Appearance.colors.colSubtext
                                 elide: Text.ElideRight
