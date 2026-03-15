@@ -163,9 +163,6 @@ Item {
             border.width: 1
             border.color: Appearance.colors.colOutlineVariant
             clip: true
-            
-            layer.enabled: true
-            layer.effect: QtObject {}
         }
 
         enter: Transition {

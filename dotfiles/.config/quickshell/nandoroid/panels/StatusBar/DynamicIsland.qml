@@ -352,7 +352,11 @@ Item {
                 else if (islandState === "media") { MprisController.raisePlayer(); GlobalStates.closeAllPanels() }
                 else if (islandState === "pomodoro") { GlobalStates.dashboardOpen = true }
             }
-            onScrollUp: Hyprland.dispatch("workspace r-1")
+            onScrollUp: {
+                if (root.monitor && root.monitor.activeWorkspace && root.monitor.activeWorkspace.id > 1) {
+                    Hyprland.dispatch("workspace r-1")
+                }
+            }
             onScrollDown: Hyprland.dispatch("workspace r+1")
         }
     }

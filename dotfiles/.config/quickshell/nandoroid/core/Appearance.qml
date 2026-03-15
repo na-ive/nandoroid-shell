@@ -121,24 +121,33 @@ Singleton {
         property color colPrimaryActive: Functions.ColorUtils.mix(colPrimary, colOnPrimary, 0.85)
         property color colPrimaryContainer: m3colors.m3primaryContainer
         property color colOnPrimaryContainer: m3colors.m3onPrimaryContainer
+        property color colPrimaryContainerActive: Functions.ColorUtils.mix(colPrimaryContainer, colOnPrimaryContainer, 0.85)
         // Secondary
         property color colSecondary: m3colors.m3secondary
         property color colOnSecondary: m3colors.m3onSecondary
+        property color colSecondaryHover: Functions.ColorUtils.mix(colSecondary, colOnSecondary, 0.92)
+        property color colSecondaryActive: Functions.ColorUtils.mix(colSecondary, colOnSecondary, 0.85)
         property color colSecondaryContainer: m3colors.m3secondaryContainer
         property color colOnSecondaryContainer: m3colors.m3onSecondaryContainer
-        property color colSecondaryHover: Functions.ColorUtils.mix(colSecondary, colOnSecondary, 0.92)
         property color colSecondaryContainerHover: Functions.ColorUtils.mix(colSecondaryContainer, colOnSecondaryContainer, 0.90)
+        property color colSecondaryContainerActive: Functions.ColorUtils.mix(colSecondaryContainer, colOnSecondaryContainer, 0.85)
         // Tertiary
         property color colTertiary: m3colors.m3tertiary
         property color colOnTertiary: m3colors.m3onTertiary
+        property color colTertiaryActive: Functions.ColorUtils.mix(colTertiary, colOnTertiary, 0.85)
         property color colTertiaryContainer: m3colors.m3tertiaryContainer
         property color colOnTertiaryContainer: m3colors.m3onTertiaryContainer
         property color colTertiaryContainerHover: Functions.ColorUtils.mix(colTertiaryContainer, colOnTertiaryContainer, 0.90)
+        property color colTertiaryContainerActive: Functions.ColorUtils.mix(colTertiaryContainer, colOnTertiaryContainer, 0.85)
         // Error
         property color colError: m3colors.m3error
         property color colOnError: m3colors.m3onError
         property color colErrorContainer: m3colors.m3errorContainer
         property color colOnErrorContainer: m3colors.m3onErrorContainer
+        // Warning (Mapped to Tertiary in M3 if not specific)
+        property color colWarning: m3colors.m3tertiary 
+        // Background alias
+        property color colBackground: colLayer0
         // Misc
         property color colOutline: m3colors.m3outline
         property color colOutlineVariant: m3colors.m3outlineVariant
