@@ -75,7 +75,12 @@ Singleton {
         }
 
         // 5. Common Keywords (Already normalized)
-        if (lowClass.includes("brave") || lowTitle.includes("brave")) return "brave-browser";
+        if (lowClass.includes("brave") || lowTitle.includes("brave")) {
+            if (iconExists("brave-desktop")) return "brave-desktop";
+            if (iconExists("brave")) return "brave";
+            if (iconExists("brave-browser")) return "brave-browser";
+            return "brave-desktop"; // Fallback to a common name
+        }
         if (lowClass.includes("chrome") || lowTitle.includes("chrome")) return "google-chrome";
         if (lowClass.includes("edge") || lowTitle.includes("edge")) return "microsoft-edge";
         if (lowClass.includes("kitty")) return "kitty";

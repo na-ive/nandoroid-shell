@@ -44,14 +44,14 @@ Item {
     Image {
         id: fullColorImage
         anchors.fill: parent
-        source: root.resolvedSource
-        visible: !root.colorize
+        source: root.resolvedSource !== "" ? root.resolvedSource : ""
+        visible: !root.colorize && root.resolvedSource !== ""
         cache: true
         fillMode: Image.PreserveAspectFit
         asynchronous: true
         
         onStatusChanged: {
-            if (status === Image.Error) {
+            if (status === Image.Error && root.resolvedSource !== "") {
                 console.error("[CustomIcon] Error loading image:", source);
             }
         }
@@ -60,13 +60,13 @@ Item {
     // 2. Layer for tinted icons (e.g. Distro icon, Material Symbols)
     Item {
         anchors.fill: parent
-        visible: root.colorize
+        visible: root.colorize && root.resolvedSource !== ""
         
         // Use IconImage as a mask source for ColorOverlay
         IconImage {
             id: maskSource
             anchors.fill: parent
-            source: root.resolvedSource
+            source: root.resolvedSource !== "" ? root.resolvedSource : ""
             visible: false
             asynchronous: true
         }

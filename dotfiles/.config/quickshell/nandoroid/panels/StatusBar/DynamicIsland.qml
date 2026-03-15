@@ -194,7 +194,7 @@ Item {
                         width: 18; height: 18
                         IconImage { 
                             id: innerImg; anchors.fill: parent; 
-                            source: Quickshell.iconPath(mediaLogo.activeEntryStr, "") 
+                            source: mediaLogo.activeEntryStr !== "" ? Quickshell.iconPath(mediaLogo.activeEntryStr, "") : ""
                             visible: status === Image.Ready
                         }
                         MaterialSymbol {

@@ -30,7 +30,8 @@ MouseArea {
 
     IconImage {
         id: trayIcon
-        source: root.item.icon
+        source: (root.item && root.item.icon) ? root.item.icon : ""
+        visible: source !== ""
         anchors.centerIn: parent
         width: 16
         height: 16

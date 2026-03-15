@@ -84,8 +84,9 @@ DockButton {
             IconImage {
                 id: iconImage
                 anchors.fill: parent
-                source: appToplevel ? Quickshell.iconPath(AppSearch.guessIcon(appToplevel.appId), "application-x-executable") : ""
-                visible: !(Config.ready && Config.options.dock.monochromeIcons)
+                property string iconName: appToplevel ? AppSearch.guessIcon(appToplevel.appId) : ""
+                source: iconName !== "" ? Quickshell.iconPath(iconName, "application-x-executable") : ""
+                visible: !(Config.ready && Config.options.dock.monochromeIcons) && source !== ""
             }
 
             ColorOverlay {
