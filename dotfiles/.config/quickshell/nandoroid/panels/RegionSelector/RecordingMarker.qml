@@ -53,10 +53,10 @@ PanelWindow {
     Rectangle {
         id: marker
         visible: root.geomData !== null
-        x: root.geomData ? root.geomData.x : 0
-        y: root.geomData ? root.geomData.y : 0
-        width: root.geomData ? root.geomData.width : 0
-        height: root.geomData ? root.geomData.height : 0
+        x: root.geomData ? root.geomData.x - 2 : 0
+        y: root.geomData ? root.geomData.y - 2 : 0
+        width: root.geomData ? root.geomData.width + 4 : 0
+        height: root.geomData ? root.geomData.height + 4 : 0
         
         color: "transparent"
         
@@ -74,16 +74,6 @@ PanelWindow {
             loops: Animation.Infinite
             NumberAnimation { from: 0.8; to: 0.3; duration: 1000; easing.type: Easing.InOutQuad }
             NumberAnimation { from: 0.3; to: 0.8; duration: 1000; easing.type: Easing.InOutQuad }
-        }
-        
-        // Inner subtle glow
-        Rectangle {
-            anchors.fill: parent
-            anchors.margins: -2
-            color: "transparent"
-            border.color: Qt.alpha(Appearance.m3colors.m3error, 0.3)
-            border.width: 1
-            radius: 2
         }
     }
 }
