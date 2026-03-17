@@ -57,9 +57,16 @@ Variants {
         // Simplified polished cross-fade logic
         property string currentPath: (Config.ready && Config.options.appearance && Config.options.appearance.background && Config.options.appearance.background.wallpaperPath) ? Config.options.appearance.background.wallpaperPath : ""
         
+        // Random Transition Logic
+        property string currentTransitionMode: "fade"
+        readonly property var transitionModes: ["fade", "zoomIn", "zoomOut", "slideUp", "slideDown", "slideLeft", "slideRight"]
+
         onCurrentPathChanged: {
             if (currentPath === "" || currentPath === undefined) return;
             
+            // Pick a random transition mode
+            currentTransitionMode = transitionModes[Math.floor(Math.random() * transitionModes.length)];
+
             if (wallpaper1.visible) {
                 wallpaper2.source = currentPath;
                 if (wallpaper2.status === Image.Ready) transAnim2.restart();
@@ -90,36 +97,86 @@ Variants {
         // --- Wallpaper Layers ---
         Image {
             id: wallpaper1
-            anchors.fill: parent
+            width: bgRoot.width
+            height: bgRoot.height
             source: bgRoot.currentPath
             fillMode: Image.PreserveAspectCrop
             visible: true
             z: 1
             opacity: 1
+            scale: 1.0
+            transformOrigin: Item.Center
         }
 
         Image {
             id: wallpaper2
-            anchors.fill: parent
+            width: bgRoot.width
+            height: bgRoot.height
             fillMode: Image.PreserveAspectCrop
             visible: false
             z: 1
             opacity: 0
+            scale: 1.0
+            transformOrigin: Item.Center
         }
 
-        // --- Polished Transitions ---
+        // --- Polished Transitions (Randomized & Optimized) ---
         SequentialAnimation {
             id: transAnim1
-            ScriptAction { script: { wallpaper1.visible = true; wallpaper1.z = 2; wallpaper2.z = 1; } }
-            NumberAnimation { target: wallpaper1; property: "opacity"; from: 0; to: 1; duration: 800; easing.type: Easing.InOutQuad }
-            ScriptAction { script: { wallpaper2.visible = false; wallpaper2.opacity = 0; } }
+            ScriptAction { 
+                script: { 
+                    wallpaper1.visible = true; wallpaper1.z = 2; wallpaper2.z = 1; 
+                    wallpaper1.x = 0; wallpaper1.y = 0;
+                } 
+            }
+            ParallelAnimation {
+                NumberAnimation { target: wallpaper1; property: "opacity"; from: 0; to: 1; duration: 500; easing.type: Easing.OutCubic }
+                NumberAnimation { 
+                    target: wallpaper1; property: "scale"
+                    from: currentTransitionMode === "zoomIn" ? 0.9 : (currentTransitionMode === "zoomOut" ? 1.1 : 1.0)
+                    to: 1.0; duration: 700; easing.type: Easing.OutExpo 
+                }
+                NumberAnimation { 
+                    target: wallpaper1; property: "y"
+                    from: currentTransitionMode === "slideUp" ? (bgRoot.height * 0.15) : (currentTransitionMode === "slideDown" ? -(bgRoot.height * 0.15) : 0)
+                    to: 0; duration: 700; easing.type: Easing.OutExpo 
+                }
+                NumberAnimation { 
+                    target: wallpaper1; property: "x"
+                    from: currentTransitionMode === "slideLeft" ? (bgRoot.width * 0.15) : (currentTransitionMode === "slideRight" ? -(bgRoot.width * 0.15) : 0)
+                    to: 0; duration: 700; easing.type: Easing.OutExpo 
+                }
+            }
+            ScriptAction { script: { wallpaper2.visible = false; wallpaper2.opacity = 0; wallpaper2.scale = 1.0; wallpaper2.x = 0; wallpaper2.y = 0; } }
         }
 
         SequentialAnimation {
             id: transAnim2
-            ScriptAction { script: { wallpaper2.visible = true; wallpaper2.z = 2; wallpaper1.z = 1; } }
-            NumberAnimation { target: wallpaper2; property: "opacity"; from: 0; to: 1; duration: 800; easing.type: Easing.InOutQuad }
-            ScriptAction { script: { wallpaper1.visible = false; wallpaper1.opacity = 0; } }
+            ScriptAction { 
+                script: { 
+                    wallpaper2.visible = true; wallpaper2.z = 2; wallpaper1.z = 1; 
+                    wallpaper2.x = 0; wallpaper2.y = 0;
+                } 
+            }
+            ParallelAnimation {
+                NumberAnimation { target: wallpaper2; property: "opacity"; from: 0; to: 1; duration: 500; easing.type: Easing.OutCubic }
+                NumberAnimation { 
+                    target: wallpaper2; property: "scale"
+                    from: currentTransitionMode === "zoomIn" ? 0.9 : (currentTransitionMode === "zoomOut" ? 1.1 : 1.0)
+                    to: 1.0; duration: 700; easing.type: Easing.OutExpo 
+                }
+                NumberAnimation { 
+                    target: wallpaper2; property: "y"
+                    from: currentTransitionMode === "slideUp" ? (bgRoot.height * 0.15) : (currentTransitionMode === "slideDown" ? -(bgRoot.height * 0.15) : 0)
+                    to: 0; duration: 700; easing.type: Easing.OutExpo 
+                }
+                NumberAnimation { 
+                    target: wallpaper2; property: "x"
+                    from: currentTransitionMode === "slideLeft" ? (bgRoot.width * 0.15) : (currentTransitionMode === "slideRight" ? -(bgRoot.width * 0.15) : 0)
+                    to: 0; duration: 700; easing.type: Easing.OutExpo 
+                }
+            }
+            ScriptAction { script: { wallpaper1.visible = false; wallpaper1.opacity = 0; wallpaper1.scale = 1.0; wallpaper1.x = 0; wallpaper1.y = 0; } }
         }
 
         Rectangle {
