@@ -63,7 +63,7 @@ Singleton {
     // --- Cache Loading ---
     Process {
         id: readCacheProc
-        command: ["bash", "-c", `mkdir -p "${root.cacheDir}" && [ -f "${root.cachePath}" ] && cat "${root.cachePath}" || exit 0`]
+        command: ["sh", "-c", 'mkdir -p "$1" && [ -f "$2" ] && cat "$2" || exit 0', "sh", root.cacheDir, root.cachePath]
         running: false
         stdout: StdioCollector {
             onStreamFinished: {
@@ -74,9 +74,7 @@ Singleton {
                             const data = JSON.parse(trimmed);
                             processWeatherData(data);
                         }
-                    } catch (e) {
-                        console.error("[Weather] Cache parse error:", e);
-                    }
+                    } catch (e) {}
                 });
             }
         }
@@ -91,10 +89,14 @@ Singleton {
         if (loading && !silent) {
             return;
         }
+
+        // Prevent redundant fetching if data is fresh (less than 5 mins old)
+        // unless it's a manual refresh (silent = false)
+        if (silent && lastUpdateTime !== null) {
+            const diff = (new Date().getTime() - lastUpdateTime.getTime()) / 60000;
+            if (diff < 5) return; 
+        }
         
-        // Safety: if it's been loading for too long, reset it
-        
-        // Re-check health status (1 hour cooldown for wttr.in)
         const now = new Date().getTime();
         if (!wttrInHealthy && (now - lastWttrInFail > 3600000)) {
             wttrInHealthy = true;
@@ -129,23 +131,14 @@ Singleton {
 
     Timer {
         id: watchdogTimer
-        interval: 60000 // Check every minute
+        interval: 60000
         running: true
         repeat: true
         onTriggered: {
-            if (Config.ready && Config.options.weather && !Config.options.weather.enable) {
-                return; // Do nothing if weather service is disabled
-            }
+            if (Config.ready && Config.options.weather && !Config.options.weather.enable) return;
             const now = Date.now();
             if (root.nextUpdateTime > 0) {
-                const remainingSecs = Math.round((root.nextUpdateTime - now) / 1000);
-                if (now >= root.nextUpdateTime) {
-                    root.fetch(true);
-                } else if (remainingSecs > 0 && remainingSecs <= 60 && remainingSecs % 20 === 0) {
-                    // Log every 20s when under 1 minute
-                } else if (remainingSecs > 60 && remainingSecs % 300 === 0) {
-                    // Log every 5 minutes for long intervals
-                }
+                if (now >= root.nextUpdateTime) root.fetch(true);
             } else {
                 root.nextUpdateTime = now + (root.updateInterval * 60000);
             }
@@ -153,8 +146,6 @@ Singleton {
     }
 
     Component.onCompleted: {
-        
-        // 1. Synchronously read cache via FileView
         try {
             const cacheData = cacheFileWriter.text;
             if (cacheData && cacheData.trim() !== "" && cacheData.indexOf("{") === 0) {
@@ -162,11 +153,8 @@ Singleton {
                 root.processWeatherData(data);
             }
         } catch (e) {
-
             readCacheProc.running = true;
         }
-        
-        // 2. Schedule first network update (silent)
         startupFetchTimer.start();
     }
 
@@ -182,13 +170,8 @@ Singleton {
         id: startupFetchTimer
         interval: 100 
         onTriggered: {
-            if (Config.ready) {
-                root.fetch(true);
-            } else {
-                // Wait for config if needed
-                interval = 500;
-                start();
-            }
+            if (Config.ready) root.fetch(true);
+            else { interval = 500; start(); }
         }
     }
 
@@ -196,13 +179,12 @@ Singleton {
         id: weatherProc
         command: {
             const cleanLoc = root.autoLocation ? "" : root.manualLocation.split(',')[0].replace(/Regency/g, '').trim();
-            const loc = encodeURIComponent(cleanLoc);
-            return ["bash", "-c", `curl -sfL -m 8 --connect-timeout 4 "https://wttr.in/${loc}?format=j1"`];
+            const url = "https://wttr.in/" + cleanLoc + "?format=j1";
+            return ["curl", "-sfL", "-m", "10", "--connect-timeout", "5", url];
         }
 
         onExited: (exitCode) => {
             if (exitCode !== 0) {
-
                 root.wttrInHealthy = false;
                 root.lastWttrInFail = new Date().getTime();
                 fallbackTrigger();
@@ -220,9 +202,7 @@ Singleton {
                         if (results === "") return;
                         const data = JSON.parse(results);
                         processWeatherData(data);
-                    } catch (e) {
-                        console.error("[Weather] JSON Parse Error:", e);
-                    }
+                    } catch (e) {}
                 });
             }
         }
@@ -233,10 +213,9 @@ Singleton {
         path: root.cachePath
     }
 
-    // --- Fallback Backend (Open-Meteo) ---
     Process {
         id: ipLocProc
-        command: ["bash", "-c", "curl -sfL -m 8 http://ip-api.com/json/"]
+        command: ["curl", "-sfL", "-m", "10", "http://ip-api.com/json/"]
         stdout: StdioCollector {
             onStreamFinished: {
                 const results = this.text.trim();
@@ -250,18 +229,10 @@ Singleton {
                             throw data.message || "Unknown error";
                         }
                     } catch(e) { 
-                        console.error("[Weather] Step: IP Loc failed:", e);
                         root.status = "Location Error";
                         root.loading = false;
                     }
                 });
-            }
-        }
-        onExited: (exitCode) => {
-            if (exitCode !== 0 && root.loading && root.status === "Finding location...") {
-                console.error("[Weather] Step: IP Loc process exited with", exitCode);
-                root.status = "Network Error";
-                root.loading = false;
             }
         }
     }
@@ -269,10 +240,9 @@ Singleton {
     Process {
         id: geocodingProc
         command: {
-            // Clean location string: 'Karanganyar Regency, ID' -> 'Karanganyar'
             let cleanLoc = root.manualLocation.split(',')[0].replace(/Regency/g, '').trim();
-            const loc = encodeURIComponent(cleanLoc);
-            return ["bash", "-c", `curl -sfL -m 15 "https://geocoding-api.open-meteo.com/v1/search?name=${loc}&count=1&language=en&format=json"`];
+            const url = "https://geocoding-api.open-meteo.com/v1/search?name=" + cleanLoc + "&count=1&language=en&format=json";
+            return ["curl", "-sfL", "-m", "15", url];
         }
         stdout: StdioCollector {
             onStreamFinished: {
@@ -285,23 +255,14 @@ Singleton {
                             const displayName = res.admin1 ? (res.name + ", " + res.admin1) : res.name;
                             root.fetchOpenMeteo(res.latitude.toString(), res.longitude.toString(), displayName);
                         } else {
-
                             ipLocProc.running = false;
                             ipLocProc.running = true;
                         }
                     } catch(e) { 
-                        console.error("[Weather] Step: Geocoding parse error, trying IP fallback");
                         ipLocProc.running = false;
                         ipLocProc.running = true;
                     }
                 });
-            }
-        }
-        onExited: (exitCode) => {
-            if (exitCode !== 0) {
-
-                ipLocProc.running = false;
-                ipLocProc.running = true;
             }
         }
     }
@@ -318,23 +279,15 @@ Singleton {
         property string lat: ""
         property string lon: ""
         command: {
-            const latVal = openMeteoProc.lat;
-            const lonVal = openMeteoProc.lon;
-            if (!latVal || !lonVal) return ["true"];
-            
+            if (!lat || !lon) return ["true"];
             const tempUnit = root.unit === "F" ? "&temperature_unit=fahrenheit" : "";
             const windUnit = root.unit === "F" ? "&wind_speed_unit=mph" : "&wind_speed_unit=kmh";
-            const url = `https://api.open-meteo.com/v1/forecast?latitude=${latVal}&longitude=${lonVal}${tempUnit}${windUnit}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,weather_code,wind_speed_10m&hourly=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto`;
-            
-            // Increased timeout to 15s
-            return ["bash", "-c", `mkdir -p "${root.cacheDir}" && curl -sfL -m 15 "${url}" > "${root.cachePath}.tmp" && jq -e . "${root.cachePath}.tmp" >/dev/null 2>&1 && mv "${root.cachePath}.tmp" "${root.cachePath}" && cat "${root.cachePath}"` ];
+            const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}${tempUnit}${windUnit}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,weather_code,wind_speed_10m&hourly=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto`;
+            return ["sh", "-c", 'mkdir -p "$1" && curl -sfL -m 15 "$2" > "$3.tmp" && jq -e . "$3.tmp" >/dev/null 2>&1 && mv "$3.tmp" "$3" && cat "$3"', "sh", root.cacheDir, url, root.cachePath];
         }
         
         onExited: (exitCode) => {
-            if (exitCode !== 0) {
-                console.error("[Weather] Step: Open-Meteo process failed (exit " + exitCode + ")");
-                root.status = "API Error";
-            }
+            if (exitCode !== 0) root.status = "API Error";
             root.loading = false;
         }
 
@@ -343,16 +296,11 @@ Singleton {
                 const results = this.text.trim();
                 Qt.callLater(() => {
                     try {
-                        if (!results) {
-
-                            return;
-                        }
+                        if (!results) return;
                         const data = JSON.parse(results);
-                        processWeatherData(data); // Using the central processor that saves cache
+                        processWeatherData(data); 
                         root.status = "Updated via fallback";
-                    } catch(e) {
-                        console.error("[Weather] Step: Open-Meteo Parse Error:", e);
-                    }
+                    } catch(e) {}
                 });
             }
         }
@@ -360,22 +308,23 @@ Singleton {
 
     function processWeatherData(data) {
         if (!data) return;
-        const jsonStr = JSON.stringify(data);
         
-        try {
-            // Quickshell.Io FileView uses setText for writing
-            cacheFileWriter.setText(jsonStr);
-        } catch(e) {
-            console.error("[Weather] Step: JSON Cache write error:", e);
+        let actualData = data;
+        if (data.data && !data.current_condition && !data.current) {
+            actualData = data.data;
         }
 
-        // Schedule next update from this moment
-        root.nextUpdateTime = Date.now() + (root.updateInterval * 60000);
+        try {
+            cacheFileWriter.setText(JSON.stringify(data));
+        } catch(e) {}
 
-        if (data.current_condition) {
-            processWttrInData(data);
-        } else if (data.current) {
-            processOpenMeteoData(data);
+        root.nextUpdateTime = Date.now() + (root.updateInterval * 60000);
+        root.lastUpdateTime = new Date();
+
+        if (actualData.current_condition) {
+            processWttrInData(actualData);
+        } else if (actualData.current) {
+            processOpenMeteoData(actualData);
         }
     }
 
@@ -392,7 +341,6 @@ Singleton {
             windSpeed: root.unit === "C" ? cur.windspeedKmph : cur.windspeedMiles
         }
 
-        // Hourly
         let hourlyList = [];
         if (data.weather && data.weather.length > 0) {
             const today = data.weather[0];
@@ -419,7 +367,6 @@ Singleton {
         }
         root.hourly = hourlyList;
 
-        // Daily
         let dailyList = [];
         if (data.weather) {
             for (let i = 0; i < Math.min(data.weather.length, 3); i++) {
@@ -433,7 +380,6 @@ Singleton {
             }
         }
         root.daily = dailyList;
-        root.lastUpdateTime = new Date();
     }
 
     function processOpenMeteoData(data) {
@@ -455,7 +401,6 @@ Singleton {
             root.todayLow = Math.round(daily.temperature_2m_min[0]).toString();
         }
 
-        // Hourly
         let hourlyList = [];
         if (hourly && hourly.time) {
             const now = new Date();
@@ -467,14 +412,13 @@ Singleton {
                 hourlyList.push({
                     time: formatHour(((new Date(hourly.time[i]).getHours()) * 100).toString()),
                     temp: Math.round(hourly.temperature_2m[i]).toString(),
-                    icon: mapWeatherIcon(wmoToWwo(hourly.weather_code[i]), i >= startIdx && i <= startIdx + 12 ? cur.is_day === 1 : true), // Simplified is_day for hourly
+                    icon: mapWeatherIcon(wmoToWwo(hourly.weather_code[i]), i >= startIdx && i <= startIdx + 12 ? cur.is_day === 1 : true),
                     condition: wmoToDesc(hourly.weather_code[i])
                 });
             }
         }
         root.hourly = hourlyList;
 
-        // Daily
         let dailyList = [];
         if (daily && daily.time) {
             for (let i = 0; i < Math.min(daily.time.length, 3); i++) {
@@ -487,20 +431,19 @@ Singleton {
             }
         }
         root.daily = dailyList;
-        root.lastUpdateTime = new Date();
     }
 
     function wmoToWwo(wmo) {
-        if (wmo === 0) return 113; // Clear
-        if (wmo === 1) return 113; // Mainly clear
-        if (wmo === 2) return 116; // Partly cloudy
-        if (wmo === 3) return 119; // Overcast
-        if (wmo === 45 || wmo === 48) return 248; // Fog
-        if (wmo >= 51 && wmo <= 55) return 266; // Drizzle
-        if (wmo >= 61 && wmo <= 65) return 296; // Rain
-        if (wmo >= 71 && wmo <= 75) return 332; // Snow
-        if (wmo >= 80 && wmo <= 82) return 299; // Rain showers
-        if (wmo >= 95) return 389; // Thunderstorm
+        if (wmo === 0) return 113;
+        if (wmo === 1) return 113;
+        if (wmo === 2) return 116;
+        if (wmo === 3) return 119;
+        if (wmo === 45 || wmo === 48) return 248;
+        if (wmo >= 51 && wmo <= 55) return 266;
+        if (wmo >= 61 && wmo <= 65) return 296;
+        if (wmo >= 71 && wmo <= 75) return 332;
+        if (wmo >= 80 && wmo <= 82) return 299;
+        if (wmo >= 95) return 389;
         return 119;
     }
 
