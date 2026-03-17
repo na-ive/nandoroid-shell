@@ -20,8 +20,7 @@ Singleton {
         clipboardHistory.forEach(entry => {
             if (entry.isImage) {
                 const thumbPath = root.clipboardThumbnailDir + "/" + entry.id + ".png";
-                const checkCmd = "test -f " + thumbPath + " || cliphist decode " + entry.id + " > " + thumbPath;
-                Quickshell.execDetached(["bash", "-c", checkCmd]);
+                Quickshell.execDetached(["sh", "-c", 'test -f "$2" || cliphist decode "$1" > "$2"', "sh", entry.id, thumbPath]);
             }
         });
     }
@@ -153,8 +152,7 @@ Singleton {
         root.usageData[appId] = currentCount + 1;
         const dataStr = JSON.stringify(root.usageData);
         const path = Quickshell.shellPath("data/app_usage.json");
-        const cmd = "printf '%s' '" + dataStr.replace(/'/g, "'\\''") + "' > '" + path + "'";
-        Quickshell.execDetached(["bash", "-c", cmd]);
+        Quickshell.execDetached(["sh", "-c", 'printf "%s" "$1" > "$2"', "sh", dataStr, path]);
         triggerUpdate();
     }
 
@@ -382,8 +380,7 @@ Singleton {
                         subtitle: cleanName, rawValue: entry, id: "clip-" + entryObj.id, icon: entryObj.isImage ? "image" : "content_paste",
                         isPlugin: true, isImage: entryObj.isImage, imagePath: thumbPath, category: "Command", emoji: "",
                         execute: () => {
-                            const escapedEntry = entry.replace(/'/g, "'\\''");
-                            Quickshell.execDetached(["bash", "-c", "printf '" + escapedEntry + "' | cliphist decode | wl-copy"]);
+                            Quickshell.execDetached(["sh", "-c", "cliphist decode \"$1\" | wl-copy", "sh", entryObj.id]);
                             root.closeAll();
                         }
                     });
