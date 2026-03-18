@@ -250,6 +250,47 @@ Item {
                 color: root.contentColor
             }
 
+            // Notification counter (now moved before WiFi)
+            Item {
+                id: notificationCounter
+                readonly property string style: (Config.ready && Config.options.notifications) ? Config.options.notifications.counterStyle : "counter"
+                
+                visible: style !== "hidden" && Notifications.unread > 0
+                Layout.preferredWidth: 20
+                Layout.preferredHeight: 20
+                Layout.alignment: Qt.AlignVCenter
+
+                MaterialSymbol {
+                    id: bellIcon
+                    anchors.centerIn: parent
+                    text: "notifications_active"
+                    iconSize: 16
+                    fill: 1
+                    color: root.contentColor
+                }
+
+                Rectangle {
+                    visible: parent.style === "counter"
+                    anchors.top: parent.top
+                    anchors.right: parent.right
+                    anchors.topMargin: -2
+                    anchors.rightMargin: -2
+                    width: Math.max(12, badgeText.implicitWidth + 4)
+                    height: 12
+                    radius: 6
+                    color: bellIcon.color // Match the bell icon color
+
+                    StyledText {
+                        id: badgeText
+                        anchors.centerIn: parent
+                        text: Notifications.unread > 99 ? "99+" : Notifications.unread.toString()
+                        font.pixelSize: 8
+                        font.weight: Font.Bold
+                        color: showBackground ? Appearance.m3colors.m3surface : Appearance.colors.colLayer0 // High contrast against the bell-colored badge
+                    }
+                }
+            }
+
             // WiFi (real data from Network service)
             MaterialSymbol {
                 text: Network.materialSymbol
@@ -294,46 +335,6 @@ Item {
                 visible: Battery.available
                 Layout.alignment: Qt.AlignVCenter
                 color: root.contentColor
-            }
-
-
-            // Notification counter (hidden when 0, moved to end)
-            Item {
-                readonly property string style: (Config.ready && Config.options.notifications) ? Config.options.notifications.counterStyle : "counter"
-                
-                visible: style !== "hidden" && Notifications.unread > 0
-                Layout.preferredWidth: 20
-                Layout.preferredHeight: 20
-                Layout.alignment: Qt.AlignVCenter
-
-                MaterialSymbol {
-                    anchors.centerIn: parent
-                    text: "notifications_active"
-                    iconSize: 16
-                    fill: 1
-                    color: root.contentColor
-                }
-
-                Rectangle {
-                    visible: parent.style === "counter"
-                    anchors.top: parent.top
-                    anchors.right: parent.right
-                    anchors.topMargin: -2
-                    anchors.rightMargin: -2
-                    width: Math.max(12, badgeText.implicitWidth + 4)
-                    height: 12
-                    radius: 6
-                    color: Appearance.m3colors.m3error
-
-                    StyledText {
-                        id: badgeText
-                        anchors.centerIn: parent
-                        text: Notifications.unread > 99 ? "99+" : Notifications.unread.toString()
-                        font.pixelSize: 8
-                        font.weight: Font.Bold
-                        color: Appearance.m3colors.m3onError
-                    }
-                }
             }
 
             // DND Indicator

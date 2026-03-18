@@ -281,6 +281,38 @@ MouseArea {
                 anchors.rightMargin: 10
                 spacing: 8
 
+                // Notifications
+                Item {
+                    visible: Notifications.unread > 0
+                    width: 20; height: 20
+                    MaterialSymbol {
+                        id: lockBellIcon
+                        anchors.centerIn: parent
+                        text: "notifications_active"
+                        iconSize: 16
+                        fill: 1
+                        color: Appearance.colors.colStatusBarText
+                    }
+                    Rectangle {
+                        anchors.top: parent.top
+                        anchors.right: parent.right
+                        anchors.topMargin: -2
+                        anchors.rightMargin: -2
+                        width: Math.max(12, badgeText.implicitWidth + 4)
+                        height: 12
+                        radius: 6
+                        color: lockBellIcon.color
+                        StyledText {
+                            id: badgeText
+                            anchors.centerIn: parent
+                            text: Notifications.unread > 99 ? "99+" : Notifications.unread.toString()
+                            font.pixelSize: 8
+                            font.weight: Font.Bold
+                            color: Appearance.colors.colLayer0
+                        }
+                    }
+                }
+
                 // WiFi
                 MaterialSymbol {
                     text: Network.materialSymbol
@@ -303,19 +335,6 @@ MouseArea {
                     visible: Battery.available
                     Layout.alignment: Qt.AlignVCenter
                     color: Appearance.colors.colStatusBarText
-                }
-
-                // Notifications
-                Item {
-                    visible: Notifications.unread > 0
-                    width: 20; height: 20
-                    MaterialSymbol {
-                        anchors.centerIn: parent
-                        text: "notifications_active"
-                        iconSize: 16
-                        fill: 1
-                        color: Appearance.colors.colStatusBarText
-                    }
                 }
 
                 // DND Indicator
