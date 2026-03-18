@@ -77,82 +77,50 @@ Item {
                         font.pixelSize: Appearance.font.pixelSize.large
                         font.weight: Font.Bold
                         color: Appearance.colors.colOnLayer0
-                        Layout.preferredWidth: 260
-                    }
-
-                    // Segmented Breadcrumbs (True high-fidelity style)
-                    RowLayout {
-                        id: breadcrumbRow
+                        Layout.preferredWidth: 200
                         Layout.alignment: Qt.AlignVCenter
-                        Layout.fillWidth: true
-                        visible: !root.favMode
-                        spacing: 2
-                        
-                        property var parts: Wallpapers.directory.toString().replace("file://", "").split("/").filter(v => v !== "")
-                        
-                        Item { Layout.fillWidth: true } // Center the breadcrumbs
-
-                        Row {
-                            spacing: 2
-                            Repeater {
-                                model: breadcrumbRow.parts
-                                delegate: SegmentedButton {
-                                    // Segmented Breadcrumbs Fix
-                                    implicitWidth: Math.max(64, label.implicitWidth + 32)
-                                    
-                                    buttonText: modelData
-                                    font.pixelSize: Appearance.font.pixelSize.smaller
-                                    smallRadius: 4 // Match the desired sharp inner edge look
-                                    pillOnActive: false // Keep it as a segment even when active
-                                    
-                                    // Highlight the "active" (last) segment
-                                    isHighlighted: index === breadcrumbRow.parts.length - 1
-                                    colInactive: Appearance.colors.colLayer2
-                                    colActive: Appearance.m3colors.m3primary
-                                    colActiveText: Appearance.m3colors.m3onPrimary
-                                    colInactiveText: Appearance.colors.colOnLayer0
-                                    
-                                    onClicked: {
-                                        const newPath = "/" + breadcrumbRow.parts.slice(0, index + 1).join("/");
-                                        Wallpapers.directory = "file://" + newPath;
-                                    }
-                                }
-                            }
-                        }
-
-                        Item { Layout.fillWidth: true } // Center the breadcrumbs
                     }
 
                     Item { Layout.fillWidth: true }
 
-                    // Header Search Pill
+                    // Header Search Pill (Centered and Matched with Settings)
                     Rectangle {
-                        Layout.preferredWidth: 240
-                        Layout.preferredHeight: 36
-                        radius: 18
-                        color: Appearance.colors.colLayer2
+                        Layout.preferredWidth: 360
+                        Layout.preferredHeight: 44
+                        radius: 22
+                        color: Appearance.colors.colLayer1
+                        Layout.alignment: Qt.AlignVCenter
+                        
                         RowLayout {
                             anchors.fill: parent
-                            anchors.leftMargin: 12
-                            spacing: 8
+                            anchors.leftMargin: 16
+                            spacing: 12
                             MaterialSymbol {
-                                text: "search"; iconSize: 18; color: Appearance.colors.colSubtext
+                                text: "search"; iconSize: 22; color: Appearance.colors.colSubtext
                             }
                             TextInput {
                                 id: headerSearch
                                 Layout.fillWidth: true
-                                color: Appearance.colors.colOnLayer0
-                                font.pixelSize: Appearance.font.pixelSize.smaller
+                                Layout.rightMargin: 16
+                                color: Appearance.colors.colOnLayer1
+                                font.pixelSize: Appearance.font.pixelSize.normal
                                 verticalAlignment: TextInput.AlignVCenter
-                                // onTextChanged: root.searchFilter = text
+                                clip: true
+                                
+                                onTextChanged: Wallpapers.searchQuery = text
+
                                 StyledText {
-                                    anchors.fill: parent; verticalAlignment: Text.AlignVCenter
-                                    text: "Search wallpapers..."; color: Appearance.colors.colSubtext
-                                    visible: headerSearch.text === "" && !headerSearch.activeFocus
+                                    visible: !headerSearch.text && !headerSearch.activeFocus
+                                    text: "Search wallpapers..."
+                                    font.pixelSize: headerSearch.font.pixelSize
+                                    color: Appearance.colors.colSubtext
+                                    anchors.verticalCenter: parent.verticalCenter
                                 }
                             }
                         }
                     }
+
+                    Item { Layout.fillWidth: true }
 
                     RippleButton {
                         implicitWidth: 36; implicitHeight: 36; buttonRadius: 18
@@ -286,10 +254,38 @@ Item {
                         cellHeight: cellWidth * 9/16 + 40 // True 16:9 + space for label
                         clip: true
                         interactive: true
-                        model: Wallpapers.folderModel
+                        
+                        // Use a custom model for favorites, otherwise use folder model
+                        model: root.favMode ? favModel : Wallpapers.folderModel
+                        
+                        ListModel {
+                            id: favModel
+                            function refresh() {
+                                clear();
+                                const favs = Wallpapers.favorites;
+                                for (let i = 0; i < favs.length; i++) {
+                                    const path = favs[i];
+                                    const name = path.split('/').pop();
+                                    append({ "filePath": path, "fileName": name });
+                                }
+                            }
+                            Component.onCompleted: refresh()
+                        }
+                        
+                        Connections {
+                            target: Wallpapers
+                            function onFavoritesChanged() { favModel.refresh(); }
+                        }
+                        
+                        onVisibleChanged: { if (visible) favModel.refresh(); }
                         
                         delegate: Item {
+                            id: delegateRoot
                             width: grid.cellWidth; height: grid.cellHeight
+                            
+                            readonly property string currentFilePath: root.favMode ? model.filePath : filePath
+                            readonly property string currentFileName: root.favMode ? model.fileName : fileName
+
                             ColumnLayout {
                                 anchors.fill: parent; anchors.margins: 12; spacing: 8
                                 
@@ -303,24 +299,62 @@ Item {
                                             maskSource: Rectangle { width: imgPlate.width; height: imgPlate.height; radius: 18 }
                                         }
 
+                                        HoverHandler { id: imgHover }
+
                                         ThumbnailImage {
-                                            anchors.fill: parent; sourcePath: "file://" + filePath
+                                            anchors.fill: parent; sourcePath: "file://" + currentFilePath
+                                        }
+
+                                        // Lightweight Gradient Overlay for better icon legibility (Focused on bottom-right)
+                                        Rectangle {
+                                            anchors.fill: parent
+                                            gradient: Gradient {
+                                                GradientStop { position: 0.0; color: Qt.rgba(0,0,0, 0.0) } 
+                                                GradientStop { position: 0.6; color: Qt.rgba(0,0,0, 0.15) } // Start darkening
+                                                GradientStop { position: 1.0; color: Qt.rgba(0,0,0, 0.45) } // Darkest at bottom
+                                            }
                                         }
                                         
                                         Rectangle {
-                                            anchors.fill: parent; color: Appearance.colors.colPrimary; opacity: mArea.containsMouse ? 0.15 : 0
+                                            anchors.fill: parent; color: Appearance.colors.colPrimary; opacity: (mArea.containsMouse || imgHover.hovered) ? 0.15 : 0
                                             Behavior on opacity { NumberAnimation { duration: 200 } }
                                         }
                                         
                                         MouseArea {
                                             id: mArea; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor
-                                            onClicked: root.selectWallpaper("file://" + filePath)
+                                            onClicked: root.selectWallpaper("file://" + currentFilePath)
+                                        }
+                                        
+                                        // Clean Favorite Button (Moved to Bottom-Right)
+                                        RippleButton {
+                                            id: favBtn
+                                            anchors.bottom: parent.bottom
+                                            anchors.right: parent.right
+                                            anchors.margins: 4 // More tucked into the corner
+                                            implicitWidth: 40; implicitHeight: 40; buttonRadius: 20
+                                            colBackground: "transparent"
+                                            
+                                            readonly property bool isFav: Wallpapers.isFavorite(currentFilePath)
+                                            
+                                            MaterialSymbol {
+                                                anchors.centerIn: parent
+                                                text: "favorite"
+                                                iconSize: 22
+                                                // 1 (solid) when active or when the button itself is hovered
+                                                fill: (favBtn.isFav || favBtn.hovered) ? 1 : 0
+                                                // Red when active, pure white when inactive
+                                                color: favBtn.isFav ? "#ff4081" : "#FFFFFF"
+                                                
+                                                Behavior on color { ColorAnimation { duration: 200 } }
+                                            }
+                                            
+                                            onClicked: Wallpapers.toggleFavorite(currentFilePath)
                                         }
                                     }
                                 }
                                 
                                 StyledText {
-                                    Layout.fillWidth: true; text: fileName; horizontalAlignment: Text.AlignHCenter
+                                    Layout.fillWidth: true; text: currentFileName; horizontalAlignment: Text.AlignHCenter
                                     font.pixelSize: Appearance.font.pixelSize.smallest; elide: Text.ElideRight; color: Appearance.colors.colOnLayer1
                                     opacity: 0.7
                                 }
@@ -333,7 +367,7 @@ Item {
                         StyledText {
                             visible: grid.count === 0
                             anchors.centerIn: parent
-                            text: "No wallpapers found"
+                            text: root.favMode ? "No favorite wallpapers" : "No wallpapers found"
                             color: Appearance.colors.colSubtext
                         }
                     }

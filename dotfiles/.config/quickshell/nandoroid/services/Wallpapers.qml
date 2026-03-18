@@ -14,6 +14,30 @@ Singleton {
     
     readonly property list<string> imagePatterns: ["*.jpg", "*.jpeg", "*.png", "*.webp", "*.avif"]
 
+    property list<string> favorites: Config.ready ? Config.options.appearance.background.favorites : []
+
+    function isFavorite(path) {
+        if (!Config.ready) return false;
+        const cleanPath = path.toString().startsWith("file://") ? path.toString().substring(7) : path.toString();
+        return favorites.includes(cleanPath);
+    }
+
+    function toggleFavorite(path) {
+        if (!Config.ready) return;
+        const cleanPath = path.toString().startsWith("file://") ? path.toString().substring(7) : path.toString();
+        let currentFavs = favorites.slice();
+        const index = currentFavs.indexOf(cleanPath);
+        
+        if (index === -1) {
+            currentFavs.push(cleanPath);
+        } else {
+            currentFavs.splice(index, 1);
+        }
+        
+        Config.options.appearance.background.favorites = currentFavs;
+        favorites = currentFavs;
+    }
+
     // Helper process to generate material colors
     Process {
         id: matugenProc
@@ -326,7 +350,8 @@ Singleton {
         }
         nameFilters: {
             if (root.searchQuery === "") return root.imagePatterns;
-            return [`*${root.searchQuery}*`, ...root.imagePatterns];
+            // Create restrictive filters like ["*query*.jpg", "*query*.png", ...]
+            return root.imagePatterns.map(p => `*${root.searchQuery}*${p.substring(1)}`);
         }
         showDirs: false
         showDotAndDotDot: false

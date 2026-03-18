@@ -34,6 +34,17 @@ Item {
         }
     }
 
+    // Auto-refresh previews when wallpaper changes
+    Connections {
+        target: (Config.ready && Config.options.appearance) ? Config.options.appearance.background : null
+        function onWallpaperPathChanged() { refreshPreviews(); }
+    }
+
+    Connections {
+        target: (Config.ready && Config.options.lock) ? Config.options.lock : null
+        function onWallpaperPathChanged() { if (Config.options.lock.useSeparateWallpaper) refreshPreviews(); }
+    }
+
     Component.onCompleted: {
         if (GlobalStates.quickWallpaperOpen) {
             root.forceActiveFocus();
