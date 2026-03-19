@@ -46,7 +46,10 @@ Item {
         }
     }
 
-    function close() { mainSelector.closed() }
+    function close() { 
+        WallhavenService.results.clear();
+        mainSelector.closed() 
+    }
 
     function selectWallpaper(path) {
         if (GlobalStates.wallpaperSelectorTarget === "desktop") {
@@ -196,7 +199,8 @@ Item {
                             onClicked: {
                                 mainSelector.wallhavenMode = true;
                                 mainSelector.favMode = false;
-                                if (WallhavenService.results.count === 0) WallhavenService.search("");
+                                // Always search for fresh random results
+                                WallhavenService.search("");
                             }
 
                             RowLayout {
