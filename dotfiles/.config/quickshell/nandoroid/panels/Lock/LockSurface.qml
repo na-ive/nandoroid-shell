@@ -612,7 +612,7 @@ MouseArea {
         RippleButton {
             Layout.alignment: Qt.AlignVCenter
             Layout.rightMargin: 0
-            implicitWidth: 40; implicitHeight: 40; buttonRadius: 20
+            implicitWidth: 64; implicitHeight: 40; buttonRadius: 20
             
             colBackground: root.context.unlockInProgress 
                 ? Appearance.m3colors.m3surfaceContainerHigh 
@@ -626,7 +626,7 @@ MouseArea {
 
             MaterialSymbol {
                 anchors.centerIn: parent
-                iconSize: 20
+                iconSize: 22
                 text: root.context.unlockInProgress ? "progress_activity" : "arrow_right_alt"
                 color: root.context.unlockInProgress
                     ? Appearance.m3colors.m3onSurfaceVariant
