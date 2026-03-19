@@ -66,13 +66,19 @@ Singleton {
     // Lists for UI
     function getNodesByType(isSink) {
         return Pipewire.nodes.values.filter(node => {
-            return (node.isSink === isSink) && node.audio && !node.isStream
+            const isDummy = (node.name || "").toLowerCase().includes("dummy") 
+                         || (node.description || "").toLowerCase().includes("dummy")
+                         || (node.nickname || "").toLowerCase().includes("dummy");
+            return (node.isSink === isSink) && node.audio && !node.isStream && !isDummy
         })
     }
 
     function getStreamNodesByType(isSink) {
         return Pipewire.nodes.values.filter(node => {
-            return (node.isSink === isSink) && node.audio && node.isStream
+            const isDummy = (node.name || "").toLowerCase().includes("dummy") 
+                         || (node.description || "").toLowerCase().includes("dummy")
+                         || (node.nickname || "").toLowerCase().includes("dummy");
+            return (node.isSink === isSink) && node.audio && node.isStream && !isDummy
         })
     }
 
