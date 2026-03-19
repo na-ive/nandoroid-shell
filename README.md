@@ -4,7 +4,7 @@ A Quickshell-based desktop shell for Hyprland adopting Android 16 design element
 
 > **Note**: This shell and its dependencies are designed strictly for **Arch Linux based distributions** (Arch, CachyOS, EndeavourOS, etc.).
 
-**Version:** v1.2.1
+**Version:** v1.2.2
 **License:** AGPL-3.0
 
 ## Key Features
@@ -12,6 +12,7 @@ A Quickshell-based desktop shell for Hyprland adopting Android 16 design element
 - **Universal Dynamic Island:** Displays media playback indicators, workspace switching, pomodoro timers, and popup notifications inside a single central notch.
 - **Deep Customizability:** Extensive personalization options (clocks, lockscreen visuals, UI sizing) accessible directly via the built-in Settings panel.
 - **Auto-generated Colors:** Entire shell theme dynamically generated from your wallpaper's colors using Material 3 design tokens (via Matugen).
+- **Wallhaven Integration:** Browse, favorite, and apply thousands of high-quality wallpapers directly from the shell with infinite scroll and smart downloading.
 
 ## Screenshots
 
