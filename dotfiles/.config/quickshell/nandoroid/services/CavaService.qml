@@ -13,10 +13,14 @@ Singleton {
     property int refCount: 0
     property bool cavaAvailable: false
 
+    onRefCountChanged: {
+        if (refCount < 0) refCount = 0;
+    }
+
     onBarCountChanged: {
         if (cavaProcess.running) {
             cavaProcess.running = false;
-            Qt.callLater(() => { cavaProcess.running = true; });
+            Qt.callLater(() => { if (root.refCount > 0) cavaProcess.running = true; });
         }
     }
 
@@ -39,6 +43,7 @@ Singleton {
 
     Process {
         id: cavaProcess
+        // Re-evaluate running state whenever dependencies change
         running: root.cavaAvailable && root.refCount > 0
         command: ["bash", "-c", `cat <<'CAVACONF' | cava -p /dev/stdin
 [general]
@@ -64,6 +69,7 @@ CAVACONF`]
 
         onRunningChanged: {
             if (!running) {
+                // Clear values when stopped to prevent "frozen" look
                 let arr = [];
                 for (let i = 0; i < barCount; i++) arr.push(0);
                 root.values = arr;
@@ -73,15 +79,16 @@ CAVACONF`]
         stdout: SplitParser {
             splitMarker: "\n"
             onRead: data => {
+                if (!data || data.length === 0) return;
+                
                 const parts = data.split(";");
                 if (parts.length >= root.barCount) {
                     let points = [];
                     for (let i = 0; i < root.barCount; i++) {
-                        points.push(parseInt(parts[i], 10));
+                        const val = parseInt(parts[i], 10);
+                        points.push(isNaN(val) ? 0 : val);
                     }
                     root.values = points;
-                } else if (data.length > 0) {
-
                 }
             }
         }
