@@ -24,24 +24,24 @@ Rectangle {
 
     ColumnLayout {
         anchors.fill: parent
-        anchors.margins: 14
-        spacing: 12
+        anchors.margins: 14 * Appearance.effectiveScale
+        spacing: 12 * Appearance.effectiveScale
 
         // ── Header ──
         RowLayout {
             Layout.fillWidth: true
-            spacing: 12
+            spacing: 12 * Appearance.effectiveScale
 
             RippleButton {
-                implicitWidth: 36
-                implicitHeight: 36
-                buttonRadius: 18
+                implicitWidth: 36 * Appearance.effectiveScale
+                implicitHeight: 36 * Appearance.effectiveScale
+                buttonRadius: 18 * Appearance.effectiveScale
                 colBackground: Appearance.colors.colLayer2
                 onClicked: root.dismiss()
                 MaterialSymbol {
                     anchors.centerIn: parent
                     text: "arrow_back"
-                    iconSize: 20
+                    iconSize: 20 * Appearance.effectiveScale
                     color: Appearance.m3colors.m3onSurface
                 }
             }
@@ -55,9 +55,9 @@ Rectangle {
             }
 
             RippleButton {
-                implicitWidth: 56
-                implicitHeight: 36
-                buttonRadius: 18
+                implicitWidth: 56 * Appearance.effectiveScale
+                implicitHeight: 36 * Appearance.effectiveScale
+                buttonRadius: 18 * Appearance.effectiveScale
                 colBackground: Hyprsunset.active ? Appearance.colors.colPrimary : Appearance.colors.colLayer2
                 colBackgroundHover: Hyprsunset.active ? Qt.darker(Appearance.colors.colPrimary, 1.12) : Appearance.colors.colLayer2Hover
                 onClicked: Hyprsunset.toggle()
@@ -65,7 +65,7 @@ Rectangle {
                 MaterialSymbol {
                     anchors.centerIn: parent
                     text: "bedtime"
-                    iconSize: 20
+                    iconSize: 20 * Appearance.effectiveScale
                     fill: Hyprsunset.active ? 1 : 0
                     color: Hyprsunset.active ? Appearance.colors.colOnPrimary : Appearance.m3colors.m3onSurface
                 }
@@ -83,8 +83,8 @@ Rectangle {
         // ── Color temperature slider ──
         Column {
             Layout.fillWidth: true
-            Layout.topMargin: 8
-            spacing: 6
+            Layout.topMargin: 8 * Appearance.effectiveScale
+            spacing: 6 * Appearance.effectiveScale
 
             RowLayout {
                 width: parent.width
@@ -148,13 +148,13 @@ Rectangle {
 
         RowLayout {
             Layout.fillWidth: true
-            spacing: 8
+            spacing: 8 * Appearance.effectiveScale
 
             Item { Layout.fillWidth: true }
 
             RippleButton {
-                implicitWidth: doneText.implicitWidth + 24
-                implicitHeight: 36
+                implicitWidth: doneText.implicitWidth + (24 * Appearance.effectiveScale)
+                implicitHeight: 36 * Appearance.effectiveScale
                 buttonRadius: height / 2
                 colBackground: Appearance.colors.colPrimary
                 colBackgroundHover: Qt.darker(Appearance.colors.colPrimary, 1.1)

@@ -51,25 +51,25 @@ Rectangle {
 
     ColumnLayout {
         anchors.fill: parent
-        anchors.margins: 14
-        spacing: 12
+        anchors.margins: 14 * Appearance.effectiveScale
+        spacing: 12 * Appearance.effectiveScale
 
         // ── Header ──
         RowLayout {
             Layout.fillWidth: true
-            spacing: 12
+            spacing: 12 * Appearance.effectiveScale
 
             RippleButton {
-                implicitWidth: 36
-                implicitHeight: 36
-                buttonRadius: 18
+                implicitWidth: 36 * Appearance.effectiveScale
+                implicitHeight: 36 * Appearance.effectiveScale
+                buttonRadius: 18 * Appearance.effectiveScale
                 colBackground: Appearance.colors.colLayer2
                 colBackgroundHover: Appearance.colors.colLayer2Hover
                 onClicked: root.dismiss()
                 MaterialSymbol {
                     anchors.centerIn: parent
                     text: "arrow_back"
-                    iconSize: 20
+                    iconSize: 20 * Appearance.effectiveScale
                     color: Appearance.m3colors.m3onSurface
                 }
             }
@@ -84,7 +84,7 @@ Rectangle {
 
             MaterialSymbol {
                 text: "airwave"
-                iconSize: 22
+                iconSize: 22 * Appearance.effectiveScale
                 color: Appearance.colors.colPrimary
             }
         }
@@ -105,8 +105,8 @@ Rectangle {
                 property bool isActive: root.currentMode === modelData.id
 
                 Layout.fillWidth: true
-                implicitHeight: 64
-                buttonRadius: 16
+                implicitHeight: 64 * Appearance.effectiveScale
+                buttonRadius: 16 * Appearance.effectiveScale
                 colBackground: isActive
                     ? Functions.ColorUtils.transparentize(Appearance.colors.colPrimary, 0.82)
                     : Appearance.colors.colLayer2
@@ -120,15 +120,15 @@ Rectangle {
 
                 contentItem: RowLayout {
                     anchors.fill: parent
-                    anchors.leftMargin: 14
-                    anchors.rightMargin: 14
-                    spacing: 12
+                    anchors.leftMargin: 14 * Appearance.effectiveScale
+                    anchors.rightMargin: 14 * Appearance.effectiveScale
+                    spacing: 12 * Appearance.effectiveScale
 
                     // Icon circle
                     Rectangle {
-                        implicitWidth: 36
-                        implicitHeight: 36
-                        radius: 18
+                        implicitWidth: 36 * Appearance.effectiveScale
+                        implicitHeight: 36 * Appearance.effectiveScale
+                        radius: 18 * Appearance.effectiveScale
                         color: profileCard.isActive
                             ? Appearance.colors.colPrimary
                             : Appearance.colors.colLayer3
@@ -137,7 +137,7 @@ Rectangle {
                         MaterialSymbol {
                             anchors.centerIn: parent
                             text: profileCard.modelData.icon
-                            iconSize: 20
+                            iconSize: 20 * Appearance.effectiveScale
                             fill: profileCard.isActive ? 1 : 0
                             color: profileCard.isActive
                                 ? Appearance.colors.colOnPrimary
@@ -148,7 +148,7 @@ Rectangle {
                     // Text
                     Column {
                         Layout.fillWidth: true
-                        spacing: 1
+                        spacing: 1 * Appearance.effectiveScale
 
                         StyledText {
                             text: profileCard.modelData.name
@@ -171,7 +171,7 @@ Rectangle {
                     MaterialSymbol {
                         visible: profileCard.isActive
                         text: "check_circle"
-                        iconSize: 20
+                        iconSize: 20 * Appearance.effectiveScale
                         fill: 1
                         color: Appearance.colors.colPrimary
                     }
@@ -192,8 +192,8 @@ Rectangle {
             Layout.fillWidth: true
             Item { Layout.fillWidth: true }
             RippleButton {
-                implicitWidth: ppDoneText.implicitWidth + 24
-                implicitHeight: 36
+                implicitWidth: ppDoneText.implicitWidth + (24 * Appearance.effectiveScale)
+                implicitHeight: 36 * Appearance.effectiveScale
                 buttonRadius: height / 2
                 colBackground: Appearance.colors.colPrimary
                 colBackgroundHover: Qt.darker(Appearance.colors.colPrimary, 1.1)
