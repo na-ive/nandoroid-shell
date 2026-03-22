@@ -897,6 +897,119 @@ Item {
             }
         }
 
+        // ── UI Scaling Section ──
+        ColumnLayout {
+            Layout.fillWidth: true
+            spacing: 4
+
+            RowLayout {
+                spacing: 12
+                Layout.bottomMargin: 8
+                MaterialSymbol {
+                    text: "straighten"
+                    iconSize: 24
+                    color: Appearance.colors.colPrimary
+                }
+                StyledText {
+                    text: "UI Scaling"
+                    font.pixelSize: Appearance.font.pixelSize.large
+                    font.weight: Font.Medium
+                    color: Appearance.colors.colOnLayer1
+                    Layout.fillWidth: true
+                }
+            }
+
+            // Card 1: Toggle Auto Scale
+            SegmentedWrapper {
+                Layout.fillWidth: true
+                implicitHeight: autoScaleRow.implicitHeight + 40
+                orientation: Qt.Vertical
+                color: Appearance.m3colors.m3surfaceContainerHigh
+                smallRadius: 8
+                fullRadius: 20
+
+                RowLayout {
+                    id: autoScaleRow
+                    anchors.fill: parent
+                    anchors.margins: 20
+                    spacing: 20
+                    
+                    ColumnLayout {
+                        spacing: 0
+                        StyledText {
+                            text: "Automatic Scaling"
+                            font.pixelSize: Appearance.font.pixelSize.normal
+                            font.weight: Font.Medium
+                            color: Appearance.colors.colOnLayer1
+                        }
+                        StyledText {
+                            text: "Detect scale based on screen resolution (Base 1080p)"
+                            font.pixelSize: Appearance.font.pixelSize.small
+                            color: Appearance.colors.colSubtext
+                        }
+                    }
+                    
+                    Item { Layout.fillWidth: true }
+
+                    AndroidToggle {
+                        checked: Config.ready && Config.options.appearance ? Config.options.appearance.autoScale : true
+                        onToggled: {
+                            if (Config.ready && Config.options.appearance) {
+                                Config.options.appearance.autoScale = !Config.options.appearance.autoScale;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Card 2: Manual Scale Slider (Separated)
+            SegmentedWrapper {
+                Layout.fillWidth: true
+                implicitHeight: manualScaleCol.implicitHeight + 40
+                orientation: Qt.Vertical
+                color: Appearance.m3colors.m3surfaceContainerHigh
+                smallRadius: 8
+                fullRadius: 20
+                
+                enabled: Config.ready && Config.options.appearance ? !Config.options.appearance.autoScale : false
+                opacity: enabled ? 1 : 0.5
+                Behavior on opacity { NumberAnimation { duration: 200 } }
+
+                ColumnLayout {
+                    id: manualScaleCol
+                    anchors.fill: parent
+                    anchors.margins: 20
+                    spacing: 12
+
+                    RowLayout {
+                        width: parent.width
+                        StyledText {
+                            text: "Manual Scale"
+                            font.pixelSize: Appearance.font.pixelSize.normal
+                            font.weight: Font.Medium
+                            color: Appearance.colors.colOnLayer1
+                        }
+                        Item { Layout.fillWidth: true }
+                        StyledText {
+                            text: Math.round((Config.ready && Config.options.appearance ? Config.options.appearance.globalScale : 1.0) * 100) + "%"
+                            font.pixelSize: Appearance.font.pixelSize.small
+                            color: Appearance.colors.colPrimary
+                        }
+                    }
+
+                    StyledSlider {
+                        Layout.fillWidth: true
+                        from: 0.5
+                        to: 2.0
+                        stepSize: 0.05
+                        value: Config.ready && Config.options.appearance ? Config.options.appearance.globalScale : 1.0
+                        configuration: StyledSlider.Configuration.M
+                        onMoved: if (Config.ready && Config.options.appearance) Config.options.appearance.globalScale = value
+                    }
+                }
+            }
+        }
+
         // ── Eye Care Section (Moved here) ──
         DisplayEyeCare { Layout.fillWidth: true }
 

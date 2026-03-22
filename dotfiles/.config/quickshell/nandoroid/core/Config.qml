@@ -87,6 +87,8 @@ Singleton {
 
             // --- Appearance ---
             property JsonObject appearance: JsonObject {
+                property real globalScale: 1.0
+                property bool autoScale: true
                 property JsonObject fonts: JsonObject {
                     property string main: "Google Sans Flex"
                     property string numbers: "Google Sans Flex"

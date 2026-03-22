@@ -15,6 +15,37 @@ Singleton {
     property QtObject animation
     property QtObject animationCurves
 
+    // --- REACTIVE SCALING LOGIC ---
+    property real effectiveScale: 1.0
+
+    function updateScale() {
+        if (!Config.ready) {
+            effectiveScale = 1.0;
+            return;
+        }
+        const appearance = Config.options.appearance;
+        if (!appearance) {
+            effectiveScale = 1.0;
+            return;
+        }
+        if (appearance.autoScale === true) {
+            const screenHeight = Quickshell.screens[0]?.height ?? 1080;
+            effectiveScale = Math.max(0.5, Math.min(2.5, screenHeight / 1080.0));
+        } else {
+            effectiveScale = appearance.globalScale ?? 1.0;
+        }
+    }
+
+    Connections {
+        target: Config
+        function onReadyChanged() { root.updateScale(); }
+    }
+    
+    Timer {
+        interval: 500; running: true; repeat: true
+        onTriggered: root.updateScale()
+    }
+
     // --- Material 3 Color Tokens (populated by MaterialThemeLoader) ---
     m3colors: QtObject {
         property bool darkmode: true
