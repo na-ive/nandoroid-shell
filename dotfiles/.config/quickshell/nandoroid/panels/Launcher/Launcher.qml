@@ -48,10 +48,11 @@ PanelWindow {
     LauncherContent {
         id: content
         
-        width: screen.width * 0.5
+        // Ensure width is correctly scaled and doesn't exceed screen width
+        width: Math.min(screen.width * 0.9, (9 * 100 + 48) * Appearance.effectiveScale)
         // Added 1px to hide the bottom border off-screen
-        height: screen.height * 0.7 + 1
-        x: (screen.width - width) / 2
+        height: (screen.height * 0.7 + 1) * Appearance.effectiveScale
+        anchors.horizontalCenter: parent.horizontalCenter
         
         // Default state: below screen
         y: screen.height
@@ -65,7 +66,7 @@ PanelWindow {
                 PropertyChanges {
                     target: content
                     // Pushed 2px below screen to hide the border and avoid gaps
-                    y: screen.height - height + 2
+                    y: screen.height - height + 2 * Appearance.effectiveScale
                     opacity: 1
                 }
             }

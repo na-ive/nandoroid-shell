@@ -1,4 +1,5 @@
 import QtQuick
+import QtQuick.Layouts
 import Quickshell
 import "../../widgets"
 import "../../core"
@@ -6,8 +7,10 @@ import "../../services"
 
 Rectangle {
     id: root
-    height: 48
-    radius: 12
+    height: 48 * Appearance.effectiveScale
+    implicitHeight: height
+    Layout.preferredHeight: height
+    radius: 12 * Appearance.effectiveScale
     
     readonly property bool isSpotlightMode: root.launcherContent && root.launcherContent.isSpotlight
     
@@ -19,15 +22,15 @@ Rectangle {
 
     Row {
         anchors.fill: parent
-        anchors.leftMargin: 20
-        anchors.rightMargin: 20
-        spacing: 8
+        anchors.leftMargin: 20 * Appearance.effectiveScale
+        anchors.rightMargin: 20 * Appearance.effectiveScale
+        spacing: 8 * Appearance.effectiveScale
         
         TextInput {
             id: input
             anchors.verticalCenter: parent.verticalCenter
             width: parent.width - searchIcon.width - parent.spacing
-            font.pixelSize: root.isSpotlightMode ? 18 : 16
+            font.pixelSize: root.isSpotlightMode ? 18 * Appearance.effectiveScale : 16 * Appearance.effectiveScale
             color: Appearance.m3colors.m3onSurface
             focus: true
 
@@ -125,7 +128,7 @@ Rectangle {
             id: searchIcon
             anchors.verticalCenter: parent.verticalCenter
             text: "search"
-            iconSize: 20
+            iconSize: 20 * Appearance.effectiveScale
             color: Appearance.m3colors.m3onSurfaceVariant
             visible: !root.isSpotlightMode
         }

@@ -18,11 +18,11 @@ RippleButton {
     readonly property bool isPlugin: Boolean(app && app.isPlugin)
     readonly property string iconSource: isPlugin ? "" : Quickshell.iconPath(app ? app.icon : "application-x-executable", "image-missing")
 
-    width: 90
-    height: 110
+    width: 90 * Appearance.effectiveScale
+    height: 110 * Appearance.effectiveScale
     
     colBackground: root.selected ? Qt.alpha(Appearance.m3colors.m3primary, 0.1) : "transparent"
-    buttonRadius: 12
+    buttonRadius: 12 * Appearance.effectiveScale
     
     onClicked: {
         if (app) {
@@ -33,12 +33,12 @@ RippleButton {
     
     Column {
         anchors.centerIn: parent
-        spacing: 4
-        width: parent.width - 16
+        spacing: 4 * Appearance.effectiveScale
+        width: parent.width - 16 * Appearance.effectiveScale
         
         Item {
-            width: 56
-            height: 56
+            width: 56 * Appearance.effectiveScale
+            height: 56 * Appearance.effectiveScale
             anchors.horizontalCenter: parent.horizontalCenter
 
             MaterialShape {
@@ -46,15 +46,15 @@ RippleButton {
                 anchors.fill: parent
                 color: (root.hovered || root.selected) ? Appearance.m3colors.m3primaryContainer : Appearance.m3colors.m3surfaceVariant
                 shapeString: Config.ready ? Config.options.search.iconShape : "Square"
-                borderWidth: 1
+                borderWidth: 1 * Appearance.effectiveScale
                 borderColor: Qt.rgba(0, 0, 0, 0.1)
                 
                 IconImage {
                     id: iconImg
                     source: app ? Quickshell.iconPath(app.icon || "application-x-executable", "image-missing") : ""
                     visible: app && !app.isPlugin && !app.emoji
-                    width: 32
-                    height: 32
+                    width: 32 * Appearance.effectiveScale
+                    height: 32 * Appearance.effectiveScale
                     anchors.centerIn: parent
                 }
 
@@ -62,7 +62,7 @@ RippleButton {
                 MaterialSymbol {
                     text: (app && app.isPlugin) ? app.icon : ""
                     visible: app && app.isPlugin && !app.emoji
-                    iconSize: 32
+                    iconSize: 32 * Appearance.effectiveScale
                     anchors.centerIn: parent
                     color: (root.hovered || root.selected) ? Appearance.m3colors.m3onPrimaryContainer : Appearance.m3colors.m3onSurfaceVariant
                 }
@@ -70,7 +70,7 @@ RippleButton {
                 StyledText {
                     text: (app && app.emoji) ? app.emoji : ""
                     visible: app && app.emoji !== ""
-                    font.pixelSize: 32
+                    font.pixelSize: 32 * Appearance.effectiveScale
                     anchors.centerIn: parent
                 }
             }
@@ -85,7 +85,7 @@ RippleButton {
                 width: parent.width
                 horizontalAlignment: Text.AlignHCenter
                 elide: Text.ElideRight
-                font.pixelSize: 12
+                font.pixelSize: 12 * Appearance.effectiveScale
                 color: root.selected ? Appearance.m3colors.m3primary : Appearance.m3colors.m3onSurface
                 font.weight: root.selected ? Font.Bold : Font.Medium
             }
@@ -96,7 +96,7 @@ RippleButton {
                 width: parent.width
                 horizontalAlignment: Text.AlignHCenter
                 elide: Text.ElideRight
-                font.pixelSize: 10
+                font.pixelSize: 10 * Appearance.effectiveScale
                 color: root.selected ? Appearance.m3colors.m3primary : Appearance.m3colors.m3onSurfaceVariant
                 opacity: 0.8
             }

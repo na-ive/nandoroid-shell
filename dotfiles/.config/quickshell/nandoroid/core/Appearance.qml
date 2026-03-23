@@ -20,14 +20,14 @@ Singleton {
 
     function updateScale() {
         if (!Config.ready) {
-            effectiveScale = 1.0;
+            // Try to guess scale from screen height even if config isn't ready
+            const screenHeight = Quickshell.screens[0]?.height ?? 1080;
+            effectiveScale = Math.max(0.5, Math.min(2.5, screenHeight / 1080.0));
             return;
         }
         const appearance = Config.options.appearance;
-        if (!appearance) {
-            effectiveScale = 1.0;
-            return;
-        }
+        if (!appearance) return;
+        
         if (appearance.autoScale === true) {
             const screenHeight = Quickshell.screens[0]?.height ?? 1080;
             effectiveScale = Math.max(0.5, Math.min(2.5, screenHeight / 1080.0));
@@ -35,6 +35,8 @@ Singleton {
             effectiveScale = appearance.globalScale ?? 1.0;
         }
     }
+
+    Component.onCompleted: root.updateScale()
 
     Connections {
         target: Config

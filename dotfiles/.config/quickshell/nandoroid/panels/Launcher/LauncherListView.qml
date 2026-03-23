@@ -13,10 +13,10 @@ RippleButton {
     property bool selected: false
     
     width: parent ? parent.width : 0
-    height: 64
+    height: 64 * Appearance.effectiveScale
     
     colBackground: root.selected ? Qt.alpha(Appearance.m3colors.m3primary, 0.1) : "transparent"
-    buttonRadius: 12
+    buttonRadius: 12 * Appearance.effectiveScale
     
     onClicked: {
         if (result) {
@@ -28,14 +28,14 @@ RippleButton {
     
     RowLayout {
         anchors.fill: parent
-        anchors.leftMargin: 16
-        anchors.rightMargin: 16
-        spacing: 16
+        anchors.leftMargin: 16 * Appearance.effectiveScale
+        anchors.rightMargin: 16 * Appearance.effectiveScale
+        spacing: 16 * Appearance.effectiveScale
         
         // Icon Container
         Item {
-            Layout.preferredWidth: 32
-            Layout.preferredHeight: 32
+            Layout.preferredWidth: 32 * Appearance.effectiveScale
+            Layout.preferredHeight: 32 * Appearance.effectiveScale
             Layout.alignment: Qt.AlignVCenter
 
             MaterialShape {
@@ -43,15 +43,15 @@ RippleButton {
                 anchors.fill: parent
                 shapeString: Config.ready ? Config.options.search.iconShape : "Square"
                 color: (root.hovered || root.selected) ? Appearance.m3colors.m3primaryContainer : Appearance.m3colors.m3surfaceVariant
-                borderWidth: 1
+                borderWidth: 1 * Appearance.effectiveScale
                 borderColor: Qt.rgba(0, 0, 0, 0.1)
                 
                 IconImage {
                     id: iconImg
                     source: (result && !result.isPlugin) ? Quickshell.iconPath(result.icon || "application-x-executable", "image-missing") : ""
                     visible: result && !result.isPlugin && result.emoji === ""
-                    width: 20
-                    height: 20
+                    width: 20 * Appearance.effectiveScale
+                    height: 20 * Appearance.effectiveScale
                     anchors.centerIn: parent
                 }
 
@@ -59,13 +59,13 @@ RippleButton {
                     text: result.emoji || ""
                     visible: result && result.emoji !== ""
                     anchors.centerIn: parent
-                    font.pixelSize: 20
+                    font.pixelSize: 20 * Appearance.effectiveScale
                 }
                 
                 MaterialSymbol {
                     text: (result && result.isPlugin) ? (result.icon || "extension") : ""
                     visible: result && result.isPlugin && result.emoji === "" && !result.isImage
-                    iconSize: 20
+                    iconSize: 20 * Appearance.effectiveScale
                     anchors.centerIn: parent
                     color: (root.hovered || root.selected) ? Appearance.m3colors.m3onPrimaryContainer : Appearance.m3colors.m3onSurfaceVariant
                 }
@@ -85,7 +85,7 @@ RippleButton {
             
             StyledText {
                 text: (result && result.name) ? result.name : ""
-                font.pixelSize: 15
+                font.pixelSize: 15 * Appearance.effectiveScale
                 font.weight: root.selected ? Font.Bold : Font.Medium
                 color: root.selected ? Appearance.m3colors.m3primary : Appearance.m3colors.m3onSurface
                 elide: Text.ElideRight
@@ -94,7 +94,7 @@ RippleButton {
             StyledText {
                 text: (result && result.subtitle) ? result.subtitle : ""
                 visible: text !== ""
-                font.pixelSize: 11
+                font.pixelSize: 11 * Appearance.effectiveScale
                 color: root.selected ? Appearance.m3colors.m3primary : Appearance.m3colors.m3onSurfaceVariant
                 opacity: 0.7
                 elide: Text.ElideRight
@@ -104,7 +104,7 @@ RippleButton {
         StyledText {
             Layout.alignment: Qt.AlignVCenter
             text: (result && result.category) ? result.category : (result && result.isPlugin ? "Command" : "Application")
-            font.pixelSize: 12
+            font.pixelSize: 12 * Appearance.effectiveScale
             color: root.selected ? Appearance.m3colors.m3primary : Appearance.m3colors.m3onSurfaceVariant
             opacity: 0.5
         }

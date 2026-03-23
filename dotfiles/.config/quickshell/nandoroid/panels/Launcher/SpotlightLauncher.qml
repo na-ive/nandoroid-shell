@@ -51,8 +51,8 @@ Variants {
         SpotlightContent {
             id: content
             
-            width: Math.min(panelWindow.width * 0.5, 750) 
-            height: Math.min(panelWindow.height * 0.7, 550)
+            width: Math.min(panelWindow.width * 0.5, 750 * Appearance.effectiveScale) 
+            height: Math.min(panelWindow.height * 0.7, 550 * Appearance.effectiveScale)
             anchors.horizontalCenter: parent.horizontalCenter
             y: parent.height * 0.15 
             
