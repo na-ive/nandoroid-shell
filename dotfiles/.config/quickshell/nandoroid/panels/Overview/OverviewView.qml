@@ -14,8 +14,8 @@ Item {
 
     width: implicitWidth
     height: implicitHeight
-    implicitWidth: overviewLoader.item ? overviewLoader.item.implicitWidth : 400
-    implicitHeight: overviewLoader.item ? overviewLoader.item.implicitHeight : 300
+    implicitWidth: overviewLoader.item ? overviewLoader.item.implicitWidth : 400 * Appearance.effectiveScale
+    implicitHeight: overviewLoader.item ? overviewLoader.item.implicitHeight : 300 * Appearance.effectiveScale
 
     readonly property var flickable: overviewLoader.item ? overviewLoader.item.flickable : null
     readonly property bool needsScrollbar: overviewLoader.item ? (overviewLoader.item.needsScrollbar ?? false) : false

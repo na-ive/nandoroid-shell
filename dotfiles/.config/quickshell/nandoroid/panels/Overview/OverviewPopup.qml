@@ -72,8 +72,8 @@ Variants {
         Item {
             id: mainContainer
             anchors.centerIn: parent
-            width: overviewLoader.item ? overviewLoader.item.implicitWidth : 400
-            height: overviewLoader.item ? overviewLoader.item.implicitHeight : 300
+            width: overviewLoader.item ? overviewLoader.item.implicitWidth : 400 * Appearance.effectiveScale
+            height: overviewLoader.item ? overviewLoader.item.implicitHeight : 300 * Appearance.effectiveScale
 
             opacity: (GlobalStates.overviewOpen && isActive) ? 1 : 0
             scale: (GlobalStates.overviewOpen && isActive) ? 1 : 0.9

@@ -191,7 +191,7 @@ Item {
             anchors.fill: parent
             color: "transparent"
             radius: Appearance.rounding.verysmall
-            border.width: root.draggingTargetWorkspace === root.workspaceId && root.draggingFromWorkspace !== root.workspaceId ? 2 : 0
+            border.width: root.draggingTargetWorkspace === root.workspaceId && root.draggingFromWorkspace !== root.workspaceId ? Math.max(1, 2 * Appearance.effectiveScale) : 0
             border.color: Appearance.m3colors.m3outline
             z: 100
         }
@@ -399,7 +399,7 @@ Item {
                         radius: windowDelegate.calculatedRadius
                         color: windowDelegate.dragging ? (Appearance.m3colors.m3surfaceBright || "transparent") : windowDelegate.hovered ? (Appearance.m3colors.m3surface || "transparent") : (Appearance.colors.colBackground || "transparent")
                         border.color: windowDelegate.isSelected ? Appearance.m3colors.m3tertiary : windowDelegate.isMatched ? Appearance.colors.colPrimary : Functions.ColorUtils.applyAlpha(Appearance.m3colors.m3onSurface, 0.12)
-                        border.width: windowDelegate.isSelected ? 3 : (windowDelegate.isMatched || windowDelegate.hovered ? 2 : 1)
+                        border.width: Math.max(1, (windowDelegate.isSelected ? 3 : (windowDelegate.isMatched || windowDelegate.hovered ? 2 : 1)) * Appearance.effectiveScale)
                         visible: !windowPreview.hasContent
                         z: 0 // Keep behind preview
 
@@ -433,7 +433,7 @@ Item {
                         radius: windowDelegate.calculatedRadius
                         color: windowDelegate.dragging ? Qt.rgba(Appearance.m3colors.m3surfaceContainerHighest.r, Appearance.m3colors.m3surfaceContainerHighest.g, Appearance.m3colors.m3surfaceContainerHighest.b, 0.5) : windowDelegate.hovered ? Qt.rgba(Appearance.m3colors.m3surfaceContainer.r, Appearance.m3colors.m3surfaceContainer.g, Appearance.m3colors.m3surfaceContainer.b, 0.2) : "transparent"
                         border.color: windowDelegate.isSelected ? Appearance.m3colors.m3tertiary : windowDelegate.isMatched ? Appearance.colors.colPrimary : Functions.ColorUtils.applyAlpha(Appearance.m3colors.m3onSurface, 0.12)
-                        border.width: windowDelegate.isSelected ? 3 : (windowDelegate.isMatched || windowDelegate.hovered ? 2 : 1)
+                        border.width: Math.max(1, (windowDelegate.isSelected ? 3 : (windowDelegate.isMatched || windowDelegate.hovered ? 2 : 1)) * Appearance.effectiveScale)
                         visible: windowPreview.hasContent && (windowDelegate.hovered || windowDelegate.dragging || windowDelegate.isMatched || windowDelegate.isSelected)
                         z: 5
                     }
@@ -444,11 +444,11 @@ Item {
                         visible: windowPreview.hasContent && !windowDelegate.compactMode
                         anchors.bottom: parent.bottom
                         anchors.right: parent.right
-                        anchors.margins: 4
-                        width: 16
-                        height: 16
+                        anchors.margins: 4 * Appearance.effectiveScale
+                        width: 16 * Appearance.effectiveScale
+                        height: 16 * Appearance.effectiveScale
                         source: Quickshell.iconPath(windowDelegate.iconPath, "application-x-executable")
-                        sourceSize: Qt.size(16, 16)
+                        sourceSize: Qt.size(16 * Appearance.effectiveScale, 16 * Appearance.effectiveScale)
                         asynchronous: true
                         opacity: 0.8
                         z: 10
@@ -459,10 +459,10 @@ Item {
                         visible: windowDelegate.windowData?.xwayland || false
                         anchors.top: parent.top
                         anchors.right: parent.right
-                        anchors.margins: 2
-                        width: 6
-                        height: 6
-                        radius: 3
+                        anchors.margins: 2 * Appearance.effectiveScale
+                        width: 6 * Appearance.effectiveScale
+                        height: 6 * Appearance.effectiveScale
+                        radius: 3 * Appearance.effectiveScale
                         color: Appearance.m3colors.m3error
                         z: 10
                     }
@@ -718,8 +718,8 @@ Item {
                         id: scrollWindowTooltip
                         visible: dragArea.containsMouse && !windowDelegate.dragging && windowDelegate.windowData
                         delay: 300
-                        padding: 8
-                        y: -height - 8
+                        padding: 8 * Appearance.effectiveScale
+                        y: -height - 8 * Appearance.effectiveScale
                         x: (parent.width - width) / 2
                         text: `${windowDelegate.windowData?.title || ""}\n[${windowDelegate.windowData?.class || ""}]${windowDelegate.windowData?.xwayland ? " [XWayland]" : ""}`
 
@@ -733,9 +733,9 @@ Item {
 
                         background: Rectangle {
                             color: Appearance.m3colors.m3surfaceContainerHigh
-                            radius: 8
+                            radius: 8 * Appearance.effectiveScale
                             border.color: Appearance.m3colors.m3outlineVariant
-                            border.width: 1
+                            border.width: Math.max(1, 1 * Appearance.effectiveScale)
                         }
                     }
                 }

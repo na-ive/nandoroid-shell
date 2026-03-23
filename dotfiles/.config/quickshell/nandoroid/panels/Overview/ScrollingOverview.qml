@@ -19,11 +19,11 @@ Rectangle {
     id: scrollingOverviewRoot
 
     // --- Layout Properties ---
-    readonly property real scale: Config.options.overview.scale
+    readonly property real scale: Config.options.overview.scale * Appearance.effectiveScale
     readonly property int totalWorkspaces: Config.options.overview.rows * Config.options.overview.columns
     readonly property int visibleWorkspaces: 3
-    readonly property real workspaceSpacing: Config.options.overview.workspaceSpacing
-    readonly property real workspacePadding: 4
+    readonly property real workspaceSpacing: Config.options.overview.workspaceSpacing * Appearance.effectiveScale
+    readonly property real workspacePadding: 4 * Appearance.effectiveScale
     readonly property color activeBorderColor: Appearance.colors.colPrimary
 
     property var currentScreen: null
@@ -33,7 +33,7 @@ Rectangle {
     readonly property var monitorData: monitors.find(m => m.id === monitorId) ?? null
 
     readonly property string barPosition: "top"
-    readonly property int barReserved: 40
+    readonly property int barReserved: 40 * Appearance.effectiveScale
 
     // --- Search Logic ---
     property string searchQuery: ""
@@ -111,11 +111,11 @@ Rectangle {
 
     width: implicitWidth
     height: implicitHeight
-    implicitWidth: mainLayout.implicitWidth + 48
-    implicitHeight: mainLayout.implicitHeight + 48
+    implicitWidth: mainLayout.implicitWidth + 48 * Appearance.effectiveScale
+    implicitHeight: mainLayout.implicitHeight + 48 * Appearance.effectiveScale
     color: Appearance.colors.colLayer1
     radius: Appearance.rounding.panel
-    border.width: 1
+    border.width: Math.max(1, 1 * Appearance.effectiveScale)
     border.color: Functions.ColorUtils.applyAlpha(Appearance.m3colors.m3onSurface, 0.12)
 
     function getWorkspaceAtY(globalY) {
@@ -131,25 +131,25 @@ Rectangle {
     ColumnLayout {
         id: mainLayout
         anchors.fill: parent
-        anchors.margins: 24
-        spacing: 24
+        anchors.margins: 24 * Appearance.effectiveScale
+        spacing: 24 * Appearance.effectiveScale
 
         // ── Search Bar Section ──
         Rectangle {
             // Match the width of the workspaces list + scrollbar area
             Layout.preferredWidth: mainContentRow.implicitWidth
-            Layout.preferredHeight: 48
+            Layout.preferredHeight: 48 * Appearance.effectiveScale
             Layout.alignment: Qt.AlignHCenter
-            radius: 12
+            radius: 12 * Appearance.effectiveScale
             color: Appearance.m3colors.m3surfaceContainerHigh
-            border.width: 1
+            border.width: Math.max(1, 1 * Appearance.effectiveScale)
             border.color: Functions.ColorUtils.applyAlpha(Appearance.m3colors.m3onSurface, 0.12)
 
             RowLayout {
-                anchors.fill: parent; anchors.leftMargin: 16; anchors.rightMargin: 16; spacing: 12
-                MaterialSymbol { Layout.alignment: Qt.AlignVCenter; text: "search"; iconSize: 20; color: Appearance.m3colors.m3onSurfaceVariant }
+                anchors.fill: parent; anchors.leftMargin: 16 * Appearance.effectiveScale; anchors.rightMargin: 16 * Appearance.effectiveScale; spacing: 12 * Appearance.effectiveScale
+                MaterialSymbol { Layout.alignment: Qt.AlignVCenter; text: "search"; iconSize: 20 * Appearance.effectiveScale; color: Appearance.m3colors.m3onSurfaceVariant }
                 TextInput {
-                    id: searchInput; Layout.fillWidth: true; Layout.alignment: Qt.AlignVCenter; font.pixelSize: 16; color: Appearance.m3colors.m3onSurface; focus: GlobalStates.overviewOpen
+                    id: searchInput; Layout.fillWidth: true; Layout.alignment: Qt.AlignVCenter; font.pixelSize: 16 * Appearance.effectiveScale; color: Appearance.m3colors.m3onSurface; focus: GlobalStates.overviewOpen
                     Text { text: "Search windows..."; visible: !searchInput.text; color: Appearance.m3colors.m3onSurfaceVariant; opacity: 0.6; font: searchInput.font }
                     onTextChanged: scrollingOverviewRoot.searchQuery = text
                     onAccepted: scrollingOverviewRoot.navigateToSelectedWindow()
@@ -225,7 +225,7 @@ Rectangle {
             // Thick Vertical Scrollbar beside the workspaces
             ScrollBar {
                 id: internalScrollBar
-                Layout.preferredWidth: 8
+                Layout.preferredWidth: 8 * Appearance.effectiveScale
                 Layout.fillHeight: true
                 policy: ScrollBar.AlwaysOn
                 active: true
@@ -233,15 +233,15 @@ Rectangle {
                 size: workspaceFlickable.visibleArea.heightRatio
                 
                 contentItem: Rectangle {
-                    implicitWidth: 8
-                    radius: 4
+                    implicitWidth: 8 * Appearance.effectiveScale
+                    radius: 4 * Appearance.effectiveScale
                     color: Appearance.colors.colPrimary
                     opacity: 0.6
                 }
                 
                 background: Rectangle {
-                    implicitWidth: 8
-                    radius: 4
+                    implicitWidth: 8 * Appearance.effectiveScale
+                    radius: 4 * Appearance.effectiveScale
                     color: Appearance.colors.colLayer0
                     opacity: 0.3
                 }

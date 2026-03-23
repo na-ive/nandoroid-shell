@@ -4,6 +4,7 @@ import QtQuick.Layouts
 import QtQuick.Effects
 import Qt5Compat.GraphicalEffects
 import Quickshell
+import Quickshell.Widgets
 import Quickshell.Wayland
 import Quickshell.Hyprland
 import "../../core"
@@ -19,12 +20,12 @@ Rectangle {
     id: standardOverviewRoot
     
     // --- Layout Properties ---
-    readonly property real scale: Config.options.overview.scale
+    readonly property real scale: Config.options.overview.scale * Appearance.effectiveScale
     readonly property int rows: Config.options.overview.rows
     readonly property int columns: Config.options.overview.columns
     readonly property int workspacesShown: rows * columns
-    readonly property real workspaceSpacing: Config.options.overview.workspaceSpacing
-    readonly property real workspacePadding: 8
+    readonly property real workspaceSpacing: Config.options.overview.workspaceSpacing * Appearance.effectiveScale
+    readonly property real workspacePadding: 8 * Appearance.effectiveScale
     readonly property color activeBorderColor: Appearance.colors.colPrimary
 
     property var currentScreen: null
@@ -36,7 +37,7 @@ Rectangle {
     readonly property var monitorData: monitors.find(m => m.id === monitorId) ?? null
 
     readonly property string barPosition: "top"
-    readonly property int barReserved: 40
+    readonly property int barReserved: 40 * Appearance.effectiveScale
 
     // --- Search Logic ---
     property string searchQuery: ""
@@ -127,45 +128,45 @@ Rectangle {
     // --- Panel Styling ---
     width: implicitWidth
     height: implicitHeight
-    implicitWidth: mainLayout.implicitWidth + 48
-    implicitHeight: mainLayout.implicitHeight + 48
+    implicitWidth: mainLayout.implicitWidth + 48 * Appearance.effectiveScale
+    implicitHeight: mainLayout.implicitHeight + 48 * Appearance.effectiveScale
     color: Appearance.colors.colLayer1
     radius: Appearance.rounding.panel
-    border.width: 1
+    border.width: Math.max(1, 1 * Appearance.effectiveScale)
     border.color: Functions.ColorUtils.applyAlpha(Appearance.m3colors.m3onSurface, 0.12)
 
     ColumnLayout {
         id: mainLayout
         anchors.fill: parent
-        anchors.margins: 24
-        spacing: 24
+        anchors.margins: 24 * Appearance.effectiveScale
+        spacing: 24 * Appearance.effectiveScale
 
         // ── Search Bar Section ──
         Rectangle {
             id: searchContainer
-            Layout.preferredWidth: 480 // Fixed sensible width for standard overview
-            Layout.preferredHeight: 48
+            Layout.preferredWidth: 480 * Appearance.effectiveScale // Fixed sensible width for standard overview
+            Layout.preferredHeight: 48 * Appearance.effectiveScale
             Layout.alignment: Qt.AlignHCenter
-            radius: 12
+            radius: 12 * Appearance.effectiveScale
             color: Appearance.m3colors.m3surfaceContainerHigh
-            border.width: 1
+            border.width: Math.max(1, 1 * Appearance.effectiveScale)
             border.color: Functions.ColorUtils.applyAlpha(Appearance.m3colors.m3onSurface, 0.12)
 
             RowLayout {
                 anchors.fill: parent
-                anchors.leftMargin: 16; anchors.rightMargin: 16
-                spacing: 12
+                anchors.leftMargin: 16 * Appearance.effectiveScale; anchors.rightMargin: 16 * Appearance.effectiveScale
+                spacing: 12 * Appearance.effectiveScale
 
                 MaterialSymbol {
                     Layout.alignment: Qt.AlignVCenter
-                    text: "search"; iconSize: 20; color: Appearance.m3colors.m3onSurfaceVariant
+                    text: "search"; iconSize: 20 * Appearance.effectiveScale; color: Appearance.m3colors.m3onSurfaceVariant
                 }
 
                 TextInput {
                     id: searchInput
                     Layout.fillWidth: true
                     Layout.alignment: Qt.AlignVCenter
-                    font.pixelSize: 16
+                    font.pixelSize: 16 * Appearance.effectiveScale
                     color: Appearance.m3colors.m3onSurface
                     focus: GlobalStates.overviewOpen
 
@@ -249,13 +250,17 @@ Rectangle {
                                 implicitHeight: standardOverviewRoot.workspaceImplicitHeight + workspacePadding
                                 color: isActiveWorkspace ? Functions.ColorUtils.applyAlpha(Appearance.colors.colPrimaryContainer, 0.4) : Appearance.colors.colLayer0
                                 radius: Appearance.rounding.verysmall
-                                border.width: isActiveWorkspace || hoveredWhileDragging ? 2 : 1
+                                border.width: Math.max(1, (isActiveWorkspace || hoveredWhileDragging ? 2 : 1) * Appearance.effectiveScale)
                                 border.color: hoveredWhileDragging ? Appearance.m3colors.m3outline : (isActiveWorkspace ? Appearance.colors.colPrimary : Appearance.colors.colOutlineVariant)
                                 property bool hoveredWhileDragging: false
 
-                                Image {
-                                    id: workspaceWallpaper; anchors.fill: parent; fillMode: Image.PreserveAspectCrop
-                                    source: Config.options?.appearance?.background?.wallpaperPath || ""
+                                ClippingRectangle {
+                                    anchors.fill: parent
+                                    radius: parent.radius
+                                    Image {
+                                        id: workspaceWallpaper; anchors.fill: parent; fillMode: Image.PreserveAspectCrop
+                                        source: Config.options?.appearance?.background?.wallpaperPath || ""
+                                    }
                                 }
 
                                 MouseArea {
@@ -337,7 +342,7 @@ Rectangle {
                     y: Math.round((standardOverviewRoot.workspaceImplicitHeight + workspacePadding + workspaceSpacing) * activeWorkspaceRowIndex)
                     width: Math.round(standardOverviewRoot.workspaceImplicitWidth + workspacePadding)
                     height: Math.round(standardOverviewRoot.workspaceImplicitHeight + workspacePadding)
-                    color: "transparent"; radius: Appearance.rounding.verysmall; border.width: 2; border.color: standardOverviewRoot.activeBorderColor; z: -1
+                    color: "transparent"; radius: Appearance.rounding.verysmall; border.width: Math.max(1, 2 * Appearance.effectiveScale); border.color: standardOverviewRoot.activeBorderColor; z: -1
                     Behavior on x { enabled: 250 > 0; NumberAnimation { duration: 250; easing.type: Easing.OutQuart } }
                     Behavior on y { enabled: 250 > 0; NumberAnimation { duration: 250; easing.type: Easing.OutQuart } }
                 }

@@ -166,7 +166,7 @@ Item {
         radius: root.calculatedRadius
         color: pressed ? Appearance.colors.colLayer1Active : hovered ? Appearance.colors.colLayer1Hover : Appearance.colors.colLayer1
         border.color: root.isSearchSelected ? Appearance.m3colors.m3tertiary : root.isSearchMatch ? Appearance.colors.colPrimary : Functions.ColorUtils.applyAlpha(Appearance.m3colors.m3onSurface, 0.12)
-        border.width: root.isSearchSelected ? 3 : (root.isSearchMatch || hovered ? 2 : 1)
+        border.width: Math.max(1, (root.isSearchSelected ? 3 : (root.isSearchMatch || hovered ? 2 : 1)) * Appearance.effectiveScale)
         visible: !windowPreview.hasContent
         z: 0
 
@@ -207,7 +207,7 @@ Item {
         radius: root.calculatedRadius
         color: pressed ? Functions.ColorUtils.applyAlpha(Appearance.colors.colLayer1Active, 0.5) : hovered ? Functions.ColorUtils.applyAlpha(Appearance.colors.colLayer1Hover, 0.4) : "transparent"
         border.color: root.isSearchSelected ? Appearance.m3colors.m3tertiary : root.isSearchMatch ? Appearance.colors.colPrimary : Functions.ColorUtils.applyAlpha(Appearance.m3colors.m3onSurface, 0.12)
-        border.width: root.isSearchSelected ? 3 : (root.isSearchMatch || hovered ? 2 : 1)
+        border.width: Math.max(1, (root.isSearchSelected ? 3 : (root.isSearchMatch || hovered ? 2 : 1)) * Appearance.effectiveScale)
         visible: windowPreview.hasContent
         z: 5
 
@@ -223,11 +223,11 @@ Item {
     Rectangle {
         visible: root.isSearchSelected && !root.Drag.active
         anchors.fill: parent
-        anchors.margins: -4
-        radius: root.calculatedRadius + 4
+        anchors.margins: -4 * Appearance.effectiveScale
+        radius: root.calculatedRadius + 4 * Appearance.effectiveScale
         color: "transparent"
         border.color: Appearance.m3colors.m3tertiary
-        border.width: 2
+        border.width: Math.max(1, 2 * Appearance.effectiveScale)
         opacity: 0.6
         z: -1
     }
@@ -238,11 +238,11 @@ Item {
         visible: windowPreview.hasContent && !root.compactMode
         anchors.bottom: parent.bottom
         anchors.right: parent.right
-        anchors.margins: 4
-        width: 16
-        height: 16
+        anchors.margins: 4 * Appearance.effectiveScale
+        width: 16 * Appearance.effectiveScale
+        height: 16 * Appearance.effectiveScale
         source: Quickshell.iconPath(root.iconPath, "application-x-executable")
-        sourceSize: Qt.size(16, 16)
+        sourceSize: Qt.size(16 * Appearance.effectiveScale, 16 * Appearance.effectiveScale)
         asynchronous: true
         opacity: 0.8
         z: 10
@@ -253,10 +253,10 @@ Item {
         visible: root.windowData?.xwayland || false
         anchors.top: parent.top
         anchors.right: parent.right
-        anchors.margins: 2
-        width: 6
-        height: 6
-        radius: 3
+        anchors.margins: 2 * Appearance.effectiveScale
+        width: 6 * Appearance.effectiveScale
+        height: 6 * Appearance.effectiveScale
+        radius: 3 * Appearance.effectiveScale
         color: Appearance.m3colors.m3error
         z: 10
     }
@@ -398,8 +398,8 @@ Item {
         id: windowTooltip
         visible: dragArea.containsMouse && !root.Drag.active && root.windowData
         delay: 300
-        padding: 8
-        y: -height - 8
+        padding: 8 * Appearance.effectiveScale
+        y: -height - 8 * Appearance.effectiveScale
         x: (parent.width - width) / 2
         text: `${root.windowData?.title || ""}\n[${root.windowData?.class || ""}]${root.windowData?.xwayland ? " [XWayland]" : ""}`
 
@@ -413,9 +413,9 @@ Item {
 
         background: Rectangle {
             color: Appearance.m3colors.m3surfaceContainerHigh
-            radius: 8
+            radius: 8 * Appearance.effectiveScale
             border.color: Appearance.m3colors.m3outlineVariant
-            border.width: 1
+            border.width: Math.max(1, 1 * Appearance.effectiveScale)
         }
     }
 }
