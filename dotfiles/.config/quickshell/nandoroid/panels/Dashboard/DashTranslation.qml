@@ -13,7 +13,7 @@ import Quickshell
  */
 RowLayout {
     id: root
-    spacing: 16
+    spacing: 16 * Appearance.effectiveScale
 
     property string srcLang: (Config.ready && Config.options.language && Config.options.language.translator) ? Config.options.language.translator.sourceLanguage : "auto"
     property string targetLang: (Config.ready && Config.options.language && Config.options.language.translator) ? Config.options.language.translator.targetLanguage : "id"
@@ -40,20 +40,20 @@ RowLayout {
     Rectangle {
         Layout.fillHeight: true; Layout.fillWidth: true
         color: Appearance.colors.colLayer1; radius: Appearance.rounding.large
-        border.width: 1; border.color: Functions.ColorUtils.applyAlpha(Appearance.colors.colOnLayer1, 0.05)
+        border.width: Math.max(1, 1 * Appearance.effectiveScale); border.color: Functions.ColorUtils.applyAlpha(Appearance.colors.colOnLayer1, 0.05)
 
         ColumnLayout {
-            anchors.fill: parent; anchors.margins: 24; spacing: 16
+            anchors.fill: parent; anchors.margins: 24 * Appearance.effectiveScale; spacing: 16 * Appearance.effectiveScale
 
             RowLayout {
                 Layout.fillWidth: true
-                MaterialSymbol { text: "translate"; iconSize: 22; color: Appearance.colors.colPrimary }
-                StyledText { text: "Source"; font.pixelSize: 15; font.weight: Font.Bold; color: Appearance.colors.colOnLayer1 }
+                MaterialSymbol { text: "translate"; iconSize: 22 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
+                StyledText { text: "Source"; font.pixelSize: 15 * Appearance.effectiveScale; font.weight: Font.Bold; color: Appearance.colors.colOnLayer1 }
                 Item { Layout.fillWidth: true }
                 
                 StyledComboBox {
                     id: srcCombo
-                    Layout.preferredWidth: 130
+                    Layout.preferredWidth: 130 * Appearance.effectiveScale
                     model: (TranslationService.availableLanguages && TranslationService.availableLanguages.length > 0) ? TranslationService.availableLanguages : ["auto", "id", "en", "ja", "zh", "ko", "fr", "de", "es", "it", "ru", "pt"]
                     text: root.srcLang
                     onAccepted: (value) => {
@@ -72,7 +72,7 @@ RowLayout {
                     placeholderTextColor: Appearance.colors.colSubtext
                     color: Appearance.colors.colOnLayer1
                     font.family: Appearance.font.family.main
-                    font.pixelSize: 16; wrapMode: Text.Wrap; background: null; selectByMouse: true
+                    font.pixelSize: 16 * Appearance.effectiveScale; wrapMode: Text.Wrap; background: null; selectByMouse: true
                     onTextChanged: {
                         if (activeFocus || text === "") root.triggerTranslate();
                     }
@@ -102,25 +102,25 @@ RowLayout {
         }
     }
 
-    MaterialSymbol { text: "arrow_forward"; iconSize: 24; color: Appearance.colors.colSubtext; opacity: 0.4 }
+    MaterialSymbol { text: "arrow_forward"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colSubtext; opacity: 0.4 }
 
     // --- Right Section: Result ---
     Rectangle {
         Layout.fillHeight: true; Layout.fillWidth: true
         color: Appearance.colors.colLayer2; radius: Appearance.rounding.large
-        border.width: 1; border.color: Functions.ColorUtils.applyAlpha(Appearance.colors.colOnLayer1, 0.05)
+        border.width: Math.max(1, 1 * Appearance.effectiveScale); border.color: Functions.ColorUtils.applyAlpha(Appearance.colors.colOnLayer1, 0.05)
 
         ColumnLayout {
-            anchors.fill: parent; anchors.margins: 24; spacing: 16
+            anchors.fill: parent; anchors.margins: 24 * Appearance.effectiveScale; spacing: 16 * Appearance.effectiveScale
 
             RowLayout {
                 Layout.fillWidth: true
-                StyledText { text: "Translation"; font.pixelSize: 15; font.weight: Font.Bold; color: Appearance.colors.colPrimary }
+                StyledText { text: "Translation"; font.pixelSize: 15 * Appearance.effectiveScale; font.weight: Font.Bold; color: Appearance.colors.colPrimary }
                 Item { Layout.fillWidth: true }
                 
                 StyledComboBox {
                     id: targetCombo
-                    Layout.preferredWidth: 130
+                    Layout.preferredWidth: 130 * Appearance.effectiveScale
                     model: {
                         const base = (TranslationService.availableLanguages && TranslationService.availableLanguages.length > 0) ? TranslationService.availableLanguages : ["id", "en", "ja", "zh", "ko", "fr", "de", "es", "it", "ru", "pt"];
                         return base.filter(l => l !== "auto");
@@ -144,7 +144,7 @@ RowLayout {
                     placeholderTextColor: Appearance.colors.colSubtext
                     color: Appearance.colors.colOnLayer2
                     font.family: Appearance.font.family.main
-                    font.pixelSize: 18; font.weight: Font.Medium; wrapMode: Text.Wrap; background: null; selectByMouse: true
+                    font.pixelSize: 18 * Appearance.effectiveScale; font.weight: Font.Medium; wrapMode: Text.Wrap; background: null; selectByMouse: true
                     
                     opacity: TranslationService.isTranslating ? 0.6 : 1.0
                     Behavior on opacity { NumberAnimation { duration: 200 } }
@@ -155,14 +155,14 @@ RowLayout {
                 Layout.fillWidth: true
                 
                 RowLayout {
-                    spacing: 8
+                    spacing: 8 * Appearance.effectiveScale
                     visible: !!TranslationService.isTranslating
                     
                     MaterialSymbol {
-                        text: "sync"; iconSize: 14; color: Appearance.colors.colPrimary
+                        text: "sync"; iconSize: 14 * Appearance.effectiveScale; color: Appearance.colors.colPrimary
                         RotationAnimation on rotation { from: 0; to: 360; duration: 1000; loops: Animation.Infinite; running: parent.visible }
                     }
-                    StyledText { text: "Translating..."; font.pixelSize: 12; color: Appearance.colors.colPrimary }
+                    StyledText { text: "Translating..."; font.pixelSize: 12 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
                 }
                 
                 Item { Layout.fillWidth: true }

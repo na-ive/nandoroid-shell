@@ -17,8 +17,8 @@ RippleButton {
     colBackground: menuEntry.isSeparator ? Appearance.colors.colOutlineVariant : "transparent"
     enabled: !menuEntry.isSeparator
     
-    implicitWidth: contentLayout.implicitWidth + 24
-    implicitHeight: menuEntry.isSeparator ? 1 : 36
+    implicitWidth: contentLayout.implicitWidth + 24 * Appearance.effectiveScale
+    implicitHeight: menuEntry.isSeparator ? 1 * Appearance.effectiveScale : 36 * Appearance.effectiveScale
     Layout.fillWidth: true
 
     onClicked: {
@@ -32,25 +32,25 @@ RippleButton {
 
     contentItem: RowLayout {
         id: contentLayout
-        spacing: 8
+        spacing: 8 * Appearance.effectiveScale
         visible: !root.menuEntry.isSeparator
         anchors {
             fill: parent
-            leftMargin: 12
-            rightMargin: 12
+            leftMargin: 12 * Appearance.effectiveScale
+            rightMargin: 12 * Appearance.effectiveScale
         }
 
         // Interaction column (checkbox/radio)
         Item {
             visible: root.forceInteractionColumn
-            implicitWidth: 16
-            implicitHeight: 16
+            implicitWidth: 16 * Appearance.effectiveScale
+            implicitHeight: 16 * Appearance.effectiveScale
             
             // Checkmark for checked items
             MaterialSymbol {
                 anchors.fill: parent
                 text: "check"
-                iconSize: 16
+                iconSize: 16 * Appearance.effectiveScale
                 visible: root.menuEntry.checkState === Qt.Checked
             }
         }
@@ -58,8 +58,8 @@ RippleButton {
         // Icon column
         Item {
             visible: root.forceIconColumn
-            implicitWidth: 16
-            implicitHeight: 16
+            implicitWidth: 16 * Appearance.effectiveScale
+            implicitHeight: 16 * Appearance.effectiveScale
             
             IconImage {
                 anchors.fill: parent
@@ -81,7 +81,7 @@ RippleButton {
         MaterialSymbol {
             visible: root.menuEntry.hasChildren
             text: "chevron_right"
-            iconSize: 16
+            iconSize: 16 * Appearance.effectiveScale
         }
     }
 }

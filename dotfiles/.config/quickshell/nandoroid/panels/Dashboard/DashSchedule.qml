@@ -87,27 +87,27 @@ Item {
 
     // ── Layout ──
     RowLayout {
-        id: schedRow
+        id: layoutRow
         anchors.fill: parent
-        spacing: 12
+        spacing: 12 * Appearance.effectiveScale
 
         // ── Event List (fixed width) ──
         ColumnLayout {
             id: schedSidebar
-            Layout.preferredWidth: 200
+            Layout.preferredWidth: 200 * Appearance.effectiveScale
             Layout.fillHeight: true
-            spacing: 8
+            spacing: 8 * Appearance.effectiveScale
 
             // New event button
             RippleButton {
                 Layout.fillWidth: true
-                implicitHeight: 40
-                buttonRadius: 20
+                implicitHeight: 40 * Appearance.effectiveScale
+                buttonRadius: 20 * Appearance.effectiveScale
                 colBackground: Appearance.colors.colPrimary
                 onClicked: { root.selectedId = ""; root.clearForm() }
                 RowLayout {
-                    anchors.centerIn: parent; spacing: 6
-                    MaterialSymbol { text: "add"; iconSize: 18; color: Appearance.colors.colOnPrimary }
+                    anchors.centerIn: parent; spacing: 6 * Appearance.effectiveScale
+                    MaterialSymbol { text: "add"; iconSize: 18 * Appearance.effectiveScale; color: Appearance.colors.colOnPrimary }
                     StyledText { text: "New Event"; color: Appearance.colors.colOnPrimary; font.weight: Font.Medium }
                 }
             }
@@ -122,15 +122,15 @@ Item {
                 ListView {
                     id: eventList
                     anchors.fill: parent
-                    anchors.margins: 6
-                    spacing: 4
+                    anchors.margins: 6 * Appearance.effectiveScale
+                    spacing: 4 * Appearance.effectiveScale
                     model: ScheduleService.events.slice().sort((a, b) =>
                             (a.date + a.time).localeCompare(b.date + b.time))
 
                     delegate: Rectangle {
                         required property var modelData
                         width: eventList.width
-                        height: (itemCol.implicitHeight + 16)
+                        height: (itemCol.implicitHeight + (16 * Appearance.effectiveScale))
                         radius: Appearance.rounding.small
 
                         color: root.selectedId === modelData.id
@@ -145,13 +145,13 @@ Item {
                             anchors.left: parent.left
                             anchors.right: parent.right
                             anchors.verticalCenter: parent.verticalCenter
-                            anchors.leftMargin: 12
-                            anchors.rightMargin: 36
-                            spacing: 2
+                            anchors.leftMargin: 12 * Appearance.effectiveScale
+                            anchors.rightMargin: 36 * Appearance.effectiveScale
+                            spacing: 2 * Appearance.effectiveScale
 
                             RowLayout {
                                 Layout.fillWidth: true
-                                spacing: 4
+                                spacing: 4 * Appearance.effectiveScale
                                 StyledText {
                                     text: modelData.title
                                     font.pixelSize: Appearance.font.pixelSize.normal
@@ -165,7 +165,7 @@ Item {
                                 MaterialSymbol {
                                     visible: modelData.focus || false
                                     text: "do_not_disturb_on"
-                                    iconSize: 14
+                                    iconSize: 14 * Appearance.effectiveScale
                                     color: root.selectedId === modelData.id
                                         ? Appearance.colors.colOnPrimaryContainer
                                         : Appearance.colors.colPrimary
@@ -187,19 +187,19 @@ Item {
                         // Delete button
                         RippleButton {
                             anchors.right: parent.right
-                            anchors.rightMargin: 6
+                            anchors.rightMargin: 6 * Appearance.effectiveScale
                             anchors.verticalCenter: parent.verticalCenter
-                            implicitWidth: 28; implicitHeight: 28; buttonRadius: 14
+                            implicitWidth: 28 * Appearance.effectiveScale; implicitHeight: 28 * Appearance.effectiveScale; buttonRadius: 14 * Appearance.effectiveScale
                             colBackground: "transparent"
                             onClicked: root.deleteEvent(modelData.id)
-                            MaterialSymbol { anchors.centerIn: parent; text: "delete"; iconSize: 16; color: Appearance.colors.colSubtext }
+                            MaterialSymbol { anchors.centerIn: parent; text: "delete"; iconSize: 16 * Appearance.effectiveScale; color: Appearance.colors.colSubtext }
                         }
 
                         // Event mouse
                         MouseArea {
                             id: evMouse
                             anchors.fill: parent
-                            anchors.rightMargin: 36
+                            anchors.rightMargin: 36 * Appearance.effectiveScale
                             hoverEnabled: true
                             cursorShape: Qt.PointingHandCursor
                             onClicked: {
@@ -227,12 +227,12 @@ Item {
         ColumnLayout {
             Layout.fillWidth: true
             Layout.fillHeight: true
-            spacing: 12
+            spacing: 12 * Appearance.effectiveScale
 
             // Header row with Focus toggle
             RowLayout {
                 Layout.fillWidth: true
-                spacing: 12
+                spacing: 12 * Appearance.effectiveScale
                 StyledText {
                     text: root.selectedId ? "Edit Event" : "New Event"
                     font.pixelSize: Appearance.font.pixelSize.large
@@ -242,10 +242,10 @@ Item {
                 }
 
                 RowLayout {
-                    spacing: 8
+                    spacing: 8 * Appearance.effectiveScale
                     MaterialSymbol {
                         text: "do_not_disturb_on"
-                        iconSize: 18
+                        iconSize: 18 * Appearance.effectiveScale
                         color: root.formFocus ? Appearance.colors.colPrimary : Appearance.colors.colSubtext
                     }
                     StyledText {
@@ -267,16 +267,16 @@ Item {
             // Title field
             Rectangle {
                 Layout.fillWidth: true
-                implicitHeight: 44
+                implicitHeight: 44 * Appearance.effectiveScale
                 radius: Appearance.rounding.small
                 color: Appearance.m3colors.m3surfaceContainer
                 border.color: titleField.activeFocus ? Appearance.colors.colPrimary : "transparent"
-                border.width: 2
+                border.width: 2 * Appearance.effectiveScale
 
                 TextInput {
                     id: titleField
                     anchors.fill: parent
-                    anchors.margins: 12
+                    anchors.margins: 12 * Appearance.effectiveScale
                     text: root.formTitle
                     font.family: Appearance.font.family.main
                     font.pixelSize: Appearance.font.pixelSize.normal
@@ -298,18 +298,18 @@ Item {
             // Date + Time row
             RowLayout {
                 Layout.fillWidth: true
-                spacing: 8
+                spacing: 8 * Appearance.effectiveScale
 
                 // Date
                 Rectangle {
-                    Layout.fillWidth: true; implicitHeight: 44
+                    Layout.fillWidth: true; implicitHeight: 44 * Appearance.effectiveScale
                     radius: Appearance.rounding.small
                     color: Appearance.m3colors.m3surfaceContainer
                     border.color: dateField.activeFocus ? Appearance.colors.colPrimary : "transparent"
-                    border.width: 2
+                    border.width: 2 * Appearance.effectiveScale
                     RowLayout {
-                        anchors.fill: parent; anchors.margins: 10; spacing: 6
-                        MaterialSymbol { text: "calendar_today"; iconSize: 16; color: Appearance.colors.colSubtext }
+                        anchors.fill: parent; anchors.margins: 10 * Appearance.effectiveScale; spacing: 6 * Appearance.effectiveScale
+                        MaterialSymbol { text: "calendar_today"; iconSize: 16 * Appearance.effectiveScale; color: Appearance.colors.colSubtext }
                         TextInput {
                             id: dateField
                             Layout.fillWidth: true
@@ -325,14 +325,14 @@ Item {
 
                 // Start Time
                 Rectangle {
-                    Layout.fillWidth: true; implicitHeight: 44
+                    Layout.fillWidth: true; implicitHeight: 44 * Appearance.effectiveScale
                     radius: Appearance.rounding.small
                     color: Appearance.m3colors.m3surfaceContainer
                     border.color: timeField.activeFocus ? Appearance.colors.colPrimary : "transparent"
-                    border.width: 2
+                    border.width: 2 * Appearance.effectiveScale
                     RowLayout {
-                        anchors.fill: parent; anchors.margins: 10; spacing: 6
-                        MaterialSymbol { text: "schedule"; iconSize: 16; color: Appearance.colors.colSubtext }
+                        anchors.fill: parent; anchors.margins: 10 * Appearance.effectiveScale; spacing: 6 * Appearance.effectiveScale
+                        MaterialSymbol { text: "schedule"; iconSize: 16 * Appearance.effectiveScale; color: Appearance.colors.colSubtext }
                         TextInput {
                             id: timeField
                             Layout.fillWidth: true
@@ -348,14 +348,14 @@ Item {
 
                 // End Time
                 Rectangle {
-                    Layout.fillWidth: true; implicitHeight: 44
+                    Layout.fillWidth: true; implicitHeight: 44 * Appearance.effectiveScale
                     radius: Appearance.rounding.small
                     color: Appearance.m3colors.m3surfaceContainer
                     border.color: endTimeField.activeFocus ? Appearance.colors.colPrimary : "transparent"
-                    border.width: 2
+                    border.width: 2 * Appearance.effectiveScale
                     RowLayout {
-                        anchors.fill: parent; anchors.margins: 10; spacing: 6
-                        MaterialSymbol { text: "event_busy"; iconSize: 16; color: Appearance.colors.colSubtext }
+                        anchors.fill: parent; anchors.margins: 10 * Appearance.effectiveScale; spacing: 6 * Appearance.effectiveScale
+                        MaterialSymbol { text: "event_busy"; iconSize: 16 * Appearance.effectiveScale; color: Appearance.colors.colSubtext }
                         TextInput {
                             id: endTimeField
                             Layout.fillWidth: true
@@ -377,13 +377,13 @@ Item {
                 radius: Appearance.rounding.normal
                 color: Appearance.m3colors.m3surfaceContainer
                 border.color: descArea.activeFocus ? Appearance.colors.colPrimary : "transparent"
-                border.width: 2
+                border.width: 2 * Appearance.effectiveScale
                 clip: true
 
                 TextEdit {
                     id: descArea
                     anchors.fill: parent
-                    anchors.margins: 12
+                    anchors.margins: 12 * Appearance.effectiveScale
                     text: root.formDescription
                     font.family: Appearance.font.family.main
                     font.pixelSize: Appearance.font.pixelSize.small
@@ -405,17 +405,17 @@ Item {
             // Recurrence selector
             ColumnLayout {
                 Layout.fillWidth: true
-                spacing: 4
+                spacing: 4 * Appearance.effectiveScale
                 StyledText { text: "Repeat"; font.pixelSize: Appearance.font.pixelSize.small; color: Appearance.colors.colSubtext }
                 RowLayout {
-                    spacing: 6
+                    spacing: 6 * Appearance.effectiveScale
                     Repeater {
                         model: ["once", "daily", "weekly", "monthly"]
                         delegate: RippleButton {
                             required property string modelData
-                            implicitHeight: 32
-                            implicitWidth: 80
-                            buttonRadius: 16
+                            implicitHeight: 32 * Appearance.effectiveScale
+                            implicitWidth: 80 * Appearance.effectiveScale
+                            buttonRadius: 16 * Appearance.effectiveScale
                             colBackground: root.formRecurrence === modelData
                                 ? Appearance.colors.colPrimary
                                 : Appearance.m3colors.m3surfaceContainer
@@ -442,15 +442,15 @@ Item {
             // Save button
             RippleButton {
                 Layout.fillWidth: true
-                implicitHeight: 44
-                buttonRadius: 22
+                implicitHeight: 44 * Appearance.effectiveScale
+                buttonRadius: 22 * Appearance.effectiveScale
                 colBackground: Appearance.colors.colPrimary
                 enabled: root.formTitle.trim().length > 0
                 opacity: enabled ? 1 : 0.5
                 onClicked: root.saveEvent()
                 RowLayout {
-                    anchors.centerIn: parent; spacing: 6
-                    MaterialSymbol { text: "save"; iconSize: 18; color: Appearance.colors.colOnPrimary }
+                    anchors.centerIn: parent; spacing: 6 * Appearance.effectiveScale
+                    MaterialSymbol { text: "save"; iconSize: 18 * Appearance.effectiveScale; color: Appearance.colors.colOnPrimary }
                     StyledText { text: root.selectedId ? "Update Event" : "Add Event"; font.weight: Font.Medium; color: Appearance.colors.colOnPrimary }
                 }
             }

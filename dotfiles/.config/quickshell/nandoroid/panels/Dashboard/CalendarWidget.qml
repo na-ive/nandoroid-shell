@@ -89,12 +89,12 @@ Item {
         id: eventPopup
         visible: false
         z: 10
-        width: 200
-        height: popupCol.implicitHeight + 20
+        width: 200 * Appearance.effectiveScale
+        height: popupCol.implicitHeight + 20 * Appearance.effectiveScale
         radius: Appearance.rounding.normal
         color: Appearance.m3colors.m3surfaceContainerHigh
         border.color: Appearance.colors.colOutlineVariant
-        border.width: 1
+        border.width: Math.max(1, 1 * Appearance.effectiveScale)
 
         // Clip to stay within CalendarWidget bounds
         x: Math.min(Math.max(0, _popX), root.width - width)
@@ -109,8 +109,8 @@ Item {
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.top: parent.top
-            anchors.margins: 10
-            spacing: 6
+            anchors.margins: 10 * Appearance.effectiveScale
+            spacing: 6 * Appearance.effectiveScale
 
             StyledText {
                 Layout.fillWidth: true
@@ -125,9 +125,9 @@ Item {
                 delegate: RowLayout {
                     required property var modelData
                     Layout.fillWidth: true
-                    spacing: 6
+                    spacing: 6 * Appearance.effectiveScale
                     Rectangle {
-                        width: 6; height: 6; radius: 3
+                        width: 6 * Appearance.effectiveScale; height: 6 * Appearance.effectiveScale; radius: 3 * Appearance.effectiveScale
                         color: Appearance.colors.colPrimary
                         Layout.alignment: Qt.AlignVCenter
                     }
@@ -180,13 +180,13 @@ Item {
     ColumnLayout {
         id: calendarColumn
         anchors.fill: parent
-        spacing: 12
+        spacing: 12 * Appearance.effectiveScale
 
         // Header (Month/Year + Nav)
         RowLayout {
             id: headerRow
             Layout.fillWidth: true
-            spacing: 8
+            spacing: 8 * Appearance.effectiveScale
 
             CalendarHeaderButton {
                 clip: true
@@ -303,7 +303,7 @@ Item {
                                 }
                                 // mapToItem(root, x, y): map button's bottom-center
                                 // from button-local coords → CalendarWidget root coords
-                                const pos = mapToItem(root, width / 2, height + 4)
+                                const pos = mapToItem(root, width / 2, height + 4 * Appearance.effectiveScale)
                                 eventPopup._popX = pos.x - eventPopup.width / 2
                                 eventPopup._popY = pos.y
                                 eventPopup.dateStr = dateStr

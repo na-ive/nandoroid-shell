@@ -35,15 +35,15 @@ Item {
         Qt.callLater(() => { tabHighlight.idx2 = currentTab })
     }
     readonly property int tabCount: 5
-    readonly property int tabButtonSize: 44
-    readonly property int tabStripWidth: tabButtonSize + 16 // button + side padding
+    readonly property int tabButtonSize: 44 * Appearance.effectiveScale
+    readonly property int tabStripWidth: tabButtonSize + 16 * Appearance.effectiveScale // button + side padding
 
     // The panel itself is centred inside the full-screen-width window
     readonly property int panelWidth: Appearance.sizes.dashboardWidth
     readonly property int panelHeight: Appearance.sizes.dashboardHeight
     // Corner radius used for the shoulder pieces — match statusbar corner radius
-    readonly property int shoulderRadius: Config.ready && Config.options.statusBar
-        ? (Config.options.statusBar.backgroundCornerRadius ?? 20) : 20
+    readonly property int shoulderRadius: (Config.ready && Config.options.statusBar
+        ? (Config.options.statusBar.backgroundCornerRadius ?? 20) : 20) * Appearance.effectiveScale
 
     // Window is sized exactly for the panel plus shoulder pieces
     implicitWidth: panelWidth + (shoulderRadius * 2)
@@ -85,7 +85,7 @@ Item {
                 NumberAnimation {
                     target: visualContainer
                     property: "y"
-                    from: -20
+                    from: -20 * Appearance.effectiveScale
                     to: 0
                     duration: 300
                     easing.type: Easing.OutQuart
@@ -110,7 +110,7 @@ Item {
                 NumberAnimation {
                     target: visualContainer
                     property: "y"
-                    to: -root.panelHeight - 40 // Move the whole container far up
+                    to: -root.panelHeight - 40 * Appearance.effectiveScale // Move the whole container far up
                     duration: Appearance.animation.elementMoveExit.duration || 400
                     easing.bezierCurve: Appearance.animationCurves.emphasized || [0.2, 0.0, 0.0, 1.0]
                 }
@@ -192,8 +192,8 @@ Item {
         layer.enabled: root.showShoulders
         layer.effect: DropShadow {
             horizontalOffset: 0
-            verticalOffset: 2
-            radius: 24
+            verticalOffset: 2 * Appearance.effectiveScale
+            radius: 24 * Appearance.effectiveScale
             samples: 32
             color: Functions.ColorUtils.applyAlpha(Appearance.colors.colShadow, 0.12)
             transparentBorder: true
@@ -237,11 +237,11 @@ Item {
                     id: mainLayout
                     anchors.fill: parent
                     // Inner padding
-                    leftPadding: 16
-                    rightPadding: 16
-                    topPadding: 16
-                    bottomPadding: 16
-                    spacing: 16
+                    leftPadding: 16 * Appearance.effectiveScale
+                    rightPadding: 16 * Appearance.effectiveScale
+                    topPadding: 16 * Appearance.effectiveScale
+                    bottomPadding: 16 * Appearance.effectiveScale
+                    spacing: 16 * Appearance.effectiveScale
 
                     // ── Vertical Tab Strip ──
             Item {
@@ -263,16 +263,16 @@ Item {
 
                 // Y-offset where the button group starts (vertically centered)
                 readonly property real buttonsTop: Math.round(
-                    (height - root.tabCount * (root.tabButtonSize + 6) + 6) / 2
+                    (height - root.tabCount * (root.tabButtonSize + 6 * Appearance.effectiveScale) + 6 * Appearance.effectiveScale) / 2
                 )
 
                 // Card background for the tab buttons
                 Rectangle {
                     id: tabButtonsCard
                     anchors.horizontalCenter: parent.horizontalCenter
-                    y: tabStrip.buttonsTop - 8
-                    width: root.tabButtonSize + 16
-                    height: (root.tabButtonSize + 6) * root.tabCount + 10
+                    y: tabStrip.buttonsTop - 8 * Appearance.effectiveScale
+                    width: root.tabButtonSize + 16 * Appearance.effectiveScale
+                    height: (root.tabButtonSize + 6 * Appearance.effectiveScale) * root.tabCount + 10 * Appearance.effectiveScale
                     radius: Appearance.rounding.large
                     color: Appearance.colors.colLayer2
                     opacity: 0.8
@@ -284,7 +284,7 @@ Item {
                     // Centered within the strip, same as the Column's horizontalCenter
                     x: Math.round((tabStrip.width - root.tabButtonSize) / 2)
                     width: root.tabButtonSize
-                    radius: 16
+                    radius: 16 * Appearance.effectiveScale
 
                     // Elastic stretch: idx1 snaps fast, idx2 follows slowly
                     property int idx1: 0
@@ -296,7 +296,7 @@ Item {
                     }
 
                     function getYForIndex(i) {
-                        return tabStrip.buttonsTop + i * (root.tabButtonSize + 6)
+                        return tabStrip.buttonsTop + i * (root.tabButtonSize + 6 * Appearance.effectiveScale)
                     }
 
                     property real targetY1: getYForIndex(idx1)
@@ -328,7 +328,7 @@ Item {
                     anchors.top: parent.top
                     anchors.topMargin: tabStrip.buttonsTop
                     anchors.horizontalCenter: parent.horizontalCenter
-                    spacing: 6
+                    spacing: 6 * Appearance.effectiveScale
 
                     Repeater {
                         model: [
@@ -356,7 +356,7 @@ Item {
                             MaterialSymbol {
                                 anchors.centerIn: parent
                                 text: modelData.icon
-                                iconSize: 22
+                                iconSize: 22 * Appearance.effectiveScale
                                 color: root.currentTab === index
                                     ? Appearance.colors.colOnPrimaryContainer
                                     : Appearance.colors.colSubtext
@@ -384,8 +384,8 @@ Item {
             Item {
                 id: contentArea
                 // panelWidth minus (leftPadding+rightPadding=32) minus tabStripWidth minus spacing(16)
-                width: root.panelWidth - 48 - root.tabStripWidth
-                height: root.panelHeight - 32
+                width: root.panelWidth - 48 * Appearance.effectiveScale - root.tabStripWidth
+                height: root.panelHeight - 32 * Appearance.effectiveScale
 
                 // Tab 0: Calendar + Pomodoro
                 Loader {
@@ -393,7 +393,7 @@ Item {
                     active: root.currentTab === 0
                     visible: root.currentTab === 0
                     opacity: visible ? 1 : 0
-                    transform: Translate { y: root.currentTab === 0 ? 0 : (root.currentTab > 0 ? -12 : 12)
+                    transform: Translate { y: root.currentTab === 0 ? 0 : (root.currentTab > 0 ? -12 * Appearance.effectiveScale : 12 * Appearance.effectiveScale)
                         Behavior on y { NumberAnimation { duration: 250; easing.type: Easing.OutQuart } }
                     }
                     Behavior on opacity { NumberAnimation { duration: 200; easing.type: Easing.OutQuart } }
@@ -413,7 +413,7 @@ Item {
                     active: root.currentTab === 1
                     visible: root.currentTab === 1
                     opacity: visible ? 1 : 0
-                    transform: Translate { y: root.currentTab === 1 ? 0 : (root.currentTab > 1 ? -12 : 12)
+                    transform: Translate { y: root.currentTab === 1 ? 0 : (root.currentTab > 1 ? -12 * Appearance.effectiveScale : 12 * Appearance.effectiveScale)
                         Behavior on y { NumberAnimation { duration: 250; easing.type: Easing.OutQuart } }
                     }
                     Behavior on opacity { NumberAnimation { duration: 200; easing.type: Easing.OutQuart } }
@@ -426,7 +426,7 @@ Item {
                     active: true
                     visible: root.currentTab === 2
                     opacity: visible ? 1 : 0
-                    transform: Translate { y: root.currentTab === 2 ? 0 : (root.currentTab > 2 ? -12 : 12)
+                    transform: Translate { y: root.currentTab === 2 ? 0 : (root.currentTab > 2 ? -12 * Appearance.effectiveScale : 12 * Appearance.effectiveScale)
                         Behavior on y { NumberAnimation { duration: 250; easing.type: Easing.OutQuart } }
                     }
                     Behavior on opacity { NumberAnimation { duration: 200; easing.type: Easing.OutQuart } }
@@ -439,7 +439,7 @@ Item {
                     active: true
                     visible: root.currentTab === 3
                     opacity: visible ? 1 : 0
-                    transform: Translate { y: root.currentTab === 3 ? 0 : (root.currentTab > 3 ? -12 : 12)
+                    transform: Translate { y: root.currentTab === 3 ? 0 : (root.currentTab > 3 ? -12 * Appearance.effectiveScale : 12 * Appearance.effectiveScale)
                         Behavior on y { NumberAnimation { duration: 250; easing.type: Easing.OutQuart } }
                     }
                     Behavior on opacity { NumberAnimation { duration: 200; easing.type: Easing.OutQuart } }
@@ -452,7 +452,7 @@ Item {
                     active: true
                     visible: root.currentTab === 4
                     opacity: visible ? 1 : 0
-                    transform: Translate { y: root.currentTab === 4 ? 0 : (root.currentTab > 4 ? -12 : 12)
+                    transform: Translate { y: root.currentTab === 4 ? 0 : (root.currentTab > 4 ? -12 * Appearance.effectiveScale : 12 * Appearance.effectiveScale)
                         Behavior on y { NumberAnimation { duration: 250; easing.type: Easing.OutQuart } }
                     }
                     Behavior on opacity { NumberAnimation { duration: 200; easing.type: Easing.OutQuart } }

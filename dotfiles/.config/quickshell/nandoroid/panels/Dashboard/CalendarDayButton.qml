@@ -24,7 +24,7 @@ RippleButton {
     StyledText {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.verticalCenter: parent.verticalCenter
-        anchors.verticalCenterOffset: (hasEvent && !isLabel) ? -3 : 0
+        anchors.verticalCenterOffset: (hasEvent && !isLabel) ? -3 * Appearance.effectiveScale : 0
         text: day
         horizontalAlignment: Text.AlignHCenter
         font.weight: (bold || isLabel) ? Font.DemiBold : Font.Normal
@@ -39,8 +39,8 @@ RippleButton {
         visible: hasEvent && !isLabel && isToday !== 1
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
-        anchors.bottomMargin: 3
-        width: 4; height: 4; radius: 2
+        anchors.bottomMargin: 3 * Appearance.effectiveScale
+        width: 4 * Appearance.effectiveScale; height: 4 * Appearance.effectiveScale; radius: 2 * Appearance.effectiveScale
         color: Appearance.colors.colPrimary
         opacity: 0.85
     }
@@ -50,8 +50,8 @@ RippleButton {
         visible: hasEvent && !isLabel && isToday === 1
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
-        anchors.bottomMargin: 3
-        width: 4; height: 4; radius: 2
+        anchors.bottomMargin: 3 * Appearance.effectiveScale
+        width: 4 * Appearance.effectiveScale; height: 4 * Appearance.effectiveScale; radius: 2 * Appearance.effectiveScale
         color: Appearance.m3colors.m3onPrimary
         opacity: 0.85
     }

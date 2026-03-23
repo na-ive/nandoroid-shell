@@ -86,25 +86,25 @@ Item {
     Row {
         id: mainRow
         anchors.fill: parent
-        spacing: 12
+        spacing: 12 * Appearance.effectiveScale
 
         // ── Note List Sidebar (fixed width, always same) ──
         ColumnLayout {
             id: sidebar
-            width: 200
+            width: 200 * Appearance.effectiveScale
             height: parent.height
-            spacing: 8
+            spacing: 8 * Appearance.effectiveScale
 
             // New note button
             RippleButton {
                 Layout.fillWidth: true
-                implicitHeight: 40
-                buttonRadius: 20
+                implicitHeight: 40 * Appearance.effectiveScale
+                buttonRadius: 20 * Appearance.effectiveScale
                 colBackground: Appearance.colors.colPrimary
                 onClicked: root.newNote()
                 RowLayout {
-                    anchors.centerIn: parent; spacing: 6
-                    MaterialSymbol { text: "add"; iconSize: 18; color: Appearance.colors.colOnPrimary }
+                    anchors.centerIn: parent; spacing: 6 * Appearance.effectiveScale
+                    MaterialSymbol { text: "add"; iconSize: 18 * Appearance.effectiveScale; color: Appearance.colors.colOnPrimary }
                     StyledText { text: "New Note"; color: Appearance.colors.colOnPrimary; font.weight: Font.Medium }
                 }
             }
@@ -120,15 +120,15 @@ Item {
                 ListView {
                     id: noteList
                     anchors.fill: parent
-                    anchors.margins: 6
-                    spacing: 2
+                    anchors.margins: 6 * Appearance.effectiveScale
+                    spacing: 2 * Appearance.effectiveScale
                     model: root.notes.slice().sort((a, b) =>
                         new Date(b.updatedAt) - new Date(a.updatedAt))
 
                     delegate: Rectangle {
                         required property var modelData
                         width: noteList.width
-                        height: 52
+                        height: 52 * Appearance.effectiveScale
                         radius: Appearance.rounding.small
                         color: root.selectedId === modelData.id
                             ? Appearance.colors.colPrimaryContainer
@@ -138,8 +138,8 @@ Item {
                         ColumnLayout {
                             anchors.left: parent.left; anchors.right: parent.right
                             anchors.verticalCenter: parent.verticalCenter
-                            anchors.leftMargin: 10; anchors.rightMargin: 10
-                            spacing: 2
+                            anchors.leftMargin: 10 * Appearance.effectiveScale; anchors.rightMargin: 10 * Appearance.effectiveScale
+                            spacing: 2 * Appearance.effectiveScale
 
                             StyledText {
                                 Layout.fillWidth: true
@@ -187,8 +187,8 @@ Item {
 
                 ColumnLayout {
                     anchors.centerIn: parent
-                    spacing: 12
-                    MaterialSymbol { Layout.alignment: Qt.AlignHCenter; text: "edit_note"; iconSize: 48; color: Appearance.colors.colSubtext }
+                    spacing: 12 * Appearance.effectiveScale
+                    MaterialSymbol { Layout.alignment: Qt.AlignHCenter; text: "edit_note"; iconSize: 48 * Appearance.effectiveScale; color: Appearance.colors.colSubtext }
                     StyledText {
                         Layout.alignment: Qt.AlignHCenter
                         text: "Select or create a note"
@@ -201,25 +201,25 @@ Item {
             // Editor (only when a note is selected)
             ColumnLayout {
                 anchors.fill: parent
-                spacing: 8
+                spacing: 8 * Appearance.effectiveScale
                 visible: root.selectedId !== ""
 
             // Title bar + delete button
             RowLayout {
                 Layout.fillWidth: true
-                spacing: 8
+                spacing: 8 * Appearance.effectiveScale
 
                 Rectangle {
                     Layout.fillWidth: true
-                    implicitHeight: 40
+                    implicitHeight: 40 * Appearance.effectiveScale
                     radius: Appearance.rounding.small
                     color: Appearance.m3colors.m3surfaceContainer
                     border.color: titleInput.activeFocus ? Appearance.colors.colPrimary : "transparent"
-                    border.width: 2
+                    border.width: 2 * Appearance.effectiveScale
 
                     TextInput {
                         id: titleInput
-                        anchors.fill: parent; anchors.margins: 10
+                        anchors.fill: parent; anchors.margins: 10 * Appearance.effectiveScale
                         font.family: Appearance.font.family.main
                         font.pixelSize: Appearance.font.pixelSize.large
                         font.weight: Font.Bold
@@ -240,10 +240,10 @@ Item {
                 }
 
                 RippleButton {
-                    implicitWidth: 40; implicitHeight: 40; buttonRadius: 20
+                    implicitWidth: 40 * Appearance.effectiveScale; implicitHeight: 40 * Appearance.effectiveScale; buttonRadius: 20 * Appearance.effectiveScale
                     colBackground: Appearance.m3colors.m3surfaceContainer
                     onClicked: root.deleteSelected()
-                    MaterialSymbol { anchors.centerIn: parent; text: "delete"; iconSize: 20; color: Appearance.colors.colError }
+                    MaterialSymbol { anchors.centerIn: parent; text: "delete"; iconSize: 20 * Appearance.effectiveScale; color: Appearance.colors.colError }
                     StyledToolTip { text: "Delete note" }
                 }
             }
@@ -255,13 +255,13 @@ Item {
                 color: Appearance.m3colors.m3surfaceContainer
                 radius: Appearance.rounding.normal
                 border.color: bodyArea.activeFocus ? Appearance.colors.colPrimary : "transparent"
-                border.width: 2
+                border.width: 2 * Appearance.effectiveScale
                 clip: true
 
                 Flickable {
                     id: bodyFlickable
                     anchors.fill: parent
-                    anchors.margins: 12
+                    anchors.margins: 12 * Appearance.effectiveScale
                     contentHeight: bodyArea.height
                     clip: true
 
@@ -280,7 +280,7 @@ Item {
                         onTextChanged: saveTimer.restart()
 
                         onCursorRectangleChanged: {
-                            const margin = 20 // Extra padding to keep cursor comfortable
+                            const margin = 20 * Appearance.effectiveScale // Extra padding to keep cursor comfortable
                             if (cursorRectangle.y < bodyFlickable.contentY) {
                                 bodyFlickable.contentY = cursorRectangle.y
                             } else if (cursorRectangle.y + cursorRectangle.height + margin > bodyFlickable.contentY + bodyFlickable.height) {

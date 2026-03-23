@@ -9,136 +9,79 @@ import QtQuick.Effects
 
 /**
  * Dashboard Tab 4: GitHub Profile Tracker
- * Shows avatar, stats, contribution heatmap (52 weeks × 7 days), and top repos.
- * Uses curl + GitHub GraphQL API for contribution graph (token required for GraphQL).
+ * Fetches user profile and contribution heatmap.
  */
 Item {
     id: root
-
-    readonly property string username: Config.ready && Config.options.github ? (Config.options.github.githubUsername || "") : ""
-    readonly property string token: Config.ready && Config.options.github ? (Config.options.github.githubToken || "") : ""
-
+    property string username: (Config.ready && Config.options.github) ? Config.options.github.githubUsername : ""
     property var profile: null
-    property var contribWeeks: []   // [{contributionDays: [{date, contributionCount, color},...]}]
+    property var contribWeeks: []
     property int totalContribs: 0
     property var repos: []
     property bool loading: false
     property string errorMsg: ""
 
-    // ── max contribution count for shade normalisation ──
-    readonly property int maxCount: {
-        let m = 1
-        for (let w of contribWeeks) for (let d of w.contributionDays) if (d.contributionCount > m) m = d.contributionCount
-        return m
-    }
+    // Matugen colors
+    readonly property color contentColor: Appearance.colors.colOnLayer1
+    readonly property real midOpacity: 0.7
+    readonly property real lowOpacity: 0.45
+
+    onUsernameChanged: { if (username) fetch() }
+    Component.onCompleted: { if (username) fetch() }
 
     function fetch() {
-        if (!username) { root.loading = false; return }
-        root.profile = null; root.contribWeeks = []; root.repos = []
-        root.errorMsg = ""; root.loading = true
-        profileProc.running = true
+        if (!username) return;
+        loading = true;
+        errorMsg = "";
+        profileProc.running = true;
+        reposProc.running = true;
+        contribProc.running = true;
     }
 
-    property bool fetchedOnce: false
-
-    // Fetch as soon as the configuration is fully loaded
-    function checkAndFetch() {
-        if (Config.ready && !fetchedOnce && !loading) {
-            fetchedOnce = true
-            fetch()
-        }
-    }
-
-    Connections {
-        target: Config
-        function onReadyChanged() { checkAndFetch() }
-    }
-
-    Component.onCompleted: checkAndFetch()
-
-    // ── Profile REST fetch ──
+    // ── Data Processors ──
+    
+    // 1. User Profile
     Process {
         id: profileProc
-        command: {
-            let args = ["curl", "-s", "-f", "--max-time", "10"]
-            if (root.token) args = args.concat(["-H", "Authorization: token " + root.token])
-            return args.concat(["https://api.github.com/users/" + root.username])
-        }
-        running: false
+        command: ["sh", "-c", `curl -s -H "Authorization: token ${Config.ready ? Config.options.github.githubToken : ""}" https://api.github.com/users/${root.username}`]
         stdout: StdioCollector {
             onStreamFinished: {
                 try {
-                    const parsed = JSON.parse(this.text)
-                    if (parsed && parsed.login) {
-                        root.profile = parsed
-                        root.errorMsg = ""
-                        // Start next step in chain
-                        if (root.token) {
-                            contribProc.running = true
-                        } else {
-                            reposProc.running = true
-                        }
-                    } else {
-                        root.errorMsg = "GitHub API error: " + (parsed.message || "unknown")
-                        root.loading = false
-                    }
-                } catch(e) {
-                    root.errorMsg = "Failed to parse profile"
-                    root.loading = false
-                }
+                    let data = JSON.parse(this.text)
+                    if (data.login) root.profile = data
+                    else root.errorMsg = data.message || "User not found"
+                } catch(e) { root.errorMsg = "Parse error" }
             }
         }
-        onExited: (code) => {
-            // Only handle real errors (not SIGTERM=15/SIGKILL=9)
-            if (code !== 0 && code !== 15 && code !== 9 && root.profile === null) {
-                root.errorMsg = "Network error: curl " + code + (code === 22 ? " (rate limited?)" : "")
-                root.loading = false
+        onExited: (code) => { if (code !== 0) root.errorMsg = "Request failed" }
+    }
+
+    // 2. Repositories
+    Process {
+        id: reposProc
+        command: ["sh", "-c", `curl -s -H "Authorization: token ${Config.ready ? Config.options.github.githubToken : ""}" "https://api.github.com/users/${root.username}/repos?sort=updated&per_page=6"`]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                try {
+                    let data = JSON.parse(this.text)
+                    if (Array.isArray(data)) root.repos = data
+                } catch(e) {}
             }
         }
     }
 
-    // ── Contributions GraphQL fetch (token required) ──
+    // 3. Contributions Heatmap (GraphQL for precision)
     Process {
         id: contribProc
-        command: {
-            const query = '{"query":"{ user(login: \\"' + root.username + '\\") { contributionsCollection { contributionCalendar { totalContributions weeks { contributionDays { date contributionCount } } } } } }"}'
-            return ["curl", "-s", "-f", "--max-time", "10",
-                    "-H", "Authorization: bearer " + root.token,
-                    "-H", "Content-Type: application/json",
-                    "-d", query,
-                    "https://api.github.com/graphql"]
-        }
-        running: false
+        command: ["sh", "-c", `curl -s -H "Authorization: token ${Config.ready ? Config.options.github.githubToken : ""}" -X POST -d '{"query": "query { user(login: \\"${root.username}\\") { contributionsCollection { contributionCalendar { totalContributions weeks { contributionDays { contributionCount color } } } } } }"}' https://api.github.com/graphql`]
         stdout: StdioCollector {
             onStreamFinished: {
                 try {
-                    const data = JSON.parse(this.text)
-                    const cal = data.data.user.contributionsCollection.contributionCalendar
+                    let data = JSON.parse(this.text)
+                    let cal = data.data.user.contributionsCollection.contributionCalendar
                     root.totalContribs = cal.totalContributions
                     root.contribWeeks = cal.weeks
                 } catch(e) {}
-                // Always proceed to repos regardless of contrib result
-                reposProc.running = true
-            }
-        }
-        onExited: (code) => {
-            // If contribProc fails without producing output, still fetch repos
-            if (code !== 0 && !reposProc.running) reposProc.running = true
-        }
-    }
-
-    // ── Repos REST fetch ──
-    Process {
-        id: reposProc
-        command: {
-            let args = ["curl", "-s", "-f", "--max-time", "10"]
-            if (root.token) args = args.concat(["-H", "Authorization: token " + root.token])
-            return args.concat(["https://api.github.com/users/" + root.username + "/repos?sort=pushed&per_page=6&type=all"])
-        }
-        running: false
-        stdout: StdioCollector {
-            onStreamFinished: {
-                try { root.repos = JSON.parse(this.text) } catch(e) {}
                 root.loading = false
             }
         }
@@ -147,10 +90,10 @@ Item {
 
     // ── Empty state (no username) ──
     ColumnLayout {
-        anchors.centerIn: parent; spacing: 16
+        anchors.centerIn: parent; spacing: 16 * Appearance.effectiveScale
         visible: !root.username && !root.loading
 
-        MaterialSymbol { Layout.alignment: Qt.AlignHCenter; text: "hub"; iconSize: 56; color: Appearance.colors.colSubtext }
+        MaterialSymbol { Layout.alignment: Qt.AlignHCenter; text: "hub"; iconSize: 56 * Appearance.effectiveScale; color: Appearance.colors.colSubtext }
         StyledText {
             Layout.alignment: Qt.AlignHCenter
             text: "GitHub Profile Tracker"
@@ -158,8 +101,8 @@ Item {
             color: Appearance.colors.colOnLayer1
         }
         StyledText {
-            Layout.alignment: Qt.AlignHCenter; horizontalAlignment: Text.AlignHCenter
-            text: "Configure your GitHub username in\nSettings → Services → GitHub"
+            Layout.alignment: Qt.AlignHCenter
+            text: "Set your username in config to track stats"
             color: Appearance.colors.colSubtext; font.pixelSize: Appearance.font.pixelSize.normal
         }
     }
@@ -167,24 +110,24 @@ Item {
     // ── Loading spinner ──
     Item {
         anchors.centerIn: parent; visible: root.loading
-        implicitWidth: 44; implicitHeight: 44
+        implicitWidth: 44 * Appearance.effectiveScale; implicitHeight: 44 * Appearance.effectiveScale
 
         Canvas {
             anchors.fill: parent
             onPaint: {
                 const ctx = getContext("2d")
                 ctx.clearRect(0, 0, width, height)
-                ctx.beginPath(); ctx.arc(width/2, height/2, 16, 0, Math.PI * 2)
+                ctx.beginPath(); ctx.arc(width/2, height/2, 16 * Appearance.effectiveScale, 0, Math.PI * 2)
                 ctx.strokeStyle = Appearance.m3colors.m3outlineVariant
-                ctx.lineWidth = 4; ctx.stroke()
+                ctx.lineWidth = 4 * Appearance.effectiveScale; ctx.stroke()
             }
         }
         Rectangle {
-            anchors.centerIn: parent; width: 32; height: 32; radius: 16
+            anchors.centerIn: parent; width: 32 * Appearance.effectiveScale; height: 32 * Appearance.effectiveScale; radius: 16 * Appearance.effectiveScale
             color: "transparent"
             Rectangle {
                 anchors.top: parent.top; anchors.horizontalCenter: parent.horizontalCenter
-                width: 4; height: 16; radius: 2; color: Appearance.m3colors.m3primary
+                width: 4 * Appearance.effectiveScale; height: 16 * Appearance.effectiveScale; radius: 2 * Appearance.effectiveScale; color: Appearance.m3colors.m3primary
             }
             RotationAnimation on rotation {
                 from: 0; to: 360; duration: 800
@@ -195,13 +138,13 @@ Item {
 
     // ── Error state ──
     ColumnLayout {
-        anchors.centerIn: parent; spacing: 12
+        anchors.centerIn: parent; spacing: 12 * Appearance.effectiveScale
         visible: root.errorMsg !== "" && !root.loading
-        MaterialSymbol { Layout.alignment: Qt.AlignHCenter; text: "error_outline"; iconSize: 40; color: Appearance.colors.colError }
+        MaterialSymbol { Layout.alignment: Qt.AlignHCenter; text: "error_outline"; iconSize: 40 * Appearance.effectiveScale; color: Appearance.colors.colError }
         StyledText { Layout.alignment: Qt.AlignHCenter; text: root.errorMsg; color: Appearance.colors.colError }
         RippleButton {
             Layout.alignment: Qt.AlignHCenter
-            implicitWidth: 100; implicitHeight: 36; buttonRadius: 18
+            implicitWidth: 100 * Appearance.effectiveScale; implicitHeight: 36 * Appearance.effectiveScale; buttonRadius: 18 * Appearance.effectiveScale
             colBackground: Appearance.m3colors.m3surfaceContainer
             onClicked: root.fetch()
             StyledText { anchors.centerIn: parent; text: "Retry"; color: Appearance.colors.colOnLayer1 }
@@ -210,42 +153,53 @@ Item {
 
     // ── Profile content ──
     ColumnLayout {
-        anchors.fill: parent; spacing: 10
+        anchors.fill: parent; spacing: 10 * Appearance.effectiveScale
         visible: root.profile !== null && !root.loading
 
         // ─ Profile header card ─
         Rectangle {
             Layout.fillWidth: true
-            implicitHeight: profileRow.implicitHeight + 20
+            implicitHeight: profileRow.implicitHeight + 20 * Appearance.effectiveScale
             radius: Appearance.rounding.normal; color: Appearance.m3colors.m3surfaceContainer
 
             RowLayout {
-                id: profileRow; anchors.fill: parent; anchors.margins: 12; spacing: 14
+                id: profileRow; anchors.fill: parent; anchors.margins: 12 * Appearance.effectiveScale; spacing: 14 * Appearance.effectiveScale
 
                 // Avatar
                 Rectangle {
                     id: avatarContainer
-                    width: 52; height: 52; radius: Appearance.rounding.normal
+                    Layout.preferredWidth: 52 * Appearance.effectiveScale
+                    Layout.preferredHeight: 52 * Appearance.effectiveScale
+                    width: Layout.preferredWidth
+                    height: Layout.preferredHeight
+                    radius: Appearance.rounding.normal
                     color: Appearance.colors.colLayer2
                     
                     Image {
                         id: avatarImg
-                        anchors.fill: parent
+                        width: avatarContainer.width
+                        height: avatarContainer.height
                         source: root.profile ? root.profile.avatar_url : ""
-                        fillMode: Image.PreserveAspectCrop; asynchronous: true
-                        visible: false // Hidden because mask renders it
+                        fillMode: Image.PreserveAspectCrop
+                        asynchronous: true
+                        visible: false
+                        // Force render size to match scaled container
+                        sourceSize.width: avatarContainer.width
+                        sourceSize.height: avatarContainer.height
                     }
-
+                    
                     Rectangle {
                         id: avatarMask
-                        anchors.fill: parent
-                        radius: Appearance.rounding.normal
+                        width: avatarContainer.width
+                        height: avatarContainer.height
+                        radius: avatarContainer.radius
                         visible: false
                         layer.enabled: true
                     }
 
                     MultiEffect {
-                        anchors.fill: avatarImg
+                        width: avatarContainer.width
+                        height: avatarContainer.height
                         source: avatarImg
                         maskEnabled: true
                         maskSource: avatarMask
@@ -254,27 +208,28 @@ Item {
 
                 // Name / login / bio
                 ColumnLayout {
-                    Layout.fillWidth: true; spacing: 2
+                    Layout.fillWidth: true; spacing: 2 * Appearance.effectiveScale
                     StyledText {
                         text: root.profile ? (root.profile.name || root.profile.login) : ""
                         font.pixelSize: Appearance.font.pixelSize.large; font.weight: Font.Bold
                         color: Appearance.colors.colOnLayer1; elide: Text.ElideRight; Layout.fillWidth: true
                     }
                     StyledText {
-                        text: root.profile ? "@" + root.profile.login : ""
+                        text: "@" + (root.profile ? root.profile.login : "")
                         font.pixelSize: Appearance.font.pixelSize.small; color: Appearance.colors.colPrimary
+                        Layout.fillWidth: true
                     }
                     StyledText {
-                        visible: root.profile && root.profile.bio
-                        text: root.profile ? (root.profile.bio || "") : ""
+                        visible: !!(root.profile && root.profile.bio)
+                        text: root.profile ? root.profile.bio : ""
                         font.pixelSize: Appearance.font.pixelSize.smaller; color: Appearance.colors.colSubtext
-                        elide: Text.ElideRight; Layout.fillWidth: true
+                        maximumLineCount: 2; elide: Text.ElideRight; Layout.fillWidth: true; wrapMode: Text.Wrap
                     }
                 }
 
                 // Stats column
                 ColumnLayout {
-                    spacing: 3; Layout.alignment: Qt.AlignVCenter
+                    spacing: 3 * Appearance.effectiveScale; Layout.alignment: Qt.AlignVCenter
 
                     Repeater {
                         model: [
@@ -283,8 +238,8 @@ Item {
                             { icon: "person_add", value: root.profile ? root.profile.following : 0, label: "following" }
                         ]
                         delegate: RowLayout {
-                            spacing: 4
-                            MaterialSymbol { text: modelData.icon; iconSize: 13; color: Appearance.colors.colSubtext }
+                            spacing: 4 * Appearance.effectiveScale
+                            MaterialSymbol { text: modelData.icon; iconSize: 13 * Appearance.effectiveScale; color: Appearance.colors.colSubtext }
                             StyledText {
                                 text: modelData.value + " " + modelData.label
                                 font.pixelSize: Appearance.font.pixelSize.smaller; color: Appearance.colors.colSubtext
@@ -297,7 +252,7 @@ Item {
 
         // ─ Contribution heatmap ─
         ColumnLayout {
-            Layout.fillWidth: true; spacing: 4
+            Layout.fillWidth: true; spacing: 4 * Appearance.effectiveScale
             visible: root.contribWeeks.length > 0
 
             RowLayout {
@@ -309,9 +264,9 @@ Item {
                 }
                 // Refresh button moved here for easy access
                 RippleButton {
-                    implicitWidth: 28; implicitHeight: 28; buttonRadius: 14; colBackground: "transparent"
+                    implicitWidth: 28 * Appearance.effectiveScale; implicitHeight: 28 * Appearance.effectiveScale; buttonRadius: 14 * Appearance.effectiveScale; colBackground: "transparent"
                     onClicked: root.fetch()
-                    MaterialSymbol { anchors.centerIn: parent; text: "refresh"; iconSize: 15; color: Appearance.colors.colSubtext }
+                    MaterialSymbol { anchors.centerIn: parent; text: "refresh"; iconSize: 15 * Appearance.effectiveScale; color: Appearance.colors.colSubtext }
                     StyledToolTip { text: "Refresh GitHub data" }
                 }
             }
@@ -320,21 +275,21 @@ Item {
             // Each column is ALWAYS 7 cells tall so widths are perfectly uniform
             Rectangle {
                 Layout.fillWidth: true
-                implicitHeight: heatGrid.implicitHeight + 16
+                implicitHeight: heatGrid.implicitHeight + 16 * Appearance.effectiveScale
                 radius: Appearance.rounding.normal
                 color: Appearance.m3colors.m3surfaceContainer
 
                 Row {
                     id: heatGrid
                     anchors.centerIn: parent
-                    spacing: 3
+                    spacing: 3 * Appearance.effectiveScale
 
                     Repeater {
                         model: root.contribWeeks
                         delegate: Column {
                             required property var modelData
                             required property int index
-                            spacing: 3
+                            spacing: 3 * Appearance.effectiveScale
 
                             Repeater {
                                 // Always 7 rows — pad short weeks with empty slots
@@ -347,16 +302,13 @@ Item {
                                     }
                                     readonly property int count: dayData ? dayData.contributionCount : 0
                                     readonly property bool padded: dayData === null
-                                    width: 10; height: 10; radius: 2
+                                    width: 10 * Appearance.effectiveScale; height: 10 * Appearance.effectiveScale; radius: 2 * Appearance.effectiveScale
                                     color: padded
                                         ? "transparent"
                                         : count === 0
                                             ? Qt.rgba(Appearance.colors.colOnLayer1.r, Appearance.colors.colOnLayer1.g, Appearance.colors.colOnLayer1.b, 0.10)
-                                            : Qt.rgba(Appearance.colors.colPrimary.r, Appearance.colors.colPrimary.g, Appearance.colors.colPrimary.b,
-                                                0.25 + 0.75 * (count / root.maxCount))
-                                    StyledToolTip {
-                                        text: dayData ? (dayData.date + ": " + count + " contribution" + (count !== 1 ? "s" : "")) : ""
-                                    }
+                                            : Qt.rgba(Appearance.colors.colPrimary.r, Appearance.colors.colPrimary.g, Appearance.colors.colPrimary.b, 
+                                                Math.min(0.2 + (count / 10), 1.0))
                                 }
                             }
                         }
@@ -365,24 +317,14 @@ Item {
             }
         }
 
-        // ─ No-token note for heatmap ─
         StyledText {
-            visible: root.profile !== null && !root.loading && root.contribWeeks.length === 0
-            text: "Add a GitHub API token in Settings → Services → GitHub to show the contribution graph"
-            font.pixelSize: Appearance.font.pixelSize.smaller; color: Appearance.colors.colSubtext
-            wrapMode: Text.WordWrap; Layout.fillWidth: true; opacity: 0.7
-        }
-
-        // ─ Top repos ─
-        StyledText {
-            visible: root.repos.length > 0
             text: "Recent Repositories"
             font.pixelSize: Appearance.font.pixelSize.small; font.weight: Font.DemiBold
             color: Appearance.colors.colOnLayer1
         }
 
         GridLayout {
-            Layout.fillWidth: true; columns: 2; rowSpacing: 6; columnSpacing: 6
+            Layout.fillWidth: true; columns: 2; rowSpacing: 6 * Appearance.effectiveScale; columnSpacing: 6 * Appearance.effectiveScale
             visible: root.repos.length > 0
 
             Repeater {
@@ -390,29 +332,29 @@ Item {
                 delegate: Rectangle {
                     required property var modelData
                     Layout.fillWidth: true; Layout.preferredWidth: 1
-                    implicitHeight: repoCol.implicitHeight + 14
+                    implicitHeight: repoCol.implicitHeight + 14 * Appearance.effectiveScale
                     radius: Appearance.rounding.small; color: Appearance.m3colors.m3surfaceContainer
 
                     RippleButton { anchors.fill: parent; buttonRadius: parent.radius; colBackground: "transparent"; onClicked: Qt.openUrlExternally(modelData.html_url) }
 
                     ColumnLayout {
-                        id: repoCol; anchors.fill: parent; anchors.margins: 10; spacing: 2
+                        id: repoCol; anchors.fill: parent; anchors.margins: 10 * Appearance.effectiveScale; spacing: 2 * Appearance.effectiveScale
                         RowLayout {
-                            spacing: 4
-                            MaterialSymbol { text: modelData.private ? "lock" : "folder_open"; iconSize: 12; color: Appearance.colors.colSubtext }
+                            spacing: 4 * Appearance.effectiveScale
+                            MaterialSymbol { text: modelData.private ? "lock" : "folder_open"; iconSize: 12 * Appearance.effectiveScale; color: Appearance.colors.colSubtext }
                             StyledText {
                                 text: modelData.name; font.pixelSize: Appearance.font.pixelSize.small; font.weight: Font.Medium
                                 color: Appearance.colors.colOnLayer1; elide: Text.ElideRight; Layout.fillWidth: true
                             }
                         }
                         RowLayout {
-                            spacing: 8
+                            spacing: 8 * Appearance.effectiveScale
                             RowLayout {
-                                spacing: 3
-                                MaterialSymbol { text: "star"; iconSize: 11; color: Appearance.colors.colSubtext }
-                                StyledText { text: modelData.stargazers_count; font.pixelSize: 11; color: Appearance.colors.colSubtext }
+                                spacing: 3 * Appearance.effectiveScale
+                                MaterialSymbol { text: "star"; iconSize: 11 * Appearance.effectiveScale; color: Appearance.colors.colSubtext }
+                                StyledText { text: modelData.stargazers_count; font.pixelSize: 11 * Appearance.effectiveScale; color: Appearance.colors.colSubtext }
                             }
-                            StyledText { visible: !!modelData.language; text: modelData.language || ""; font.pixelSize: 11; color: Appearance.colors.colPrimary }
+                            StyledText { visible: !!modelData.language; text: modelData.language || ""; font.pixelSize: 11 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
                         }
                     }
                 }

@@ -63,14 +63,14 @@ Variants {
             // Position it exactly below the expand arrow
             // We subtract half width of content and add half width of arrow (8) to center it
             // but align it within screen bounds (20 margin)
-            x: Math.max(20, Math.min(parent.width - width - 20, GlobalStates.trayPosX - (width / 2) + 8))
-            y: Config.ready ? Config.options.statusBar.height + 2 : 42
+            x: Math.max(20 * Appearance.effectiveScale, Math.min(parent.width - width - 20 * Appearance.effectiveScale, GlobalStates.trayPosX - (width / 2) + 8 * Appearance.effectiveScale))
+            y: Config.ready ? (Config.options.statusBar.height * Appearance.effectiveScale) + 2 * Appearance.effectiveScale : 42 * Appearance.effectiveScale
             
-            width: contentLayout.implicitWidth + 24
-            height: contentLayout.implicitHeight + 24
+            width: contentLayout.implicitWidth + 24 * Appearance.effectiveScale
+            height: contentLayout.implicitHeight + 24 * Appearance.effectiveScale
             radius: Appearance.rounding.small
             color: Appearance.colors.colLayer0
-            border.width: 1
+            border.width: Math.max(1, 1 * Appearance.effectiveScale)
             border.color: Functions.ColorUtils.applyAlpha(Appearance.m3colors.m3onSurface, 0.12)
 
             opacity: GlobalStates.trayOverflowOpen ? 1 : 0
@@ -89,8 +89,8 @@ Variants {
                 id: contentLayout
                 anchors.centerIn: parent
                 columns: Math.max(3, Math.ceil(Math.sqrt(overflowRepeater.count)))
-                columnSpacing: 12
-                rowSpacing: 12
+                columnSpacing: 12 * Appearance.effectiveScale
+                rowSpacing: 12 * Appearance.effectiveScale
 
                 Repeater {
                     id: overflowRepeater
@@ -98,8 +98,8 @@ Variants {
                     delegate: StatusBarTrayItem {
                         required property SystemTrayItem modelData
                         item: modelData
-                        implicitWidth: 24
-                        implicitHeight: 24
+                        implicitWidth: 24 * Appearance.effectiveScale
+                        implicitHeight: 24 * Appearance.effectiveScale
                     }
                 }
             }

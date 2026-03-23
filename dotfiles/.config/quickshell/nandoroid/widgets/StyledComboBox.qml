@@ -20,12 +20,12 @@ Item {
     property bool searchable: true
     property bool isOpened: false
     property bool isFiltering: false // Only filter when user starts typing
-    property int maxHeight: 240
+    property int maxHeight: 240 * Appearance.effectiveScale
     
     signal accepted(string value)
     
-    implicitWidth: 200
-    implicitHeight: 48
+    implicitWidth: 200 * Appearance.effectiveScale
+    implicitHeight: 48 * Appearance.effectiveScale
     z: isOpened ? 1000 : 1
 
     // Update internal search model when text changes or model changes
@@ -44,9 +44,9 @@ Item {
     Rectangle {
         id: bg
         anchors.fill: parent
-        radius: 12
+        radius: 12 * Appearance.effectiveScale
         color: Appearance.colors.colLayer1
-        border.width: root.isOpened ? 2 : 1
+        border.width: root.isOpened ? 2 * Appearance.effectiveScale : 1 * Appearance.effectiveScale
         border.color: root.isOpened ? Appearance.colors.colPrimary : Appearance.colors.colOutlineVariant
         
         Behavior on border.color { ColorAnimation { duration: 200 } }
@@ -64,8 +64,8 @@ Item {
         
         RowLayout {
             anchors.fill: parent
-            anchors.margins: 12
-            spacing: 8
+            anchors.margins: 12 * Appearance.effectiveScale
+            spacing: 8 * Appearance.effectiveScale
             
             TextInput {
                 id: input
@@ -132,7 +132,7 @@ Item {
             
             MaterialSymbol {
                 text: root.isOpened ? "expand_less" : "expand_more"
-                iconSize: 20
+                iconSize: 20 * Appearance.effectiveScale
                 color: Appearance.colors.colSubtext
                 
                 MouseArea {
@@ -150,7 +150,7 @@ Item {
     // Dropdown Popup
     Popup {
         id: dropdownPopup
-        y: bg.height + 4
+        y: bg.height + 4 * Appearance.effectiveScale
         width: root.width
         visible: root.isOpened && filteredModel.length > 0
         padding: 0
@@ -158,9 +158,9 @@ Item {
         z: 2000
         
         background: Rectangle {
-            radius: 12
+            radius: 12 * Appearance.effectiveScale
             color: Qt.darker(Appearance.colors.colLayer2, 1.05)
-            border.width: 1
+            border.width: 1 * Appearance.effectiveScale
             border.color: Appearance.colors.colOutlineVariant
             clip: true
         }
@@ -177,23 +177,23 @@ Item {
 
         contentItem: ListView {
             id: listView
-            implicitHeight: Math.min(root.maxHeight, contentHeight + 8)
+            implicitHeight: Math.min(root.maxHeight, contentHeight + 8 * Appearance.effectiveScale)
             model: root.filteredModel
             boundsBehavior: Flickable.StopAtBounds
             clip: true
-            anchors.margins: 4
+            anchors.margins: 4 * Appearance.effectiveScale
             highlightFollowsCurrentItem: true
             highlight: Rectangle {
                 color: Appearance.colors.colLayer2Hover
-                radius: 8
+                radius: 8 * Appearance.effectiveScale
                 z: 0
             }
             
             delegate: RippleButton {
                 id: delegateRoot
                 width: listView.width
-                implicitHeight: 40
-                buttonRadius: 8
+                implicitHeight: 40 * Appearance.effectiveScale
+                buttonRadius: 8 * Appearance.effectiveScale
                 colBackground: "transparent"
                 colBackgroundHover: "transparent" // Use Listview highlight instead
                 colRipple: Appearance.colors.colLayer2Active
@@ -203,7 +203,7 @@ Item {
                 contentItem: StyledText {
                     text: modelData
                     anchors.fill: parent
-                    anchors.leftMargin: 12
+                    anchors.leftMargin: 12 * Appearance.effectiveScale
                     verticalAlignment: Text.AlignVCenter
                     color: delegateRoot.isCurrent ? (Appearance.m3colors.m3primary || Appearance.colors.colPrimary) : Appearance.colors.colOnLayer2
                     font.family: root.searchable ? text : Appearance.font.family.main

@@ -8,8 +8,8 @@ RippleButton {
     property string tooltipText: ""
     property bool forceCircle: false
 
-    implicitHeight: 36
-    implicitWidth: forceCircle ? implicitHeight : (contentItem.implicitWidth + 10 * 2)
+    implicitHeight: 36 * Appearance.effectiveScale
+    implicitWidth: forceCircle ? implicitHeight : (contentItem.implicitWidth + (10 * 2) * Appearance.effectiveScale)
     
     Behavior on implicitWidth {
         SmoothedAnimation {
