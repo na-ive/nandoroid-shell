@@ -96,7 +96,9 @@ Rectangle {
                 if (!root.launcherContent) return;
                 
                 const results = LauncherSearch.results;
-                const total = results.length;
+                const total = results ? results.length : 0;
+                if (total <= 0) return;
+
                 const isGrid = !root.isSpotlightMode && !LauncherSearch.isPluginSearch && !LauncherSearch.query;
                 const cols = isGrid ? (root.launcherContent.gridColumns || 5) : 1;
 
@@ -106,7 +108,7 @@ Rectangle {
                     event.accepted = true;
                 } else if (event.key === Qt.Key_Down) {
                     root.launcherContent.isKeyboardNavigation = true;
-                    root.launcherContent.selectedIndex = Math.min(total - 1, root.launcherContent.selectedIndex + cols);
+                    root.launcherContent.selectedIndex = Math.min(Math.max(0, total - 1), root.launcherContent.selectedIndex + cols);
                     event.accepted = true;
                 } else if (event.key === Qt.Key_Left) {
                     if (isGrid) {

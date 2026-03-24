@@ -22,6 +22,7 @@ Rectangle {
     readonly property var resultsProxy: LauncherSearch.results
     property int selectedIndex: 0
     property int gridColumns: 1
+    property bool isKeyboardNavigation: false
     readonly property bool hasQuery: LauncherSearch.query !== ""
     
     width: 700 * Appearance.effectiveScale
@@ -73,7 +74,12 @@ Rectangle {
             delegate: LauncherListView {
                 result: modelData
                 selected: root.selectedIndex === index
-                onHoveredChanged: if (hovered) root.selectedIndex = index
+                onHoveredChanged: {
+                    if (hovered) {
+                        root.selectedIndex = index
+                        root.isKeyboardNavigation = false
+                    }
+                }
             }
             currentIndex: root.selectedIndex
             onCurrentIndexChanged: {
