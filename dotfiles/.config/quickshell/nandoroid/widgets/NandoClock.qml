@@ -36,7 +36,7 @@ Item {
     readonly property real parentHeight: parent ? parent.height : 1080
 
     readonly property real clockOffsetX: Config.ready ? Config.options.appearance.clock.offsetX : 0
-    readonly property real clockOffsetY: Config.ready ? Config.options.appearance.clock.offsetY : -50
+    readonly property real clockOffsetY: Config.ready ? Config.options.appearance.clock.offsetY : -50 * Appearance.effectiveScale
 
     // Dynamic anchor point based on alignment to prevent shifting
     property string alignment: {

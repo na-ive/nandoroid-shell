@@ -6,7 +6,7 @@ import "../../services"
 
 ColumnLayout {
     id: root
-    spacing: 2
+    spacing: 2 * Appearance.effectiveScale
 
     readonly property string alignment: "left"
     property bool isLockscreen: false
@@ -38,7 +38,7 @@ ColumnLayout {
     readonly property color blockColor:   resolveColor(Config.ready ? cfg.blockColorStyle   : "primary")
 
     // ── Config ──────────────────────────────────────────────────
-    readonly property int    cfgSize:    Config.ready ? cfg.fontSize  : 18
+    readonly property int    cfgSize:    Config.ready ? cfg.fontSize  : 18 * Appearance.effectiveScale
     readonly property string blockType:  Config.ready ? cfg.blockType : "js"
     readonly property bool   showDate:   Config.ready && Config.options.appearance.clock.showDate
     readonly property string fontFamily: (Config.ready && cfg.fontFamily) || Appearance.font.family.monospace
@@ -68,7 +68,7 @@ ColumnLayout {
         property string keyword: ""
         property string value: ""
         property bool   isValue: true  // larger font for value string
-        spacing: 6
+        spacing: 6 * Appearance.effectiveScale
 
         // indent spacer
         Text {
@@ -100,7 +100,7 @@ ColumnLayout {
             text: "\"" + cl.value + "\""
             color: root.valueColor
             font.family: root.fontFamily
-            font.pixelSize: cl.isValue ? Math.max(root.cfgSize * 1.45, 22) : root.cfgSize
+            font.pixelSize: cl.isValue ? Math.max(root.cfgSize * 1.45, 22 * Appearance.effectiveScale) : root.cfgSize
             font.weight: Font.Bold
             renderType: Text.NativeRendering
         }

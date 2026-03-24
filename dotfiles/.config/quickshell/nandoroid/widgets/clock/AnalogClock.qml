@@ -22,7 +22,7 @@ Item {
         return Config.options.appearance.clock.analog
     }
 
-    readonly property int configSize: Config.ready ? cfg.size : 240
+    readonly property int configSize: Config.ready ? cfg.size : 240 * Appearance.effectiveScale
     width: configSize
     height: configSize
     implicitWidth: configSize
@@ -88,7 +88,7 @@ Item {
                 implicitSize: root.width
                 color: root.colBackground
                 shapeString: Config.ready ? root.cfg.shape : "Circle"
-                borderWidth: 2
+                borderWidth: Math.max(2, 2 * Appearance.effectiveScale)
                 borderColor: Appearance.colors.colOutlineVariant
             }
         }
@@ -154,11 +154,11 @@ Item {
 
     // Center Pin
     Rectangle {
-        width: 8; height: 8
-        radius: 4
+        width: 8 * Appearance.effectiveScale; height: 8 * Appearance.effectiveScale
+        radius: 4 * Appearance.effectiveScale
         color: Appearance.m3colors.m3surface
         anchors.centerIn: parent
-        border.width: 1.5
+        border.width: Math.max(1, 1.5 * Appearance.effectiveScale)
         border.color: root.colSecondHand
     }
 }

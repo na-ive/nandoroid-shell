@@ -8,7 +8,7 @@ Item {
     required property color color
     required property color overlayColor
     required property list<point> points
-    property int strokeWidth: Config.ready ? Config.options.regionSelector.circle.strokeWidth : 6
+    property int strokeWidth: (Config.ready ? Config.options.regionSelector.circle.strokeWidth : 6) * Appearance.effectiveScale
     property bool dragging: false
     property int mouseX: 0
     property int mouseY: 0

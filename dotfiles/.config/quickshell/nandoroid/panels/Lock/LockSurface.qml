@@ -57,7 +57,7 @@ MouseArea {
     // Animations
     property real islandOpacity: 0
     property real islandScale: 0.95
-    property real islandYOffset: 30
+    property real islandYOffset: 30 * Appearance.effectiveScale
     
     Behavior on islandOpacity { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
     Behavior on islandScale   { NumberAnimation { duration: 400; easing.type: Easing.OutBack; easing.overshoot: 0.8 } }
@@ -135,9 +135,9 @@ MouseArea {
         z: 10
 
         readonly property bool isCentered: (Config.ready && Config.options.statusBar) ? Config.options.statusBar.layoutStyle === "centered" : false
-        readonly property real centeredWidth: (Config.ready && Config.options.statusBar) ? Config.options.statusBar.centeredWidth : 1200
-        readonly property real sidePadding: isCentered ? Math.round((parent.width - Math.min(centeredWidth, parent.width - 40)) / 2) : 12
-        readonly property int cornerRadius: (Config.ready && Config.options.statusBar?.backgroundCornerRadius) || 20
+        readonly property real centeredWidth: (Config.ready && Config.options.statusBar) ? Config.options.statusBar.centeredWidth * Appearance.effectiveScale : 1200 * Appearance.effectiveScale
+        readonly property real sidePadding: isCentered ? Math.round((parent.width - Math.min(centeredWidth, parent.width - 40 * Appearance.effectiveScale)) / 2) : 12 * Appearance.effectiveScale
+        readonly property int cornerRadius: Math.round(((Config.ready && Config.options.statusBar?.backgroundCornerRadius) || 20) * Appearance.effectiveScale)
 
         // Adaptive background detection
         readonly property int bgStyle: (Config.ready && Config.options.statusBar) ? (Config.options.statusBar.backgroundStyle ?? 0) : 0
@@ -166,7 +166,7 @@ MouseArea {
             
             readonly property bool showBg: (lockStatusBarContainer.bgStyle === 1) || (lockStatusBarContainer.bgStyle === 2 && lockStatusBarContainer.hasTiledWindows)
             
-            width: (lockStatusBarContainer.isCentered && showBg) ? Math.min(lockStatusBarContainer.centeredWidth, parent.width - 40) : parent.width
+            width: (lockStatusBarContainer.isCentered && showBg) ? Math.min(lockStatusBarContainer.centeredWidth, parent.width - 40 * Appearance.effectiveScale) : parent.width
             height: parent.height + (lockStatusBarContainer.isCentered && showBg ? lockStatusBarContainer.cornerRadius : 0)
             anchors.topMargin: (lockStatusBarContainer.isCentered && showBg) ? -lockStatusBarContainer.cornerRadius : 0
             
@@ -239,9 +239,9 @@ MouseArea {
             anchors.horizontalCenter: parent.horizontalCenter
             
             // Idle: y=6, height=28. Waterdrop: y=0, height=34.
-            y: lockStatusBarContainer.isWaterdrop ? 0 : 6
-            height: lockStatusBarContainer.isWaterdrop ? 34 : 28
-            width: lockedContent.implicitWidth + 24
+            y: lockStatusBarContainer.isWaterdrop ? 0 : 6 * Appearance.effectiveScale
+            height: lockStatusBarContainer.isWaterdrop ? 34 * Appearance.effectiveScale : 28 * Appearance.effectiveScale
+            width: lockedContent.implicitWidth + (24 * Appearance.effectiveScale)
             color: "black"
             radius: height / 2
 
@@ -256,13 +256,13 @@ MouseArea {
             // Concave Corners for Waterdrop
             RoundCorner {
                 anchors.right: parent.left; anchors.top: parent.top
-                implicitSize: 12; color: "black"; corner: RoundCorner.CornerEnum.TopRight
+                implicitSize: 12 * Appearance.effectiveScale; color: "black"; corner: RoundCorner.CornerEnum.TopRight
                 visible: lockStatusBarContainer.isWaterdrop
             }
 
             RoundCorner {
                 anchors.left: parent.right; anchors.top: parent.top
-                implicitSize: 12; color: "black"; corner: RoundCorner.CornerEnum.TopLeft
+                implicitSize: 12 * Appearance.effectiveScale; color: "black"; corner: RoundCorner.CornerEnum.TopLeft
                 visible: lockStatusBarContainer.isWaterdrop
             }
 
@@ -272,16 +272,16 @@ MouseArea {
             RowLayout {
                 id: lockedContent
                 anchors.centerIn: parent
-                spacing: 6
+                spacing: 6 * Appearance.effectiveScale
                 MaterialSymbol {
                     text: "lock"
-                    iconSize: 14
+                    iconSize: 14 * Appearance.effectiveScale
                     color: Appearance.colors.colNotchText
                     fill: 1
                 }
                 StyledText {
                     text: "Locked"
-                    font.pixelSize: 12
+                    font.pixelSize: 12 * Appearance.effectiveScale
                     font.weight: Font.DemiBold
                     color: Appearance.colors.colNotchText
                 }
@@ -297,11 +297,11 @@ MouseArea {
             RowLayout {
                 anchors.left: parent.left
                 anchors.verticalCenter: parent.verticalCenter
-                anchors.leftMargin: lockStatusBarContainer.sidePadding + (lockStatusBarContainer.isCentered ? 12 : 0)
-                spacing: 8
+                anchors.leftMargin: lockStatusBarContainer.sidePadding + (lockStatusBarContainer.isCentered ? 12 * Appearance.effectiveScale : 0)
+                spacing: 8 * Appearance.effectiveScale
                 StyledText {
                     text: SystemInfo.username + "  •  " + (Network.wifiEnabled ? (Network.networkName || "Offline") : "WiFi Off")
-                    font.pixelSize: 14
+                    font.pixelSize: 14 * Appearance.effectiveScale
                     font.weight: Font.Medium
                     color: lockStatusBarContainer.contentColor
                 }
@@ -311,35 +311,35 @@ MouseArea {
             RowLayout {
                 anchors.right: privacyIndicator.left
                 anchors.verticalCenter: parent.verticalCenter
-                anchors.rightMargin: 10
-                spacing: 8
+                anchors.rightMargin: 10 * Appearance.effectiveScale
+                spacing: 8 * Appearance.effectiveScale
 
                 // Notifications
                 Item {
                     visible: Notifications.unread > 0
-                    width: 20; height: 20
+                    width: 20 * Appearance.effectiveScale; height: 20 * Appearance.effectiveScale
                     MaterialSymbol {
                         id: lockBellIcon
                         anchors.centerIn: parent
                         text: "notifications_active"
-                        iconSize: 16
+                        iconSize: 16 * Appearance.effectiveScale
                         fill: 1
                         color: lockStatusBarContainer.contentColor
                     }
                     Rectangle {
                         anchors.top: parent.top
                         anchors.right: parent.right
-                        anchors.topMargin: -2
-                        anchors.rightMargin: -2
-                        width: Math.max(12, badgeText.implicitWidth + 4)
-                        height: 12
-                        radius: 6
+                        anchors.topMargin: -2 * Appearance.effectiveScale
+                        anchors.rightMargin: -2 * Appearance.effectiveScale
+                        width: Math.max(12 * Appearance.effectiveScale, badgeText.implicitWidth + 4 * Appearance.effectiveScale)
+                        height: 12 * Appearance.effectiveScale
+                        radius: 6 * Appearance.effectiveScale
                         color: lockBellIcon.color
                         StyledText {
                             id: badgeText
                             anchors.centerIn: parent
                             text: Notifications.unread > 99 ? "99+" : Notifications.unread.toString()
-                            font.pixelSize: 8
+                            font.pixelSize: 8 * Appearance.effectiveScale
                             font.weight: Font.Bold
                             color: barBg.showBg ? Appearance.m3colors.m3surface : Appearance.colors.colLayer0
                         }
@@ -349,7 +349,7 @@ MouseArea {
                 // WiFi
                 MaterialSymbol {
                     text: Network.materialSymbol
-                    iconSize: 16
+                    iconSize: 16 * Appearance.effectiveScale
                     fill: 1
                     color: lockStatusBarContainer.contentColor
                 }
@@ -358,7 +358,7 @@ MouseArea {
                 MaterialSymbol {
                     visible: BluetoothStatus.available
                     text: BluetoothStatus.materialSymbol
-                    iconSize: 16
+                    iconSize: 16 * Appearance.effectiveScale
                     fill: BluetoothStatus.connected ? 1 : 0
                     color: lockStatusBarContainer.contentColor
                 }
@@ -374,7 +374,7 @@ MouseArea {
                 MaterialSymbol {
                     visible: Notifications.silent
                     text: "notifications_paused"
-                    iconSize: 16
+                    iconSize: 16 * Appearance.effectiveScale
                     fill: 1
                     color: lockStatusBarContainer.contentColor
                 }
@@ -384,7 +384,7 @@ MouseArea {
             PrivacyIndicator {
                 id: privacyIndicator
                 anchors.right: parent.right
-                anchors.rightMargin: lockStatusBarContainer.sidePadding + (lockStatusBarContainer.isCentered ? 8 : -2)
+                anchors.rightMargin: lockStatusBarContainer.sidePadding + (lockStatusBarContainer.isCentered ? 8 * Appearance.effectiveScale : -2 * Appearance.effectiveScale)
                 anchors.verticalCenter: parent.verticalCenter
             }
         }
@@ -395,7 +395,7 @@ MouseArea {
         anchors.centerIn: parent
         // Offset slightly up to make room for media and password if they feel crowded, 
         // but user asked for "exactly in center" so we start with 0 offset.
-        spacing: 20
+        spacing: 20 * Appearance.effectiveScale
 
         NandoClock {
             id: lockClock
@@ -408,22 +408,22 @@ MouseArea {
         // Weather (Adaptive color)
         ColumnLayout {
             anchors.horizontalCenter: parent.horizontalCenter
-            spacing: 6
+            spacing: 6 * Appearance.effectiveScale
             visible: Config.ready && (Config.options.weather?.enable ?? true)
 
             RowLayout {
                 Layout.alignment: Qt.AlignHCenter
-                spacing: 12
+                spacing: 12 * Appearance.effectiveScale
                 CustomIcon {
                     source: Weather.current.icon
                     iconFolder: "assets/icons/google-weather"
-                    width: 32; height: 32
+                    width: 32 * Appearance.effectiveScale; height: 32 * Appearance.effectiveScale
                     colorize: false
                     Layout.alignment: Qt.AlignVCenter
                 }
                 StyledText {
                     text: Weather.current.temp + "°"
-                    font.pixelSize: 32
+                    font.pixelSize: 32 * Appearance.effectiveScale
                     font.weight: Font.Medium
                     color: Appearance.colors.colLockscreenWeatherText
                     Layout.alignment: Qt.AlignVCenter
@@ -433,7 +433,7 @@ MouseArea {
             StyledText {
                 Layout.alignment: Qt.AlignHCenter
                 text: Weather.current.condition
-                font.pixelSize: 15
+                font.pixelSize: 15 * Appearance.effectiveScale
                 font.weight: Font.Normal
                 color: Appearance.colors.colLockscreenWeatherSubtext
             }
@@ -445,16 +445,16 @@ MouseArea {
         default property alias contents: innerRow.data
         property alias rowSpacing: innerRow.spacing
         
-        implicitHeight: Math.min(56, Quickshell.screens[0].height * 0.08)
-        implicitWidth: innerRow.implicitWidth + 16 
+        implicitHeight: Math.min(56 * Appearance.effectiveScale, Quickshell.screens[0].height * 0.08)
+        implicitWidth: innerRow.implicitWidth + (16 * Appearance.effectiveScale)
         radius: height / 2
         color: Appearance.colors.colLayer2 // Surface Container
         
         StyledRectangularShadow {
             target: parent
             z: -1
-            offset: Qt.vector2d(0, 4)
-            blur: 10
+            offset: Qt.vector2d(0, 4 * Appearance.effectiveScale)
+            blur: 10 * Appearance.effectiveScale
             // Tailwind shadow-md approximation (slightly darker for dark bg)
             color: Qt.rgba(0, 0, 0, 0.25)
         }
@@ -462,8 +462,8 @@ MouseArea {
         RowLayout { 
             id: innerRow
             anchors.fill: parent
-            anchors.margins: 8 // Padding 8
-            spacing: 4
+            anchors.margins: 8 * Appearance.effectiveScale // Padding 8
+            spacing: 4 * Appearance.effectiveScale
         }
     }
 
@@ -474,7 +474,7 @@ MouseArea {
         property bool isActive: root.context.targetAction === pb.targetAction
         
         Layout.alignment: Qt.AlignVCenter
-        implicitWidth: 40; implicitHeight: 40; buttonRadius: 20
+        implicitWidth: 40 * Appearance.effectiveScale; implicitHeight: 40 * Appearance.effectiveScale; buttonRadius: 20 * Appearance.effectiveScale
         
         colBackground: isActive ? Appearance.m3colors.m3primary : "transparent"
         colBackgroundHover: isActive ? Qt.darker(Appearance.m3colors.m3primary, 1.1) : Appearance.colors.colLayer2Hover
@@ -492,7 +492,7 @@ MouseArea {
         MaterialSymbol {
             anchors.centerIn: parent
             text: pb.btnIcon
-            iconSize: 20
+            iconSize: 20 * Appearance.effectiveScale
             color: pb.isActive ? Appearance.m3colors.m3onPrimary : Appearance.m3colors.m3onSurfaceVariant
         }
     }
@@ -502,9 +502,9 @@ MouseArea {
         id: lockMediaCard
         showVisualizer: false
         anchors.bottom: bottomIsland.top
-        anchors.bottomMargin: 24
+        anchors.bottomMargin: 24 * Appearance.effectiveScale
         anchors.horizontalCenter: parent.horizontalCenter
-        width: Math.min(400, parent.width * 0.9)
+        width: Math.min(400 * Appearance.effectiveScale, parent.width * 0.9)
         scale: root.islandScale
         opacity: (Config.ready && Config.options.lock.showMediaCard) ? root.islandOpacity * (MprisController.activePlayer ? 1 : 0) : 0
         visible: opacity > 0
@@ -519,11 +519,11 @@ MouseArea {
         anchors {
             horizontalCenter: parent.horizontalCenter
             bottom: parent.bottom
-            bottomMargin: 32
+            bottomMargin: 32 * Appearance.effectiveScale
         }
         
         // Match MediaCard width with responsiveness
-        implicitWidth: Math.min(400, parent.width * 0.9)
+        implicitWidth: Math.min(400 * Appearance.effectiveScale, parent.width * 0.9)
         scale: root.islandScale
         opacity: root.islandOpacity
         y: root.islandYOffset
@@ -533,7 +533,7 @@ MouseArea {
             active: root.context.fingerprintsConfigured
             visible: active
             Layout.alignment: Qt.AlignVCenter
-            Layout.leftMargin: 6
+            Layout.leftMargin: 6 * Appearance.effectiveScale
             sourceComponent: MaterialSymbol {
                 text: "fingerprint"
                 iconSize: Appearance.font.pixelSize.huge
@@ -561,7 +561,7 @@ MouseArea {
                 echoMode: TextInput.Normal
                 cursorDelegate: Item {}
                 clip: true
-                padding: 12
+                padding: 12 * Appearance.effectiveScale
 
                 onTextChanged: root.context.currentText = text
                 onAccepted:    root.context.tryUnlock(root.ctrlHeld)
@@ -583,7 +583,7 @@ MouseArea {
                     selectionEnd: passwordInput.selectionEnd
                     cursorPosition: passwordInput.cursorPosition
                     
-                    charSize: 18
+                    charSize: 18 * Appearance.effectiveScale
                     selectionColor: Appearance.m3colors.m3secondary
                 }
 
@@ -600,10 +600,10 @@ MouseArea {
             // Shake
              SequentialAnimation {
                 id: shakeAnim
-                NumberAnimation { target: inputWrapper; property: "Layout.leftMargin"; to: -10; duration: 50 }
-                NumberAnimation { target: inputWrapper; property: "Layout.leftMargin"; to:  10; duration: 50 }
-                NumberAnimation { target: inputWrapper; property: "Layout.leftMargin"; to:  -5; duration: 50 }
-                NumberAnimation { target: inputWrapper; property: "Layout.leftMargin"; to:   5; duration: 50 }
+                NumberAnimation { target: inputWrapper; property: "Layout.leftMargin"; to: -10 * Appearance.effectiveScale; duration: 50 }
+                NumberAnimation { target: inputWrapper; property: "Layout.leftMargin"; to:  10 * Appearance.effectiveScale; duration: 50 }
+                NumberAnimation { target: inputWrapper; property: "Layout.leftMargin"; to:  -5 * Appearance.effectiveScale; duration: 50 }
+                NumberAnimation { target: inputWrapper; property: "Layout.leftMargin"; to:   5 * Appearance.effectiveScale; duration: 50 }
                 NumberAnimation { target: inputWrapper; property: "Layout.leftMargin"; to:   0; duration: 50 }
             }
             Connections {
@@ -618,7 +618,7 @@ MouseArea {
         RippleButton {
             Layout.alignment: Qt.AlignVCenter
             Layout.rightMargin: 0
-            implicitWidth: 64; implicitHeight: 40; buttonRadius: 20
+            implicitWidth: 64 * Appearance.effectiveScale; implicitHeight: 40 * Appearance.effectiveScale; buttonRadius: 20 * Appearance.effectiveScale
             
             colBackground: root.context.unlockInProgress 
                 ? Appearance.m3colors.m3surfaceContainerHigh 
@@ -632,7 +632,7 @@ MouseArea {
 
             MaterialSymbol {
                 anchors.centerIn: parent
-                iconSize: 22
+                iconSize: 22 * Appearance.effectiveScale
                 text: root.context.unlockInProgress ? "progress_activity" : "arrow_right_alt"
                 color: root.context.unlockInProgress
                     ? Appearance.m3colors.m3onSurfaceVariant
@@ -645,7 +645,7 @@ MouseArea {
     RoundCorner {
         anchors.top: parent.top; anchors.left: parent.left
         corner: RoundCorner.CornerEnum.TopLeft
-        implicitSize: Config.ready ? (Config.options.appearance?.screenCorners?.radius ?? 20) : 20
+        implicitSize: Math.round((Config.ready ? (Config.options.appearance?.screenCorners?.radius ?? 20) : 20) * Appearance.effectiveScale)
         color: "#000000"
         z: 100
         visible: Config.ready && (Config.options.appearance?.screenCorners?.mode ?? 1) !== 0
@@ -653,7 +653,7 @@ MouseArea {
     RoundCorner {
         anchors.top: parent.top; anchors.right: parent.right
         corner: RoundCorner.CornerEnum.TopRight
-        implicitSize: Config.ready ? (Config.options.appearance?.screenCorners?.radius ?? 20) : 20
+        implicitSize: Math.round((Config.ready ? (Config.options.appearance?.screenCorners?.radius ?? 20) : 20) * Appearance.effectiveScale)
         color: "#000000"
         z: 100
         visible: Config.ready && (Config.options.appearance?.screenCorners?.mode ?? 1) !== 0
@@ -661,7 +661,7 @@ MouseArea {
     RoundCorner {
         anchors.bottom: parent.bottom; anchors.left: parent.left
         corner: RoundCorner.CornerEnum.BottomLeft
-        implicitSize: Config.ready ? (Config.options.appearance?.screenCorners?.radius ?? 20) : 20
+        implicitSize: Math.round((Config.ready ? (Config.options.appearance?.screenCorners?.radius ?? 20) : 20) * Appearance.effectiveScale)
         color: "#000000"
         z: 100
         visible: Config.ready && (Config.options.appearance?.screenCorners?.mode ?? 1) !== 0
@@ -669,7 +669,7 @@ MouseArea {
     RoundCorner {
         anchors.bottom: parent.bottom; anchors.right: parent.right
         corner: RoundCorner.CornerEnum.BottomRight
-        implicitSize: Config.ready ? (Config.options.appearance?.screenCorners?.radius ?? 20) : 20
+        implicitSize: Math.round((Config.ready ? (Config.options.appearance?.screenCorners?.radius ?? 20) : 20) * Appearance.effectiveScale)
         color: "#000000"
         z: 100
         visible: Config.ready && (Config.options.appearance?.screenCorners?.mode ?? 1) !== 0

@@ -60,7 +60,7 @@ Item {
         descTimeout.restart()
     }
 
-    property int margins: 8
+    property int margins: 8 * Appearance.effectiveScale
     implicitWidth: content.implicitWidth + margins * 2
     implicitHeight: content.implicitHeight + margins * 2
 
@@ -68,12 +68,12 @@ Item {
         id: content
         anchors.centerIn: parent
 
-        property real padding: 8
-        implicitHeight: 38
+        property real padding: 8 * Appearance.effectiveScale
+        implicitHeight: 38 * Appearance.effectiveScale
         implicitWidth: root.showDescription ? contentRow.implicitWidth + padding * 2 : implicitHeight
         clip: true
 
-        radius: 19
+        radius: height / 2
 
         color: Appearance.colors.colPrimary
 
@@ -88,11 +88,11 @@ Item {
                 left: parent.left
                 leftMargin: content.padding
             }
-            spacing: 12
+            spacing: 12 * Appearance.effectiveScale
 
             MaterialSymbol {
                 anchors.verticalCenter: parent.verticalCenter
-                iconSize: 22
+                iconSize: 22 * Appearance.effectiveScale
                 color: Appearance.colors.colOnPrimary
                 text: root.materialSymbol
             }
@@ -104,6 +104,7 @@ Item {
                 sourceComponent: StyledText {
                     color: Appearance.colors.colOnPrimary
                     text: root.description
+                    font.pixelSize: Appearance.font.pixelSize.small
                 }
             }
         }

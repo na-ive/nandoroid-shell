@@ -44,9 +44,9 @@ ColumnLayout {
     }
 
     // ── Config props ───────────────────────────────────────────
-    readonly property real  cfgSize:       Config.ready ? cfg.fontSize     : 84
-    readonly property real  cfgDateSize:   14
-    readonly property int   cfgDateGap:    4
+    readonly property real  cfgSize:       Config.ready ? cfg.fontSize     : 84 * Appearance.effectiveScale
+    readonly property real  cfgDateSize:   14 * Appearance.effectiveScale
+    readonly property int   cfgDateGap:    4 * Appearance.effectiveScale
     readonly property string cfgWeight:    "Bold"
     readonly property string cfgDateWeight:"Medium"
     readonly property string cfgFamily:    Appearance.font.family.title
@@ -93,7 +93,7 @@ ColumnLayout {
         font.hintingPreference: Font.PreferDefaultHinting
         renderType: Text.NativeRendering
         Layout.alignment: Qt.AlignHCenter
-        Layout.topMargin: -24
+        Layout.topMargin: -24 * Appearance.effectiveScale
     }
 
     // ── Date ────────────────────────────────────────────────────

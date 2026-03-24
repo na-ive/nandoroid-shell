@@ -28,8 +28,8 @@ Slider {
 
     property var configuration: StyledSlider.Configuration.S
 
-    property real handleDefaultWidth: 3
-    property real handlePressedWidth: 1.5
+    property real handleDefaultWidth: 3 * Appearance.effectiveScale
+    property real handlePressedWidth: 1.5 * Appearance.effectiveScale
     property color highlightColor: Appearance.m3colors.m3primary // Adapted
     property color trackColor: Appearance.m3colors.m3secondaryContainer // Adapted
     property color handleColor: Appearance.m3colors.m3primary // Adapted
@@ -41,16 +41,16 @@ Slider {
     // Actually, I'll use 4 if unsharpen is missing. Safe fallback: (Appearance.rounding.verysmall ?? 4) is not valid QML syntax for property alias chain?
     // I'll use Appearance.rounding.small for now to be safe.
     
-    property real trackWidth: configuration
-    property real trackRadius: trackWidth >= StyledSlider.Configuration.XL ? 24
-        : trackWidth >= StyledSlider.Configuration.L ? 16
-        : trackWidth >= StyledSlider.Configuration.M ? 12
-        : trackWidth >= StyledSlider.Configuration.S ? 8
+    property real trackWidth: configuration * Appearance.effectiveScale
+    property real trackRadius: trackWidth >= StyledSlider.Configuration.XL * Appearance.effectiveScale ? 24 * Appearance.effectiveScale
+        : trackWidth >= StyledSlider.Configuration.L * Appearance.effectiveScale ? 16 * Appearance.effectiveScale
+        : trackWidth >= StyledSlider.Configuration.M * Appearance.effectiveScale ? 12 * Appearance.effectiveScale
+        : trackWidth >= StyledSlider.Configuration.S * Appearance.effectiveScale ? 8 * Appearance.effectiveScale
         : height / 2
-    property real handleHeight: (configuration === StyledSlider.Configuration.Wavy) ? 24 : (configuration === StyledSlider.Configuration.X0) ? 14 : Math.max(33, trackWidth + 9)
+    property real handleHeight: (configuration === StyledSlider.Configuration.Wavy) ? 24 * Appearance.effectiveScale : (configuration === StyledSlider.Configuration.X0) ? 14 * Appearance.effectiveScale : Math.max(33 * Appearance.effectiveScale, trackWidth + (9 * Appearance.effectiveScale))
     property real handleWidth: root.pressed ? handlePressedWidth : handleDefaultWidth
-    property real handleMargins: 4
-    property real trackDotSize: 3
+    property real handleMargins: 4 * Appearance.effectiveScale
+    property real trackDotSize: 3 * Appearance.effectiveScale
     property bool usePercentTooltip: true
     property string tooltipContent: usePercentTooltip ? `${Math.round(((value - from) / (to - from)) * 100)}%` : `${Math.round(value)}`
     property bool wavy: configuration === StyledSlider.Configuration.Wavy // If true, the progress bar will have a wavy fill effect
@@ -62,7 +62,7 @@ Slider {
 
     leftPadding: handleMargins
     rightPadding: handleMargins
-    implicitWidth: 100
+    implicitWidth: 100 * Appearance.effectiveScale
     property real effectiveDraggingWidth: width - leftPadding - rightPadding
 
     Layout.fillWidth: true

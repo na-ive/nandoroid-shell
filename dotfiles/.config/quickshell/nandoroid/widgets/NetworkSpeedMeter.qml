@@ -47,7 +47,7 @@ ColumnLayout {
         Layout.preferredHeight: 10 * Appearance.effectiveScale
         StyledText {
             text: root.formatSpeed(SystemData.networkTxRate)
-            font.pixelSize: 10 * Appearance.effectiveScale
+            font.pixelSize: Appearance.font.pixelSize.smallest
             font.weight: Font.Medium
             color: root.color
             horizontalAlignment: Text.AlignRight
@@ -67,7 +67,7 @@ ColumnLayout {
         Layout.preferredHeight: 10 * Appearance.effectiveScale
         StyledText {
             text: root.formatSpeed(SystemData.networkRxRate)
-            font.pixelSize: 10 * Appearance.effectiveScale
+            font.pixelSize: Appearance.font.pixelSize.smallest
             font.weight: Font.Medium
             color: root.color
             horizontalAlignment: Text.AlignRight

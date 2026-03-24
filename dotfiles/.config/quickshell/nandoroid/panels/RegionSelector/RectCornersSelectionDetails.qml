@@ -1,3 +1,4 @@
+pragma ComponentBehavior: Bound
 import QtQuick
 import "../../core"
 import "../../widgets"
@@ -44,9 +45,9 @@ Item {
         height: Math.round(root.regionHeight) + borderWidth * 2
 
         color: root.color
-        dashLength: 6
-        gapLength: 3
-        borderWidth: 1
+        dashLength: 6 * Appearance.effectiveScale
+        gapLength: 3 * Appearance.effectiveScale
+        borderWidth: Math.max(1, 1 * Appearance.effectiveScale)
     }
 
     Text {
@@ -54,7 +55,7 @@ Item {
         anchors {
             top: selectionBorder.bottom
             right: selectionBorder.right
-            margins: 8
+            margins: 8 * Appearance.effectiveScale
         }
         color: root.color
         font.family: Appearance.font.family.main
@@ -72,7 +73,7 @@ Item {
             top: parent.top
             bottom: parent.bottom
         }
-        width: 1
+        width: Math.max(1, 1 * Appearance.effectiveScale)
         color: root.color
     }
     Rectangle { // Horizontal
@@ -84,7 +85,7 @@ Item {
             left: parent.left
             right: parent.right
         }
-        height: 1
+        height: Math.max(1, 1 * Appearance.effectiveScale)
         color: root.color
     }
 }

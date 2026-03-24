@@ -42,7 +42,7 @@ Scope {
             id: cornerWidget
             anchors.fill: parent
             corner: cornerPanelWindow.corner
-            implicitSize: Config.ready ? Config.options.appearance.screenCorners.radius : 20
+            implicitSize: Math.round((Config.ready ? (Config.options.appearance?.screenCorners?.radius ?? 20) : 20) * Appearance.effectiveScale)
             color: "#000000" // Solid background color for the corner itself -> looks like black corner wrapping the screen
         }
     }

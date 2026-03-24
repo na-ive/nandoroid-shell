@@ -46,7 +46,7 @@ Item {
         anchors.fill: parent
         radius: 12 * Appearance.effectiveScale
         color: Appearance.colors.colLayer1
-        border.width: root.isOpened ? 2 * Appearance.effectiveScale : 1 * Appearance.effectiveScale
+        border.width: root.isOpened ? Math.max(2, 2 * Appearance.effectiveScale) : Math.max(1, 1 * Appearance.effectiveScale)
         border.color: root.isOpened ? Appearance.colors.colPrimary : Appearance.colors.colOutlineVariant
         
         Behavior on border.color { ColorAnimation { duration: 200 } }
@@ -160,7 +160,7 @@ Item {
         background: Rectangle {
             radius: 12 * Appearance.effectiveScale
             color: Qt.darker(Appearance.colors.colLayer2, 1.05)
-            border.width: 1 * Appearance.effectiveScale
+            border.width: Math.max(1, 1 * Appearance.effectiveScale)
             border.color: Appearance.colors.colOutlineVariant
             clip: true
         }

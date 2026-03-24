@@ -76,7 +76,7 @@ Rectangle {
 
             StyledText {
                 text: SystemInfo.hostname
-                font.pixelSize: 14 * Appearance.effectiveScale
+                font.pixelSize: Appearance.font.pixelSize.small
                 font.weight: Font.Medium
                 color: Appearance.m3colors.m3onSurface
                 elide: Text.ElideRight

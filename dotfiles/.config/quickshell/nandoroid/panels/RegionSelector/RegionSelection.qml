@@ -352,7 +352,7 @@ PanelWindow {
                 id: closeButton
                 anchors.right: parent.right
                 anchors.bottom: parent.bottom
-                anchors.margins: 20
+                anchors.margins: 20 * Appearance.effectiveScale
                 iconName: "close"
                 onClicked: root.dismiss()
                 z: 10000

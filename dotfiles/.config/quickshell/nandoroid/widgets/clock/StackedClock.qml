@@ -11,8 +11,8 @@ ColumnLayout {
 
     // Internal default config to ensure we never have undefined access
     readonly property var defaultCfg: ({
-        fontSize: 64,
-        labelFontSize: 24,
+        fontSize: 64 * Appearance.effectiveScale,
+        labelFontSize: 24 * Appearance.effectiveScale,
         fontFamily: "sans",
         fontWeight: "Bold",
         labelFontWeight: "Normal",
@@ -102,7 +102,7 @@ ColumnLayout {
     Text {
         visible: root.showDate
         text: root.dayName
-        font.pixelSize: cfg.labelFontSize || 24
+        font.pixelSize: cfg.labelFontSize || 24 * Appearance.effectiveScale
         font.family: cfg.fontFamily || "sans"
         font.weight: root.fontW(cfg.labelFontWeight)
         color: root.labelColor
@@ -114,36 +114,36 @@ ColumnLayout {
     Text {
         visible: root.showDate
         text: root.dayNumber
-        font.pixelSize: cfg.fontSize || 64
+        font.pixelSize: cfg.fontSize || 64 * Appearance.effectiveScale
         font.family: cfg.fontFamily || "sans"
         font.weight: root.fontW(cfg.labelFontWeight)
         color: root.labelColor
         Layout.alignment: root.mapAlign(cfg.alignment)
         horizontalAlignment: root.mapTextAlign(cfg.alignment)
-        Layout.topMargin: - ((cfg.fontSize || 64) * 0.2)
+        Layout.topMargin: - ((cfg.fontSize || 64 * Appearance.effectiveScale) * 0.2)
     }
 
     Text {
         text: root.displayHours + ":" + root.displayMinutes
-        font.pixelSize: cfg.fontSize || 64
+        font.pixelSize: cfg.fontSize || 64 * Appearance.effectiveScale
         font.family: cfg.fontFamily || "sans"
         font.weight: root.fontW(cfg.fontWeight)
         color: root.mainColor
         Layout.alignment: root.mapAlign(cfg.alignment)
         horizontalAlignment: root.mapTextAlign(cfg.alignment)
-        Layout.topMargin: - ((cfg.fontSize || 64) * 0.2)
+        Layout.topMargin: - ((cfg.fontSize || 64 * Appearance.effectiveScale) * 0.2)
     }
 
     Text {
         visible: !root.is24H
         text: root.amPm
-        font.pixelSize: (cfg.labelFontSize || 24) + 6
+        font.pixelSize: (cfg.labelFontSize || 24 * Appearance.effectiveScale) + 6 * Appearance.effectiveScale
         font.family: cfg.fontFamily || "sans"
         font.weight: root.fontW(cfg.labelFontWeight)
         color: root.labelColor
         opacity: 0.8
         Layout.alignment: root.mapAlign(cfg.alignment)
         horizontalAlignment: root.mapTextAlign(cfg.alignment)
-        Layout.topMargin: - ((cfg.labelFontSize || 24) * 0.3)
+        Layout.topMargin: - ((cfg.labelFontSize || 24 * Appearance.effectiveScale) * 0.3)
     }
 }

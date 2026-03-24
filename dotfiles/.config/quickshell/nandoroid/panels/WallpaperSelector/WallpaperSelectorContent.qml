@@ -20,8 +20,8 @@ Item {
     readonly property Item selectorItem: mainSelector
 
     // Responsive sizing
-    width: Math.min(1100, (parent ? parent.width : 1200) * 0.9)
-    height: Math.min(800, (parent ? parent.height : 900) * 0.85)
+    width: Math.min(1100 * Appearance.effectiveScale, (parent ? parent.width : 1200) * 0.9)
+    height: Math.min(800 * Appearance.effectiveScale, (parent ? parent.height : 900) * 0.85)
     
     implicitWidth: width
     implicitHeight: height
@@ -72,8 +72,8 @@ Item {
         id: bgContainer
         anchors.fill: parent
         color: Appearance.colors.colLayer0
-        radius: 32
-        border.width: 1
+        radius: 32 * Appearance.effectiveScale
+        border.width: Math.max(1, 1 * Appearance.effectiveScale)
         border.color: Appearance.colors.colOutlineVariant
         clip: true
 
@@ -81,26 +81,27 @@ Item {
 
         ColumnLayout {
             anchors.fill: parent
-            anchors.margins: 12
+            anchors.margins: 12 * Appearance.effectiveScale
             spacing: 0
 
             // ── Header ──
             Item {
+                id: headerItem
                 Layout.fillWidth: true
-                Layout.preferredHeight: 64
+                Layout.preferredHeight: 64 * Appearance.effectiveScale
                 
                 RowLayout {
                     anchors.fill: parent
-                    anchors.leftMargin: 20
-                    anchors.rightMargin: 12
-                    spacing: 20
+                    anchors.leftMargin: 20 * Appearance.effectiveScale
+                    anchors.rightMargin: 12 * Appearance.effectiveScale
+                    spacing: 20 * Appearance.effectiveScale
 
                     StyledText {
                         text: (GlobalStates.wallpaperSelectorTarget === "desktop" ? "Desktop Wallpaper" : "Lock Screen Wallpaper")
                         font.pixelSize: Appearance.font.pixelSize.large
                         font.weight: Font.Bold
                         color: Appearance.colors.colOnLayer0
-                        Layout.preferredWidth: 200
+                        Layout.preferredWidth: 200 * Appearance.effectiveScale
                         Layout.alignment: Qt.AlignVCenter
                     }
 
@@ -108,23 +109,23 @@ Item {
 
                     // Header Search Pill
                     Rectangle {
-                        Layout.preferredWidth: 360
-                        Layout.preferredHeight: 44
-                        radius: 22
+                        Layout.preferredWidth: 360 * Appearance.effectiveScale
+                        Layout.preferredHeight: 44 * Appearance.effectiveScale
+                        radius: 22 * Appearance.effectiveScale
                         color: Appearance.colors.colLayer1
                         Layout.alignment: Qt.AlignVCenter
                         
                         RowLayout {
                             anchors.fill: parent
-                            anchors.leftMargin: 16
-                            spacing: 12
+                            anchors.leftMargin: 16 * Appearance.effectiveScale
+                            spacing: 12 * Appearance.effectiveScale
                             MaterialSymbol {
-                                text: "search"; iconSize: 22; color: Appearance.colors.colSubtext
+                                text: "search"; iconSize: 22 * Appearance.effectiveScale; color: Appearance.colors.colSubtext
                             }
                             TextInput {
                                 id: headerSearch
                                 Layout.fillWidth: true
-                                Layout.rightMargin: 16
+                                Layout.rightMargin: 16 * Appearance.effectiveScale
                                 color: Appearance.colors.colOnLayer1
                                 font.pixelSize: Appearance.font.pixelSize.normal
                                 verticalAlignment: TextInput.AlignVCenter
@@ -163,10 +164,10 @@ Item {
                     Item { Layout.fillWidth: true }
 
                     RippleButton {
-                        implicitWidth: 36; implicitHeight: 36; buttonRadius: 18
+                        implicitWidth: 36 * Appearance.effectiveScale; implicitHeight: 36 * Appearance.effectiveScale; buttonRadius: 18 * Appearance.effectiveScale
                         colBackground: "transparent"
                         onClicked: mainSelector.close()
-                        MaterialSymbol { anchors.centerIn: parent; text: "close"; iconSize: 22; color: Appearance.colors.colSubtext }
+                        MaterialSymbol { anchors.centerIn: parent; text: "close"; iconSize: 22 * Appearance.effectiveScale; color: Appearance.colors.colSubtext }
                     }
                 }
             }
@@ -180,18 +181,18 @@ Item {
                 // Sidebar area
                 Item {
                     Layout.fillHeight: true
-                    Layout.preferredWidth: 240
+                    Layout.preferredWidth: 240 * Appearance.effectiveScale
                     ColumnLayout {
                         anchors.fill: parent
-                        anchors.margins: 8
-                        spacing: 4
+                        anchors.margins: 8 * Appearance.effectiveScale
+                        spacing: 4 * Appearance.effectiveScale
 
                         // --- Top Special Button (Wallhaven - Online) ---
                         RippleButton {
                             id: wallhavenSideBtn
                             Layout.fillWidth: true
-                            implicitHeight: 52
-                            buttonRadius: 16
+                            implicitHeight: 52 * Appearance.effectiveScale
+                            buttonRadius: 16 * Appearance.effectiveScale
                             toggled: mainSelector.wallhavenMode
                             colBackground: toggled ? Appearance.colors.colPrimary : Appearance.colors.colLayer1
                             colBackgroundHover: toggled ? Appearance.colors.colPrimaryHover : Appearance.colors.colLayer1Hover
@@ -204,9 +205,9 @@ Item {
                             }
 
                             RowLayout {
-                                anchors.fill: parent; anchors.leftMargin: 20; spacing: 16
+                                anchors.fill: parent; anchors.leftMargin: 20 * Appearance.effectiveScale; spacing: 16 * Appearance.effectiveScale
                                 MaterialSymbol { 
-                                    text: "travel_explore"; iconSize: 22
+                                    text: "travel_explore"; iconSize: 22 * Appearance.effectiveScale
                                     color: wallhavenSideBtn.toggled ? Appearance.colors.colOnPrimary : Appearance.colors.colPrimary
                                 }
                                 StyledText { 
@@ -217,7 +218,7 @@ Item {
                             }
                         }
 
-                        Item { Layout.preferredHeight: 12 } // Gap separator
+                        Item { Layout.preferredHeight: 12 * Appearance.effectiveScale } // Gap separator
 
                         // --- Local Group (Folders & Favourites) ---
                         Repeater {
@@ -230,8 +231,8 @@ Item {
                             delegate: RippleButton {
                                 id: folderBtn
                                 Layout.fillWidth: true
-                                implicitHeight: 52
-                                buttonRadius: 26
+                                implicitHeight: 52 * Appearance.effectiveScale
+                                buttonRadius: 26 * Appearance.effectiveScale
                                 
                                 readonly property bool isFavBtn: modelData.path === "FAV_MODE"
                                 readonly property bool isActive: {
@@ -255,9 +256,9 @@ Item {
                                 }
                                 
                                 contentItem: RowLayout {
-                                    anchors.fill: parent; anchors.leftMargin: 20; spacing: 16
+                                    anchors.fill: parent; anchors.leftMargin: 20 * Appearance.effectiveScale; spacing: 16 * Appearance.effectiveScale
                                     MaterialSymbol { 
-                                        text: modelData.icon; iconSize: 22
+                                        text: modelData.icon; iconSize: 22 * Appearance.effectiveScale
                                         color: folderBtn.toggled ? Appearance.m3colors.m3onPrimaryContainer : Appearance.colors.colOnLayer0
                                     }
                                     StyledText { 
@@ -274,17 +275,17 @@ Item {
                         // Mode Switcher
                         Row {
                             Layout.fillWidth: true
-                            Layout.preferredHeight: 48
-                            Layout.margins: 4
-                            spacing: 4
+                            Layout.preferredHeight: 48 * Appearance.effectiveScale
+                            Layout.margins: 4 * Appearance.effectiveScale
+                            spacing: 4 * Appearance.effectiveScale
                             SegmentedButton {
-                                width: (parent.width - 4) / 2; height: parent.height
+                                width: (parent.width - (4 * Appearance.effectiveScale)) / 2; height: parent.height
                                 buttonText: "Desktop"; isHighlighted: GlobalStates.wallpaperSelectorTarget === "desktop"
                                 colInactive: Appearance.colors.colLayer2; colActive: Appearance.m3colors.m3primary
                                 onClicked: GlobalStates.wallpaperSelectorTarget = "desktop"
                             }
                             SegmentedButton {
-                                width: (parent.width - 4) / 2; height: parent.height
+                                width: (parent.width - (4 * Appearance.effectiveScale)) / 2; height: parent.height
                                 buttonText: "Lock"; isHighlighted: GlobalStates.wallpaperSelectorTarget === "lock"
                                 enabled: Config.ready && (Config.options.lock ? Config.options.lock.useSeparateWallpaper : true)
                                 opacity: enabled ? 1 : 0.4; colInactive: Appearance.colors.colLayer2; colActive: Appearance.m3colors.m3primary
@@ -295,13 +296,13 @@ Item {
                 }
 
                     Rectangle {
-                        Layout.fillWidth: true; Layout.fillHeight: true; Layout.margins: 12
-                        color: Appearance.colors.colLayer1; radius: 28; clip: true; opacity: 0.98
+                        Layout.fillWidth: true; Layout.fillHeight: true; Layout.margins: 12 * Appearance.effectiveScale
+                        color: Appearance.colors.colLayer1; radius: 28 * Appearance.effectiveScale; clip: true; opacity: 0.98
 
                         GridView {
                             id: grid
-                            anchors.fill: parent; anchors.margins: 20
-                            cellWidth: width / 3; cellHeight: cellWidth * 9/16 + 40
+                            anchors.fill: parent; anchors.margins: 20 * Appearance.effectiveScale
+                            cellWidth: width / 3; cellHeight: cellWidth * 9/16 + (40 * Appearance.effectiveScale)
                             clip: true; interactive: true
                             
                             // Memory optimization: Load only what's necessary (about 1.5 extra screen heights)
@@ -310,7 +311,7 @@ Item {
                             model: mainSelector.wallhavenMode ? WallhavenService.results : (mainSelector.favMode ? favModel : Wallpapers.folderModel)
                             
                             onContentYChanged: {
-                                if (mainSelector.wallhavenMode && !WallhavenService.loading && contentY > contentHeight - height - 400) {
+                                if (mainSelector.wallhavenMode && !WallhavenService.loading && contentY > contentHeight - height - (400 * Appearance.effectiveScale)) {
                                     if (WallhavenService.results.count < WallhavenService.totalResults) {
                                         WallhavenService.search(WallhavenService.lastQuery, false, WallhavenService.currentPage + 1);
                                     }
@@ -318,13 +319,13 @@ Item {
                             }
 
                             footer: Item {
-                                width: grid.width; height: 80
+                                width: grid.width; height: 80 * Appearance.effectiveScale
                                 visible: mainSelector.wallhavenMode && WallhavenService.loading && grid.count > 0
                                 RowLayout {
                                     anchors.centerIn: parent
-                                    spacing: 12
+                                    spacing: 12 * Appearance.effectiveScale
                                     MaterialSymbol {
-                                        text: "progress_activity"; iconSize: 24; color: Appearance.colors.colPrimary
+                                        text: "progress_activity"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary
                                         RotationAnimation on rotation { from: 0; to: 360; duration: 1000; loops: Animation.Infinite; running: parent.visible }
                                     }
                                     StyledText { text: "Loading more..."; color: Appearance.colors.colSubtext }
@@ -380,16 +381,16 @@ Item {
                                 }
 
                                 ColumnLayout {
-                                    anchors.fill: parent; anchors.margins: 12; spacing: 8
+                                    anchors.fill: parent; anchors.margins: 12 * Appearance.effectiveScale; spacing: 8 * Appearance.effectiveScale
                                     
                                     Item {
                                         Layout.fillWidth: true; Layout.fillHeight: true
                                         Rectangle {
                                             id: imgPlate
-                                            anchors.fill: parent; radius: 18; color: Appearance.colors.colLayer2
+                                            anchors.fill: parent; radius: 18 * Appearance.effectiveScale; color: Appearance.colors.colLayer2
                                             layer.enabled: true
                                             layer.effect: OpacityMask {
-                                                maskSource: Rectangle { width: imgPlate.width; height: imgPlate.height; radius: 18 }
+                                                maskSource: Rectangle { width: imgPlate.width; height: imgPlate.height; radius: 18 * Appearance.effectiveScale }
                                             }
 
                                             HoverHandler { id: imgHover }
@@ -434,14 +435,14 @@ Item {
                                             }
                                             
                                             RowLayout {
-                                                anchors.bottom: parent.bottom; anchors.right: parent.right; anchors.margins: 4; spacing: 2
+                                                anchors.bottom: parent.bottom; anchors.right: parent.right; anchors.margins: 4 * Appearance.effectiveScale; spacing: 2 * Appearance.effectiveScale
 
                                                 RippleButton {
                                                     id: similarBtn
                                                     visible: delegateRoot.wallhavenId !== ""
-                                                    implicitWidth: 36; implicitHeight: 36; buttonRadius: 18; colBackground: "transparent"
+                                                    implicitWidth: 36 * Appearance.effectiveScale; implicitHeight: 36 * Appearance.effectiveScale; buttonRadius: 18 * Appearance.effectiveScale; colBackground: "transparent"
                                                     MaterialSymbol {
-                                                        anchors.centerIn: parent; text: "auto_awesome"; iconSize: 20; color: "white"
+                                                        anchors.centerIn: parent; text: "auto_awesome"; iconSize: 20 * Appearance.effectiveScale; color: "white"
                                                         fill: parent.hovered ? 1 : 0
                                                     }
                                                     onClicked: {
@@ -457,10 +458,10 @@ Item {
                                                 RippleButton {
                                                     id: favBtn
                                                     visible: !delegateRoot.inWallhavenMode && currentFilePath !== ""
-                                                    implicitWidth: 36; implicitHeight: 36; buttonRadius: 18; colBackground: "transparent"
+                                                    implicitWidth: 36 * Appearance.effectiveScale; implicitHeight: 36 * Appearance.effectiveScale; buttonRadius: 18 * Appearance.effectiveScale; colBackground: "transparent"
                                                     readonly property bool isFav: currentFilePath !== "" && Wallpapers.isFavorite(currentFilePath)
                                                     MaterialSymbol {
-                                                        anchors.centerIn: parent; text: "favorite"; iconSize: 20
+                                                        anchors.centerIn: parent; text: "favorite"; iconSize: 20 * Appearance.effectiveScale
                                                         fill: (favBtn.isFav || favBtn.hovered) ? 1 : 0
                                                         color: favBtn.isFav ? "#ff4081" : "#FFFFFF"
                                                         Behavior on color { ColorAnimation { duration: 200 } }
@@ -472,9 +473,9 @@ Item {
                                                 RippleButton {
                                                     id: downloadOnlyBtn
                                                     visible: delegateRoot.inWallhavenMode && (model.full || "") !== ""
-                                                    implicitWidth: 36; implicitHeight: 36; buttonRadius: 18; colBackground: "transparent"
+                                                    implicitWidth: 36 * Appearance.effectiveScale; implicitHeight: 36 * Appearance.effectiveScale; buttonRadius: 18 * Appearance.effectiveScale; colBackground: "transparent"
                                                     MaterialSymbol {
-                                                        anchors.centerIn: parent; text: "download"; iconSize: 20; color: "white"
+                                                        anchors.centerIn: parent; text: "download"; iconSize: 20 * Appearance.effectiveScale; color: "white"
                                                         fill: parent.hovered ? 1 : 0
                                                     }
                                                     onClicked: WallhavenService.download(model.full, model.id, model.file_type, false)
@@ -484,9 +485,9 @@ Item {
                                                 RippleButton {
                                                     id: downloadApplyBtn
                                                     visible: delegateRoot.inWallhavenMode && (model.full || "") !== ""
-                                                    implicitWidth: 36; implicitHeight: 36; buttonRadius: 18; colBackground: "transparent"
+                                                    implicitWidth: 36 * Appearance.effectiveScale; implicitHeight: 36 * Appearance.effectiveScale; buttonRadius: 18 * Appearance.effectiveScale; colBackground: "transparent"
                                                     MaterialSymbol {
-                                                        anchors.centerIn: parent; text: "wallpaper"; iconSize: 20; color: "white"
+                                                        anchors.centerIn: parent; text: "wallpaper"; iconSize: 20 * Appearance.effectiveScale; color: "white"
                                                         fill: parent.hovered ? 1 : 0
                                                     }
                                                     onClicked: WallhavenService.download(model.full, model.id, model.file_type, true)
@@ -496,11 +497,11 @@ Item {
 
                                             Rectangle {
                                                 visible: delegateRoot.inWallhavenMode && (model.resolution || "") !== ""
-                                                anchors.top: parent.top; anchors.left: parent.left; anchors.margins: 8
-                                                width: resText.implicitWidth + 12; height: 20; radius: 10; color: Qt.rgba(0,0,0, 0.5)
+                                                anchors.top: parent.top; anchors.left: parent.left; anchors.margins: 8 * Appearance.effectiveScale
+                                                width: resText.implicitWidth + (12 * Appearance.effectiveScale); height: 20 * Appearance.effectiveScale; radius: 10 * Appearance.effectiveScale; color: Qt.rgba(0,0,0, 0.5)
                                                 StyledText {
                                                     id: resText; anchors.centerIn: parent; text: model.resolution || ""
-                                                    font.pixelSize: 10; font.weight: Font.Bold; color: "white"
+                                                    font.pixelSize: 10 * Appearance.effectiveScale; font.weight: Font.Bold; color: "white"
                                                 }
                                             }
                                         }
@@ -515,10 +516,10 @@ Item {
                             ScrollBar.vertical: StyledScrollBar {}
 
                             ColumnLayout {
-                                anchors.centerIn: parent; visible: grid.count === 0; spacing: 12
+                                anchors.centerIn: parent; visible: grid.count === 0; spacing: 12 * Appearance.effectiveScale
                                 MaterialSymbol {
                                     visible: mainSelector.wallhavenMode && WallhavenService.loading
-                                    text: "progress_activity"; iconSize: 32; color: Appearance.colors.colPrimary
+                                    text: "progress_activity"; iconSize: 32 * Appearance.effectiveScale; color: Appearance.colors.colPrimary
                                     Layout.alignment: Qt.AlignHCenter
                                     RotationAnimation on rotation { from: 0; to: 360; duration: 1000; loops: Animation.Infinite; running: parent.visible }
                                 }

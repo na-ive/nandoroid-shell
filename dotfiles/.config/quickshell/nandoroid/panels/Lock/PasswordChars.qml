@@ -24,7 +24,7 @@ StyledFlickable {
     property color selectedTextColor: Appearance.m3colors.m3onSecondaryContainer
     property color selectionColor:    Appearance.m3colors.m3secondaryContainer
 
-    property int charSize: 22
+    property int charSize: 22 * Appearance.effectiveScale
 
     // shapes pool
     readonly property list<int> charShapes: [
@@ -53,8 +53,8 @@ StyledFlickable {
     onLengthChanged: updateModel()
     Component.onCompleted: updateModel()
 
-    property int spacing: 4
-    property int leftPadding: 12
+    property int spacing: 4 * Appearance.effectiveScale
+    property int leftPadding: 12 * Appearance.effectiveScale
 
     contentWidth: dotsRow.implicitWidth + leftPadding * 2
     contentX: Math.max(contentWidth - width, 0)
@@ -74,7 +74,7 @@ StyledFlickable {
             leftMargin: (root.charSize + root.spacing) * root.cursorPosition + root.leftPadding
         }
         color: root.shapeColor
-        implicitWidth: 2
+        implicitWidth: Math.max(1, 2 * Appearance.effectiveScale)
         implicitHeight: root.charSize
         opacity: root.active ? 1 : 0
 
@@ -150,7 +150,7 @@ StyledFlickable {
                         NumberAnimation {
                             target: shape
                             properties: "implicitSize"
-                            to: 18
+                            to: 18 * Appearance.effectiveScale
                             easing.type: Easing.BezierSpline
                             easing.bezierCurve: Appearance.animationCurves.expressiveDefaultSpatial
                         }

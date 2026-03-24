@@ -64,7 +64,7 @@ Rectangle {
             layer.enabled: true
             layer.effect: GaussianBlur {
                 radius: 64 * Appearance.effectiveScale
-                samples: 48
+                samples: Math.round(48 * Appearance.effectiveScale)
                 cached: true
             }
 
@@ -240,7 +240,7 @@ Rectangle {
                 StyledText {
                     id: currentTimeText
                     text: Functions.StringUtils.friendlyTimeForSeconds(MprisController.position)
-                    font.pixelSize: 10 * Appearance.effectiveScale
+                    font.pixelSize: Appearance.font.pixelSize.smallest
                     font.family: Appearance.font.family.monospace
                     font.weight: Font.Medium
                     color: MprisController.dynSubtext
@@ -285,7 +285,7 @@ Rectangle {
                 StyledText {
                     id: totalTimeText
                     text: Functions.StringUtils.friendlyTimeForSeconds(MprisController.length)
-                    font.pixelSize: 10 * Appearance.effectiveScale
+                    font.pixelSize: Appearance.font.pixelSize.smallest
                     font.family: Appearance.font.family.monospace
                     font.weight: Font.Medium
                     color: MprisController.dynSubtext

@@ -130,7 +130,7 @@ Rectangle {
                             }
                             StyledText {
                                 text: index === 0 ? "Now" : modelData.time
-                                font.pixelSize: 10 * Appearance.effectiveScale; color: root.contentColor; opacity: root.lowOpacity
+                                font.pixelSize: Appearance.font.pixelSize.smallest; color: root.contentColor; opacity: root.lowOpacity
                                 Layout.alignment: Qt.AlignHCenter; horizontalAlignment: Text.AlignHCenter; Layout.fillWidth: true
                             }
                         }

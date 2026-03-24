@@ -53,19 +53,19 @@ PanelWindow {
     Rectangle {
         id: marker
         visible: root.geomData !== null
-        x: root.geomData ? root.geomData.x - 2 : 0
-        y: root.geomData ? root.geomData.y - 2 : 0
-        width: root.geomData ? root.geomData.width + 4 : 0
-        height: root.geomData ? root.geomData.height + 4 : 0
+        x: root.geomData ? root.geomData.x - 2 * Appearance.effectiveScale : 0
+        y: root.geomData ? root.geomData.y - 2 * Appearance.effectiveScale : 0
+        width: root.geomData ? root.geomData.width + 4 * Appearance.effectiveScale : 0
+        height: root.geomData ? root.geomData.height + 4 * Appearance.effectiveScale : 0
         
         color: "transparent"
         
         DashedBorder {
             anchors.fill: parent
             color: Appearance.m3colors.m3error
-            borderWidth: 2
-            dashLength: 6
-            gapLength: 3
+            borderWidth: Math.max(1, 2 * Appearance.effectiveScale)
+            dashLength: 6 * Appearance.effectiveScale
+            gapLength: 3 * Appearance.effectiveScale
         }
         
         // Pulsing animation
