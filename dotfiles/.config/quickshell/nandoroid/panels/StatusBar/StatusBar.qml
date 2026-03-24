@@ -66,6 +66,19 @@ Scope {
                 + (showBackground ? cornerRadius : 0)
             height: implicitHeight
 
+            // Define clickable area mask
+            mask: Region {
+                item: maskItem
+            }
+
+            Item {
+                id: maskItem
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.top: parent.top
+                height: (autoHide && !mustShow) ? 3 * Appearance.effectiveScale : parent.height
+            }
+
             // ── Hover Detection Infrastructure ──────────────────
             HoverHandler {
                 id: barHoverHandler

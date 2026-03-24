@@ -19,8 +19,8 @@ Item {
     property var shape
     
     // Root dimensions for the Loader/PanelWindow
-    implicitWidth: 340
-    implicitHeight: 48
+    implicitWidth: 340 * Appearance.effectiveScale
+    implicitHeight: 48 * Appearance.effectiveScale
 
     Rectangle {
         id: valueIndicator
@@ -31,14 +31,14 @@ Item {
         RowLayout {
             id: valueRow
             anchors.fill: parent
-            anchors.leftMargin: 12
-            anchors.rightMargin: 12
-            spacing: 12
+            anchors.leftMargin: 12 * Appearance.effectiveScale
+            anchors.rightMargin: 12 * Appearance.effectiveScale
+            spacing: 12 * Appearance.effectiveScale
 
             // ── Slot Kiri: Icon Wrapper ──
             Item {
-                Layout.preferredWidth: 32
-                Layout.preferredHeight: 32
+                Layout.preferredWidth: 32 * Appearance.effectiveScale
+                Layout.preferredHeight: 32 * Appearance.effectiveScale
                 Layout.alignment: Qt.AlignVCenter
 
                 MaterialShapeWrappedMaterialSymbol {
@@ -56,7 +56,7 @@ Item {
                     }
                     
                     text: root.icon
-                    iconSize: 18
+                    iconSize: 18 * Appearance.effectiveScale
                     
                     color: Appearance.m3colors.m3primaryContainer
                     colSymbol: Appearance.m3colors.m3onPrimaryContainer
@@ -67,17 +67,17 @@ Item {
             Rectangle {
                 id: textWrapper
                 Layout.fillWidth: true
-                Layout.preferredHeight: 32
+                Layout.preferredHeight: 32 * Appearance.effectiveScale
                 Layout.alignment: Qt.AlignVCenter
-                radius: 16
+                radius: 16 * Appearance.effectiveScale
                 color: Appearance.m3colors.m3surfaceContainerHighest
                 
                 Text {
                     anchors.centerIn: parent
                     text: root.statusText !== "" ? root.statusText : root.name
-                    font.pixelSize: 13
+                    font.pixelSize: 13 * Appearance.effectiveScale
                     font.weight: Font.Medium
-                    color: Appearance.m3colors.m3onSurface
+                    color: Appearance.colors.colOnLayer1
                     elide: Text.ElideRight
                     
                     horizontalAlignment: Text.AlignHCenter
@@ -89,16 +89,16 @@ Item {
             // ── Slot Kanan: Category Label (Centered Square) ──
             Rectangle {
                 id: contextSlot
-                Layout.preferredWidth: 44
-                Layout.preferredHeight: 32
+                Layout.preferredWidth: 44 * Appearance.effectiveScale
+                Layout.preferredHeight: 32 * Appearance.effectiveScale
                 Layout.alignment: Qt.AlignVCenter
-                radius: 12 
+                radius: 12 * Appearance.effectiveScale
                 color: Appearance.m3colors.m3secondaryContainer
 
                 Text {
                     anchors.centerIn: parent
                     text: root.name.substring(0, 2).toUpperCase()
-                    font.pixelSize: 11
+                    font.pixelSize: 11 * Appearance.effectiveScale
                     font.weight: Font.Bold
                     color: Appearance.m3colors.m3onSecondaryContainer
                     opacity: 0.8

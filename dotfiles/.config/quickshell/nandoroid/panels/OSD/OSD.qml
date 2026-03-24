@@ -122,7 +122,7 @@ Scope {
             }
             
             margins {
-                bottom: 80 // Android 16 style bottom margin (elevated)
+                bottom: 80 * Appearance.effectiveScale // Android 16 style bottom margin (elevated)
             }
 
             // Sync screen with Hyprland focus
@@ -137,8 +137,8 @@ Scope {
             exclusiveZone: -1 // Floating
 
             // Window is 40px wider than the OSD pill to provide 'rendering air' and prevent noise
-            implicitWidth: osdIndicatorLoader.implicitWidth + 40
-            implicitHeight: osdIndicatorLoader.implicitHeight + 20
+            implicitWidth: osdIndicatorLoader.implicitWidth + (40 * Appearance.effectiveScale)
+            implicitHeight: osdIndicatorLoader.implicitHeight + (20 * Appearance.effectiveScale)
             visible: osdLoader.active
 
             // Animation for appearance

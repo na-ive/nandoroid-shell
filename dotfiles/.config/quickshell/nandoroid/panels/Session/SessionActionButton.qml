@@ -14,7 +14,7 @@ RippleButton {
     property string actionText
     
     // Scale relative to height to maintain consistent vertical size across resolutions
-    readonly property real baseScale: Appearance.sizes.screen.height / 1080
+    readonly property real baseScale: (Appearance.sizes.screen.height / 1080) * Appearance.effectiveScale
     readonly property real buttonSize: 128 * baseScale
     
     // Hard-set width and height to force 1:1

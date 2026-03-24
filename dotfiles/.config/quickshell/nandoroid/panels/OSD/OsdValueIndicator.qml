@@ -21,8 +21,8 @@ Item {
     property bool scaleIcon: false
 
     // Root dimensions for the Loader/PanelWindow
-    implicitWidth: 340
-    implicitHeight: 48
+    implicitWidth: 340 * Appearance.effectiveScale
+    implicitHeight: 48 * Appearance.effectiveScale
 
     Rectangle {
         id: valueIndicator
@@ -33,14 +33,14 @@ Item {
         RowLayout {
             id: valueRow
             anchors.fill: parent
-            anchors.leftMargin: 12
-            anchors.rightMargin: 12
-            spacing: 12
+            anchors.leftMargin: 12 * Appearance.effectiveScale
+            anchors.rightMargin: 12 * Appearance.effectiveScale
+            spacing: 12 * Appearance.effectiveScale
 
             // ── Slot Kiri: Icon Wrapper ──
             Item {
-                Layout.preferredWidth: 32
-                Layout.preferredHeight: 32
+                Layout.preferredWidth: 32 * Appearance.effectiveScale
+                Layout.preferredHeight: 32 * Appearance.effectiveScale
                 Layout.alignment: Qt.AlignVCenter
 
                 MaterialShapeWrappedMaterialSymbol {
@@ -54,7 +54,7 @@ Item {
                     
                     shapeString: (typeof root.shape === "string") ? root.shape : "Circle"
                     text: root.icon
-                    iconSize: 18
+                    iconSize: 18 * Appearance.effectiveScale
                     
                     color: Appearance.m3colors.m3primaryContainer
                     colSymbol: Appearance.m3colors.m3onPrimaryContainer
@@ -64,7 +64,7 @@ Item {
             // ── Slot Tengah: Main Content (Sleeker StyledSlider) ──
             Item {
                 Layout.fillWidth: true
-                Layout.preferredHeight: 32
+                Layout.preferredHeight: 32 * Appearance.effectiveScale
                 Layout.alignment: Qt.AlignVCenter
                 
                 StyledSlider {
@@ -80,7 +80,7 @@ Item {
                     configuration: StyledSlider.Configuration.M
                     animateValue: true
                     
-                    handleMargins: 4
+                    handleMargins: 4 * Appearance.effectiveScale
                     highlightColor: Appearance.m3colors.m3primary
                     trackColor: Appearance.m3colors.m3surfaceContainerHighest
                     handleColor: Appearance.m3colors.m3primary
@@ -90,17 +90,17 @@ Item {
             // ── Slot Kanan: Value Indicator (Compact Centered Square) ──
             Rectangle {
                 id: valueSlot
-                Layout.preferredWidth: 44
-                Layout.preferredHeight: 32
+                Layout.preferredWidth: 44 * Appearance.effectiveScale
+                Layout.preferredHeight: 32 * Appearance.effectiveScale
                 Layout.alignment: Qt.AlignVCenter
                 
-                radius: 12
+                radius: 12 * Appearance.effectiveScale
                 color: Appearance.m3colors.m3secondaryContainer
 
                 Text {
                     anchors.centerIn: parent
                     text: Math.round(root.value * 100)
-                    font.pixelSize: 13
+                    font.pixelSize: 13 * Appearance.effectiveScale
                     font.family: Appearance.font.family.numbers
                     font.weight: Font.Bold
                     color: Appearance.m3colors.m3onSecondaryContainer

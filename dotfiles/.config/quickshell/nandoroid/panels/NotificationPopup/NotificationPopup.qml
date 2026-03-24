@@ -43,8 +43,8 @@ Scope {
             anchors.horizontalCenter: parent.horizontalCenter
             width: listview.width
             anchors.top: parent.top
-            anchors.topMargin: (Config.options?.statusBar?.height ?? 40) - 20
-            height: listview.contentHeight + 100
+            anchors.topMargin: ((Config.options?.statusBar?.height ?? 40) * Appearance.effectiveScale) - (20 * Appearance.effectiveScale)
+            height: listview.contentHeight + (100 * Appearance.effectiveScale)
         }
 
         color: "transparent"
@@ -54,11 +54,11 @@ Scope {
             anchors {
                 top: parent.top
                 horizontalCenter: parent.horizontalCenter
-                topMargin: (Config.options?.statusBar?.height ?? 40) + 8
+                topMargin: ((Config.options?.statusBar?.height ?? 40) * Appearance.effectiveScale) + (8 * Appearance.effectiveScale)
             }
             width: Appearance.sizes.notificationCenterWidth
             implicitHeight: contentHeight
-            spacing: 8
+            spacing: 8 * Appearance.effectiveScale
             interactive: false
             
             model: Notifications.activePopup ? [Notifications.activePopup] : []

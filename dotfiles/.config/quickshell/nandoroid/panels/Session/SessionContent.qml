@@ -16,7 +16,7 @@ Item {
     property string subtitle: ""
 
     // Single scaling factor based on screen height for vertical consistency
-    readonly property real baseScale: Appearance.sizes.screen.height / 1080
+    readonly property real baseScale: (Appearance.sizes.screen.height / 1080) * Appearance.effectiveScale
     
     // Core sizing tokens
     readonly property real gridSpacing: 16 * baseScale
@@ -36,16 +36,16 @@ Item {
         color: Appearance.colors.colLayer0 
         
         // MD3 Outline Style (instead of shadow)
-        border.width: 1
+        border.width: Math.max(1, 1 * Appearance.effectiveScale)
         border.color: Functions.ColorUtils.applyAlpha(Appearance.m3colors.m3onSurface, 0.12)
         
         // Very subtle ambient shadow (optional, keep it extremely thin)
         layer.enabled: true
         layer.effect: DropShadow {
-            radius: 12
+            radius: 12 * Appearance.effectiveScale
             samples: 24
             color: Functions.ColorUtils.applyAlpha(Appearance.colors.colShadow, 0.1)
-            verticalOffset: 2
+            verticalOffset: 2 * Appearance.effectiveScale
             transparentBorder: true
         }
 
