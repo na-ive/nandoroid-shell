@@ -25,18 +25,21 @@ Rectangle {
     property int selectedIndex: 0
     // Fixed to 9 to match the precise width in Launcher.qml
     readonly property int gridColumns: 9
+    property bool isKeyboardNavigation: false
 
     onSelectedIndexChanged: {
         if (!GlobalStates.launcherOpen) return;
         
         if (root.hasQuery) {
-            pluginList.positionViewAtIndex(selectedIndex, ListView.Contain)
+            if (isKeyboardNavigation) pluginList.positionViewAtIndex(selectedIndex, ListView.Contain)
         } else {
-            // Manual positioning only if index is significantly changed
-            if (selectedIndex >= gridColumns) {
-                appGrid.positionViewAtIndex(selectedIndex, GridView.Contain)
-            } else if (selectedIndex === 0) {
-                appGrid.contentY = 0
+            // Only auto-scroll for keyboard to prevent jumping when mouse hovers partially visible items
+            if (isKeyboardNavigation) {
+                if (selectedIndex >= gridColumns) {
+                    appGrid.positionViewAtIndex(selectedIndex, GridView.Contain)
+                } else if (selectedIndex >= 0 && selectedIndex < gridColumns) {
+                    appGrid.contentY = 0
+                }
             }
         }
     }
@@ -72,11 +75,12 @@ Rectangle {
         function onLauncherOpenChanged() {
             if (GlobalStates.launcherOpen) {
                 root.selectedIndex = 0
-                // Reset scroll to top immediately and then again after layout stabilizes
+                // Force scroll to top immediately and after a tiny delay to be sure
                 appGrid.contentY = 0
+                appGrid.positionViewAtIndex(0, GridView.Beginning)
                 Qt.callLater(() => {
-                    appGrid.forceLayout();
                     appGrid.contentY = 0;
+                    appGrid.positionViewAtIndex(0, GridView.Beginning);
                 });
             } else {
                 root.selectedIndex = 0
@@ -147,6 +151,13 @@ Rectangle {
                 interactive: true
                 clip: true
                 
+                onVisibleChanged: {
+                    if (visible) {
+                        contentY = 0;
+                        positionViewAtIndex(0, GridView.Beginning);
+                    }
+                }
+                
                 cellWidth: 100 * Appearance.effectiveScale
                 cellHeight: (110 + 24) * Appearance.effectiveScale
                 
@@ -162,7 +173,12 @@ Rectangle {
                         anchors.centerIn: parent
                         app: modelData
                         selected: root.selectedIndex === index
-                        onHoveredChanged: if (hovered && GlobalStates.launcherOpen) root.selectedIndex = index
+                        onHoveredChanged: {
+                            if (hovered && GlobalStates.launcherOpen && root.selectedIndex !== index) {
+                                root.isKeyboardNavigation = false;
+                                root.selectedIndex = index;
+                            }
+                        }
                     }
                 }
                 // currentIndex is REMOVED to prevent automatic scrolling artifacts
@@ -180,7 +196,12 @@ Rectangle {
                 delegate: LauncherListView {
                     result: modelData
                     selected: root.selectedIndex === index
-                    onHoveredChanged: if (hovered && GlobalStates.launcherOpen) root.selectedIndex = index
+                    onHoveredChanged: {
+                        if (hovered && GlobalStates.launcherOpen && root.selectedIndex !== index) {
+                            root.isKeyboardNavigation = false;
+                            root.selectedIndex = index;
+                        }
+                    }
                 }
                 // currentIndex is REMOVED to prevent automatic scrolling artifacts
             }

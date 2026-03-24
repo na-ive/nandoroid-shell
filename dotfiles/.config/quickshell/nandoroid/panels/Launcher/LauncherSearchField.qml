@@ -101,18 +101,22 @@ Rectangle {
                 const cols = isGrid ? (root.launcherContent.gridColumns || 5) : 1;
 
                 if (event.key === Qt.Key_Up) {
+                    root.launcherContent.isKeyboardNavigation = true;
                     root.launcherContent.selectedIndex = Math.max(0, root.launcherContent.selectedIndex - cols);
                     event.accepted = true;
                 } else if (event.key === Qt.Key_Down) {
+                    root.launcherContent.isKeyboardNavigation = true;
                     root.launcherContent.selectedIndex = Math.min(total - 1, root.launcherContent.selectedIndex + cols);
                     event.accepted = true;
                 } else if (event.key === Qt.Key_Left) {
                     if (isGrid) {
+                        root.launcherContent.isKeyboardNavigation = true;
                         root.launcherContent.selectedIndex = Math.max(0, root.launcherContent.selectedIndex - 1);
                         event.accepted = true;
                     }
                 } else if (event.key === Qt.Key_Right) {
                     if (isGrid) {
+                        root.launcherContent.isKeyboardNavigation = true;
                         root.launcherContent.selectedIndex = Math.min(total - 1, root.launcherContent.selectedIndex + 1);
                         event.accepted = true;
                     }

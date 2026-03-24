@@ -33,16 +33,23 @@ Scope {
                 WlrLayershell.namespace: "nandoroid:dock"
                 
                 exclusiveZone: {
-                    if (!Config.ready) return 0;
+                    if (!Config.ready || !visible) return 0;
                     const scale = (Config.options.dock.scale ?? 1.0) * Appearance.effectiveScale;
+                    // Only reserve space if NOT auto-hiding and NOT showOnlyInDesktop
                     if (!Config.options.dock.showOnlyInDesktop && !Config.options.dock.autoHide) {
                         return 70 * scale + (dockWindow.bgStyle === 2 ? 0 : Appearance.sizes.elevationMargin / 2);
                     }
                     return 0;
                 }
                 
-                anchors { bottom: true }
+                anchors { left: true; right: true; bottom: true }
                 color: "transparent"
+                
+                // Define the clickable area to allow click-through on the sides
+                mask: Region {
+                    // Include the entire mouse area to allow trigger at bottom edge
+                    item: dockMouseArea
+                }
                 
                 // SIMPLIFIED VISIBILITY: Toggle the whole window for 'Show Only In Desktop'
                 visible: {
@@ -64,9 +71,8 @@ Scope {
                 readonly property int bgStyle: Config.ready && Config.options.dock ? Config.options.dock.backgroundStyle : 1
                 
                 implicitWidth: modelData.width
-                // Increased height to provide more room for the premium soft shadow (radius 36)
-                // In attached mode (bgStyle 2), we minimize the extra bottom space
-                implicitHeight: (dockHeight * (dockWindow.dockScale / Appearance.effectiveScale)) + Appearance.sizes.elevationMargin + (bgStyle === 2 ? 0 : 60 * Appearance.effectiveScale)
+                // Provide enough height for popups and shadows without pushing them too far up
+                implicitHeight: 500 * Appearance.effectiveScale
                 readonly property real screenY: modelData.height - height
 
                 readonly property bool hasActiveWindows: {
