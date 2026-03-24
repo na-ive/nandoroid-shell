@@ -11,7 +11,7 @@ import Quickshell.Io
 
 ColumnLayout {
     id: updateRoot
-    spacing: 24
+    spacing: 24 * Appearance.effectiveScale
 
     FileView {
         id: installStateView
@@ -28,19 +28,19 @@ ColumnLayout {
     // --- 1. Channel Selector ---
     SegmentedWrapper {
         Layout.fillWidth: true
-        implicitHeight: channelRow.implicitHeight + 40
+        implicitHeight: channelRow.implicitHeight + (40 * Appearance.effectiveScale)
         orientation: Qt.Vertical
-        maxRadius: 20
+        maxRadius: 20 * Appearance.effectiveScale
         color: Appearance.m3colors.m3surfaceContainerHigh
         
         RowLayout {
             id: channelRow
             anchors.fill: parent
-            anchors.margins: 20
-            spacing: 20
+            anchors.margins: 20 * Appearance.effectiveScale
+            spacing: 20 * Appearance.effectiveScale
 
             ColumnLayout {
-                spacing: 2
+                spacing: 2 * Appearance.effectiveScale
                 StyledText {
                     text: "Update Channel"
                     font.pixelSize: Appearance.font.pixelSize.normal
@@ -57,8 +57,8 @@ ColumnLayout {
             Item { Layout.fillWidth: true }
             
             RowLayout {
-                spacing: 4
-                Layout.preferredHeight: 52
+                spacing: 4 * Appearance.effectiveScale
+                Layout.preferredHeight: 52 * Appearance.effectiveScale
                 Layout.alignment: Qt.AlignRight
                 
                 Repeater {
@@ -71,8 +71,8 @@ ColumnLayout {
                         Layout.fillHeight: true
                         
                         buttonText: modelData.label
-                        leftPadding: 32
-                        rightPadding: 32
+                        leftPadding: 32 * Appearance.effectiveScale
+                        rightPadding: 32 * Appearance.effectiveScale
                         
                         colActive: Appearance.m3colors.m3primary
                         colActiveText: Appearance.m3colors.m3onPrimary
@@ -96,8 +96,8 @@ ColumnLayout {
     // --- 2. Check for Updates Status Row ---
     Rectangle {
         Layout.fillWidth: true
-        Layout.preferredHeight: 80
-        radius: 20
+        Layout.preferredHeight: 80 * Appearance.effectiveScale
+        radius: 20 * Appearance.effectiveScale
         color: Appearance.m3colors.m3surfaceContainerHigh
         visible: installState.install_dir !== ""
         
@@ -130,19 +130,19 @@ ColumnLayout {
 
         RowLayout {
             anchors.fill: parent
-            anchors.leftMargin: 20
-            anchors.rightMargin: 16
-            spacing: 16
+            anchors.leftMargin: 20 * Appearance.effectiveScale
+            anchors.rightMargin: 16 * Appearance.effectiveScale
+            spacing: 16 * Appearance.effectiveScale
             
             MaterialSymbol {
                 text: (checkUpdateCollector.text && checkUpdateCollector.text.includes("Available")) ? "update" : "published_with_changes"
-                iconSize: 24
+                iconSize: 24 * Appearance.effectiveScale
                 color: (checkUpdateCollector.text && checkUpdateCollector.text.includes("Available")) ? Appearance.colors.colPrimary : Appearance.colors.colSubtext
             }
             
             ColumnLayout {
                 Layout.fillWidth: true
-                spacing: 2
+                spacing: 2 * Appearance.effectiveScale
                 StyledText {
                     text: "Update Status"
                     font.pixelSize: Appearance.font.pixelSize.normal
@@ -159,9 +159,9 @@ ColumnLayout {
             Item { Layout.fillWidth: true }
 
             RippleButton {
-                implicitWidth: 140
-                implicitHeight: 40
-                buttonRadius: 20
+                implicitWidth: 140 * Appearance.effectiveScale
+                implicitHeight: 40 * Appearance.effectiveScale
+                buttonRadius: 20 * Appearance.effectiveScale
                 colBackground: Appearance.colors.colPrimary
                 onClicked: {
                     checkUpdateProc.running = false
@@ -173,10 +173,10 @@ ColumnLayout {
                 }
                 RowLayout {
                     anchors.centerIn: parent
-                    spacing: 8
+                    spacing: 8 * Appearance.effectiveScale
                     MaterialSymbol {
                         text: "sync"
-                        iconSize: 18
+                        iconSize: 18 * Appearance.effectiveScale
                         color: Appearance.colors.colOnPrimary
                     }
                     StyledText {
@@ -206,14 +206,14 @@ ColumnLayout {
     // --- 3. Update Buttons (50:50) ---
     RowLayout {
         Layout.fillWidth: true
-        spacing: 20
+        spacing: 20 * Appearance.effectiveScale
         visible: installState.install_dir !== ""
 
         RippleButton {
             Layout.fillWidth: true
             Layout.preferredWidth: 1
-            Layout.preferredHeight: 64
-            buttonRadius: 20
+            Layout.preferredHeight: 64 * Appearance.effectiveScale
+            buttonRadius: 20 * Appearance.effectiveScale
             colBackground: Appearance.m3colors.m3surfaceContainerHigh
             onClicked: {
                 updateRoot.updateType = "shell";
@@ -221,12 +221,12 @@ ColumnLayout {
             }
             RowLayout {
                 anchors.fill: parent
-                anchors.leftMargin: 20
-                anchors.rightMargin: 20
-                spacing: 16
+                anchors.leftMargin: 20 * Appearance.effectiveScale
+                anchors.rightMargin: 20 * Appearance.effectiveScale
+                spacing: 16 * Appearance.effectiveScale
                 MaterialSymbol {
                     text: "system_update_alt"
-                    iconSize: 24
+                    iconSize: 24 * Appearance.effectiveScale
                     color: Appearance.colors.colPrimary
                 }
                 StyledText {
@@ -238,7 +238,7 @@ ColumnLayout {
                 }
                 MaterialSymbol {
                     text: "download"
-                    iconSize: 20
+                    iconSize: 20 * Appearance.effectiveScale
                     color: Appearance.colors.colPrimary
                 }
             }
@@ -248,8 +248,8 @@ ColumnLayout {
             visible: installState.inject
             Layout.fillWidth: true
             Layout.preferredWidth: 1
-            Layout.preferredHeight: 64
-            buttonRadius: 20
+            Layout.preferredHeight: 64 * Appearance.effectiveScale
+            buttonRadius: 20 * Appearance.effectiveScale
             colBackground: Appearance.m3colors.m3surfaceContainerHigh
             onClicked: {
                 updateRoot.updateType = "all";
@@ -257,12 +257,12 @@ ColumnLayout {
             }
             RowLayout {
                 anchors.fill: parent
-                anchors.leftMargin: 20
-                anchors.rightMargin: 20
-                spacing: 16
+                anchors.leftMargin: 20 * Appearance.effectiveScale
+                anchors.rightMargin: 20 * Appearance.effectiveScale
+                spacing: 16 * Appearance.effectiveScale
                 MaterialSymbol {
                     text: "downloading"
-                    iconSize: 24
+                    iconSize: 24 * Appearance.effectiveScale
                     color: Appearance.colors.colError
                 }
                 StyledText {
@@ -274,7 +274,7 @@ ColumnLayout {
                 }
                 MaterialSymbol {
                     text: "download"
-                    iconSize: 20
+                    iconSize: 20 * Appearance.effectiveScale
                     color: Appearance.colors.colError
                 }
             }
@@ -284,15 +284,15 @@ ColumnLayout {
     // --- Logs & Tags 50:50 Section ---
     RowLayout {
         Layout.fillWidth: true
-        spacing: 20
+        spacing: 20 * Appearance.effectiveScale
         visible: installState.install_dir !== ""
 
         // Commit Log (Canary)
         Rectangle {
             Layout.fillWidth: true
             Layout.preferredWidth: 1
-            Layout.preferredHeight: 250
-            radius: 24
+            Layout.preferredHeight: 250 * Appearance.effectiveScale
+            radius: 24 * Appearance.effectiveScale
             color: Appearance.m3colors.m3surfaceContainerHigh
 
             Process {
@@ -304,14 +304,14 @@ ColumnLayout {
 
             ColumnLayout {
                 anchors.fill: parent
-                anchors.margins: 20
-                spacing: 16
+                anchors.margins: 20 * Appearance.effectiveScale
+                spacing: 16 * Appearance.effectiveScale
 
                 RowLayout {
-                    spacing: 12
+                    spacing: 12 * Appearance.effectiveScale
                     MaterialSymbol {
                         text: "commit"
-                        iconSize: 24
+                        iconSize: 24 * Appearance.effectiveScale
                         color: Appearance.colors.colPrimary
                     }
                     StyledText {
@@ -345,8 +345,8 @@ ColumnLayout {
         Rectangle {
             Layout.fillWidth: true
             Layout.preferredWidth: 1
-            Layout.preferredHeight: 250
-            radius: 24
+            Layout.preferredHeight: 250 * Appearance.effectiveScale
+            radius: 24 * Appearance.effectiveScale
             color: Appearance.m3colors.m3surfaceContainerHigh
 
             Process {
@@ -358,14 +358,14 @@ ColumnLayout {
 
             ColumnLayout {
                 anchors.fill: parent
-                anchors.margins: 20
-                spacing: 16
+                anchors.margins: 20 * Appearance.effectiveScale
+                spacing: 16 * Appearance.effectiveScale
 
                 RowLayout {
-                    spacing: 12
+                    spacing: 12 * Appearance.effectiveScale
                     MaterialSymbol {
                         text: "local_offer"
-                        iconSize: 24
+                        iconSize: 24 * Appearance.effectiveScale
                         color: Appearance.colors.colPrimary
                     }
                     StyledText {

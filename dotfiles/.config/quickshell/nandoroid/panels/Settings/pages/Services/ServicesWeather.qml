@@ -10,7 +10,7 @@ import Quickshell
 
         ColumnLayout {
             Layout.fillWidth: true
-            spacing: 4
+            spacing: 4 * Appearance.effectiveScale
             
             SearchHandler { 
                 searchString: "Weather"
@@ -18,11 +18,11 @@ import Quickshell
             }
 
             RowLayout {
-                spacing: 12
-                Layout.bottomMargin: 8
+                spacing: 12 * Appearance.effectiveScale
+                Layout.bottomMargin: 8 * Appearance.effectiveScale
                 MaterialSymbol {
                     text: "cloud"
-                    iconSize: 24
+                    iconSize: 24 * Appearance.effectiveScale
                     color: Appearance.colors.colPrimary
                 }
                 StyledText {
@@ -35,20 +35,20 @@ import Quickshell
 
             SegmentedWrapper {
                 Layout.fillWidth: true
-                implicitHeight: weatherEnableRow.implicitHeight + 40
+                implicitHeight: weatherEnableRow.implicitHeight + 40 * Appearance.effectiveScale
                 orientation: Qt.Vertical
                 color: Appearance.m3colors.m3surfaceContainerHigh
-                smallRadius: 8
-                fullRadius: 20
+                smallRadius: 8 * Appearance.effectiveScale
+                fullRadius: 20 * Appearance.effectiveScale
                 
                 RowLayout {
                     id: weatherEnableRow
                     anchors.fill: parent
-                    anchors.margins: 20
-                    spacing: 20
+                    anchors.margins: 20 * Appearance.effectiveScale
+                    spacing: 20 * Appearance.effectiveScale
 
                     ColumnLayout {
-                        spacing: 2
+                        spacing: 2 * Appearance.effectiveScale
                         StyledText {
                             text: "Enable Weather Service"
                             font.pixelSize: Appearance.font.pixelSize.normal
@@ -66,19 +66,19 @@ import Quickshell
                     
                     // Custom Switch
                     Rectangle {
-                        implicitWidth: 52
-                        implicitHeight: 28
-                        radius: 14
+                        implicitWidth: 52 * Appearance.effectiveScale
+                        implicitHeight: 28 * Appearance.effectiveScale
+                        radius: 14 * Appearance.effectiveScale
                         color: (Config.ready && Config.options.weather && Config.options.weather.enable)
                             ? Appearance.colors.colPrimary
                             : Appearance.m3colors.m3surfaceContainerLowest
 
                         Rectangle {
-                            width: 20
-                            height: 20
-                            radius: 10
+                            width: 20 * Appearance.effectiveScale
+                            height: 20 * Appearance.effectiveScale
+                            radius: 10 * Appearance.effectiveScale
                             anchors.verticalCenter: parent.verticalCenter
-                            x: (Config.ready && Config.options.weather && Config.options.weather.enable) ? parent.width - width - 4 : 4
+                            x: (Config.ready && Config.options.weather && Config.options.weather.enable) ? parent.width - width - 4 * Appearance.effectiveScale : 4 * Appearance.effectiveScale
                             color: (Config.ready && Config.options.weather && Config.options.weather.enable)
                                 ? Appearance.colors.colOnPrimary
                                 : Appearance.colors.colSubtext
@@ -104,11 +104,11 @@ import Quickshell
             // 1. Auto Location Card (Top)
             SegmentedWrapper {
                 Layout.fillWidth: true
-                implicitHeight: autoLocRow.implicitHeight + 40
+                implicitHeight: autoLocRow.implicitHeight + 40 * Appearance.effectiveScale
                 orientation: Qt.Vertical
                 color: Appearance.m3colors.m3surfaceContainerHigh
-                smallRadius: 8
-                fullRadius: 20
+                smallRadius: 8 * Appearance.effectiveScale
+                fullRadius: 20 * Appearance.effectiveScale
                 
                 enabled: Config.ready && Config.options.weather && Config.options.weather.enable
                 opacity: enabled ? 1.0 : 0.5
@@ -117,11 +117,11 @@ import Quickshell
                 RowLayout {
                     id: autoLocRow
                     anchors.fill: parent
-                    anchors.margins: 20
-                    spacing: 20
+                    anchors.margins: 20 * Appearance.effectiveScale
+                    spacing: 20 * Appearance.effectiveScale
 
                     ColumnLayout {
-                        spacing: 2
+                        spacing: 2 * Appearance.effectiveScale
                         StyledText {
                             text: "Auto detect location"
                             font.pixelSize: Appearance.font.pixelSize.normal
@@ -139,19 +139,19 @@ import Quickshell
                     
                     // Custom Switch
                     Rectangle {
-                        implicitWidth: 52
-                        implicitHeight: 28
-                        radius: 14
+                        implicitWidth: 52 * Appearance.effectiveScale
+                        implicitHeight: 28 * Appearance.effectiveScale
+                        radius: 14 * Appearance.effectiveScale
                         color: (Config.ready && Config.options.weather && Config.options.weather.autoLocation)
                             ? Appearance.colors.colPrimary
                             : Appearance.m3colors.m3surfaceContainerLowest
 
                         Rectangle {
-                            width: 20
-                            height: 20
-                            radius: 10
+                            width: 20 * Appearance.effectiveScale
+                            height: 20 * Appearance.effectiveScale
+                            radius: 10 * Appearance.effectiveScale
                             anchors.verticalCenter: parent.verticalCenter
-                            x: (Config.ready && Config.options.weather && Config.options.weather.autoLocation) ? parent.width - width - 4 : 4
+                            x: (Config.ready && Config.options.weather && Config.options.weather.autoLocation) ? parent.width - width - 4 * Appearance.effectiveScale : 4 * Appearance.effectiveScale
                             color: (Config.ready && Config.options.weather && Config.options.weather.autoLocation)
                                 ? Appearance.colors.colOnPrimary
                                 : Appearance.colors.colSubtext
@@ -175,11 +175,11 @@ import Quickshell
             // 2. Manual Location Card (Middle)
             SegmentedWrapper {
                 Layout.fillWidth: true
-                implicitHeight: locRow.implicitHeight + 40
+                implicitHeight: locRow.implicitHeight + 40 * Appearance.effectiveScale
                 orientation: Qt.Vertical
                 color: Appearance.m3colors.m3surfaceContainerHigh
-                smallRadius: 8
-                fullRadius: 20
+                smallRadius: 8 * Appearance.effectiveScale
+                fullRadius: 20 * Appearance.effectiveScale
                 
                 enabled: Config.ready && Config.options.weather && Config.options.weather.enable && !Config.options.weather.autoLocation
                 opacity: enabled ? 1.0 : 0.5
@@ -188,30 +188,30 @@ import Quickshell
                 RowLayout {
                     id: locRow
                     anchors.fill: parent
-                    anchors.margins: 20
-                    spacing: 20
+                    anchors.margins: 20 * Appearance.effectiveScale
+                    spacing: 20 * Appearance.effectiveScale
 
                     StyledText {
                         text: "Manual Location"
                         font.pixelSize: Appearance.font.pixelSize.normal
                         font.weight: Font.Medium
                         color: Appearance.colors.colOnLayer1
-                        Layout.preferredWidth: 200
+                        Layout.preferredWidth: 200 * Appearance.effectiveScale
                     }
                     
                     Rectangle {
                         Layout.fillWidth: true
-                        Layout.preferredHeight: 48
-                        radius: 12
+                        Layout.preferredHeight: 48 * Appearance.effectiveScale
+                        radius: 12 * Appearance.effectiveScale
                         color: Appearance.m3colors.m3surfaceContainerLow
-                        border.width: locInput.activeFocus ? 2 : 0
+                        border.width: locInput.activeFocus ? Math.max(1, 2 * Appearance.effectiveScale) : 0
                         border.color: Appearance.colors.colPrimary
 
                         TextInput {
                             id: locInput
                             anchors.fill: parent
-                            anchors.leftMargin: 16
-                            anchors.rightMargin: 16
+                            anchors.leftMargin: 16 * Appearance.effectiveScale
+                            anchors.rightMargin: 16 * Appearance.effectiveScale
                             verticalAlignment: TextInput.AlignVCenter
                             font.family: Appearance.font.family.main
                             font.pixelSize: Appearance.font.pixelSize.normal
@@ -239,11 +239,11 @@ import Quickshell
             // 3. Temperature Unit Card (Middle)
             SegmentedWrapper {
                 Layout.fillWidth: true
-                implicitHeight: unitRow.implicitHeight + 40
+                implicitHeight: unitRow.implicitHeight + 40 * Appearance.effectiveScale
                 orientation: Qt.Vertical
                 color: Appearance.m3colors.m3surfaceContainerHigh
-                smallRadius: 8
-                fullRadius: 20
+                smallRadius: 8 * Appearance.effectiveScale
+                fullRadius: 20 * Appearance.effectiveScale
                 
                 enabled: Config.ready && Config.options.weather && Config.options.weather.enable
                 opacity: enabled ? 1.0 : 0.5
@@ -252,11 +252,11 @@ import Quickshell
                 RowLayout {
                     id: unitRow
                     anchors.fill: parent
-                    anchors.margins: 20
-                    spacing: 20
+                    anchors.margins: 20 * Appearance.effectiveScale
+                    spacing: 20 * Appearance.effectiveScale
 
                     ColumnLayout {
-                        spacing: 2
+                        spacing: 2 * Appearance.effectiveScale
                         StyledText {
                             text: "Temperature Unit"
                             font.pixelSize: Appearance.font.pixelSize.normal
@@ -273,8 +273,8 @@ import Quickshell
                     Item { Layout.fillWidth: true }
                     
                     RowLayout {
-                        spacing: 4
-                        Layout.preferredHeight: 52
+                        spacing: 4 * Appearance.effectiveScale
+                        Layout.preferredHeight: 52 * Appearance.effectiveScale
                         Layout.alignment: Qt.AlignRight
                         
                         Repeater {
@@ -287,8 +287,8 @@ import Quickshell
                                 Layout.fillHeight: true
                                 
                                 buttonText: modelData.label
-                                leftPadding: 32
-                                rightPadding: 32
+                                leftPadding: 32 * Appearance.effectiveScale
+                                rightPadding: 32 * Appearance.effectiveScale
                                 
                                 colActive: Appearance.m3colors.m3primary
                                 colActiveText: Appearance.m3colors.m3onPrimary
@@ -308,11 +308,11 @@ import Quickshell
             // 4. Daily Forecast Card (Middle)
             SegmentedWrapper {
                 Layout.fillWidth: true
-                implicitHeight: dailyFlowRow.implicitHeight + 40
+                implicitHeight: dailyFlowRow.implicitHeight + 40 * Appearance.effectiveScale
                 orientation: Qt.Vertical
                 color: Appearance.m3colors.m3surfaceContainerHigh
-                smallRadius: 8
-                fullRadius: 20
+                smallRadius: 8 * Appearance.effectiveScale
+                fullRadius: 20 * Appearance.effectiveScale
                 
                 enabled: Config.ready && Config.options.weather && Config.options.weather.enable
                 opacity: enabled ? 1.0 : 0.5
@@ -321,11 +321,11 @@ import Quickshell
                 RowLayout {
                     id: dailyFlowRow
                     anchors.fill: parent
-                    anchors.margins: 20
-                    spacing: 20
+                    anchors.margins: 20 * Appearance.effectiveScale
+                    spacing: 20 * Appearance.effectiveScale
 
                     ColumnLayout {
-                        spacing: 2
+                        spacing: 2 * Appearance.effectiveScale
                         StyledText {
                             text: "Show 3 Days Forecast"
                             font.pixelSize: Appearance.font.pixelSize.normal
@@ -343,19 +343,19 @@ import Quickshell
                     
                     // Custom Switch
                     Rectangle {
-                        implicitWidth: 52
-                        implicitHeight: 28
-                        radius: 14
+                        implicitWidth: 52 * Appearance.effectiveScale
+                        implicitHeight: 28 * Appearance.effectiveScale
+                        radius: 14 * Appearance.effectiveScale
                         color: (Config.ready && Config.options.weather && Config.options.weather.showDailyForecast)
                             ? Appearance.colors.colPrimary
                             : Appearance.m3colors.m3surfaceContainerLowest
 
                         Rectangle {
-                            width: 20
-                            height: 20
-                            radius: 10
+                            width: 20 * Appearance.effectiveScale
+                            height: 20 * Appearance.effectiveScale
+                            radius: 10 * Appearance.effectiveScale
                             anchors.verticalCenter: parent.verticalCenter
-                            x: (Config.ready && Config.options.weather && Config.options.weather.showDailyForecast) ? parent.width - width - 4 : 4
+                            x: (Config.ready && Config.options.weather && Config.options.weather.showDailyForecast) ? parent.width - width - 4 * Appearance.effectiveScale : 4 * Appearance.effectiveScale
                             color: (Config.ready && Config.options.weather && Config.options.weather.showDailyForecast)
                                 ? Appearance.colors.colOnPrimary
                                 : Appearance.colors.colSubtext
@@ -377,11 +377,11 @@ import Quickshell
             // 5. Update Interval Card (Bottom)
             SegmentedWrapper {
                 Layout.fillWidth: true
-                implicitHeight: intervalRow.implicitHeight + 40
+                implicitHeight: intervalRow.implicitHeight + 40 * Appearance.effectiveScale
                 orientation: Qt.Vertical
                 color: Appearance.m3colors.m3surfaceContainerHigh
-                smallRadius: 8
-                fullRadius: 20
+                smallRadius: 8 * Appearance.effectiveScale
+                fullRadius: 20 * Appearance.effectiveScale
                 
                 enabled: Config.ready && Config.options.weather && Config.options.weather.enable
                 opacity: enabled ? 1.0 : 0.5
@@ -390,11 +390,11 @@ import Quickshell
                 RowLayout {
                     id: intervalRow
                     anchors.fill: parent
-                    anchors.margins: 20
-                    spacing: 20
+                    anchors.margins: 20 * Appearance.effectiveScale
+                    spacing: 20 * Appearance.effectiveScale
 
                     ColumnLayout {
-                        spacing: 2
+                        spacing: 2 * Appearance.effectiveScale
                         StyledText {
                             text: "Update Interval"
                             font.pixelSize: Appearance.font.pixelSize.normal
@@ -411,10 +411,10 @@ import Quickshell
                     Item { Layout.fillWidth: true }
                     
                     RowLayout {
-                        spacing: 8
+                        spacing: 8 * Appearance.effectiveScale
                         
                         StyledComboBox {
-                            implicitWidth: 140
+                            implicitWidth: 140 * Appearance.effectiveScale
                             searchable: false
                             text: (Config.ready && Config.options.weather) ? (Config.options.weather.updateInterval + " mins") : "30 mins"
                             model: ["15 mins", "30 mins", "1 hour", "2 hours", "4 hours"]

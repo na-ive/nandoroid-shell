@@ -22,15 +22,15 @@ ColumnLayout {
 
             ColumnLayout {
                 Layout.fillWidth: true
-                Layout.topMargin: 12
-                spacing: 16
+                Layout.topMargin: 12 * Appearance.effectiveScale
+                spacing: 16 * Appearance.effectiveScale
     
                 RowLayout {
-                    spacing: 12
-                    Layout.bottomMargin: 4
+                    spacing: 12 * Appearance.effectiveScale
+                    Layout.bottomMargin: 4 * Appearance.effectiveScale
                     MaterialSymbol {
                         text: "desktop_windows"
-                        iconSize: 24
+                        iconSize: 24 * Appearance.effectiveScale
                         color: Appearance.colors.colPrimary
                     }
                     StyledText {
@@ -44,22 +44,22 @@ ColumnLayout {
     
                 ColumnLayout {
                     Layout.fillWidth: true
-                    spacing: 4
+                    spacing: 4 * Appearance.effectiveScale
     
                     SegmentedWrapper {
                         Layout.fillWidth: true
-                        implicitHeight: screenCornerToggleRow.implicitHeight + 36
+                        implicitHeight: screenCornerToggleRow.implicitHeight + (36 * Appearance.effectiveScale)
                         orientation: Qt.Vertical
-                        maxRadius: 20
+                        maxRadius: 20 * Appearance.effectiveScale
                         color: Appearance.m3colors.m3surfaceContainerHigh
                         RowLayout {
                             id: screenCornerToggleRow
-                            anchors.fill: parent; anchors.margins: 16
-                            spacing: 16
-                            MaterialSymbol { text: "rounded_corner"; iconSize: 24; color: Appearance.colors.colPrimary }
+                            anchors.fill: parent; anchors.margins: 16 * Appearance.effectiveScale
+                            spacing: 16 * Appearance.effectiveScale
+                            MaterialSymbol { text: "rounded_corner"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
                             StyledText { text: "Rounded screen corners"; Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
                             RowLayout {
-                                spacing: 2
+                                spacing: 2 * Appearance.effectiveScale
                                 Repeater {
                                     model: [
                                         { val: 0, label: "Off" },
@@ -83,20 +83,20 @@ ColumnLayout {
     
                     SegmentedWrapper {
                         Layout.fillWidth: true
-                        implicitHeight: screenCornerRadRow.implicitHeight + 36
+                        implicitHeight: screenCornerRadRow.implicitHeight + (36 * Appearance.effectiveScale)
                         orientation: Qt.Vertical
-                        maxRadius: 20
+                        maxRadius: 20 * Appearance.effectiveScale
                         color: Appearance.m3colors.m3surfaceContainerHigh
                         visible: Config.ready && (Config.options.appearance.screenCorners ? Config.options.appearance.screenCorners.mode : 1) > 0
                         RowLayout {
                             id: screenCornerRadRow
-                            anchors.fill: parent; anchors.margins: 16
-                            spacing: 16
+                            anchors.fill: parent; anchors.margins: 16 * Appearance.effectiveScale
+                            spacing: 16 * Appearance.effectiveScale
                             
                             RowLayout {
-                                spacing: 16
-                                Layout.preferredWidth: 70
-                                MaterialSymbol { text: "straighten"; iconSize: 24; color: Appearance.colors.colPrimary }
+                                spacing: 16 * Appearance.effectiveScale
+                                Layout.preferredWidth: 70 * Appearance.effectiveScale
+                                MaterialSymbol { text: "straighten"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
                                 StyledText { 
                                     text: "Corner radius"
                                     Layout.fillWidth: true
@@ -114,7 +114,7 @@ ColumnLayout {
                             StyledText {
                                 text: Math.round(Config.ready && Config.options.appearance.screenCorners ? Config.options.appearance.screenCorners.radius : 20).toString() + "px"
                                 color: Appearance.colors.colOnLayer1
-                                Layout.preferredWidth: 40
+                                Layout.preferredWidth: 40 * Appearance.effectiveScale
                                 horizontalAlignment: Text.AlignRight
                             }
                         }

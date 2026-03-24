@@ -12,24 +12,24 @@ Rectangle {
     signal selected(var node)
     
     Layout.fillWidth: true
-    implicitHeight: 300
-    radius: 16
+    implicitHeight: 300 * Appearance.effectiveScale
+    radius: 16 * Appearance.effectiveScale
     color: Appearance.colors.colLayer1
     clip: true
 
     ListView {
         id: audioList
         anchors.fill: parent
-        anchors.margins: 8
+        anchors.margins: 8 * Appearance.effectiveScale
         model: parent.model
-        spacing: 4
+        spacing: 4 * Appearance.effectiveScale
         clip: true
 
         delegate: RippleButton {
             id: audioItem
             width: audioList.width
-            implicitHeight: 56
-            buttonRadius: 12
+            implicitHeight: 56 * Appearance.effectiveScale
+            buttonRadius: 12 * Appearance.effectiveScale
 
             readonly property bool isActive: parent.parent.parent.isSink 
                 ? (Audio.sink === modelData)
@@ -43,9 +43,9 @@ Rectangle {
 
             RowLayout {
                 anchors.fill: parent
-                anchors.leftMargin: 12
-                anchors.rightMargin: 12
-                spacing: 12
+                anchors.leftMargin: 12 * Appearance.effectiveScale
+                anchors.rightMargin: 12 * Appearance.effectiveScale
+                spacing: 12 * Appearance.effectiveScale
 
                 MaterialSymbol {
                     text: {
@@ -55,7 +55,7 @@ Rectangle {
                         if (desc.includes("hdmi") || desc.includes("tv")) return "tv"
                         return "speaker"
                     }
-                    iconSize: 20
+                    iconSize: 20 * Appearance.effectiveScale
                     color: audioItem.isActive ? Appearance.colors.colPrimary : Appearance.colors.colSubtext
                 }
 
@@ -71,7 +71,7 @@ Rectangle {
                 MaterialSymbol {
                     visible: audioItem.isActive
                     text: "check"
-                    iconSize: 20
+                    iconSize: 20 * Appearance.effectiveScale
                     color: Appearance.colors.colPrimary
                 }
             }

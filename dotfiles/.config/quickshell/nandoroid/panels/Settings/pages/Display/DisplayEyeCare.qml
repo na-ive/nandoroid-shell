@@ -10,14 +10,14 @@ import Quickshell.Wayland
 
 ColumnLayout {
             Layout.fillWidth: true
-            spacing: 4
+            spacing: 4 * Appearance.effectiveScale
 
             RowLayout {
-                spacing: 12
-                Layout.bottomMargin: 8
+                spacing: 12 * Appearance.effectiveScale
+                Layout.bottomMargin: 8 * Appearance.effectiveScale
                 MaterialSymbol {
                     text: "bedtime"
-                    iconSize: 24
+                    iconSize: 24 * Appearance.effectiveScale
                     color: Appearance.colors.colPrimary
                 }
                 StyledText {
@@ -30,20 +30,20 @@ ColumnLayout {
 
             SegmentedWrapper {
                 Layout.fillWidth: true
-                implicitHeight: nightRow.implicitHeight + 40
+                implicitHeight: nightRow.implicitHeight + (40 * Appearance.effectiveScale)
                 orientation: Qt.Vertical
                 color: Appearance.m3colors.m3surfaceContainerHigh
-                smallRadius: 8
-                fullRadius: 20
+                smallRadius: 8 * Appearance.effectiveScale
+                fullRadius: 20 * Appearance.effectiveScale
                 
                 RowLayout {
                     id: nightRow
                     anchors.fill: parent
-                    anchors.margins: 20
-                    spacing: 20
+                    anchors.margins: 20 * Appearance.effectiveScale
+                    spacing: 20 * Appearance.effectiveScale
                     
                     ColumnLayout {
-                        spacing: 2
+                        spacing: 2 * Appearance.effectiveScale
                         StyledText {
                             text: "Night Light"
                             font.pixelSize: Appearance.font.pixelSize.normal
@@ -60,17 +60,17 @@ ColumnLayout {
                     Item { Layout.fillWidth: true }
 
                     Rectangle {
-                        implicitWidth: 52
-                        implicitHeight: 28
-                        radius: 14
+                        implicitWidth: 52 * Appearance.effectiveScale
+                        implicitHeight: 28 * Appearance.effectiveScale
+                        radius: 14 * Appearance.effectiveScale
                         color: Hyprsunset.active ? Appearance.colors.colPrimary : Appearance.m3colors.m3surfaceContainerLowest
 
                         Rectangle {
-                            width: 20
-                            height: 20
-                            radius: 10
+                            width: 20 * Appearance.effectiveScale
+                            height: 20 * Appearance.effectiveScale
+                            radius: 10 * Appearance.effectiveScale
                             anchors.verticalCenter: parent.verticalCenter
-                            x: Hyprsunset.active ? parent.width - width - 4 : 4
+                            x: Hyprsunset.active ? parent.width - width - (4 * Appearance.effectiveScale) : 4 * Appearance.effectiveScale
                             color: Hyprsunset.active ? Appearance.colors.colOnPrimary : Appearance.colors.colSubtext
                             Behavior on x { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
                         }
@@ -86,11 +86,11 @@ ColumnLayout {
 
             SegmentedWrapper {
                 Layout.fillWidth: true
-                implicitHeight: colorTempCol.implicitHeight + 40
+                implicitHeight: colorTempCol.implicitHeight + (40 * Appearance.effectiveScale)
                 orientation: Qt.Vertical
                 color: Appearance.m3colors.m3surfaceContainerHigh
-                smallRadius: 8
-                fullRadius: 20
+                smallRadius: 8 * Appearance.effectiveScale
+                fullRadius: 20 * Appearance.effectiveScale
                 
                 opacity: Hyprsunset.active ? 1.0 : 0.4
                 enabled: Hyprsunset.active
@@ -98,8 +98,8 @@ ColumnLayout {
                 ColumnLayout {
                     id: colorTempCol
                     anchors.fill: parent
-                    anchors.margins: 20
-                    spacing: 12
+                    anchors.margins: 20 * Appearance.effectiveScale
+                    spacing: 12 * Appearance.effectiveScale
 
                     RowLayout {
                         width: parent.width

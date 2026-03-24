@@ -10,17 +10,17 @@ import Quickshell
 
         ColumnLayout {
             Layout.fillWidth: true
-            spacing: 4
-            Layout.topMargin: 16
+            spacing: 4 * Appearance.effectiveScale
+            Layout.topMargin: 16 * Appearance.effectiveScale
             
             SearchHandler { searchString: "Performance" }
 
             RowLayout {
-                spacing: 12
-                Layout.bottomMargin: 8
+                spacing: 12 * Appearance.effectiveScale
+                Layout.bottomMargin: 8 * Appearance.effectiveScale
                 MaterialSymbol {
                     text: "monitoring"
-                    iconSize: 24
+                    iconSize: 24 * Appearance.effectiveScale
                     color: Appearance.colors.colPrimary
                 }
                 StyledText {
@@ -33,20 +33,20 @@ import Quickshell
 
             SegmentedWrapper {
                 Layout.fillWidth: true
-                implicitHeight: perfStatsRow.implicitHeight + 40
+                implicitHeight: perfStatsRow.implicitHeight + 40 * Appearance.effectiveScale
                 orientation: Qt.Vertical
                 color: Appearance.m3colors.m3surfaceContainerHigh
-                smallRadius: 8
-                fullRadius: 20
+                smallRadius: 8 * Appearance.effectiveScale
+                fullRadius: 20 * Appearance.effectiveScale
                 
                 RowLayout {
                     id: perfStatsRow
                     anchors.fill: parent
-                    anchors.margins: 20
-                    spacing: 20
+                    anchors.margins: 20 * Appearance.effectiveScale
+                    spacing: 20 * Appearance.effectiveScale
 
                     ColumnLayout {
-                        spacing: 2
+                        spacing: 2 * Appearance.effectiveScale
                         StyledText {
                             text: "Show Performance Stats"
                             font.pixelSize: Appearance.font.pixelSize.normal
@@ -64,19 +64,19 @@ import Quickshell
                     
                     // Custom Switch
                     Rectangle {
-                        implicitWidth: 52
-                        implicitHeight: 28
-                        radius: 14
+                        implicitWidth: 52 * Appearance.effectiveScale
+                        implicitHeight: 28 * Appearance.effectiveScale
+                        radius: 14 * Appearance.effectiveScale
                         color: (Config.ready && Config.options.quickSettings && Config.options.quickSettings.showPerformanceStats)
                             ? Appearance.colors.colPrimary
                             : Appearance.m3colors.m3surfaceContainerLowest
 
                         Rectangle {
-                            width: 20
-                            height: 20
-                            radius: 10
+                            width: 20 * Appearance.effectiveScale
+                            height: 20 * Appearance.effectiveScale
+                            radius: 10 * Appearance.effectiveScale
                             anchors.verticalCenter: parent.verticalCenter
-                            x: (Config.ready && Config.options.quickSettings && Config.options.quickSettings.showPerformanceStats) ? parent.width - width - 4 : 4
+                            x: (Config.ready && Config.options.quickSettings && Config.options.quickSettings.showPerformanceStats) ? parent.width - width - 4 * Appearance.effectiveScale : 4 * Appearance.effectiveScale
                             color: (Config.ready && Config.options.quickSettings && Config.options.quickSettings.showPerformanceStats)
                                 ? Appearance.colors.colOnPrimary
                                 : Appearance.colors.colSubtext

@@ -64,6 +64,7 @@ Scope {
             color: "transparent"
             implicitHeight: Appearance.sizes.statusBarHeight
                 + (showBackground ? cornerRadius : 0)
+            height: implicitHeight
 
             // ── Hover Detection Infrastructure ──────────────────
             HoverHandler {

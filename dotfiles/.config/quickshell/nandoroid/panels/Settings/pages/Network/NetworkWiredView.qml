@@ -11,7 +11,7 @@ import Quickshell
                     id: wiredViewCol
                     Layout.fillWidth: true
                     visible: root.currentView === "wired"
-                    spacing: 24
+                    spacing: 24 * Appearance.effectiveScale
 
                     StyledText {
                         text: "Ethernet Connections"
@@ -22,7 +22,7 @@ import Quickshell
 
                     ColumnLayout {
                         Layout.fillWidth: true
-                        spacing: 12
+                        spacing: 12 * Appearance.effectiveScale
 
                         Repeater {
                             model: Network.wiredConnections
@@ -36,20 +36,20 @@ import Quickshell
 
                                 RippleButton {
                                     Layout.fillWidth: true
-                                    implicitHeight: 64
-                                    buttonRadius: 16
+                                    implicitHeight: 64 * Appearance.effectiveScale
+                                    buttonRadius: 16 * Appearance.effectiveScale
                                     colBackground: modelData.active ? Functions.ColorUtils.mix(Appearance.colors.colLayer1, Appearance.colors.colPrimary, 0.85) : Appearance.colors.colLayer1
                                     onClicked: wiredItem.expanded = !wiredItem.expanded
 
                                     RowLayout {
                                         anchors.fill: parent
-                                        anchors.leftMargin: 16
-                                        anchors.rightMargin: 16
-                                        spacing: 16
+                                        anchors.leftMargin: 16 * Appearance.effectiveScale
+                                        anchors.rightMargin: 16 * Appearance.effectiveScale
+                                        spacing: 16 * Appearance.effectiveScale
 
                                         MaterialSymbol {
                                             text: "lan"
-                                            iconSize: 24
+                                            iconSize: 24 * Appearance.effectiveScale
                                             color: modelData.active ? Appearance.colors.colPrimary : Appearance.colors.colSubtext
                                         }
 
@@ -72,7 +72,7 @@ import Quickshell
 
                                         MaterialSymbol {
                                             text: "keyboard_arrow_down"
-                                            iconSize: 20
+                                            iconSize: 20 * Appearance.effectiveScale
                                             color: Appearance.colors.colSubtext
                                             rotation: wiredItem.expanded ? 180 : 0
                                             Behavior on rotation { NumberAnimation { duration: 200 } }
@@ -83,16 +83,16 @@ import Quickshell
                                 // Expanded details
                                 Rectangle {
                                     Layout.fillWidth: true
-                                    Layout.preferredHeight: wiredItem.expanded ? (detailsCol.implicitHeight + 32) : 0
+                                    Layout.preferredHeight: wiredItem.expanded ? (detailsCol.implicitHeight + 32 * Appearance.effectiveScale) : 0
                                     visible: Layout.preferredHeight > 0
                                     clip: true
                                     color: Appearance.colors.colLayer2
-                                    radius: 16
+                                    radius: 16 * Appearance.effectiveScale
                                     
                                     // Merge with header by making top square
                                     Rectangle {
                                         width: parent.width
-                                        height: 16
+                                        height: 16 * Appearance.effectiveScale
                                         color: parent.color
                                         visible: wiredItem.expanded
                                         anchors.top: parent.top
@@ -102,8 +102,8 @@ import Quickshell
                                     ColumnLayout {
                                         id: detailsCol
                                         anchors.fill: parent
-                                        anchors.margins: 16
-                                        spacing: 12
+                                        anchors.margins: 16 * Appearance.effectiveScale
+                                        spacing: 12 * Appearance.effectiveScale
 
                                         Repeater {
                                             model: [
@@ -118,7 +118,7 @@ import Quickshell
                                                     text: modelData.label
                                                     font.pixelSize: Appearance.font.pixelSize.small
                                                     color: Appearance.colors.colSubtext
-                                                    Layout.preferredWidth: 100
+                                                    Layout.preferredWidth: 100 * Appearance.effectiveScale
                                                 }
                                                 StyledText {
                                                     text: Network.wiredDetails[modelData.key] || "Not available"
@@ -132,13 +132,13 @@ import Quickshell
 
                                         RowLayout {
                                             Layout.fillWidth: true
-                                            Layout.topMargin: 4
+                                            Layout.topMargin: 4 * Appearance.effectiveScale
                                             Item { Layout.fillWidth: true }
                                             RippleButton {
                                                 buttonText: modelData.active ? "Disconnect" : "Connect"
-                                                implicitWidth: 110
-                                                implicitHeight: 32
-                                                buttonRadius: 16
+                                                implicitWidth: 110 * Appearance.effectiveScale
+                                                implicitHeight: 32 * Appearance.effectiveScale
+                                                buttonRadius: 16 * Appearance.effectiveScale
                                                 colBackground: modelData.active ? Appearance.m3colors.m3error : Appearance.colors.colPrimary
                                                 colText: modelData.active ? Appearance.m3colors.m3onError : Appearance.colors.colOnPrimary
                                                 onClicked: Network.toggleWiredConnection(modelData.uuid, modelData.active)
@@ -154,12 +154,12 @@ import Quickshell
                     ColumnLayout {
                         visible: Network.wiredConnections.length === 0
                         Layout.fillWidth: true
-                        spacing: 16
-                        Item { Layout.preferredHeight: 40 }
+                        spacing: 16 * Appearance.effectiveScale
+                        Item { Layout.preferredHeight: 40 * Appearance.effectiveScale }
                         MaterialSymbol {
                             Layout.alignment: Qt.AlignHCenter
                             text: "lan_off"
-                            iconSize: 64
+                            iconSize: 64 * Appearance.effectiveScale
                             color: Appearance.colors.colSubtext
                         }
                         StyledText {

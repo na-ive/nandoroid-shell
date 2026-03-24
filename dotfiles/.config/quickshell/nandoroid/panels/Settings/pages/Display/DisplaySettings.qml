@@ -141,18 +141,18 @@ Item {
     Flickable {
         id: mainFlickable
         anchors.fill: parent
-        contentHeight: mainCol.implicitHeight + 48
+        contentHeight: mainCol.implicitHeight + (48 * Appearance.effectiveScale)
         clip: true
         ScrollBar.vertical: StyledScrollBar {}
 
         ColumnLayout {
             id: mainCol
             width: parent.width
-            spacing: 32
+            spacing: 32 * Appearance.effectiveScale
 
         // ── Header ──
         ColumnLayout {
-            spacing: 4
+            spacing: 4 * Appearance.effectiveScale
             StyledText {
                 text: "Display"
                 font.pixelSize: Appearance.font.pixelSize.huge
@@ -169,14 +169,14 @@ Item {
         // ── Monitor Layout Visualization (Selector & Drag-n-Drop) ──
         ColumnLayout {
             Layout.fillWidth: true
-            spacing: 8
+            spacing: 8 * Appearance.effectiveScale
             
             RowLayout {
-                spacing: 12
-                Layout.bottomMargin: 8
+                spacing: 12 * Appearance.effectiveScale
+                Layout.bottomMargin: 8 * Appearance.effectiveScale
                 MaterialSymbol {
                     text: "layers"
-                    iconSize: 24
+                    iconSize: 24 * Appearance.effectiveScale
                     color: Appearance.colors.colPrimary
                 }
                 StyledText {
@@ -203,18 +203,18 @@ Item {
             // ── Monitor Layout Visualization (Selector) ──
             SegmentedWrapper {
                 Layout.fillWidth: true
-                implicitHeight: 320
+                implicitHeight: 320 * Appearance.effectiveScale
                 orientation: Qt.Vertical
                 color: Appearance.m3colors.m3surfaceContainerHigh
-                smallRadius: 8
-                fullRadius: 20
+                smallRadius: 8 * Appearance.effectiveScale
+                fullRadius: 20 * Appearance.effectiveScale
                 
                 // Grid Background
                 Rectangle {
                     anchors.fill: parent
                     color: "transparent"
                     clip: true
-                    radius: 20
+                    radius: 20 * Appearance.effectiveScale
                     
                     Canvas {
                         id: vizCanvas
@@ -223,12 +223,12 @@ Item {
                             var ctx = getContext("2d");
                             ctx.clearRect(0, 0, width, height);
                             ctx.strokeStyle = Appearance.m3colors.m3outlineVariant;
-                            ctx.lineWidth = 0.5;
+                            ctx.lineWidth = 0.5 * Appearance.effectiveScale;
                             ctx.globalAlpha = 0.15;
-                            for (var x = 0; x <= width; x += 40) {
+                            for (var x = 0; x <= width; x += 40 * Appearance.effectiveScale) {
                                 ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, height); ctx.stroke();
                             }
-                            for (var y = 0; y <= height; y += 40) {
+                            for (var y = 0; y <= height; y += 40 * Appearance.effectiveScale) {
                                 ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(width, y); ctx.stroke();
                             }
                         }
@@ -239,7 +239,7 @@ Item {
                 Item {
                     id: monitorContainer
                     anchors.fill: parent
-                    anchors.margins: 40
+                    anchors.margins: 40 * Appearance.effectiveScale
                     
                     readonly property real vizScale: {
                         const m = root.monitorList;
@@ -258,7 +258,7 @@ Item {
                             maxX = Math.max(maxX, mx + m[i].width);
                             maxY = Math.max(maxY, my + m[i].height);
                         }
-                        return Math.max(10, Math.max(maxX - minX, maxY - minY) / 240);
+                        return Math.max(10, Math.max(maxX - minX, maxY - minY) / (240 * Appearance.effectiveScale));
                     }
                     
                     readonly property var bounds: {
@@ -302,10 +302,10 @@ Item {
                                 return (monitorContainer.height / 2) + ((targetY - monitorContainer.bounds.centerY) / monitorContainer.vizScale);
                             }
                             
-                            radius: 16
+                            radius: 16 * Appearance.effectiveScale
                             color: root.currentMonitorIndex === index ? Appearance.colors.colPrimary : Appearance.m3colors.m3surfaceContainerLow
                             border.color: root.currentMonitorIndex === index ? Appearance.colors.colPrimary : Appearance.m3colors.m3outline
-                            border.width: 1.5
+                            border.width: 1.5 * Appearance.effectiveScale
                             
                             Behavior on x { NumberAnimation { duration: 500; easing.type: Easing.OutQuint } }
                             Behavior on y { NumberAnimation { duration: 500; easing.type: Easing.OutQuint } }
@@ -318,27 +318,27 @@ Item {
                                 radius: parent.radius
                                 color: "transparent"
                                 border.color: root.currentMonitorIndex === index ? "white" : "transparent"
-                                border.width: 2
+                                border.width: 2 * Appearance.effectiveScale
                                 opacity: 0.3
                             }
 
                             ColumnLayout {
                                 anchors.centerIn: parent
-                                spacing: 4
+                                spacing: 4 * Appearance.effectiveScale
                                 MaterialSymbol {
                                     Layout.alignment: Qt.AlignCenter
                                     text: index === 0 ? "home" : "monitor"
-                                    iconSize: Math.min(24, monRect.height * 0.4)
+                                    iconSize: Math.min(24 * Appearance.effectiveScale, monRect.height * 0.4)
                                     color: root.currentMonitorIndex === index ? Appearance.colors.colOnPrimary : Appearance.colors.colOnSurface
                                 }
                                 StyledText {
                                     text: index === 0 ? "Main" : "" + (index + 1)
                                     Layout.alignment: Qt.AlignCenter
                                     horizontalAlignment: Text.AlignHCenter
-                                    font.pixelSize: 10
+                                    font.pixelSize: 10 * Appearance.effectiveScale
                                     font.weight: Font.Black
                                     color: root.currentMonitorIndex === index ? Appearance.colors.colOnPrimary : Appearance.colors.colOnSurface
-                                    visible: monRect.height > 25
+                                    visible: monRect.height > 25 * Appearance.effectiveScale
                                 }
                             }
                             
@@ -355,23 +355,23 @@ Item {
         // ── Layout & Arrangement Controls (Directly under visualization) ──
         ColumnLayout {
             Layout.fillWidth: true
-            spacing: 4 // Match Eye Care / ServicesSettings
+            spacing: 4 * Appearance.effectiveScale // Match Eye Care / ServicesSettings
             visible: root.currentMonitorIndex !== 0 && root.monitorList.length > 1
                 
                 // Arrangement Presets
                 SegmentedWrapper {
                     Layout.fillWidth: true
-                    implicitHeight: arrangeRow.implicitHeight + 40
+                    implicitHeight: arrangeRow.implicitHeight + (40 * Appearance.effectiveScale)
                     orientation: Qt.Vertical
                     color: Appearance.m3colors.m3surfaceContainerHigh
-                    smallRadius: 8
-                    fullRadius: 20
+                    smallRadius: 8 * Appearance.effectiveScale
+                    fullRadius: 20 * Appearance.effectiveScale
                     
                     RowLayout {
                         id: arrangeRow
                         anchors.fill: parent
-                        anchors.margins: 20
-                        spacing: 20
+                        anchors.margins: 20 * Appearance.effectiveScale
+                        spacing: 20 * Appearance.effectiveScale
                         
                         ColumnLayout {
                             spacing: 0
@@ -391,7 +391,7 @@ Item {
                         Item { Layout.fillWidth: true }
 
                         RowLayout {
-                            spacing: 4
+                            spacing: 4 * Appearance.effectiveScale
                             Repeater {
                                 model: [
                                     { label: "Left", icon: "arrow_back" },
@@ -400,13 +400,13 @@ Item {
                                     { label: "Below", icon: "arrow_downward" }
                                 ]
                                 delegate: SegmentedButton {
-                                    Layout.preferredWidth: 48
-                                    Layout.preferredHeight: 32
+                                    Layout.preferredWidth: 48 * Appearance.effectiveScale
+                                    Layout.preferredHeight: 32 * Appearance.effectiveScale
                                     colActive: Appearance.colors.colPrimary
                                     colInactive: Appearance.m3colors.m3surfaceContainerLow
                                     isHighlighted: false
                                     iconName: modelData.icon
-                                    iconSize: 18
+                                    iconSize: 18 * Appearance.effectiveScale
                                     
                                     onClicked: {
                                         const main = root.monitorList[0];
@@ -445,17 +445,17 @@ Item {
                 // Mirroring
                 SegmentedWrapper {
                     Layout.fillWidth: true
-                    implicitHeight: mirrorRow.implicitHeight + 40
+                    implicitHeight: mirrorRow.implicitHeight + (40 * Appearance.effectiveScale)
                     orientation: Qt.Vertical
                     color: Appearance.m3colors.m3surfaceContainerHigh
-                    smallRadius: 8
-                    fullRadius: 20
+                    smallRadius: 8 * Appearance.effectiveScale
+                    fullRadius: 20 * Appearance.effectiveScale
                     
                     RowLayout {
                         id: mirrorRow
                         anchors.fill: parent
-                        anchors.margins: 20
-                        spacing: 20
+                        anchors.margins: 20 * Appearance.effectiveScale
+                        spacing: 20 * Appearance.effectiveScale
                         
                         ColumnLayout {
                             spacing: 0
@@ -475,9 +475,9 @@ Item {
                         Item { Layout.fillWidth: true }
 
                         Rectangle {
-                            implicitWidth: 48
-                            implicitHeight: 26
-                            radius: 13
+                            implicitWidth: 48 * Appearance.effectiveScale
+                            implicitHeight: 26 * Appearance.effectiveScale
+                            radius: 13 * Appearance.effectiveScale
                             readonly property bool isMirroring: {
                                 if (!root.currentMonitor) return false;
                                 const sj = root.stagedChanges[root.currentMonitor.name];
@@ -487,11 +487,11 @@ Item {
                             color: isMirroring ? Appearance.colors.colPrimary : Appearance.m3colors.m3surfaceContainerLowest
 
                             Rectangle {
-                                width: 18
-                                height: 18
-                                radius: 9
+                                width: 18 * Appearance.effectiveScale
+                                height: 18 * Appearance.effectiveScale
+                                radius: 9 * Appearance.effectiveScale
                                 anchors.verticalCenter: parent.verticalCenter
-                                x: parent.isMirroring ? parent.width - width - 4 : 4
+                                x: parent.isMirroring ? parent.width - width - (4 * Appearance.effectiveScale) : 4 * Appearance.effectiveScale
                                 color: parent.isMirroring ? Appearance.colors.colOnPrimary : Appearance.colors.colSubtext
                                 Behavior on x { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
                             }
@@ -516,18 +516,18 @@ Item {
                 // Primary Display (Set as Main)
                 SegmentedWrapper {
                     Layout.fillWidth: true
-                    implicitHeight: primaryRow.implicitHeight + 40
+                    implicitHeight: primaryRow.implicitHeight + (40 * Appearance.effectiveScale)
                     orientation: Qt.Vertical
                     color: Appearance.m3colors.m3surfaceContainerHigh
-                    smallRadius: 8
-                    fullRadius: 20
+                    smallRadius: 8 * Appearance.effectiveScale
+                    fullRadius: 20 * Appearance.effectiveScale
                     visible: root.currentMonitorIndex !== 0
                     
                     RowLayout {
                         id: primaryRow
                         anchors.fill: parent
-                        anchors.margins: 20
-                        spacing: 20
+                        anchors.margins: 20 * Appearance.effectiveScale
+                        spacing: 20 * Appearance.effectiveScale
                         
                         ColumnLayout {
                             spacing: 0
@@ -547,9 +547,9 @@ Item {
                         Item { Layout.fillWidth: true }
 
                         RippleButton {
-                            implicitWidth: 100
-                            implicitHeight: 32
-                            buttonRadius: 16
+                            implicitWidth: 100 * Appearance.effectiveScale
+                            implicitHeight: 32 * Appearance.effectiveScale
+                            buttonRadius: 16 * Appearance.effectiveScale
                             buttonText: "Set Main"
                             Layout.alignment: Qt.AlignVCenter
                             colBackground: Appearance.colors.colPrimary
@@ -571,15 +571,15 @@ Item {
         // ── Selected Monitor Settings ──
         ColumnLayout {
             Layout.fillWidth: true
-            spacing: 4 // Match Eye Care / ServicesSettings
+            spacing: 4 * Appearance.effectiveScale // Match Eye Care / ServicesSettings
             visible: root.currentMonitor !== null
             
             RowLayout {
-                spacing: 12
-                Layout.bottomMargin: 8 // Space from header to first card
+                spacing: 12 * Appearance.effectiveScale
+                Layout.bottomMargin: 8 * Appearance.effectiveScale // Space from header to first card
                 MaterialSymbol {
                     text: "settings_input_component"
-                    iconSize: 24
+                    iconSize: 24 * Appearance.effectiveScale
                     color: Appearance.colors.colPrimary
                     Layout.alignment: Qt.AlignVCenter
                 }
@@ -599,7 +599,7 @@ Item {
                 
                 // ── Apply/Cancel Buttons moved here ──
                 RowLayout {
-                    spacing: 16
+                    spacing: 16 * Appearance.effectiveScale
                     opacity: root.hasPendingChanges ? 1 : 0
                     enabled: root.hasPendingChanges
                     Layout.alignment: Qt.AlignVCenter
@@ -607,13 +607,13 @@ Item {
                     
                     MouseArea {
                         width: cancelText.implicitWidth
-                        height: 32
+                        height: 32 * Appearance.effectiveScale
                         cursorShape: Qt.PointingHandCursor
                         StyledText {
                             id: cancelText
                             anchors.centerIn: parent
                             text: "Cancel"
-                            font.pixelSize: 13
+                            font.pixelSize: 13 * Appearance.effectiveScale
                             font.weight: Font.Medium
                             color: Appearance.colors.colSubtext
                         }
@@ -622,13 +622,13 @@ Item {
                     
                     MouseArea {
                         width: applyText.implicitWidth
-                        height: 32
+                        height: 32 * Appearance.effectiveScale
                         cursorShape: Qt.PointingHandCursor
                         StyledText {
                             id: applyText
                             anchors.centerIn: parent
                             text: "Apply"
-                            font.pixelSize: 13
+                            font.pixelSize: 13 * Appearance.effectiveScale
                             font.weight: Font.Bold
                             color: Appearance.colors.colPrimary
                         }
@@ -642,20 +642,20 @@ Item {
             // Resolution
             SegmentedWrapper {
                 Layout.fillWidth: true
-                implicitHeight: resRow.implicitHeight + 40
+                implicitHeight: resRow.implicitHeight + (40 * Appearance.effectiveScale)
                 orientation: Qt.Vertical
                 color: Appearance.m3colors.m3surfaceContainerHigh
-                smallRadius: 8
-                fullRadius: 20
+                smallRadius: 8 * Appearance.effectiveScale
+                fullRadius: 20 * Appearance.effectiveScale
                 
                 RowLayout {
                     id: resRow
                     anchors.fill: parent
-                    anchors.margins: 20
-                    spacing: 20
+                    anchors.margins: 20 * Appearance.effectiveScale
+                    spacing: 20 * Appearance.effectiveScale
                     
                     ColumnLayout {
-                        spacing: 2
+                        spacing: 2 * Appearance.effectiveScale
                         StyledText {
                             text: "Resolution & Refresh"
                             font.pixelSize: Appearance.font.pixelSize.normal
@@ -678,7 +678,7 @@ Item {
 
                     StyledComboBox {
                         id: resCombo
-                        implicitWidth: 260
+                        implicitWidth: 260 * Appearance.effectiveScale
                         
                         Binding on text {
                             when: true
@@ -709,20 +709,20 @@ Item {
             // Scaling
             SegmentedWrapper {
                 Layout.fillWidth: true
-                implicitHeight: scaleRow.implicitHeight + 40
+                implicitHeight: scaleRow.implicitHeight + (40 * Appearance.effectiveScale)
                 orientation: Qt.Vertical
                 color: Appearance.m3colors.m3surfaceContainerHigh
-                smallRadius: 8
-                fullRadius: 20
+                smallRadius: 8 * Appearance.effectiveScale
+                fullRadius: 20 * Appearance.effectiveScale
                 
                 RowLayout {
                     id: scaleRow
                     anchors.fill: parent
-                    anchors.margins: 20
-                    spacing: 20
+                    anchors.margins: 20 * Appearance.effectiveScale
+                    spacing: 20 * Appearance.effectiveScale
                     
                     ColumnLayout {
-                        spacing: 2
+                        spacing: 2 * Appearance.effectiveScale
                         StyledText {
                             text: "Display Scaling"
                             font.pixelSize: Appearance.font.pixelSize.normal
@@ -739,7 +739,7 @@ Item {
                     Item { Layout.fillWidth: true }
 
                     RowLayout {
-                        spacing: 4
+                        spacing: 4 * Appearance.effectiveScale
                         Repeater {
                             model: [1.0, 1.25, 1.5, 2.0]
                             delegate: SegmentedButton {
@@ -750,9 +750,9 @@ Item {
                                     if (sj && sj.scale !== undefined) return Math.abs(sj.scale - modelData) < 0.01;
                                     return Math.abs(parseFloat(root.currentMonitor.scale || 1.0) - modelData) < 0.01;
                                 }
-                                Layout.preferredHeight: 36
-                                leftPadding: 16
-                                rightPadding: 16
+                                Layout.preferredHeight: 36 * Appearance.effectiveScale
+                                leftPadding: 16 * Appearance.effectiveScale
+                                rightPadding: 16 * Appearance.effectiveScale
                                 colActive: Appearance.m3colors.m3primary
                                 colInactive: Appearance.m3colors.m3surfaceContainerLow
                                 onClicked: {
@@ -767,20 +767,20 @@ Item {
             // Orientation
             SegmentedWrapper {
                 Layout.fillWidth: true
-                implicitHeight: orientRow.implicitHeight + 40
+                implicitHeight: orientRow.implicitHeight + (40 * Appearance.effectiveScale)
                 orientation: Qt.Vertical
                 color: Appearance.m3colors.m3surfaceContainerHigh
-                smallRadius: 8
-                fullRadius: 20
+                smallRadius: 8 * Appearance.effectiveScale
+                fullRadius: 20 * Appearance.effectiveScale
                 
                 RowLayout {
                     id: orientRow
                     anchors.fill: parent
-                    anchors.margins: 20
-                    spacing: 20
+                    anchors.margins: 20 * Appearance.effectiveScale
+                    spacing: 20 * Appearance.effectiveScale
                     
                     ColumnLayout {
-                        spacing: 2
+                        spacing: 2 * Appearance.effectiveScale
                         StyledText {
                             text: "Orientation"
                             font.pixelSize: Appearance.font.pixelSize.normal
@@ -797,7 +797,7 @@ Item {
                     Item { Layout.fillWidth: true }
 
                     RowLayout {
-                        spacing: 4
+                        spacing: 4 * Appearance.effectiveScale
                         Repeater {
                             model: [
                                 { label: "Normal", value: 0 },
@@ -806,374 +806,373 @@ Item {
                                 { label: "270°", value: 3 }
                             ]
                             delegate: SegmentedButton {
-                                buttonText: modelData.label
-                                isHighlighted: {
-                                    if (!root.currentMonitor) return false;
-                                    const sj = root.stagedChanges[root.currentMonitor.name];
-                                    if (sj && sj.transform !== undefined) return sj.transform === modelData.value;
-                                    return (root.currentMonitor.transform || 0) === modelData.value;
-                                }
-                                Layout.preferredHeight: 36
-                                leftPadding: 16
-                                rightPadding: 16
-                                colActive: Appearance.m3colors.m3primary
-                                colInactive: Appearance.m3colors.m3surfaceContainerLow
-                                onClicked: {
-                                    root.setStagedChange(root.currentMonitor.name, "transform", modelData.value);
-                                }
+                            buttonText: modelData.label
+                            isHighlighted: {
+                                if (!root.currentMonitor) return false;
+                                const sj = root.stagedChanges[root.currentMonitor.name];
+                                if (sj && sj.transform !== undefined) return sj.transform === modelData.value;
+                                return (root.currentMonitor.transform || 0) === modelData.value;
                             }
-                        }
-                    }
-                }
-            }
+                            Layout.preferredHeight: 36 * Appearance.effectiveScale
+                            leftPadding: 16 * Appearance.effectiveScale
+                            rightPadding: 16 * Appearance.effectiveScale
+                            colActive: Appearance.m3colors.m3primary
+                            colInactive: Appearance.m3colors.m3surfaceContainerLow
+                            onClicked: {
+                                root.setStagedChange(root.currentMonitor.name, "transform", modelData.value);
+                            }
+                            }
+                            }
+                            }
+                            }
+                            }
 
-            // Brightness
-            SegmentedWrapper {
-                Layout.fillWidth: true
-                implicitHeight: brightCol.implicitHeight + 40
-                orientation: Qt.Vertical
-                color: Appearance.m3colors.m3surfaceContainerHigh
-                smallRadius: 8
-                fullRadius: 20
-                
-                ColumnLayout {
-                    id: brightCol
-                    anchors.fill: parent
-                    anchors.margins: 20
-                    spacing: 12
-                    
-                    property var mon: root.currentMonitor ? Brightness.getMonitorByName(root.currentMonitor.name) : null
+                            // Brightness
+                            SegmentedWrapper {
+                            Layout.fillWidth: true
+                            implicitHeight: brightCol.implicitHeight + (40 * Appearance.effectiveScale)
+                            orientation: Qt.Vertical
+                            color: Appearance.m3colors.m3surfaceContainerHigh
+                            smallRadius: 8 * Appearance.effectiveScale
+                            fullRadius: 20 * Appearance.effectiveScale
 
-                    RowLayout {
-                        width: parent.width
-                        StyledText {
+                            ColumnLayout {
+                            id: brightCol
+                            anchors.fill: parent
+                            anchors.margins: 20 * Appearance.effectiveScale
+                            spacing: 12 * Appearance.effectiveScale
+
+                            property var mon: root.currentMonitor ? Brightness.getMonitorByName(root.currentMonitor.name) : null
+
+                            RowLayout {
+                            width: parent.width
+                            StyledText {
                             text: "Brightness"
                             font.pixelSize: Appearance.font.pixelSize.normal
                             font.weight: Font.Medium
                             color: Appearance.colors.colOnLayer1
-                        }
-                        Item { Layout.fillWidth: true }
-                        StyledText {
+                            }
+                            Item { Layout.fillWidth: true }
+                            StyledText {
                             text: brightCol.mon ? Math.round(brightCol.mon.multipliedBrightness * 100) + "%" : "N/A"
                             font.pixelSize: Appearance.font.pixelSize.small
                             color: Appearance.colors.colPrimary
-                        }
-                    }
-
-                    StyledSlider {
-                        Layout.fillWidth: true
-                        from: 0.0
-                        to: 1.0
-                        stepSize: 0.01
-                        value: brightCol.mon ? brightCol.mon.brightness : 0.5
-                        configuration: StyledSlider.Configuration.M
-                        onPressedChanged: {
-                            if (!pressed) {
-                                // Small delay to allow the last update to settle
-                                timerRelease.restart();
-                            } else {
-                                root.isDraggingBrightness = true;
                             }
-                        }
-                        
-                        Timer {
+                            }
+
+                            StyledSlider {
+                            Layout.fillWidth: true
+                            from: 0.0
+                            to: 1.0
+                            stepSize: 0.01
+                            value: brightCol.mon ? brightCol.mon.brightness : 0.5
+                            configuration: StyledSlider.Configuration.M
+                            onPressedChanged: {
+                            if (!pressed) {
+                            // Small delay to allow the last update to settle
+                            timerRelease.restart();
+                            } else {
+                            root.isDraggingBrightness = true;
+                            }
+                            }
+
+                            Timer {
                             id: timerRelease
                             interval: 100
                             onTriggered: root.isDraggingBrightness = false
-                        }
+                            }
 
-                        onMoved: {
+                            onMoved: {
                             if (brightCol.mon) brightCol.mon.setBrightness(value);
-                        }
-                        
-                        // Prevent the value from updating via binding while dragging
-                        Binding on value {
+                            }
+
+                            // Prevent the value from updating via binding while dragging
+                            Binding on value {
                             when: !root.isDraggingBrightness && brightCol.mon !== null
                             value: brightCol.mon ? brightCol.mon.brightness : 0.5
                             restoreMode: Binding.RestoreBindingOrValue
-                        }
-                    }
-                }
-            }
-        }
+                            }
+                            }
+                            }
+                            }
+                            }
 
-        // ── UI Scaling Section ──
-        ColumnLayout {
-            Layout.fillWidth: true
-            spacing: 4
+                            // ── UI Scaling Section ──
+                            ColumnLayout {
+                            Layout.fillWidth: true
+                            spacing: 4 * Appearance.effectiveScale
 
-            RowLayout {
-                spacing: 12
-                Layout.bottomMargin: 8
-                MaterialSymbol {
-                    text: "straighten"
-                    iconSize: 24
-                    color: Appearance.colors.colPrimary
-                }
-                StyledText {
-                    text: "UI Scaling"
-                    font.pixelSize: Appearance.font.pixelSize.large
-                    font.weight: Font.Medium
-                    color: Appearance.colors.colOnLayer1
-                    Layout.fillWidth: true
-                }
-            }
+                            RowLayout {
+                            spacing: 12 * Appearance.effectiveScale
+                            Layout.bottomMargin: 8 * Appearance.effectiveScale
+                            MaterialSymbol {
+                            text: "straighten"
+                            iconSize: 24 * Appearance.effectiveScale
+                            color: Appearance.colors.colPrimary
+                            }
+                            StyledText {
+                            text: "UI Scaling"
+                            font.pixelSize: Appearance.font.pixelSize.large
+                            font.weight: Font.Medium
+                            color: Appearance.colors.colOnLayer1
+                            Layout.fillWidth: true
+                            }
+                            }
 
-            // Card 1: Toggle Auto Scale
-            SegmentedWrapper {
-                Layout.fillWidth: true
-                implicitHeight: autoScaleRow.implicitHeight + 40
-                orientation: Qt.Vertical
-                color: Appearance.m3colors.m3surfaceContainerHigh
-                smallRadius: 8
-                fullRadius: 20
+                            // Card 1: Toggle Auto Scale
+                            SegmentedWrapper {
+                            Layout.fillWidth: true
+                            implicitHeight: autoScaleRow.implicitHeight + (40 * Appearance.effectiveScale)
+                            orientation: Qt.Vertical
+                            color: Appearance.m3colors.m3surfaceContainerHigh
+                            smallRadius: 8 * Appearance.effectiveScale
+                            fullRadius: 20 * Appearance.effectiveScale
 
-                RowLayout {
-                    id: autoScaleRow
-                    anchors.fill: parent
-                    anchors.margins: 20
-                    spacing: 20
-                    
-                    ColumnLayout {
-                        spacing: 0
-                        StyledText {
+                            RowLayout {
+                            id: autoScaleRow
+                            anchors.fill: parent
+                            anchors.margins: 20 * Appearance.effectiveScale
+                            spacing: 20 * Appearance.effectiveScale
+
+                            ColumnLayout {
+                            spacing: 0
+                            StyledText {
                             text: "Automatic Scaling"
                             font.pixelSize: Appearance.font.pixelSize.normal
                             font.weight: Font.Medium
                             color: Appearance.colors.colOnLayer1
-                        }
-                        StyledText {
+                            }
+                            StyledText {
                             text: "Detect scale based on screen resolution (Base 1080p)"
                             font.pixelSize: Appearance.font.pixelSize.small
                             color: Appearance.colors.colSubtext
-                        }
-                    }
-                    
-                    Item { Layout.fillWidth: true }
-
-                    AndroidToggle {
-                        checked: Config.ready && Config.options.appearance ? Config.options.appearance.autoScale : true
-                        onToggled: {
-                            if (Config.ready && Config.options.appearance) {
-                                Config.options.appearance.autoScale = !Config.options.appearance.autoScale;
                             }
-                        }
-                    }
-                }
-            }
+                            }
 
-            // Card 2: Manual Scale Slider (Separated)
-            SegmentedWrapper {
-                Layout.fillWidth: true
-                implicitHeight: manualScaleCol.implicitHeight + 40
-                orientation: Qt.Vertical
-                color: Appearance.m3colors.m3surfaceContainerHigh
-                smallRadius: 8
-                fullRadius: 20
-                
-                enabled: Config.ready && Config.options.appearance ? !Config.options.appearance.autoScale : false
-                opacity: enabled ? 1 : 0.5
-                Behavior on opacity { NumberAnimation { duration: 200 } }
+                            Item { Layout.fillWidth: true }
 
-                ColumnLayout {
-                    id: manualScaleCol
-                    anchors.fill: parent
-                    anchors.margins: 20
-                    spacing: 12
+                            AndroidToggle {
+                            checked: Config.ready && Config.options.appearance ? Config.options.appearance.autoScale : true
+                            onToggled: {
+                            if (Config.ready && Config.options.appearance) {
+                            Config.options.appearance.autoScale = !Config.options.appearance.autoScale;
+                            }
+                            }
+                            }
+                            }
+                            }
 
-                    RowLayout {
-                        width: parent.width
-                        StyledText {
+                            // Card 2: Manual Scale Slider (Separated)
+                            SegmentedWrapper {
+                            Layout.fillWidth: true
+                            implicitHeight: manualScaleCol.implicitHeight + (40 * Appearance.effectiveScale)
+                            orientation: Qt.Vertical
+                            color: Appearance.m3colors.m3surfaceContainerHigh
+                            smallRadius: 8 * Appearance.effectiveScale
+                            fullRadius: 20 * Appearance.effectiveScale
+
+                            enabled: Config.ready && Config.options.appearance ? !Config.options.appearance.autoScale : false
+                            opacity: enabled ? 1 : 0.5
+                            Behavior on opacity { NumberAnimation { duration: 200 } }
+
+                            ColumnLayout {
+                            id: manualScaleCol
+                            anchors.fill: parent
+                            anchors.margins: 20 * Appearance.effectiveScale
+                            spacing: 12 * Appearance.effectiveScale
+
+                            RowLayout {
+                            width: parent.width
+                            StyledText {
                             text: "Manual Scale"
                             font.pixelSize: Appearance.font.pixelSize.normal
                             font.weight: Font.Medium
                             color: Appearance.colors.colOnLayer1
-                        }
-                        Item { Layout.fillWidth: true }
-                        StyledText {
+                            }
+                            Item { Layout.fillWidth: true }
+                            StyledText {
                             text: Math.round((Config.ready && Config.options.appearance ? Config.options.appearance.globalScale : 1.0) * 100) + "%"
                             font.pixelSize: Appearance.font.pixelSize.small
                             color: Appearance.colors.colPrimary
-                        }
-                    }
+                            }
+                            }
 
-                    StyledSlider {
-                        Layout.fillWidth: true
-                        from: 0.5
-                        to: 2.0
-                        stepSize: 0.05
-                        value: Config.ready && Config.options.appearance ? Config.options.appearance.globalScale : 1.0
-                        configuration: StyledSlider.Configuration.M
-                        onMoved: if (Config.ready && Config.options.appearance) Config.options.appearance.globalScale = value
-                    }
-                }
-            }
-        }
+                            StyledSlider {
+                            Layout.fillWidth: true
+                            from: 0.5
+                            to: 2.0
+                            stepSize: 0.05
+                            value: Config.ready && Config.options.appearance ? Config.options.appearance.globalScale : 1.0
+                            configuration: StyledSlider.Configuration.M
+                            onMoved: if (Config.ready && Config.options.appearance) Config.options.appearance.globalScale = value
+                            }
+                            }
+                            }
+                            }
 
-        // ── Eye Care Section (Moved here) ──
-        DisplayEyeCare { Layout.fillWidth: true }
+                            // ── Eye Care Section (Moved here) ──
+                            DisplayEyeCare { Layout.fillWidth: true }
 
-        Item { Layout.fillHeight: true }
-    }
-    }
+                            Item { Layout.fillHeight: true }
+                            }
+                            }
 
-    // ── Revert Confirmation Popup ──
-    PanelWindow {
-        id: revertPopup
-        
-        property int countdown: 15
-        property bool active: false
-        
-        signal confirmed()
-        signal reverted()
-        
-        visible: active
-        color: "transparent"
-        
-        screen: Quickshell.screens[0]
-        anchors {
-            top: true
-            bottom: true
-            left: true
-            right: true
-        }
+                            // ── Revert Confirmation Popup ──
+                            PanelWindow {
+                            id: revertPopup
 
-        WlrLayershell.layer: WlrLayer.Overlay
-        WlrLayershell.namespace: "nandoroid:displayrevert"
-        WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
-        exclusionMode: ExclusionMode.Ignore
+                            property int countdown: 15
+                            property bool active: false
 
-        // Block interactions with background
-        MouseArea {
-            anchors.fill: parent
-            acceptedButtons: Qt.AllButtons
-            onClicked: {}
-        }
+                            signal confirmed()
+                            signal reverted()
 
-        // Dim background
-        Rectangle {
-            anchors.fill: parent
-            color: Appearance.colors.colScrim
-            opacity: revertPopup.active ? 1 : 0
-            Behavior on opacity { NumberAnimation { duration: 200 } }
-        }
+                            visible: active
+                            color: "transparent"
 
-        Timer {
-            id: countdownTimer
-            interval: 1000
-            repeat: true
-            running: revertPopup.active
-            onTriggered: {
-                revertPopup.countdown--;
-                if (revertPopup.countdown <= 0) {
-                    revertPopup.reverted();
-                    revertPopup.active = false;
-                }
-            }
-        }
+                            screen: Quickshell.screens[0]
+                            anchors {
+                            top: true
+                            bottom: true
+                            left: true
+                            right: true
+                            }
 
-        onActiveChanged: {
-            if (active) {
-                revertPopup.countdown = 15;
-                countdownTimer.start();
-            } else {
-                countdownTimer.stop();
-            }
-        }
+                            WlrLayershell.layer: WlrLayer.Overlay
+                            WlrLayershell.namespace: "nandoroid:displayrevert"
+                            WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
+                            exclusionMode: ExclusionMode.Ignore
 
-        // Modal Content
-        Rectangle {
-            id: modal
-            anchors.centerIn: parent
-            width: 380
-            height: contentCol.implicitHeight + 48
-            radius: Appearance.rounding.card
-            color: Appearance.m3colors.m3surfaceContainerHigh
-            
-            // Shadow
-            StyledRectangularShadow {
-                target: parent
-                z: -1
-                offset: Qt.vector2d(0, 8)
-                blur: 20
-                color: Qt.rgba(0, 0, 0, 0.3)
-            }
+                            // Block interactions with background
+                            MouseArea {
+                            anchors.fill: parent
+                            acceptedButtons: Qt.AllButtons
+                            onClicked: {}
+                            }
 
-            ColumnLayout {
-                id: contentCol
-                anchors.centerIn: parent
-                width: parent.width - 48
-                spacing: 24
+                            // Dim background
+                            Rectangle {
+                            anchors.fill: parent
+                            color: Appearance.colors.colScrim
+                            opacity: revertPopup.active ? 1 : 0
+                            Behavior on opacity { NumberAnimation { duration: 200 } }
+                            }
 
-                // Icon
-                MaterialSymbol {
-                    Layout.alignment: Qt.AlignHCenter
-                    text: "monitor"
-                    iconSize: 32
-                    color: Appearance.colors.colPrimary
-                }
-
-                ColumnLayout {
-                    Layout.fillWidth: true
-                    spacing: 8
-                    
-                    StyledText {
-                        Layout.fillWidth: true
-                        text: "Keep these display settings?"
-                        font.pixelSize: Appearance.font.pixelSize.large
-                        font.weight: Font.Medium
-                        horizontalAlignment: Text.AlignHCenter
-                        color: Appearance.m3colors.m3onSurface
-                    }
-
-                    StyledText {
-                        Layout.fillWidth: true
-                        text: "Changes will be reverted in " + revertPopup.countdown + " seconds."
-                        font.pixelSize: Appearance.font.pixelSize.small
-                        horizontalAlignment: Text.AlignHCenter
-                        color: Appearance.m3colors.m3onSurfaceVariant
-                    }
-                }
-
-                RowLayout {
-                    Layout.fillWidth: true
-                    Layout.topMargin: 24
-                    spacing: 12
-
-                    Item { Layout.fillWidth: true }
-
-                    RippleButton {
-                        Layout.preferredWidth: 100
-                        Layout.preferredHeight: 40
-                        buttonRadius: Appearance.rounding.button
-                        buttonText: "Revert"
-                        colBackground: "transparent"
-                        colBackgroundHover: Appearance.colors.colLayer2Hover
-                        colText: Appearance.m3colors.m3onSurface
-                        onClicked: {
+                            Timer {
+                            id: countdownTimer
+                            interval: 1000
+                            repeat: true
+                            running: revertPopup.active
+                            onTriggered: {
+                            revertPopup.countdown--;
+                            if (revertPopup.countdown <= 0) {
                             revertPopup.reverted();
                             revertPopup.active = false;
-                        }
-                    }
+                            }
+                            }
+                            }
 
-                    RippleButton {
-                        Layout.preferredHeight: 40
-                        Layout.minimumWidth: 110
-                        Layout.leftMargin: 8
-                        buttonRadius: Appearance.rounding.button
-                        buttonText: "Keep changes"
-                        colBackground: Appearance.colors.colPrimary
-                        colText: Appearance.colors.colOnPrimary
-                        onClicked: {
+                            onActiveChanged: {
+                            if (active) {
+                            revertPopup.countdown = 15;
+                            countdownTimer.start();
+                            } else {
+                            countdownTimer.stop();
+                            }
+                            }
+
+                            // Modal Content
+                            Rectangle {
+                            id: modal
+                            anchors.centerIn: parent
+                            width: 380 * Appearance.effectiveScale
+                            height: contentCol.implicitHeight + (48 * Appearance.effectiveScale)
+                            radius: Appearance.rounding.card
+                            color: Appearance.m3colors.m3surfaceContainerHigh
+
+                            // Shadow
+                            StyledRectangularShadow {
+                            target: parent
+                            z: -1
+                            offset: Qt.vector2d(0, 8 * Appearance.effectiveScale)
+                            blur: 20 * Appearance.effectiveScale
+                            color: Qt.rgba(0, 0, 0, 0.3)
+                            }
+
+                            ColumnLayout {
+                            id: contentCol
+                            anchors.centerIn: parent
+                            width: parent.width - (48 * Appearance.effectiveScale)
+                            spacing: 24 * Appearance.effectiveScale
+
+                            // Icon
+                            MaterialSymbol {
+                            Layout.alignment: Qt.AlignHCenter
+                            text: "monitor"
+                            iconSize: 32 * Appearance.effectiveScale
+                            color: Appearance.colors.colPrimary
+                            }
+
+                            ColumnLayout {
+                            Layout.fillWidth: true
+                            spacing: 8 * Appearance.effectiveScale
+
+                            StyledText {
+                            Layout.fillWidth: true
+                            text: "Keep these display settings?"
+                            font.pixelSize: Appearance.font.pixelSize.large
+                            font.weight: Font.Medium
+                            horizontalAlignment: Text.AlignHCenter
+                            color: Appearance.m3colors.m3onSurface
+                            }
+
+                            StyledText {
+                            Layout.fillWidth: true
+                            text: "Changes will be reverted in " + revertPopup.countdown + " seconds."
+                            font.pixelSize: Appearance.font.pixelSize.small
+                            horizontalAlignment: Text.AlignHCenter
+                            color: Appearance.m3colors.m3onSurfaceVariant
+                            }
+                            }
+
+                            RowLayout {
+                            Layout.fillWidth: true
+                            Layout.topMargin: 24 * Appearance.effectiveScale
+                            spacing: 12 * Appearance.effectiveScale
+
+                            Item { Layout.fillWidth: true }
+
+                            RippleButton {
+                            Layout.preferredWidth: 100 * Appearance.effectiveScale
+                            Layout.preferredHeight: 40 * Appearance.effectiveScale
+                            buttonRadius: Appearance.rounding.button
+                            buttonText: "Revert"
+                            colBackground: "transparent"
+                            colBackgroundHover: Appearance.colors.colLayer2Hover
+                            colText: Appearance.m3colors.m3onSurface
+                            onClicked: {
+                            revertPopup.reverted();
+                            revertPopup.active = false;
+                            }
+                            }
+
+                            RippleButton {
+                            Layout.preferredHeight: 40 * Appearance.effectiveScale
+                            Layout.minimumWidth: 110 * Appearance.effectiveScale
+                            Layout.leftMargin: 8 * Appearance.effectiveScale
+                            buttonRadius: Appearance.rounding.button
+                            buttonText: "Keep changes"
+                            colBackground: Appearance.colors.colPrimary
+                            colText: Appearance.colors.colOnPrimary
+                            onClicked: {
                             revertPopup.confirmed();
                             revertPopup.active = false;
-                        }
-                    }
-                }
-            }
-        }
-        onConfirmed: root.confirmChanges()
-        onReverted: root.revertChanges()
-    }
-
+                            }
+                            }
+                            }
+                            }
+                            }
+                            onConfirmed: root.confirmChanges()
+                            onReverted: root.revertChanges()
+                            }
 }

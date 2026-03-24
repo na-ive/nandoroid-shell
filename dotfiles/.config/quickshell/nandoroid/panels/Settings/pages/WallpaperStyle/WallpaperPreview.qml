@@ -11,7 +11,7 @@ ColumnLayout {
     property bool showCheckmark: false
     property bool clickable: true
     signal clicked()
-    spacing: 12
+    spacing: 12 * Appearance.effectiveScale
     Item {
         id: previewWrapper
         Layout.fillWidth: true
@@ -20,7 +20,7 @@ ColumnLayout {
         Rectangle {
             id: imgContainer
             anchors.fill: parent
-            radius: 24; 
+            radius: 24 * Appearance.effectiveScale; 
             color: Appearance.colors.colLayer1
             
             layer.enabled: true
@@ -59,13 +59,13 @@ ColumnLayout {
             // 3. Hover Content (Icon + Text)
             ColumnLayout {
                 anchors.centerIn: parent
-                spacing: 8
+                spacing: 8 * Appearance.effectiveScale
                 visible: previewComp.clickable && mouseArea.containsMouse
                 
                 MaterialSymbol {
                     Layout.alignment: Qt.AlignHCenter
                     text: "edit"
-                    iconSize: 32
+                    iconSize: 32 * Appearance.effectiveScale
                     color: "white"
                 }
                 StyledText {
@@ -78,14 +78,14 @@ ColumnLayout {
             
             // Selection Checkmark
             Rectangle {
-                width: 42; height: 42; radius: 21; anchors.centerIn: parent
+                width: 42 * Appearance.effectiveScale; height: 42 * Appearance.effectiveScale; radius: 21 * Appearance.effectiveScale; anchors.centerIn: parent
                 color: Appearance.colors.colPrimary
                 visible: previewComp.showCheckmark
                 MaterialSymbol { 
                     anchors.centerIn: parent; 
                     text: "check"; 
                     color: Appearance.colors.colOnPrimary; 
-                    iconSize: 24 
+                    iconSize: 24 * Appearance.effectiveScale
                 }
             }
         }

@@ -11,7 +11,7 @@ import Quickshell.Io
 
 ColumnLayout {
     id: dependencyRoot
-    spacing: 24
+    spacing: 24 * Appearance.effectiveScale
 
     property alias isScanning: pacmanCheckProc.running
 
@@ -101,25 +101,25 @@ ColumnLayout {
 
     Rectangle {
         Layout.fillWidth: true
-        Layout.preferredHeight: 80
-        radius: 20
+        Layout.preferredHeight: 80 * Appearance.effectiveScale
+        radius: 20 * Appearance.effectiveScale
         color: Appearance.m3colors.m3surfaceContainerHigh
         
         RowLayout {
             anchors.fill: parent
-            anchors.leftMargin: 20
-            anchors.rightMargin: 16
-            spacing: 16
+            anchors.leftMargin: 20 * Appearance.effectiveScale
+            anchors.rightMargin: 16 * Appearance.effectiveScale
+            spacing: 16 * Appearance.effectiveScale
             
             MaterialSymbol {
                 text: "account_tree"
-                iconSize: 24
+                iconSize: 24 * Appearance.effectiveScale
                 color: Appearance.colors.colPrimary
             }
             
             ColumnLayout {
                 Layout.fillWidth: true
-                spacing: 2
+                spacing: 2 * Appearance.effectiveScale
                 StyledText {
                     text: "Dependency Scanner"
                     font.pixelSize: Appearance.font.pixelSize.normal
@@ -136,19 +136,19 @@ ColumnLayout {
             Item { Layout.fillWidth: true }
 
             RippleButton {
-                implicitWidth: 140
-                implicitHeight: 40
-                buttonRadius: 20
+                implicitWidth: 140 * Appearance.effectiveScale
+                implicitHeight: 40 * Appearance.effectiveScale
+                buttonRadius: 20 * Appearance.effectiveScale
                 colBackground: Appearance.colors.colPrimary
                 onClicked: {
                     dependencyRoot.scanDependencies();
                 }
                 RowLayout {
                     anchors.centerIn: parent
-                    spacing: 8
+                    spacing: 8 * Appearance.effectiveScale
                     MaterialSymbol {
                         text: "sync"
-                        iconSize: 18
+                        iconSize: 18 * Appearance.effectiveScale
                         color: Appearance.colors.colOnPrimary
                     }
                     StyledText {
@@ -165,18 +165,18 @@ ColumnLayout {
     GridLayout {
         Layout.fillWidth: true
         columns: 2
-        rowSpacing: 12
-        columnSpacing: 12
+        rowSpacing: 12 * Appearance.effectiveScale
+        columnSpacing: 12 * Appearance.effectiveScale
 
         Repeater {
             model: depModel
             delegate: Rectangle {
                 Layout.fillWidth: true
                 Layout.preferredWidth: 1
-                Layout.preferredHeight: 72
-                radius: 20
+                Layout.preferredHeight: 72 * Appearance.effectiveScale
+                radius: 20 * Appearance.effectiveScale
                 color: Appearance.m3colors.m3surfaceContainerHigh
-                border.width: 1
+                border.width: 1 * Appearance.effectiveScale
                 border.color: model.installed ? "#81C995" : Appearance.colors.colError 
 
                 MouseArea {
@@ -194,19 +194,19 @@ ColumnLayout {
 
                     RowLayout {
                         anchors.fill: parent
-                        anchors.leftMargin: 20
-                        anchors.rightMargin: 20
-                        spacing: 16
+                        anchors.leftMargin: 20 * Appearance.effectiveScale
+                        anchors.rightMargin: 20 * Appearance.effectiveScale
+                        spacing: 16 * Appearance.effectiveScale
 
                         MaterialSymbol {
                             text: model.installed ? "check_circle" : "cancel"
-                            iconSize: 28
+                            iconSize: 28 * Appearance.effectiveScale
                             color: model.installed ? "#81C995" : Appearance.colors.colError
                         }
 
                         ColumnLayout {
                             Layout.fillWidth: true
-                            spacing: 2
+                            spacing: 2 * Appearance.effectiveScale
                             StyledText {
                                 Layout.fillWidth: true
                                 text: model.displayName
@@ -227,7 +227,7 @@ ColumnLayout {
                         ColumnLayout {
                             visible: !model.installed
                             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                            spacing: 2
+                            spacing: 2 * Appearance.effectiveScale
                             StyledText {
                                 text: "Not Installed"
                                 color: Appearance.colors.colError
@@ -239,7 +239,7 @@ ColumnLayout {
                                 text: "Click to install"
                                 color: Appearance.colors.colError
                                 opacity: 0.8
-                                font.pixelSize: 10
+                                font.pixelSize: Appearance.font.pixelSize.smallest
                                 Layout.alignment: Qt.AlignRight
                             }
                         }

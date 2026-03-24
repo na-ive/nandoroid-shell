@@ -13,12 +13,12 @@ ColumnLayout {
     property string version: ""
     signal pushView(string viewName)
 
-            spacing: 32
+            spacing: 32 * Appearance.effectiveScale
 
             // ── Top Branding & Distro Cards (50:50) ──
             RowLayout {
                 Layout.fillWidth: true
-                spacing: 20
+                spacing: 20 * Appearance.effectiveScale
 
                 BrandingCard {
                     Layout.fillWidth: true
@@ -49,23 +49,23 @@ ColumnLayout {
             // ── Update & Dependencies ──
             ColumnLayout {
                 Layout.fillWidth: true
-                spacing: 12
+                spacing: 12 * Appearance.effectiveScale
 
                 RippleButton {
                     Layout.fillWidth: true
-                    Layout.preferredHeight: 52
-                    buttonRadius: 16
+                    Layout.preferredHeight: 52 * Appearance.effectiveScale
+                    buttonRadius: 16 * Appearance.effectiveScale
                     colBackground: Appearance.m3colors.m3surfaceContainerHigh
                     onClicked: pushView( "update")
                     
                     RowLayout {
                         anchors.fill: parent
-                        anchors.leftMargin: 20
-                        anchors.rightMargin: 16
-                        spacing: 16
+                        anchors.leftMargin: 20 * Appearance.effectiveScale
+                        anchors.rightMargin: 16 * Appearance.effectiveScale
+                        spacing: 16 * Appearance.effectiveScale
                         MaterialSymbol {
                             text: "system_update"
-                            iconSize: 22
+                            iconSize: 22 * Appearance.effectiveScale
                             color: Appearance.colors.colPrimary
                         }
                         StyledText {
@@ -76,7 +76,7 @@ ColumnLayout {
                         }
                         MaterialSymbol {
                             text: "chevron_right"
-                            iconSize: 20
+                            iconSize: 20 * Appearance.effectiveScale
                             color: Appearance.colors.colSubtext
                         }
                     }
@@ -84,19 +84,19 @@ ColumnLayout {
 
                 RippleButton {
                     Layout.fillWidth: true
-                    Layout.preferredHeight: 52
-                    buttonRadius: 16
+                    Layout.preferredHeight: 52 * Appearance.effectiveScale
+                    buttonRadius: 16 * Appearance.effectiveScale
                     colBackground: Appearance.m3colors.m3surfaceContainerHigh
                     onClicked: pushView( "dependency")
                     
                     RowLayout {
                         anchors.fill: parent
-                        anchors.leftMargin: 20
-                        anchors.rightMargin: 16
-                        spacing: 16
+                        anchors.leftMargin: 20 * Appearance.effectiveScale
+                        anchors.rightMargin: 16 * Appearance.effectiveScale
+                        spacing: 16 * Appearance.effectiveScale
                         MaterialSymbol {
                             text: "verified"
-                            iconSize: 22
+                            iconSize: 22 * Appearance.effectiveScale
                             color: Appearance.colors.colPrimary
                         }
                         StyledText {
@@ -107,7 +107,7 @@ ColumnLayout {
                         }
                         MaterialSymbol {
                             text: "chevron_right"
-                            iconSize: 20
+                            iconSize: 20 * Appearance.effectiveScale
                             color: Appearance.colors.colSubtext
                         }
                     }
@@ -117,7 +117,7 @@ ColumnLayout {
             // ── System Information ──
             ColumnLayout {
                 Layout.fillWidth: true
-                spacing: 4
+                spacing: 4 * Appearance.effectiveScale
                 
                 SearchHandler { 
                     searchString: "System Information"
@@ -125,11 +125,11 @@ ColumnLayout {
                 }
 
                 RowLayout {
-                    spacing: 12
-                    Layout.bottomMargin: 8
+                    spacing: 12 * Appearance.effectiveScale
+                    Layout.bottomMargin: 8 * Appearance.effectiveScale
                     MaterialSymbol {
                         text: "info"
-                        iconSize: 24
+                        iconSize: 24 * Appearance.effectiveScale
                         color: Appearance.colors.colPrimary
                     }
                     StyledText {
@@ -142,7 +142,7 @@ ColumnLayout {
 
                 ColumnLayout {
                     Layout.fillWidth: true
-                    spacing: 4
+                    spacing: 4 * Appearance.effectiveScale
 
                     InfoRow { label: "Distro"; value: SystemInfo.distroName }
                     InfoRow { label: "Username"; value: SystemInfo.username }
@@ -155,7 +155,7 @@ ColumnLayout {
             // ── Hardware Information ──
             ColumnLayout {
                 Layout.fillWidth: true
-                spacing: 4
+                spacing: 4 * Appearance.effectiveScale
                 
                 SearchHandler { 
                     searchString: "Hardware"
@@ -163,11 +163,11 @@ ColumnLayout {
                 }
 
                 RowLayout {
-                    spacing: 12
-                    Layout.bottomMargin: 8
+                    spacing: 12 * Appearance.effectiveScale
+                    Layout.bottomMargin: 8 * Appearance.effectiveScale
                     MaterialSymbol {
                         text: "memory"
-                        iconSize: 24
+                        iconSize: 24 * Appearance.effectiveScale
                         color: Appearance.colors.colPrimary
                     }
                     StyledText {
@@ -180,7 +180,7 @@ ColumnLayout {
 
                 ColumnLayout {
                     Layout.fillWidth: true
-                    spacing: 4
+                    spacing: 4 * Appearance.effectiveScale
 
                     InfoRow { label: "Processor"; value: SystemInfo.cpu }
                     InfoRow { label: "GPU"; value: SystemInfo.gpu }
@@ -193,14 +193,14 @@ ColumnLayout {
             // ── Links ──
             ColumnLayout {
                 Layout.fillWidth: true
-                spacing: 4
+                spacing: 4 * Appearance.effectiveScale
 
                 RowLayout {
-                    spacing: 12
-                    Layout.bottomMargin: 8
+                    spacing: 12 * Appearance.effectiveScale
+                    Layout.bottomMargin: 8 * Appearance.effectiveScale
                     MaterialSymbol {
                         text: "link"
-                        iconSize: 24
+                        iconSize: 24 * Appearance.effectiveScale
                         color: Appearance.colors.colPrimary
                     }
                     StyledText {
@@ -213,24 +213,24 @@ ColumnLayout {
 
                 ColumnLayout {
                     Layout.fillWidth: true
-                    spacing: 4
+                    spacing: 4 * Appearance.effectiveScale
 
                     SegmentedWrapper {
                         Layout.fillWidth: true
-                        implicitHeight: 52
+                        implicitHeight: 52 * Appearance.effectiveScale
                         orientation: Qt.Vertical
-                        maxRadius: 20
+                        maxRadius: 20 * Appearance.effectiveScale
                         color: Appearance.m3colors.m3surfaceContainerHigh
 
                         RowLayout {
                             anchors.fill: parent
-                            anchors.leftMargin: 20
-                            anchors.rightMargin: 20
-                            spacing: 12
+                            anchors.leftMargin: 20 * Appearance.effectiveScale
+                            anchors.rightMargin: 20 * Appearance.effectiveScale
+                            spacing: 12 * Appearance.effectiveScale
                             
                             MaterialSymbol {
                                 text: "code"
-                                iconSize: 20
+                                iconSize: 20 * Appearance.effectiveScale
                                 color: Appearance.colors.colPrimary
                             }
                             StyledText {
@@ -255,20 +255,20 @@ ColumnLayout {
 
                     SegmentedWrapper {
                         Layout.fillWidth: true
-                        implicitHeight: 52
+                        implicitHeight: 52 * Appearance.effectiveScale
                         orientation: Qt.Vertical
-                        maxRadius: 20
+                        maxRadius: 20 * Appearance.effectiveScale
                         color: Appearance.m3colors.m3surfaceContainerHigh
 
                         RowLayout {
                             anchors.fill: parent
-                            anchors.leftMargin: 20
-                            anchors.rightMargin: 12
-                            spacing: 12
+                            anchors.leftMargin: 20 * Appearance.effectiveScale
+                            anchors.rightMargin: 12 * Appearance.effectiveScale
+                            spacing: 12 * Appearance.effectiveScale
                             
                             MaterialSymbol {
                                 text: "favorite"
-                                iconSize: 20
+                                iconSize: 20 * Appearance.effectiveScale
                                 color: "#ff4081"
                             }
                             StyledText {
@@ -279,7 +279,7 @@ ColumnLayout {
                             }
                             MaterialSymbol {
                                 text: "chevron_right"
-                                iconSize: 20
+                                iconSize: 20 * Appearance.effectiveScale
                                 color: Appearance.colors.colSubtext
                             }
                         }

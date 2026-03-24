@@ -13,17 +13,17 @@ import Quickshell
 ColumnLayout {
     id: root
     Layout.fillWidth: true
-    spacing: 4
+    spacing: 4 * Appearance.effectiveScale
     
     SearchHandler { searchString: "GitHub" }
 
     // Section Header
     RowLayout {
-        spacing: 12
-        Layout.bottomMargin: 8
+        spacing: 12 * Appearance.effectiveScale
+        Layout.bottomMargin: 8 * Appearance.effectiveScale
         MaterialSymbol {
             text: "code"
-            iconSize: 24
+            iconSize: 24 * Appearance.effectiveScale
             color: Appearance.colors.colPrimary
         }
         StyledText {
@@ -40,29 +40,29 @@ ColumnLayout {
         color: Appearance.colors.colSubtext
         wrapMode: Text.WordWrap
         Layout.fillWidth: true
-        Layout.bottomMargin: 8
+        Layout.bottomMargin: 8 * Appearance.effectiveScale
     }
 
     // ── Username card ──
     SegmentedWrapper {
         Layout.fillWidth: true
-        implicitHeight: usernameInner.implicitHeight + 40
+        implicitHeight: usernameInner.implicitHeight + 40 * Appearance.effectiveScale
         orientation: Qt.Vertical
         color: Appearance.m3colors.m3surfaceContainerHigh
-        smallRadius: 8
-        fullRadius: 20
+        smallRadius: 8 * Appearance.effectiveScale
+        fullRadius: 20 * Appearance.effectiveScale
 
         ColumnLayout {
             id: usernameInner
             anchors.fill: parent
-            anchors.margins: 20
-            spacing: 8
+            anchors.margins: 20 * Appearance.effectiveScale
+            spacing: 8 * Appearance.effectiveScale
 
             RowLayout {
-                spacing: 10
+                spacing: 10 * Appearance.effectiveScale
                 MaterialSymbol {
                     text: "person"
-                    iconSize: 18
+                    iconSize: 18 * Appearance.effectiveScale
                     color: Appearance.colors.colSubtext
                     Layout.alignment: Qt.AlignVCenter
                 }
@@ -78,17 +78,17 @@ ColumnLayout {
             // Input field — disk-monitoring style
             Rectangle {
                 Layout.fillWidth: true
-                Layout.preferredHeight: 48
-                radius: 12
+                Layout.preferredHeight: 48 * Appearance.effectiveScale
+                radius: 12 * Appearance.effectiveScale
                 color: Appearance.m3colors.m3surfaceContainerLow
-                border.width: usernameField.activeFocus ? 2 : 0
+                border.width: usernameField.activeFocus ? Math.max(1, 2 * Appearance.effectiveScale) : 0
                 border.color: Appearance.colors.colPrimary
 
                 TextInput {
                     id: usernameField
                     anchors.fill: parent
-                    anchors.leftMargin: 16
-                    anchors.rightMargin: 16
+                    anchors.leftMargin: 16 * Appearance.effectiveScale
+                    anchors.rightMargin: 16 * Appearance.effectiveScale
                     verticalAlignment: TextInput.AlignVCenter
                     clip: true
                     text: Config.ready && Config.options.github ? Config.options.github.githubUsername : ""
@@ -118,24 +118,24 @@ ColumnLayout {
     // ── Personal Access Token card ──
     SegmentedWrapper {
         Layout.fillWidth: true
-        implicitHeight: tokenInner.implicitHeight + 40
+        implicitHeight: tokenInner.implicitHeight + 40 * Appearance.effectiveScale
         orientation: Qt.Vertical
         color: Appearance.m3colors.m3surfaceContainerHigh
-        smallRadius: 8
-        fullRadius: 20
+        smallRadius: 8 * Appearance.effectiveScale
+        fullRadius: 20 * Appearance.effectiveScale
 
         ColumnLayout {
             id: tokenInner
             anchors.fill: parent
-            anchors.margins: 20
-            spacing: 8
+            anchors.margins: 20 * Appearance.effectiveScale
+            spacing: 8 * Appearance.effectiveScale
 
             RowLayout {
                 Layout.fillWidth: true
-                spacing: 10
+                spacing: 10 * Appearance.effectiveScale
                 MaterialSymbol {
                     text: "key"
-                    iconSize: 18
+                    iconSize: 18 * Appearance.effectiveScale
                     color: Appearance.colors.colSubtext
                     Layout.alignment: Qt.AlignVCenter
                 }
@@ -156,17 +156,17 @@ ColumnLayout {
             // Input field — disk-monitoring style with show/hide toggle
             Rectangle {
                 Layout.fillWidth: true
-                Layout.preferredHeight: 48
-                radius: 12
+                Layout.preferredHeight: 48 * Appearance.effectiveScale
+                radius: 12 * Appearance.effectiveScale
                 color: Appearance.m3colors.m3surfaceContainerLow
-                border.width: tokenField.activeFocus ? 2 : 0
+                border.width: tokenField.activeFocus ? Math.max(1, 2 * Appearance.effectiveScale) : 0
                 border.color: Appearance.colors.colPrimary
 
                 RowLayout {
                     anchors.fill: parent
-                    anchors.leftMargin: 16
-                    anchors.rightMargin: 8
-                    spacing: 4
+                    anchors.leftMargin: 16 * Appearance.effectiveScale
+                    anchors.rightMargin: 8 * Appearance.effectiveScale
+                    spacing: 4 * Appearance.effectiveScale
 
                     TextInput {
                         id: tokenField
@@ -198,13 +198,13 @@ ColumnLayout {
                     RippleButton {
                         id: showToken
                         property bool showingToken: false
-                        implicitWidth: 32; implicitHeight: 32; buttonRadius: 16
+                        implicitWidth: 32 * Appearance.effectiveScale; implicitHeight: 32 * Appearance.effectiveScale; buttonRadius: 16 * Appearance.effectiveScale
                         colBackground: "transparent"
                         onClicked: showingToken = !showingToken
                         MaterialSymbol {
                             anchors.centerIn: parent
                             text: showToken.showingToken ? "visibility_off" : "visibility"
-                            iconSize: 16
+                            iconSize: 16 * Appearance.effectiveScale
                             color: Appearance.colors.colSubtext
                         }
                     }

@@ -22,19 +22,19 @@ ColumnLayout {
 
                 id: clockStyleSection
                 Layout.fillWidth: true
-                Layout.topMargin: 12
-                spacing: 16
+                Layout.topMargin: 12 * Appearance.effectiveScale
+                spacing: 16 * Appearance.effectiveScale
                 
                 property string activeContext: "desktop"
                 property bool showAdvanced: false
     
                 // Section Header
                 RowLayout {
-                    spacing: 12
-                    Layout.bottomMargin: 4
+                    spacing: 12 * Appearance.effectiveScale
+                    Layout.bottomMargin: 4 * Appearance.effectiveScale
                     MaterialSymbol {
                         text: "watch"
-                        iconSize: 24
+                        iconSize: 24 * Appearance.effectiveScale
                         color: Appearance.colors.colPrimary
                     }
                     StyledText {
@@ -48,8 +48,8 @@ ColumnLayout {
                     // Reset Position Button (Only for Desktop)
                     RippleButton {
                         visible: !Config.options.appearance.clock.useSameStyle || clockStyleSection.activeContext === "desktop"
-                        Layout.preferredHeight: 32
-                        implicitWidth: 120
+                        Layout.preferredHeight: 32 * Appearance.effectiveScale
+                        implicitWidth: 120 * Appearance.effectiveScale
                         buttonText: "Reset Position"
                         onClicked: {
                             Config.options.appearance.clock.offsetX = 0
@@ -62,12 +62,12 @@ ColumnLayout {
                 // Context Switcher (Only if NOT same style)
                 Row {
                     Layout.fillWidth: true
-                    Layout.preferredHeight: 52
-                    spacing: 4
+                    Layout.preferredHeight: 52 * Appearance.effectiveScale
+                    spacing: 4 * Appearance.effectiveScale
                     visible: Config.ready && !Config.options.appearance.clock.useSameStyle
                     
                     SegmentedButton {
-                        width: (parent.width - 4) / 2
+                        width: (parent.width - (4 * Appearance.effectiveScale)) / 2
                         height: parent.height
                         buttonText: "Desktop"
                         isHighlighted: clockStyleSection.activeContext === "desktop"
@@ -76,7 +76,7 @@ ColumnLayout {
                         colActiveText: Appearance.m3colors.m3onPrimary
                     }
                     SegmentedButton {
-                        width: (parent.width - 4) / 2
+                        width: (parent.width - (4 * Appearance.effectiveScale)) / 2
                         height: parent.height
                         buttonText: "Lockscreen"
                         isHighlighted: clockStyleSection.activeContext === "lock"
@@ -89,14 +89,14 @@ ColumnLayout {
                 // Style Picker
                 Rectangle {
                     Layout.fillWidth: true
-                    implicitHeight: 120
-                    radius: 20
+                    implicitHeight: 120 * Appearance.effectiveScale
+                    radius: 20 * Appearance.effectiveScale
                     color: Appearance.m3colors.m3surfaceContainerHigh
                     
                     RowLayout {
                         anchors.fill: parent
-                        anchors.margins: 20
-                        spacing: 20
+                        anchors.margins: 20 * Appearance.effectiveScale
+                        spacing: 20 * Appearance.effectiveScale
     
                         Repeater {
                             model: [
@@ -109,7 +109,7 @@ ColumnLayout {
                                 id: clockStyleBtn
                                 Layout.fillWidth: true
                                 Layout.fillHeight: true
-                                buttonRadius: 16
+                                buttonRadius: 16 * Appearance.effectiveScale
                                 
                                 readonly property bool isSelected: {
                                     if (!Config.ready) return false
@@ -139,17 +139,17 @@ ColumnLayout {
                                 
                                 ColumnLayout {
                                     anchors.centerIn: parent
-                                    spacing: 8
+                                    spacing: 8 * Appearance.effectiveScale
                                     MaterialSymbol {
                                         Layout.alignment: Qt.AlignHCenter
                                         text: modelData.icon
-                                        iconSize: 24
+                                        iconSize: 24 * Appearance.effectiveScale
                                         color: clockStyleBtn.isSelected ? Appearance.colors.colOnPrimary : Appearance.m3colors.m3onSurfaceVariant
                                     }
                                     StyledText {
                                         Layout.alignment: Qt.AlignHCenter
                                         text: modelData.name
-                                        font.pixelSize: 12
+                                        font.pixelSize: 12 * Appearance.effectiveScale
                                         font.weight: clockStyleBtn.isSelected ? Font.Bold : Font.Normal
                                         color: clockStyleBtn.isSelected ? Appearance.colors.colOnPrimary : Appearance.m3colors.m3onSurface
                                     }
@@ -162,17 +162,17 @@ ColumnLayout {
                 // Advanced Settings Toggle
                 RippleButton {
                     Layout.fillWidth: true
-                    Layout.preferredHeight: 48
-                    buttonRadius: 16
+                    Layout.preferredHeight: 48 * Appearance.effectiveScale
+                    buttonRadius: 16 * Appearance.effectiveScale
                     colBackground: Appearance.m3colors.m3surfaceContainerHigh
                     onClicked: clockStyleSection.showAdvanced = !clockStyleSection.showAdvanced
                     
                     RowLayout {
                         anchors.centerIn: parent
-                        spacing: 8
+                        spacing: 8 * Appearance.effectiveScale
                         MaterialSymbol {
                             text: clockStyleSection.showAdvanced ? "expand_less" : "expand_more"
-                            iconSize: 20
+                            iconSize: 20 * Appearance.effectiveScale
                             color: Appearance.colors.colPrimary
                         }
                         StyledText {
@@ -188,7 +188,7 @@ ColumnLayout {
                     id: advancedPanel
                     Layout.fillWidth: true
                     visible: clockStyleSection.showAdvanced
-                    spacing: 12
+                    spacing: 12 * Appearance.effectiveScale
     
                     readonly property string currentStyle: {
                         if (!Config.ready) return "digital"
@@ -207,17 +207,17 @@ ColumnLayout {
                     ColumnLayout {
                         visible: advancedPanel.currentStyle === "digital"
                         Layout.fillWidth: true
-                        spacing: 8
+                        spacing: 8 * Appearance.effectiveScale
     
                         // Color Style
                         GridLayout {
                             columns: 2
                             Layout.fillWidth: true
-                            rowSpacing: 12
+                            rowSpacing: 12 * Appearance.effectiveScale
                             StyledText { text: "Color Style"; color: Appearance.colors.colOnLayer1 }
                             Row {
                                 Layout.alignment: Qt.AlignRight
-                                spacing: 2
+                                spacing: 2 * Appearance.effectiveScale
                                 Repeater {
                                     model: ["primary", "secondary", "onSurface", "surface"]
                                     delegate: SegmentedButton {
@@ -233,7 +233,7 @@ ColumnLayout {
                             StyledText { text: "Orientation"; color: Appearance.colors.colOnLayer1 }
                             Row {
                                 Layout.alignment: Qt.AlignRight
-                                spacing: 2
+                                spacing: 2 * Appearance.effectiveScale
                                 SegmentedButton {
                                     buttonText: "Horizontal"
                                     isHighlighted: Config.ready && !advancedPanel.digitalCfg.isVertical
@@ -249,12 +249,12 @@ ColumnLayout {
                             // Font Size
                             StyledText { 
                                 text: "Font Size"
-                                Layout.preferredWidth: 110
+                                Layout.preferredWidth: 110 * Appearance.effectiveScale
                                 color: Appearance.colors.colOnLayer1 
                             }
                             RowLayout {
                                 Layout.fillWidth: true
-                                spacing: 12
+                                spacing: 12 * Appearance.effectiveScale
                                 StyledSlider {
                                     Layout.fillWidth: true
                                     value: Config.ready ? advancedPanel.digitalCfg.fontSize : 84
@@ -264,7 +264,7 @@ ColumnLayout {
                                 StyledText { 
                                     text: Math.round(advancedPanel.digitalCfg.fontSize).toString()
                                     color: Appearance.colors.colOnLayer1 
-                                    Layout.preferredWidth: 40
+                                    Layout.preferredWidth: 40 * Appearance.effectiveScale
                                     horizontalAlignment: Text.AlignRight
                                 }
                             }
@@ -273,12 +273,12 @@ ColumnLayout {
                             // Time-Date Gap
                             StyledText { 
                                 text: "Date Gap"
-                                Layout.preferredWidth: 110
+                                Layout.preferredWidth: 110 * Appearance.effectiveScale
                                 color: Appearance.colors.colOnLayer1 
                             }
                             RowLayout {
                                 Layout.fillWidth: true
-                                spacing: 12
+                                spacing: 12 * Appearance.effectiveScale
                                 StyledSlider {
                                     Layout.fillWidth: true
                                     from: -40; to: 60; stepSize: 1
@@ -288,7 +288,7 @@ ColumnLayout {
                                 StyledText {
                                     text: Math.round(advancedPanel.digitalCfg.dateGap ?? 4).toString() + "px"
                                     color: Appearance.colors.colOnLayer1
-                                    Layout.preferredWidth: 40
+                                    Layout.preferredWidth: 40 * Appearance.effectiveScale
                                     horizontalAlignment: Text.AlignRight
                                 }
                             }
@@ -299,22 +299,22 @@ ColumnLayout {
                     ColumnLayout {
                         visible: advancedPanel.currentStyle === "analog"
                         Layout.fillWidth: true
-                        spacing: 16
+                        spacing: 16 * Appearance.effectiveScale
     
                         GridLayout {
                             columns: 2
                             Layout.fillWidth: true
-                            rowSpacing: 16
-                            columnSpacing: 12
+                            rowSpacing: 16 * Appearance.effectiveScale
+                            columnSpacing: 12 * Appearance.effectiveScale
     
                             StyledText { 
                                 text: "Clock Size"
-                                Layout.preferredWidth: 110
+                                Layout.preferredWidth: 110 * Appearance.effectiveScale
                                 color: Appearance.colors.colOnLayer1 
                             }
                             RowLayout {
                                 Layout.fillWidth: true
-                                spacing: 12
+                                spacing: 12 * Appearance.effectiveScale
                                 StyledSlider {
                                     Layout.fillWidth: true
                                     value: Config.ready ? advancedPanel.analogCfg.size : 240
@@ -324,7 +324,7 @@ ColumnLayout {
                                 StyledText { 
                                     text: Math.round(advancedPanel.analogCfg.size).toString()
                                     color: Appearance.colors.colOnLayer1 
-                                    Layout.preferredWidth: 40
+                                    Layout.preferredWidth: 40 * Appearance.effectiveScale
                                     horizontalAlignment: Text.AlignRight
                                 }
                             }
@@ -333,26 +333,26 @@ ColumnLayout {
                                 text: "Face Shape"
                                 Layout.alignment: Qt.AlignTop
                                 color: Appearance.colors.colOnLayer1
-                                Layout.topMargin: 12
-                                Layout.preferredWidth: 110
+                                Layout.topMargin: 12 * Appearance.effectiveScale
+                                Layout.preferredWidth: 110 * Appearance.effectiveScale
                                 visible: Config.ready && advancedPanel.analogCfg.backgroundStyle === "shape"
                             }
                             Flow {
                                 Layout.fillWidth: true
-                                spacing: 8
+                                spacing: 8 * Appearance.effectiveScale
                                 visible: Config.ready && advancedPanel.analogCfg.backgroundStyle === "shape"
                                 Repeater {
                                     model: ["Circle", "Square", "Slanted", "Arch", "Fan", "Arrow", "SemiCircle", "Oval", "Pill", "Triangle", "Diamond", "ClamShell", "Pentagon", "Gem", "Sunny", "VerySunny", "Cookie4Sided", "Cookie6Sided", "Cookie9Sided", "Cookie12Sided", "Clover4Leaf", "Burst", "SoftBurst", "Flower", "Puffy", "Heart"]
                                     delegate: RippleButton {
                                         required property string modelData
-                                        width: 56; height: 56
-                                        buttonRadius: 12
+                                        width: 56 * Appearance.effectiveScale; height: 56 * Appearance.effectiveScale
+                                        buttonRadius: 12 * Appearance.effectiveScale
                                         property bool isSelected: Config.ready && advancedPanel.analogCfg.shape === modelData
                                         colBackground: isSelected ? Appearance.colors.colPrimary : Appearance.m3colors.m3surfaceContainerHigh
                                         onClicked: advancedPanel.analogCfg.shape = modelData
                                         MaterialShape {
                                             anchors.centerIn: parent
-                                            implicitSize: 32
+                                            implicitSize: 32 * Appearance.effectiveScale
                                             shapeString: modelData
                                             color: parent.isSelected ? Appearance.m3colors.m3onPrimary : Appearance.colors.colOnLayer1
                                         }
@@ -361,12 +361,12 @@ ColumnLayout {
                             }
                             StyledText { 
                                 text: "Background Style"
-                                Layout.preferredWidth: 110
+                                Layout.preferredWidth: 110 * Appearance.effectiveScale
                                 color: Appearance.colors.colOnLayer1 
                             }
                             Row {
                                 Layout.alignment: Qt.AlignRight
-                                spacing: 2
+                                spacing: 2 * Appearance.effectiveScale
                                 Repeater {
                                     model: ["none", "shape", "cookie", "sine"]
                                     delegate: SegmentedButton {
@@ -380,14 +380,14 @@ ColumnLayout {
     
                             StyledText {
                                 text: "Sides"
-                                Layout.preferredWidth: 110
+                                Layout.preferredWidth: 110 * Appearance.effectiveScale
                                 color: Appearance.colors.colOnLayer1
                                 visible: Config.ready && (advancedPanel.analogCfg.backgroundStyle === "cookie" || advancedPanel.analogCfg.backgroundStyle === "sine")
                             }
                             RowLayout {
                                 visible: Config.ready && (advancedPanel.analogCfg.backgroundStyle === "cookie" || advancedPanel.analogCfg.backgroundStyle === "sine")
                                 Layout.fillWidth: true
-                                spacing: 12
+                                spacing: 12 * Appearance.effectiveScale
                                 StyledSlider {
                                     Layout.fillWidth: true
                                     from: 3
@@ -404,28 +404,28 @@ ColumnLayout {
                                 }
                             }
     
-                            StyledText { text: "Constantly Rotate"; Layout.preferredWidth: 160; color: Appearance.colors.colOnLayer1 }
+                            StyledText { text: "Constantly Rotate"; Layout.preferredWidth: 160 * Appearance.effectiveScale; color: Appearance.colors.colOnLayer1 }
                             AndroidToggle {
                                 Layout.alignment: Qt.AlignRight
                                 checked: Config.ready && advancedPanel.analogCfg.constantlyRotate
                                 onToggled: advancedPanel.analogCfg.constantlyRotate = !advancedPanel.analogCfg.constantlyRotate
                             }
     
-                            StyledText { text: "Time Indicators"; Layout.preferredWidth: 160; color: Appearance.colors.colOnLayer1 }
+                            StyledText { text: "Time Indicators"; Layout.preferredWidth: 160 * Appearance.effectiveScale; color: Appearance.colors.colOnLayer1 }
                             AndroidToggle {
                                 Layout.alignment: Qt.AlignRight
                                 checked: Config.ready && advancedPanel.analogCfg.timeIndicators
                                 onToggled: advancedPanel.analogCfg.timeIndicators = !advancedPanel.analogCfg.timeIndicators
                             }
     
-                            StyledText { text: "Hour Marks"; Layout.preferredWidth: 160; color: Appearance.colors.colOnLayer1 }
+                            StyledText { text: "Hour Marks"; Layout.preferredWidth: 160 * Appearance.effectiveScale; color: Appearance.colors.colOnLayer1 }
                             AndroidToggle {
                                 Layout.alignment: Qt.AlignRight
                                 checked: Config.ready && advancedPanel.analogCfg.hourMarks
                                 onToggled: advancedPanel.analogCfg.hourMarks = !advancedPanel.analogCfg.hourMarks
                             }
     
-                            StyledText { text: "Show Marks"; Layout.preferredWidth: 160; color: Appearance.colors.colOnLayer1 }
+                            StyledText { text: "Show Marks"; Layout.preferredWidth: 160 * Appearance.effectiveScale; color: Appearance.colors.colOnLayer1 }
                             AndroidToggle {
                                 Layout.alignment: Qt.AlignRight
                                 checked: Config.ready && advancedPanel.analogCfg.showMarks
@@ -434,14 +434,14 @@ ColumnLayout {
     
                             StyledText {
                                 text: "Dial Style"
-                                Layout.preferredWidth: 110
+                                Layout.preferredWidth: 110 * Appearance.effectiveScale
                                 color: Appearance.colors.colOnLayer1
                                 visible: Config.ready && advancedPanel.analogCfg.showMarks
                             }
                             Row {
                                 visible: Config.ready && advancedPanel.analogCfg.showMarks
                                 Layout.alignment: Qt.AlignRight
-                                spacing: 2
+                                spacing: 2 * Appearance.effectiveScale
                                 Repeater {
                                     model: ["none", "dots", "full", "numbers"]
                                     delegate: SegmentedButton {
@@ -453,10 +453,10 @@ ColumnLayout {
                                 }
                             }
     
-                            StyledText { text: "Hour Hand"; Layout.preferredWidth: 160; color: Appearance.colors.colOnLayer1 }
+                            StyledText { text: "Hour Hand"; Layout.preferredWidth: 160 * Appearance.effectiveScale; color: Appearance.colors.colOnLayer1 }
                             Row {
                                 Layout.alignment: Qt.AlignRight
-                                spacing: 2
+                                spacing: 2 * Appearance.effectiveScale
                                 Repeater {
                                     model: ["none", "classic", "hollow", "fill"]
                                     delegate: SegmentedButton {
@@ -468,10 +468,10 @@ ColumnLayout {
                                 }
                             }
     
-                            StyledText { text: "Minute Hand"; Layout.preferredWidth: 160; color: Appearance.colors.colOnLayer1 }
+                            StyledText { text: "Minute Hand"; Layout.preferredWidth: 160 * Appearance.effectiveScale; color: Appearance.colors.colOnLayer1 }
                             Row {
                                 Layout.alignment: Qt.AlignRight
-                                spacing: 2
+                                spacing: 2 * Appearance.effectiveScale
                                 Repeater {
                                     model: ["none", "classic", "thin", "medium", "bold"]
                                     delegate: SegmentedButton {
@@ -483,10 +483,10 @@ ColumnLayout {
                                 }
                             }
     
-                            StyledText { text: "Second Hand"; Layout.preferredWidth: 160; color: Appearance.colors.colOnLayer1 }
+                            StyledText { text: "Second Hand"; Layout.preferredWidth: 160 * Appearance.effectiveScale; color: Appearance.colors.colOnLayer1 }
                             Row {
                                 Layout.alignment: Qt.AlignRight
-                                spacing: 2
+                                spacing: 2 * Appearance.effectiveScale
                                 Repeater {
                                     model: ["none", "classic", "line", "dot"]
                                     delegate: SegmentedButton {
@@ -498,10 +498,10 @@ ColumnLayout {
                                 }
                             }
     
-                            StyledText { text: "Date Style"; Layout.preferredWidth: 160; color: Appearance.colors.colOnLayer1 }
+                            StyledText { text: "Date Style"; Layout.preferredWidth: 160 * Appearance.effectiveScale; color: Appearance.colors.colOnLayer1 }
                             Row {
                                 Layout.alignment: Qt.AlignRight
-                                spacing: 2
+                                spacing: 2 * Appearance.effectiveScale
                                 Repeater {
                                     model: ["none", "bubble", "border", "rect"]
                                     delegate: SegmentedButton {
@@ -523,18 +523,18 @@ ColumnLayout {
                     ColumnLayout {
                         visible: advancedPanel.currentStyle === "code"
                         Layout.fillWidth: true
-                        spacing: 12
+                        spacing: 12 * Appearance.effectiveScale
     
                         GridLayout {
                             columns: 2
                             Layout.fillWidth: true
-                            rowSpacing: 16
-                            columnSpacing: 12
+                            rowSpacing: 16 * Appearance.effectiveScale
+                            columnSpacing: 12 * Appearance.effectiveScale
     
-                            StyledText { text: "Value Color"; Layout.preferredWidth: 160; color: Appearance.colors.colOnLayer1 }
+                            StyledText { text: "Value Color"; Layout.preferredWidth: 160 * Appearance.effectiveScale; color: Appearance.colors.colOnLayer1 }
                             Row {
                                 Layout.alignment: Qt.AlignRight
-                                spacing: 2
+                                spacing: 2 * Appearance.effectiveScale
                                 Repeater {
                                     model: ["primary", "secondary", "tertiary", "onSurface", "surface"]
                                     delegate: SegmentedButton {
@@ -546,10 +546,10 @@ ColumnLayout {
                                 }
                             }
     
-                            StyledText { text: "Keyword Color"; Layout.preferredWidth: 160; color: Appearance.colors.colOnLayer1 }
+                            StyledText { text: "Keyword Color"; Layout.preferredWidth: 160 * Appearance.effectiveScale; color: Appearance.colors.colOnLayer1 }
                             Row {
                                 Layout.alignment: Qt.AlignRight
-                                spacing: 2
+                                spacing: 2 * Appearance.effectiveScale
                                 Repeater {
                                     model: ["primary", "secondary", "tertiary", "onSurface", "surface"]
                                     delegate: SegmentedButton {
@@ -561,10 +561,10 @@ ColumnLayout {
                                 }
                             }
     
-                            StyledText { text: "Block Color"; Layout.preferredWidth: 160; color: Appearance.colors.colOnLayer1 }
+                            StyledText { text: "Block Color"; Layout.preferredWidth: 160 * Appearance.effectiveScale; color: Appearance.colors.colOnLayer1 }
                             Row {
                                 Layout.alignment: Qt.AlignRight
-                                spacing: 2
+                                spacing: 2 * Appearance.effectiveScale
                                 Repeater {
                                     model: ["primary", "secondary", "tertiary", "onSurface", "surface"]
                                     delegate: SegmentedButton {
@@ -578,12 +578,12 @@ ColumnLayout {
     
                             StyledText {
                                 text: "Block Style"
-                                Layout.preferredWidth: 110
+                                Layout.preferredWidth: 110 * Appearance.effectiveScale
                                 color: Appearance.colors.colOnLayer1
                             }
                             Row {
                                 Layout.alignment: Qt.AlignRight
-                                spacing: 2
+                                spacing: 2 * Appearance.effectiveScale
                                 Repeater {
                                     model: [
                                         { id: "js",     label: "JS / while" },
@@ -603,12 +603,12 @@ ColumnLayout {
     
                             StyledText { 
                                 text: "Font Size"
-                                Layout.preferredWidth: 110
+                                Layout.preferredWidth: 110 * Appearance.effectiveScale
                                 color: Appearance.colors.colOnLayer1 
                             }
                             RowLayout {
                                 Layout.fillWidth: true
-                                spacing: 12
+                                spacing: 12 * Appearance.effectiveScale
                                 StyledSlider {
                                     Layout.fillWidth: true
                                     value: Config.ready ? advancedPanel.codeCfg.fontSize : 18
@@ -618,7 +618,7 @@ ColumnLayout {
                                 StyledText { 
                                     text: Math.round(advancedPanel.codeCfg.fontSize).toString()
                                     color: Appearance.colors.colOnLayer1 
-                                    Layout.preferredWidth: 40
+                                    Layout.preferredWidth: 40 * Appearance.effectiveScale
                                     horizontalAlignment: Text.AlignRight
                                 }
                             }
@@ -630,18 +630,18 @@ ColumnLayout {
                     ColumnLayout {
                         visible: advancedPanel.currentStyle === "stacked"
                         Layout.fillWidth: true
-                        spacing: 12
+                        spacing: 12 * Appearance.effectiveScale
     
                         GridLayout {
                             columns: 2
                             Layout.fillWidth: true
-                            rowSpacing: 16
-                            columnSpacing: 12
+                            rowSpacing: 16 * Appearance.effectiveScale
+                            columnSpacing: 12 * Appearance.effectiveScale
     
-                            StyledText { text: "Main Color"; Layout.preferredWidth: 160; color: Appearance.colors.colOnLayer1 }
+                            StyledText { text: "Main Color"; Layout.preferredWidth: 160 * Appearance.effectiveScale; color: Appearance.colors.colOnLayer1 }
                             Row {
                                 Layout.alignment: Qt.AlignRight
-                                spacing: 2
+                                spacing: 2 * Appearance.effectiveScale
                                 Repeater {
                                     model: ["primary", "secondary", "tertiary", "error", "onSurface"]
                                     delegate: SegmentedButton {
@@ -653,10 +653,10 @@ ColumnLayout {
                                 }
                             }
     
-                            StyledText { text: "Text Color"; Layout.preferredWidth: 160; color: Appearance.colors.colOnLayer1 }
+                            StyledText { text: "Text Color"; Layout.preferredWidth: 160 * Appearance.effectiveScale; color: Appearance.colors.colOnLayer1 }
                             Row {
                                 Layout.alignment: Qt.AlignRight
-                                spacing: 2
+                                spacing: 2 * Appearance.effectiveScale
                                 Repeater {
                                     model: ["primary", "secondary", "tertiary", "onSurface", "surface"]
                                     delegate: SegmentedButton {
@@ -668,10 +668,10 @@ ColumnLayout {
                                 }
                             }
     
-                            StyledText { text: "Alignment"; Layout.preferredWidth: 160; color: Appearance.colors.colOnLayer1 }
+                            StyledText { text: "Alignment"; Layout.preferredWidth: 160 * Appearance.effectiveScale; color: Appearance.colors.colOnLayer1 }
                             Row {
                                 Layout.alignment: Qt.AlignRight
-                                spacing: 2
+                                spacing: 2 * Appearance.effectiveScale
                                 Repeater {
                                     model: ["left", "center", "right"]
                                     delegate: SegmentedButton {
@@ -685,12 +685,12 @@ ColumnLayout {
     
                             StyledText { 
                                 text: "Clock Size"
-                                Layout.preferredWidth: 110
+                                Layout.preferredWidth: 110 * Appearance.effectiveScale
                                 color: Appearance.colors.colOnLayer1 
                             }
                             RowLayout {
                                 Layout.fillWidth: true
-                                spacing: 12
+                                spacing: 12 * Appearance.effectiveScale
                                 StyledSlider {
                                     Layout.fillWidth: true
                                     value: Config.ready ? advancedPanel.stackedCfg.fontSize : 84
@@ -700,19 +700,19 @@ ColumnLayout {
                                 StyledText { 
                                     text: Math.round(advancedPanel.stackedCfg.fontSize).toString()
                                     color: Appearance.colors.colOnLayer1 
-                                    Layout.preferredWidth: 40
+                                    Layout.preferredWidth: 40 * Appearance.effectiveScale
                                     horizontalAlignment: Text.AlignRight
                                 }
                             }
     
                             StyledText { 
                                 text: "Label Size"
-                                Layout.preferredWidth: 110
+                                Layout.preferredWidth: 110 * Appearance.effectiveScale
                                 color: Appearance.colors.colOnLayer1 
                             }
                             RowLayout {
                                 Layout.fillWidth: true
-                                spacing: 12
+                                spacing: 12 * Appearance.effectiveScale
                                 StyledSlider {
                                     Layout.fillWidth: true
                                     value: Config.ready ? advancedPanel.stackedCfg.labelFontSize : 42
@@ -722,7 +722,7 @@ ColumnLayout {
                                 StyledText { 
                                     text: Math.round(advancedPanel.stackedCfg.labelFontSize).toString()
                                     color: Appearance.colors.colOnLayer1 
-                                    Layout.preferredWidth: 40
+                                    Layout.preferredWidth: 40 * Appearance.effectiveScale
                                     horizontalAlignment: Text.AlignRight
                                 }
                             }
@@ -732,21 +732,22 @@ ColumnLayout {
     
                 // Global Toggles Column
                 ColumnLayout {
+                    id: globalTogglesCol
                     Layout.fillWidth: true
-                    spacing: 4
+                    spacing: 4 * Appearance.effectiveScale
     
                     // Use Same Style Toggle (Grouped with main style usually, but here is fine)
                     SegmentedWrapper {
                         Layout.fillWidth: true
-                        implicitHeight: sameStyleRow.implicitHeight + 32
+                        implicitHeight: sameStyleRow.implicitHeight + (32 * Appearance.effectiveScale)
                         orientation: Qt.Vertical
-                        maxRadius: 20
+                        maxRadius: 20 * Appearance.effectiveScale
                         color: Appearance.m3colors.m3surfaceContainerHigh
                         RowLayout {
                             id: sameStyleRow
-                            anchors.fill: parent; anchors.margins: 16
-                            spacing: 16
-                            MaterialSymbol { text: "sync"; iconSize: 24; color: Appearance.colors.colPrimary }
+                            anchors.fill: parent; anchors.margins: 16 * Appearance.effectiveScale
+                            spacing: 16 * Appearance.effectiveScale
+                            MaterialSymbol { text: "sync"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
                             StyledText { text: "Use same style for lockscreen"; Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
                             AndroidToggle {
                                 checked: Config.ready && Config.options.appearance.clock.useSameStyle
@@ -762,15 +763,15 @@ ColumnLayout {
     
                     SegmentedWrapper {
                         Layout.fillWidth: true
-                        implicitHeight: showOnDesktopRow.implicitHeight + 32
+                        implicitHeight: showOnDesktopRow.implicitHeight + (32 * Appearance.effectiveScale)
                         orientation: Qt.Vertical
-                        maxRadius: 20
+                        maxRadius: 20 * Appearance.effectiveScale
                         color: Appearance.m3colors.m3surfaceContainerHigh
                         RowLayout {
                             id: showOnDesktopRow
-                            anchors.fill: parent; anchors.margins: 16
-                            spacing: 16
-                            MaterialSymbol { text: "desktop_windows"; iconSize: 24; color: Appearance.colors.colPrimary }
+                            anchors.fill: parent; anchors.margins: 16 * Appearance.effectiveScale
+                            spacing: 16 * Appearance.effectiveScale
+                            MaterialSymbol { text: "desktop_windows"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
                             StyledText { text: "Show clock on desktop"; Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
                             AndroidToggle {
                                 checked: Config.ready && Config.options.appearance.clock.showOnDesktop
@@ -781,15 +782,15 @@ ColumnLayout {
                     
                     SegmentedWrapper {
                         Layout.fillWidth: true
-                        implicitHeight: showDateRow.implicitHeight + 32
+                        implicitHeight: showDateRow.implicitHeight + (32 * Appearance.effectiveScale)
                         orientation: Qt.Vertical
-                        maxRadius: 20
+                        maxRadius: 20 * Appearance.effectiveScale
                         color: Appearance.m3colors.m3surfaceContainerHigh
                         RowLayout {
                             id: showDateRow
-                            anchors.fill: parent; anchors.margins: 16
-                            spacing: 16
-                            MaterialSymbol { text: "calendar_today"; iconSize: 24; color: Appearance.colors.colPrimary }
+                            anchors.fill: parent; anchors.margins: 16 * Appearance.effectiveScale
+                            spacing: 16 * Appearance.effectiveScale
+                            MaterialSymbol { text: "calendar_today"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
                             StyledText { text: "Show date"; Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
                             AndroidToggle {
                                 checked: Config.ready && Config.options.appearance.clock.showDate

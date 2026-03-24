@@ -17,7 +17,7 @@ Flickable {
     id: root
     width: parent ? parent.width : 0
     height: parent ? parent.height : 0
-    contentHeight: mainCol.implicitHeight + 48
+    contentHeight: mainCol.implicitHeight + (48 * Appearance.effectiveScale)
     clip: true
     
     ScrollBar.vertical: StyledScrollBar {}
@@ -32,11 +32,11 @@ Flickable {
     ColumnLayout {
         id: mainCol
         width: parent.width
-        spacing: 32
+        spacing: 32 * Appearance.effectiveScale
 
         // ── Header ──
         ColumnLayout {
-            spacing: 4
+            spacing: 4 * Appearance.effectiveScale
             StyledText {
                 text: "Services"
                 font.pixelSize: Appearance.font.pixelSize.huge

@@ -10,9 +10,9 @@ RippleButton {
     property var cardColors: ["transparent", "transparent", "transparent"]
     property bool isSelected: false
     
-    implicitWidth: 104
-    implicitHeight: 120
-    buttonRadius: 28
+    implicitWidth: 104 * Appearance.effectiveScale
+    implicitHeight: 120 * Appearance.effectiveScale
+    buttonRadius: 28 * Appearance.effectiveScale
     colBackground: Appearance.colors.colLayer2
     colBackgroundToggled: Appearance.colors.colLayer2 // Handled by border
     colText: "white"
@@ -50,7 +50,7 @@ RippleButton {
             Rectangle {
                 anchors.bottom: parent.bottom
                 width: parent.width
-                height: 48
+                height: 48 * Appearance.effectiveScale
                 gradient: Gradient {
                     GradientStop { position: 0.0; color: "transparent" }
                     GradientStop { position: 1.0; color: Qt.rgba(0,0,0,0.6) }
@@ -62,7 +62,7 @@ RippleButton {
         Rectangle {
             anchors.fill: parent
             color: "transparent"
-            border.width: 3
+            border.width: 3 * Appearance.effectiveScale
             border.color: Appearance.m3colors.m3primary
             radius: card.buttonRadius
             visible: card.isSelected
@@ -72,7 +72,7 @@ RippleButton {
         // Label
         StyledText {
             anchors.bottom: parent.bottom
-            anchors.bottomMargin: 8
+            anchors.bottomMargin: 8 * Appearance.effectiveScale
             anchors.horizontalCenter: parent.horizontalCenter
             text: card.label
             font.pixelSize: Appearance.font.pixelSize.smaller
@@ -82,22 +82,22 @@ RippleButton {
             wrapMode: Text.WordWrap
             lineHeight: 0.9
             maximumLineCount: 2
-            width: parent.width - 12
+            width: parent.width - (12 * Appearance.effectiveScale)
         }
         
         // Centered Checkmark in Circle
         Rectangle {
             anchors.centerIn: parent
-            width: 32
-            height: 32
-            radius: 16
+            width: 32 * Appearance.effectiveScale
+            height: 32 * Appearance.effectiveScale
+            radius: 16 * Appearance.effectiveScale
             color: "#1A1C1E"
             visible: card.isSelected
             
             MaterialSymbol {
                 anchors.centerIn: parent
                 text: "check"
-                iconSize: 20
+                iconSize: 20 * Appearance.effectiveScale
                 color: "white"
             }
         }

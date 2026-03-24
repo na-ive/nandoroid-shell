@@ -53,8 +53,11 @@ Scope {
         color: "transparent"
 
         // Since it's a real window, it defaults to a reasonable size:
-        implicitWidth: Math.min(1100, screen.width * 0.85)
-        implicitHeight: Math.min(800, screen.height * 0.8)
+        implicitWidth: Math.min(1100 * Appearance.effectiveScale, screen.width * 0.85)
+        implicitHeight: Math.min(800 * Appearance.effectiveScale, screen.height * 0.8)
+
+        width: implicitWidth
+        height: implicitHeight
 
         onVisibleChanged: {
             if (!visible) {
@@ -89,34 +92,35 @@ Scope {
 
             color: Appearance.colors.colLayer0
             border.color: Functions.ColorUtils.applyAlpha(Appearance.m3colors.m3onSurface, 0.12)
-            border.width: 1
+            border.width: Math.max(1, 1 * Appearance.effectiveScale)
+            radius: 20 * Appearance.effectiveScale
 
             // Trap clicks inside
             TapHandler {}
 
             ColumnLayout {
                 anchors.fill: parent
-                anchors.margins: 12
-                spacing: 12
+                anchors.margins: 12 * Appearance.effectiveScale
+                spacing: 12 * Appearance.effectiveScale
 
                 // ── Global Header ──
                 Item {
                     id: headerWrapper
                     Layout.fillWidth: true
-                    Layout.preferredHeight: 52 // Reduced from 64
+                    Layout.preferredHeight: 52 * Appearance.effectiveScale // Reduced from 64
 
                     RowLayout {
                         anchors.fill: parent
-                        anchors.leftMargin: 20
+                        anchors.leftMargin: 20 * Appearance.effectiveScale
                         anchors.rightMargin: 0
-                        spacing: 20
+                        spacing: 20 * Appearance.effectiveScale
 
                         StyledText {
                             text: "Settings"
                             font.pixelSize: Appearance.font.pixelSize.huge
                             font.weight: Font.Bold
                             color: Appearance.colors.colOnLayer0
-                            Layout.preferredWidth: 200
+                            Layout.preferredWidth: 200 * Appearance.effectiveScale
                             Layout.alignment: Qt.AlignVCenter
                         }
 
@@ -124,25 +128,25 @@ Scope {
 
                         // Truly Centered Search pill
                         Rectangle {
-                            Layout.preferredWidth: 360
-                            Layout.preferredHeight: 44
+                            Layout.preferredWidth: 360 * Appearance.effectiveScale
+                            Layout.preferredHeight: 44 * Appearance.effectiveScale
                             Layout.alignment: Qt.AlignVCenter
-                            radius: 22
+                            radius: 22 * Appearance.effectiveScale
                             color: Appearance.colors.colLayer1 // Using colLayer1 for search as it sits on colLayer0
                             
                             RowLayout {
                                 anchors.fill: parent
-                                anchors.leftMargin: 16
-                                spacing: 12
+                                anchors.leftMargin: 16 * Appearance.effectiveScale
+                                spacing: 12 * Appearance.effectiveScale
                                 MaterialSymbol {
                                     text: "search"
-                                    iconSize: 22
+                                    iconSize: 22 * Appearance.effectiveScale
                                     color: Appearance.colors.colSubtext
                                 }
                                 TextInput {
                                     id: searchInput
                                     Layout.fillWidth: true
-                                    Layout.rightMargin: 16
+                                    Layout.rightMargin: 16 * Appearance.effectiveScale
                                     verticalAlignment: TextInput.AlignVCenter
                                     font.pixelSize: Appearance.font.pixelSize.normal
                                     color: Appearance.colors.colOnLayer1
@@ -193,7 +197,7 @@ Scope {
                                     font.pixelSize: Appearance.font.pixelSize.smaller
                                     color: Appearance.colors.colPrimary
                                     Layout.alignment: Qt.AlignVCenter
-                                    Layout.rightMargin: 16
+                                    Layout.rightMargin: 16 * Appearance.effectiveScale
                                 }
                             }
                         }
@@ -201,22 +205,22 @@ Scope {
                         Item { Layout.fillWidth: true }
 
                         Item {
-                            Layout.preferredWidth: 200
+                            Layout.preferredWidth: 200 * Appearance.effectiveScale
                             Layout.fillHeight: true
 
                             RippleButton {
                                 anchors.right: parent.right
                                 anchors.verticalCenter: parent.verticalCenter
-                                implicitWidth: 36
-                                implicitHeight: 36
-                                buttonRadius: 18
+                                implicitWidth: 36 * Appearance.effectiveScale
+                                implicitHeight: 36 * Appearance.effectiveScale
+                                buttonRadius: 18 * Appearance.effectiveScale
                                 colBackground: "transparent"
                                 onClicked: GlobalStates.settingsOpen = false
                                 
                                 MaterialSymbol {
                                     anchors.centerIn: parent
                                     text: "close"
-                                    iconSize: 22
+                                    iconSize: 22 * Appearance.effectiveScale
                                     color: Appearance.colors.colSubtext
                                 }
                             }
@@ -229,7 +233,7 @@ Scope {
                 RowLayout {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
-                    spacing: 12
+                    spacing: 12 * Appearance.effectiveScale
 
                     SettingsSidebar {
                         id: sidebar
@@ -244,7 +248,7 @@ Scope {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
                         color: Appearance.colors.colLayer1
-                        radius: 28 
+                        radius: 28 * Appearance.effectiveScale
 
                         Item {
                             anchors.fill: parent
@@ -254,7 +258,7 @@ Scope {
                             Loader {
                                 id: pageLoader
                                 anchors.fill: parent
-                                anchors.margins: 24
+                                anchors.margins: 24 * Appearance.effectiveScale
                                 Component.onCompleted: source = pages[root.currentIndex].component
                                 
                                 onStatusChanged: {
@@ -275,13 +279,13 @@ Scope {
                                 TextEdit {
                                     visible: pageLoader.status === Loader.Error
                                     anchors.centerIn: parent
-                                    width: Math.min(800, parent.width - 40)
+                                    width: Math.min(800 * Appearance.effectiveScale, parent.width - (40 * Appearance.effectiveScale))
                                     wrapMode: TextEdit.Wrap
                                     readOnly: true
                                     selectByMouse: true
                                     text: "Error loading page: " + pageLoader.source + "\n\n" + (pageLoader.sourceComponent ? pageLoader.sourceComponent.errorString() : "Unknown component error")
                                     color: "#FF5555"
-                                    font.pixelSize: 14
+                                    font.pixelSize: 14 * Appearance.effectiveScale
                                     font.family: "monospace"
                                 }
                                 
@@ -308,7 +312,7 @@ Scope {
                                         duration: 150
                                         easing.type: Easing.OutQuad
                                     }
-                                    PropertyAction { target: pageLoader; property: "yOffset"; value: 20 }
+                                    PropertyAction { target: pageLoader; property: "yOffset"; value: 20 * Appearance.effectiveScale }
                                     PropertyAction { 
                                         target: pageLoader
                                         property: "source"

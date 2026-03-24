@@ -22,22 +22,22 @@ ColumnLayout {
 
             SegmentedWrapper {
                 Layout.fillWidth: true
-                implicitHeight: themeToggleRow.implicitHeight + 36
-                maxRadius: 20
+                implicitHeight: themeToggleRow.implicitHeight + (36 * Appearance.effectiveScale)
+                maxRadius: 20 * Appearance.effectiveScale
                 color: Appearance.m3colors.m3surfaceContainerHigh
     
                 RowLayout {
                     id: themeToggleRow
                     anchors.fill: parent
-                    anchors.margins: 16
-                    spacing: 20
+                    anchors.margins: 16 * Appearance.effectiveScale
+                    spacing: 20 * Appearance.effectiveScale
     
                     RowLayout {
-                        spacing: 16
-                        Layout.preferredWidth: 70
+                        spacing: 16 * Appearance.effectiveScale
+                        Layout.preferredWidth: 70 * Appearance.effectiveScale
                         MaterialSymbol {
                             text: Config.options.appearance.background.darkmode ? "dark_mode" : "light_mode"
-                            iconSize: 24
+                            iconSize: 24 * Appearance.effectiveScale
                             color: Appearance.colors.colPrimary
                         }
                         StyledText {
@@ -60,8 +60,8 @@ ColumnLayout {
             ColumnLayout {
                 id: colorSettingsCol
                 Layout.fillWidth: true
-                Layout.topMargin: 12
-                spacing: 24
+                Layout.topMargin: 12 * Appearance.effectiveScale
+                spacing: 24 * Appearance.effectiveScale
     
                 property bool showAllMatugen: false
                 property bool showAllBasic: false
@@ -70,17 +70,17 @@ ColumnLayout {
                 Row {
                     id: colorSwitcherRow
                     Layout.fillWidth: true
-                    Layout.preferredHeight: 52
-                    spacing: 4
+                    Layout.preferredHeight: 52 * Appearance.effectiveScale
+                    spacing: 4 * Appearance.effectiveScale
                     property string currentTab: Config.ready && Config.options.appearance.background && Config.options.appearance.background.matugen ? "wallpaper" : "basic"
                     
                     SegmentedButton {
-                        width: (parent.width - 4) / 2
+                        width: (parent.width - (4 * Appearance.effectiveScale)) / 2
                         height: parent.height
                         
                         isHighlighted: parent.currentTab === "wallpaper"
                         buttonText: "Wallpaper color"
-                        font.pixelSize: 14 // Increased font size
+                        font.pixelSize: Appearance.font.pixelSize.normal
                         colActive: Appearance.m3colors.m3primary
                         colActiveText: Appearance.m3colors.m3onPrimary
                         colInactive: Appearance.m3colors.m3surfaceContainerHigh
@@ -90,12 +90,12 @@ ColumnLayout {
                     }
     
                     SegmentedButton {
-                        width: (parent.width - 4) / 2
+                        width: (parent.width - (4 * Appearance.effectiveScale)) / 2
                         height: parent.height
                         
                         isHighlighted: parent.currentTab === "basic"
                         buttonText: "Basic color"
-                        font.pixelSize: 14 // Increased font size
+                        font.pixelSize: Appearance.font.pixelSize.normal
                         colActive: Appearance.m3colors.m3primary
                         colActiveText: Appearance.m3colors.m3onPrimary
                         colInactive: Appearance.m3colors.m3surfaceContainerHigh
@@ -108,14 +108,14 @@ ColumnLayout {
                 // Scheme / Color Grid (grid-cols-5 style)
                 ColumnLayout {
                     Layout.fillWidth: true
-                    spacing: 16
+                    spacing: 16 * Appearance.effectiveScale
                     visible: colorSwitcherRow.currentTab === "wallpaper"
                     
                     GridLayout {
                         Layout.fillWidth: true
                         columns: 5
-                        rowSpacing: 16
-                        columnSpacing: 16
+                        rowSpacing: 16 * Appearance.effectiveScale
+                        columnSpacing: 16 * Appearance.effectiveScale
     
                         // Desktop Schemes
                         Repeater {
@@ -170,17 +170,17 @@ ColumnLayout {
                     RippleButton {
                         visible: Config.ready && Config.options.lock && Config.options.lock.useSeparateWallpaper
                         Layout.fillWidth: true
-                        Layout.preferredHeight: 48
-                        buttonRadius: 16
+                        Layout.preferredHeight: 48 * Appearance.effectiveScale
+                        buttonRadius: 16 * Appearance.effectiveScale
                         colBackground: Appearance.m3colors.m3surfaceContainerHigh
                         onClicked: colorSettingsCol.showAllMatugen = !colorSettingsCol.showAllMatugen
                         
                         RowLayout {
                             anchors.centerIn: parent
-                            spacing: 8
+                            spacing: 8 * Appearance.effectiveScale
                             MaterialSymbol {
                                 text: colorSettingsCol.showAllMatugen ? "expand_less" : "expand_more"
-                                iconSize: 20
+                                iconSize: 20 * Appearance.effectiveScale
                                 color: Appearance.colors.colPrimary
                             }
                             StyledText {
@@ -194,14 +194,14 @@ ColumnLayout {
     
                 ColumnLayout {
                     Layout.fillWidth: true
-                    spacing: 16
+                    spacing: 16 * Appearance.effectiveScale
                     visible: colorSwitcherRow.currentTab === "basic"
                     
                     GridLayout {
                         Layout.fillWidth: true
                         columns: 5
-                        rowSpacing: 16
-                        columnSpacing: 16
+                        rowSpacing: 16 * Appearance.effectiveScale
+                        columnSpacing: 16 * Appearance.effectiveScale
     
                         Repeater {
                             model: colorSettingsCol.showAllBasic ? root.basicColors : root.basicColors.slice(0, 10)
@@ -224,17 +224,17 @@ ColumnLayout {
                     RippleButton {
                         visible: root.basicColors.length > 10
                         Layout.fillWidth: true
-                        Layout.preferredHeight: 48
-                        buttonRadius: 16
+                        Layout.preferredHeight: 48 * Appearance.effectiveScale
+                        buttonRadius: 16 * Appearance.effectiveScale
                         colBackground: Appearance.m3colors.m3surfaceContainerHigh
                         onClicked: colorSettingsCol.showAllBasic = !colorSettingsCol.showAllBasic
                         
                         RowLayout {
                             anchors.centerIn: parent
-                            spacing: 8
+                            spacing: 8 * Appearance.effectiveScale
                             MaterialSymbol {
                                 text: colorSettingsCol.showAllBasic ? "expand_less" : "expand_more"
-                                iconSize: 20
+                                iconSize: 20 * Appearance.effectiveScale
                                 color: Appearance.colors.colPrimary
                             }
                             StyledText {

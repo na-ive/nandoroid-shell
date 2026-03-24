@@ -16,8 +16,8 @@ ColumnLayout {
     ColumnLayout {
                 id: lockscreenStyleSection
                 Layout.fillWidth: true
-                Layout.topMargin: 12
-                spacing: 4
+                Layout.topMargin: 12 * Appearance.effectiveScale
+                spacing: 4 * Appearance.effectiveScale
                 
                 SearchHandler { 
                     searchString: "Lockscreen"
@@ -26,12 +26,12 @@ ColumnLayout {
     
                 // Section Header
                 RowLayout {
-                    spacing: 12
-                    Layout.bottomMargin: 8
+                    spacing: 12 * Appearance.effectiveScale
+                    Layout.bottomMargin: 8 * Appearance.effectiveScale
     
                     MaterialSymbol {
                         text: "lock"
-                        iconSize: 24
+                        iconSize: 24 * Appearance.effectiveScale
                         color: Appearance.colors.colPrimary
                     }
                     StyledText {
@@ -45,19 +45,19 @@ ColumnLayout {
     
                 ColumnLayout {
                     Layout.fillWidth: true
-                    spacing: 4
+                    spacing: 4 * Appearance.effectiveScale
     
                     SegmentedWrapper {
                         Layout.fillWidth: true
-                        implicitHeight: showCavaRow.implicitHeight + 32
+                        implicitHeight: showCavaRow.implicitHeight + (32 * Appearance.effectiveScale)
                         orientation: Qt.Vertical
-                        maxRadius: 20
+                        maxRadius: 20 * Appearance.effectiveScale
                         color: Appearance.m3colors.m3surfaceContainerHigh
                         RowLayout {
                             id: showCavaRow
-                            anchors.fill: parent; anchors.margins: 16
-                            spacing: 16
-                            MaterialSymbol { text: "equalizer"; iconSize: 24; color: Appearance.colors.colPrimary }
+                            anchors.fill: parent; anchors.margins: 16 * Appearance.effectiveScale
+                            spacing: 16 * Appearance.effectiveScale
+                            MaterialSymbol { text: "equalizer"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
                             StyledText { text: "Show Cava Visualizer"; Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
                             AndroidToggle {
                                 checked: Config.ready && Config.options.lock.showCava
@@ -68,15 +68,15 @@ ColumnLayout {
     
                     SegmentedWrapper {
                         Layout.fillWidth: true
-                        implicitHeight: showMediaRow.implicitHeight + 32
+                        implicitHeight: showMediaRow.implicitHeight + (32 * Appearance.effectiveScale)
                         orientation: Qt.Vertical
-                        maxRadius: 20
+                        maxRadius: 20 * Appearance.effectiveScale
                         color: Appearance.m3colors.m3surfaceContainerHigh
                         RowLayout {
                             id: showMediaRow
-                            anchors.fill: parent; anchors.margins: 16
-                            spacing: 16
-                            MaterialSymbol { text: "movie"; iconSize: 24; color: Appearance.colors.colPrimary }
+                            anchors.fill: parent; anchors.margins: 16 * Appearance.effectiveScale
+                            spacing: 16 * Appearance.effectiveScale
+                            MaterialSymbol { text: "movie"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
                             StyledText { text: "Show Media Controls"; Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
                             AndroidToggle {
                                 checked: Config.ready && Config.options.lock.showMediaCard
@@ -88,19 +88,19 @@ ColumnLayout {
                     // ── Weather text color mode ────────────
                     SegmentedWrapper {
                         Layout.fillWidth: true
-                        implicitHeight: weatherTextRow.implicitHeight + 36
+                        implicitHeight: weatherTextRow.implicitHeight + (36 * Appearance.effectiveScale)
                         orientation: Qt.Vertical
-                        maxRadius: 20
+                        maxRadius: 20 * Appearance.effectiveScale
                         color: Appearance.m3colors.m3surfaceContainerHigh
                         RowLayout {
                             id: weatherTextRow
                             anchors.fill: parent
-                            anchors.margins: 16
-                            spacing: 16
-                            MaterialSymbol { text: "palette"; iconSize: 24; color: Appearance.colors.colPrimary }
+                            anchors.margins: 16 * Appearance.effectiveScale
+                            spacing: 16 * Appearance.effectiveScale
+                            MaterialSymbol { text: "palette"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
                             StyledText { text: "Weather text color"; Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
                             RowLayout {
-                                spacing: 2
+                                spacing: 2 * Appearance.effectiveScale
                                 Repeater {
                                     model: [
                                         { id: "adaptive", label: "Adaptive" },

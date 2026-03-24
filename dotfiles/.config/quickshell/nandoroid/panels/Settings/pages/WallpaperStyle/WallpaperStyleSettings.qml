@@ -17,7 +17,7 @@ Flickable {
     id: root
     width: parent ? parent.width : 0
     height: parent ? parent.height : 0
-    contentHeight: mainCol.implicitHeight + 48
+    contentHeight: mainCol.implicitHeight + (48 * Appearance.effectiveScale)
     clip: true
     
     ScrollBar.vertical: StyledScrollBar {}
@@ -242,8 +242,8 @@ Flickable {
     ColumnLayout {
         id: mainCol
         width: parent.width
-        spacing: 32
-        anchors.margins: 4
+        spacing: 32 * Appearance.effectiveScale
+        anchors.margins: 4 * Appearance.effectiveScale
         visible: Config.ready
         opacity: visible ? 1 : 0
         Behavior on opacity { NumberAnimation { duration: 250 } }
@@ -252,7 +252,7 @@ Flickable {
 
         // ── Header ──
         ColumnLayout {
-            spacing: 4
+            spacing: 4 * Appearance.effectiveScale
             StyledText {
                 text: "Wallpaper & Style"
                 font.pixelSize: Appearance.font.pixelSize.huge
@@ -269,26 +269,26 @@ Flickable {
         // ── Wallpaper Style Options Group ──
         ColumnLayout {
             Layout.fillWidth: true
-            spacing: 4 // Tight gap like in Clock section
+            spacing: 4 * Appearance.effectiveScale // Tight gap like in Clock section
 
             SegmentedWrapper {
                 Layout.fillWidth: true
-                implicitHeight: syncToggleRow.implicitHeight + 40
+                implicitHeight: syncToggleRow.implicitHeight + (40 * Appearance.effectiveScale)
                 orientation: Qt.Vertical
-                maxRadius: 20
+                maxRadius: 20 * Appearance.effectiveScale
                 color: Appearance.m3colors.m3surfaceContainerHigh
                 
                 RowLayout {
                     id: syncToggleRow
-                    anchors.fill: parent; anchors.margins: 16
-                    spacing: 20
+                    anchors.fill: parent; anchors.margins: 16 * Appearance.effectiveScale
+                    spacing: 20 * Appearance.effectiveScale
 
                     RowLayout {
-                        spacing: 16
-                        Layout.preferredWidth: 70
+                        spacing: 16 * Appearance.effectiveScale
+                        Layout.preferredWidth: 70 * Appearance.effectiveScale
                         MaterialSymbol {
                             text: "sync"
-                            iconSize: 24
+                            iconSize: 24 * Appearance.effectiveScale
                             color: Appearance.colors.colPrimary
                         }
                         StyledText {
@@ -326,7 +326,7 @@ Flickable {
         RowLayout {
             id: previewRow
             Layout.fillWidth: true
-            spacing: 24
+            spacing: 24 * Appearance.effectiveScale
 
             property string selection: "desktop"
 
@@ -391,6 +391,6 @@ Flickable {
         // ── Date & Time Section ──
         WsDateTime { Layout.fillWidth: true }
 
-        Item { Layout.fillHeight: true; Layout.preferredHeight: 32 }
+        Item { Layout.fillHeight: true; Layout.preferredHeight: 32 * Appearance.effectiveScale }
     }
 }

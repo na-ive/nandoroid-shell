@@ -15,17 +15,17 @@ import Quickshell.Widgets
  */
 Flickable {
     id: root
-    contentHeight: mainCol.implicitHeight + 48
+    contentHeight: mainCol.implicitHeight + (48 * Appearance.effectiveScale)
     clip: true
 
     ColumnLayout {
         id: mainCol
         width: parent.width
-        spacing: 32
+        spacing: 32 * Appearance.effectiveScale
 
         // ── Header ──
         ColumnLayout {
-            spacing: 4
+            spacing: 4 * Appearance.effectiveScale
             StyledText {
                 text: "Audio"
                 font.pixelSize: Appearance.font.pixelSize.huge
@@ -42,7 +42,7 @@ Flickable {
         // ── Volume Section ──
         ColumnLayout {
             Layout.fillWidth: true
-            spacing: 16
+            spacing: 16 * Appearance.effectiveScale
 
             StyledText {
                 text: "Volume Levels"
@@ -53,24 +53,24 @@ Flickable {
 
             Rectangle {
                 Layout.fillWidth: true
-                implicitHeight: volumeCol.implicitHeight + 32
-                radius: 16
+                implicitHeight: volumeCol.implicitHeight + (32 * Appearance.effectiveScale)
+                radius: 16 * Appearance.effectiveScale
                 color: Appearance.colors.colLayer1
 
                 ColumnLayout {
                     id: volumeCol
                     anchors.fill: parent
-                    anchors.margins: 16
-                    spacing: 24
+                    anchors.margins: 16 * Appearance.effectiveScale
+                    spacing: 24 * Appearance.effectiveScale
 
                     // Output Volume
                     ColumnLayout {
-                        spacing: 8
+                        spacing: 8 * Appearance.effectiveScale
                         RowLayout {
-                            spacing: 8
+                            spacing: 8 * Appearance.effectiveScale
                             MaterialSymbol {
                                 text: Audio.volume > 0 ? (Audio.volume > 0.5 ? "volume_up" : "volume_down") : "volume_mute"
-                                iconSize: 22
+                                iconSize: 22 * Appearance.effectiveScale
                                 color: Appearance.colors.colPrimary
                             }
                             StyledText {
@@ -96,12 +96,12 @@ Flickable {
  
                     // Input Volume
                     ColumnLayout {
-                        spacing: 8
+                        spacing: 8 * Appearance.effectiveScale
                         RowLayout {
-                            spacing: 8
+                            spacing: 8 * Appearance.effectiveScale
                             MaterialSymbol {
                                 text: "mic"
-                                iconSize: 22
+                                iconSize: 22 * Appearance.effectiveScale
                                 color: Appearance.colors.colSecondary
                             }
                             StyledText {
@@ -131,7 +131,7 @@ Flickable {
         // ── Per-App Volume Section ──
         ColumnLayout {
             Layout.fillWidth: true
-            spacing: 16
+            spacing: 16 * Appearance.effectiveScale
             visible: Audio.streamNodes.length > 0
 
             StyledText {
@@ -143,28 +143,28 @@ Flickable {
 
             Rectangle {
                 Layout.fillWidth: true
-                implicitHeight: perAppCol.implicitHeight + 32
-                radius: 16
+                implicitHeight: perAppCol.implicitHeight + (32 * Appearance.effectiveScale)
+                radius: 16 * Appearance.effectiveScale
                 color: Appearance.colors.colLayer1
 
                 ColumnLayout {
                     id: perAppCol
                     anchors.fill: parent
-                    anchors.margins: 16
-                    spacing: 24
+                    anchors.margins: 16 * Appearance.effectiveScale
+                    spacing: 24 * Appearance.effectiveScale
 
                     Repeater {
                         model: Audio.streamNodes
                         delegate: ColumnLayout {
                             required property var modelData
                             Layout.fillWidth: true
-                            spacing: 8
+                            spacing: 8 * Appearance.effectiveScale
                             RowLayout {
-                                spacing: 8
+                                spacing: 8 * Appearance.effectiveScale
                                 
                                 Item {
-                                    width: 20
-                                    height: 20
+                                    width: 20 * Appearance.effectiveScale
+                                    height: 20 * Appearance.effectiveScale
                                     
                                     IconImage {
                                         id: appIcon
@@ -176,7 +176,7 @@ Flickable {
                                     MaterialSymbol {
                                         anchors.centerIn: parent
                                         text: "settings_input_component"
-                                        iconSize: 20
+                                        iconSize: 20 * Appearance.effectiveScale
                                         color: Appearance.colors.colPrimary
                                         visible: appIcon.status !== Image.Ready
                                     }
@@ -210,13 +210,13 @@ Flickable {
         // ── Device Section ──
         RowLayout {
             Layout.fillWidth: true
-            spacing: 24
+            spacing: 24 * Appearance.effectiveScale
             
             // Output Devices
             ColumnLayout {
                 Layout.fillWidth: true
                 Layout.preferredWidth: 1
-                spacing: 12
+                spacing: 12 * Appearance.effectiveScale
                 StyledText {
                     text: "Output Devices"
                     font.pixelSize: Appearance.font.pixelSize.large
@@ -234,7 +234,7 @@ Flickable {
             ColumnLayout {
                 Layout.fillWidth: true
                 Layout.preferredWidth: 1
-                spacing: 12
+                spacing: 12 * Appearance.effectiveScale
                 StyledText {
                     text: "Input Devices"
                     font.pixelSize: Appearance.font.pixelSize.large

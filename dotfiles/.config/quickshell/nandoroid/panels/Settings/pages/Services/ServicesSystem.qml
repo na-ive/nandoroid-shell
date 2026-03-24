@@ -10,8 +10,8 @@ import Quickshell
 
             ColumnLayout {
                 Layout.fillWidth: true
-                spacing: 4
-                Layout.topMargin: 16
+                spacing: 4 * Appearance.effectiveScale
+                Layout.topMargin: 16 * Appearance.effectiveScale
 
                 SearchHandler { 
                     searchString: "System Interface"
@@ -20,11 +20,11 @@ import Quickshell
 
                 RowLayout {
 
-                    spacing: 12
-                    Layout.bottomMargin: 8
+                    spacing: 12 * Appearance.effectiveScale
+                    Layout.bottomMargin: 8 * Appearance.effectiveScale
                     MaterialSymbol {
                         text: "settings_suggest"
-                        iconSize: 24
+                        iconSize: 24 * Appearance.effectiveScale
                         color: Appearance.colors.colPrimary
                     }
                     StyledText {
@@ -38,19 +38,19 @@ import Quickshell
                 // 1. Distro Icon
                 SegmentedWrapper {
                     Layout.fillWidth: true
-                    implicitHeight: distroRow.implicitHeight + 40
+                    implicitHeight: distroRow.implicitHeight + 40 * Appearance.effectiveScale
                     orientation: Qt.Vertical
                     color: Appearance.m3colors.m3surfaceContainerHigh
-                    maxRadius: 20
+                    maxRadius: 20 * Appearance.effectiveScale
                     
                     RowLayout {
                         id: distroRow
                         anchors.fill: parent
-                        anchors.margins: 20
-                        spacing: 20
+                        anchors.margins: 20 * Appearance.effectiveScale
+                        spacing: 20 * Appearance.effectiveScale
 
                         ColumnLayout {
-                            spacing: 2
+                            spacing: 2 * Appearance.effectiveScale
                             StyledText {
                                 text: "StatusBar Distro Icon"
                                 font.pixelSize: Appearance.font.pixelSize.normal
@@ -68,19 +68,19 @@ import Quickshell
                         
                         // Custom Switch
                         Rectangle {
-                            implicitWidth: 52
-                            implicitHeight: 28
-                            radius: 14
+                            implicitWidth: 52 * Appearance.effectiveScale
+                            implicitHeight: 28 * Appearance.effectiveScale
+                            radius: 14 * Appearance.effectiveScale
                             color: (Config.ready && Config.options.bar && Config.options.bar.show_distro_icon)
                                 ? Appearance.colors.colPrimary
                                 : Appearance.colors.colLayer3
 
                             Rectangle {
-                                width: 20
-                                height: 20
-                                radius: 10
+                                width: 20 * Appearance.effectiveScale
+                                height: 20 * Appearance.effectiveScale
+                                radius: 10 * Appearance.effectiveScale
                                 anchors.verticalCenter: parent.verticalCenter
-                                x: (Config.ready && Config.options.bar && Config.options.bar.show_distro_icon) ? parent.width - width - 4 : 4
+                                x: (Config.ready && Config.options.bar && Config.options.bar.show_distro_icon) ? parent.width - width - 4 * Appearance.effectiveScale : 4 * Appearance.effectiveScale
                                 color: (Config.ready && Config.options.bar && Config.options.bar.show_distro_icon)
                                     ? Appearance.colors.colOnPrimary
                                     : Appearance.colors.colSubtext
@@ -103,19 +103,19 @@ import Quickshell
                 // 2. Notification Counter
                 SegmentedWrapper {
                     Layout.fillWidth: true
-                    implicitHeight: notifyCounterRow.implicitHeight + 40
+                    implicitHeight: notifyCounterRow.implicitHeight + 40 * Appearance.effectiveScale
                     orientation: Qt.Vertical
                     color: Appearance.m3colors.m3surfaceContainerHigh
-                    maxRadius: 20
+                    maxRadius: 20 * Appearance.effectiveScale
                     
                     RowLayout {
                         id: notifyCounterRow
                         anchors.fill: parent
-                        anchors.margins: 20
-                        spacing: 20
+                        anchors.margins: 20 * Appearance.effectiveScale
+                        spacing: 20 * Appearance.effectiveScale
 
                         ColumnLayout {
-                            spacing: 2
+                            spacing: 2 * Appearance.effectiveScale
                             StyledText {
                                 text: "Notification Counter"
                                 font.pixelSize: Appearance.font.pixelSize.normal
@@ -132,8 +132,8 @@ import Quickshell
                         Item { Layout.fillWidth: true }
                         
                         RowLayout {
-                            spacing: 4
-                            Layout.preferredHeight: 40
+                            spacing: 4 * Appearance.effectiveScale
+                            Layout.preferredHeight: 40 * Appearance.effectiveScale
                             
                             Repeater {
                                 model: [
@@ -146,8 +146,8 @@ import Quickshell
                                     Layout.fillHeight: true
                                     
                                     buttonText: modelData.label
-                                    leftPadding: 16
-                                    rightPadding: 16
+                                    leftPadding: 16 * Appearance.effectiveScale
+                                    rightPadding: 16 * Appearance.effectiveScale
                                     
                                     colActive: Appearance.m3colors.m3primary
                                     colActiveText: Appearance.m3colors.m3onPrimary
@@ -167,19 +167,19 @@ import Quickshell
                 // 3. Privacy Indicators
                 SegmentedWrapper {
                     Layout.fillWidth: true
-                    implicitHeight: privRow.implicitHeight + 40
+                    implicitHeight: privRow.implicitHeight + 40 * Appearance.effectiveScale
                     orientation: Qt.Vertical
                     color: Appearance.m3colors.m3surfaceContainerHigh
-                    maxRadius: 20
+                    maxRadius: 20 * Appearance.effectiveScale
                     
                     RowLayout {
                         id: privRow
                         anchors.fill: parent
-                        anchors.margins: 20
-                        spacing: 20
+                        anchors.margins: 20 * Appearance.effectiveScale
+                        spacing: 20 * Appearance.effectiveScale
 
                         ColumnLayout {
-                            spacing: 2
+                            spacing: 2 * Appearance.effectiveScale
                             StyledText {
                                 text: "Privacy Indicators"
                                 font.pixelSize: Appearance.font.pixelSize.normal
@@ -197,19 +197,19 @@ import Quickshell
                         
                         // Custom Switch
                         Rectangle {
-                            implicitWidth: 52
-                            implicitHeight: 28
-                            radius: 14
+                            implicitWidth: 52 * Appearance.effectiveScale
+                            implicitHeight: 28 * Appearance.effectiveScale
+                            radius: 14 * Appearance.effectiveScale
                             color: (Config.ready && Config.options.privacy && Config.options.privacy.enable)
                                 ? Appearance.colors.colPrimary
                                 : Appearance.colors.colLayer3
 
                             Rectangle {
-                                width: 20
-                                height: 20
-                                radius: 10
+                                width: 20 * Appearance.effectiveScale
+                                height: 20 * Appearance.effectiveScale
+                                radius: 10 * Appearance.effectiveScale
                                 anchors.verticalCenter: parent.verticalCenter
-                                x: (Config.ready && Config.options.privacy && Config.options.privacy.enable) ? parent.width - width - 4 : 4
+                                x: (Config.ready && Config.options.privacy && Config.options.privacy.enable) ? parent.width - width - 4 * Appearance.effectiveScale : 4 * Appearance.effectiveScale
                                 color: (Config.ready && Config.options.privacy && Config.options.privacy.enable)
                                     ? Appearance.colors.colOnPrimary
                                     : Appearance.colors.colSubtext
@@ -232,19 +232,19 @@ import Quickshell
                 // 4. Region Selector: Windows Snapping
                 SegmentedWrapper {
                     Layout.fillWidth: true
-                    implicitHeight: snapRow.implicitHeight + 40
+                    implicitHeight: snapRow.implicitHeight + 40 * Appearance.effectiveScale
                     orientation: Qt.Vertical
                     color: Appearance.m3colors.m3surfaceContainerHigh
-                    maxRadius: 20
+                    maxRadius: 20 * Appearance.effectiveScale
                     
                     RowLayout {
                         id: snapRow
                         anchors.fill: parent
-                        anchors.margins: 20
-                        spacing: 20
+                        anchors.margins: 20 * Appearance.effectiveScale
+                        spacing: 20 * Appearance.effectiveScale
 
                         ColumnLayout {
-                            spacing: 2
+                            spacing: 2 * Appearance.effectiveScale
                             StyledText {
                                 text: "Region Selector: Window Snapping"
                                 font.pixelSize: Appearance.font.pixelSize.normal
@@ -262,19 +262,19 @@ import Quickshell
                         
                         // Custom Switch
                         Rectangle {
-                            implicitWidth: 52
-                            implicitHeight: 28
-                            radius: 14
+                            implicitWidth: 52 * Appearance.effectiveScale
+                            implicitHeight: 28 * Appearance.effectiveScale
+                            radius: 14 * Appearance.effectiveScale
                             color: (Config.ready && Config.options.regionSelector && Config.options.regionSelector.targetRegions.windows)
                                 ? Appearance.colors.colPrimary
                                 : Appearance.colors.colLayer3
 
                             Rectangle {
-                                width: 20
-                                height: 20
-                                radius: 10
+                                width: 20 * Appearance.effectiveScale
+                                height: 20 * Appearance.effectiveScale
+                                radius: 10 * Appearance.effectiveScale
                                 anchors.verticalCenter: parent.verticalCenter
-                                x: (Config.ready && Config.options.regionSelector && Config.options.regionSelector.targetRegions.windows) ? parent.width - width - 4 : 4
+                                x: (Config.ready && Config.options.regionSelector && Config.options.regionSelector.targetRegions.windows) ? parent.width - width - 4 * Appearance.effectiveScale : 4 * Appearance.effectiveScale
                                 color: (Config.ready && Config.options.regionSelector && Config.options.regionSelector.targetRegions.windows)
                                     ? Appearance.colors.colOnPrimary
                                     : Appearance.colors.colSubtext

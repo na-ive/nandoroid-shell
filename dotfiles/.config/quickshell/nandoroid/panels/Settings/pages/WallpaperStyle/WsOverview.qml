@@ -22,15 +22,15 @@ ColumnLayout {
     ColumnLayout {
                 id: overviewSettingsSection
                 Layout.fillWidth: true
-                Layout.topMargin: 12
-                spacing: 4
+                Layout.topMargin: 12 * Appearance.effectiveScale
+                spacing: 4 * Appearance.effectiveScale
                 
                 RowLayout {
-                    spacing: 12
-                    Layout.bottomMargin: 8
+                    spacing: 12 * Appearance.effectiveScale
+                    Layout.bottomMargin: 8 * Appearance.effectiveScale
                     MaterialSymbol {
                         text: "grid_view"
-                        iconSize: 24
+                        iconSize: 24 * Appearance.effectiveScale
                         color: Appearance.colors.colPrimary
                     }
                     StyledText {
@@ -45,21 +45,21 @@ ColumnLayout {
                 // Rows
                 SegmentedWrapper {
                     Layout.fillWidth: true
-                    implicitHeight: overviewRowsRow.implicitHeight + 36
+                    implicitHeight: overviewRowsRow.implicitHeight + (36 * Appearance.effectiveScale)
                     orientation: Qt.Vertical
-                    maxRadius: 20
+                    maxRadius: 20 * Appearance.effectiveScale
                     color: Appearance.m3colors.m3surfaceContainerHigh
                     
                     RowLayout {
                         id: overviewRowsRow
                         anchors.fill: parent
-                        anchors.margins: 16
-                        spacing: 20
+                        anchors.margins: 16 * Appearance.effectiveScale
+                        spacing: 20 * Appearance.effectiveScale
     
                         RowLayout {
-                            spacing: 16
-                            Layout.preferredWidth: 70
-                            MaterialSymbol { text: "reorder"; iconSize: 24; color: Appearance.colors.colPrimary }
+                            spacing: 16 * Appearance.effectiveScale
+                            Layout.preferredWidth: 70 * Appearance.effectiveScale
+                            MaterialSymbol { text: "reorder"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
                             StyledText { 
                                 text: "Rows"
                                 color: Appearance.colors.colOnLayer1
@@ -76,7 +76,7 @@ ColumnLayout {
                         StyledText { 
                             text: Math.round(Config.ready && Config.options.overview ? Config.options.overview.rows : 2).toString()
                             color: Appearance.colors.colOnLayer1 
-                            Layout.preferredWidth: 40
+                            Layout.preferredWidth: 40 * Appearance.effectiveScale
                             horizontalAlignment: Text.AlignRight
                         }
                     }
@@ -85,21 +85,21 @@ ColumnLayout {
                 // Columns
                 SegmentedWrapper {
                     Layout.fillWidth: true
-                    implicitHeight: overviewColsRow.implicitHeight + 36
+                    implicitHeight: overviewColsRow.implicitHeight + (36 * Appearance.effectiveScale)
                     orientation: Qt.Vertical
-                    maxRadius: 20
+                    maxRadius: 20 * Appearance.effectiveScale
                     color: Appearance.m3colors.m3surfaceContainerHigh
                     
                     RowLayout {
                         id: overviewColsRow
                         anchors.fill: parent
-                        anchors.margins: 16
-                        spacing: 20
+                        anchors.margins: 16 * Appearance.effectiveScale
+                        spacing: 20 * Appearance.effectiveScale
     
                         RowLayout {
-                            spacing: 16
-                            Layout.preferredWidth: 70
-                            MaterialSymbol { text: "view_week"; iconSize: 24; color: Appearance.colors.colPrimary }
+                            spacing: 16 * Appearance.effectiveScale
+                            Layout.preferredWidth: 70 * Appearance.effectiveScale
+                            MaterialSymbol { text: "view_week"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
                             StyledText { 
                                 text: "Columns"
                                 color: Appearance.colors.colOnLayer1
@@ -116,7 +116,7 @@ ColumnLayout {
                         StyledText { 
                             text: Math.round(Config.ready && Config.options.overview ? Config.options.overview.columns : 5).toString()
                             color: Appearance.colors.colOnLayer1 
-                            Layout.preferredWidth: 40
+                            Layout.preferredWidth: 40 * Appearance.effectiveScale
                             horizontalAlignment: Text.AlignRight
                         }
                     }
@@ -125,21 +125,21 @@ ColumnLayout {
                 // Scale
                 SegmentedWrapper {
                     Layout.fillWidth: true
-                    implicitHeight: overviewScaleRow.implicitHeight + 36
+                    implicitHeight: overviewScaleRow.implicitHeight + (36 * Appearance.effectiveScale)
                     orientation: Qt.Vertical
-                    maxRadius: 20
+                    maxRadius: 20 * Appearance.effectiveScale
                     color: Appearance.m3colors.m3surfaceContainerHigh
                     
                     RowLayout {
                         id: overviewScaleRow
                         anchors.fill: parent
-                        anchors.margins: 16
-                        spacing: 20
+                        anchors.margins: 16 * Appearance.effectiveScale
+                        spacing: 20 * Appearance.effectiveScale
     
                         RowLayout {
-                            spacing: 16
-                            Layout.preferredWidth: 70
-                            MaterialSymbol { text: "zoom_in"; iconSize: 24; color: Appearance.colors.colPrimary }
+                            spacing: 16 * Appearance.effectiveScale
+                            Layout.preferredWidth: 70 * Appearance.effectiveScale
+                            MaterialSymbol { text: "zoom_in"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
                             StyledText { 
                                 text: "Window Scale"
                                 color: Appearance.colors.colOnLayer1
@@ -156,7 +156,7 @@ ColumnLayout {
                         StyledText { 
                             text: Math.round(Config.ready && Config.options.overview ? Config.options.overview.scale * 100 : 15).toString() + "%"
                             color: Appearance.colors.colOnLayer1 
-                            Layout.preferredWidth: 40
+                            Layout.preferredWidth: 40 * Appearance.effectiveScale
                             horizontalAlignment: Text.AlignRight
                         }
                     }
@@ -165,21 +165,21 @@ ColumnLayout {
                 // Workspace Spacing
                 SegmentedWrapper {
                     Layout.fillWidth: true
-                    implicitHeight: overviewSpacingRow.implicitHeight + 36
+                    implicitHeight: overviewSpacingRow.implicitHeight + (36 * Appearance.effectiveScale)
                     orientation: Qt.Vertical
-                    maxRadius: 20
+                    maxRadius: 20 * Appearance.effectiveScale
                     color: Appearance.m3colors.m3surfaceContainerHigh
                     
                     RowLayout {
                         id: overviewSpacingRow
                         anchors.fill: parent
-                        anchors.margins: 16
-                        spacing: 20
+                        anchors.margins: 16 * Appearance.effectiveScale
+                        spacing: 20 * Appearance.effectiveScale
     
                         RowLayout {
-                            spacing: 16
-                            Layout.preferredWidth: 70
-                            MaterialSymbol { text: "space_dashboard"; iconSize: 24; color: Appearance.colors.colPrimary }
+                            spacing: 16 * Appearance.effectiveScale
+                            Layout.preferredWidth: 70 * Appearance.effectiveScale
+                            MaterialSymbol { text: "space_dashboard"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
                             StyledText { 
                                 text: "Workspace Spacing"
                                 color: Appearance.colors.colOnLayer1
@@ -196,7 +196,7 @@ ColumnLayout {
                         StyledText { 
                             text: Math.round(Config.ready && Config.options.overview ? Config.options.overview.workspaceSpacing : 10).toString() + "px"
                             color: Appearance.colors.colOnLayer1 
-                            Layout.preferredWidth: 40
+                            Layout.preferredWidth: 40 * Appearance.effectiveScale
                             horizontalAlignment: Text.AlignRight
                         }
                     }

@@ -15,7 +15,7 @@ Flickable {
     id: root
     width: parent ? parent.width : 0
     height: parent ? parent.height : 0
-    contentHeight: mainCol.implicitHeight + 48
+    contentHeight: mainCol.implicitHeight + (48 * Appearance.effectiveScale)
     clip: true
 
     ScrollBar.vertical: StyledScrollBar {}
@@ -57,28 +57,28 @@ Flickable {
     ColumnLayout {
         id: mainCol
         width: parent.width
-        spacing: 32
+        spacing: 32 * Appearance.effectiveScale
 
         // ── Header ──
         ColumnLayout {
-            spacing: 4
+            spacing: 4 * Appearance.effectiveScale
             
             RowLayout {
                 Layout.fillWidth: true
-                spacing: 12
+                spacing: 12 * Appearance.effectiveScale
 
                 // Back Button (only in sub-pages)
                 RippleButton {
                     visible: root.currentView !== "main"
-                    implicitWidth: 40
-                    implicitHeight: 40
-                    buttonRadius: 20
+                    implicitWidth: 40 * Appearance.effectiveScale
+                    implicitHeight: 40 * Appearance.effectiveScale
+                    buttonRadius: 20 * Appearance.effectiveScale
                     colBackground: Appearance.colors.colLayer1
                     onClicked: root.currentView = "main"
                     contentItem: MaterialSymbol {
                         anchors.centerIn: parent
                         text: "arrow_back"
-                        iconSize: 24
+                        iconSize: 24 * Appearance.effectiveScale
                         color: Appearance.colors.colOnLayer1
                     }
                 }

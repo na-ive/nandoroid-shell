@@ -9,9 +9,10 @@ import Qt5Compat.GraphicalEffects
 import Quickshell
 
         ColumnLayout {
+            id: diskMainCol
             Layout.fillWidth: true
-            spacing: 4
-            Layout.topMargin: 16
+            spacing: 4 * Appearance.effectiveScale
+            Layout.topMargin: 16 * Appearance.effectiveScale
             
             SearchHandler { 
                 searchString: "Disk Monitoring"
@@ -19,11 +20,11 @@ import Quickshell
             }
 
             RowLayout {
-                spacing: 12
-                Layout.bottomMargin: 8
+                spacing: 12 * Appearance.effectiveScale
+                Layout.bottomMargin: 8 * Appearance.effectiveScale
                 MaterialSymbol {
                     text: "storage"
-                    iconSize: 24
+                    iconSize: 24 * Appearance.effectiveScale
                     color: Appearance.colors.colPrimary
                 }
                 StyledText {
@@ -37,7 +38,7 @@ import Quickshell
             // List of monitored disks
             ColumnLayout {
                 Layout.fillWidth: true
-                spacing: 4
+                spacing: 4 * Appearance.effectiveScale
 
                 Repeater {
                     model: (Config.ready && Config.options.system) ? Config.options.system.monitoredDisks : []
@@ -45,10 +46,10 @@ import Quickshell
                         required property var modelData
                         required property int index
                         Layout.fillWidth: true
-                        implicitHeight: 64
+                        implicitHeight: 64 * Appearance.effectiveScale
                         orientation: Qt.Vertical
-                        smallRadius: 8
-                        fullRadius: 20
+                        smallRadius: 8 * Appearance.effectiveScale
+                        fullRadius: 20 * Appearance.effectiveScale
                         color: Appearance.m3colors.m3surfaceContainerHigh
 
                         // Manual rounding for joined list
@@ -59,12 +60,12 @@ import Quickshell
 
                         RowLayout {
                             anchors.fill: parent
-                            anchors.leftMargin: 20
-                            anchors.rightMargin: 12
-                            spacing: 12
+                            anchors.leftMargin: 20 * Appearance.effectiveScale
+                            anchors.rightMargin: 12 * Appearance.effectiveScale
+                            spacing: 12 * Appearance.effectiveScale
 
                             ColumnLayout {
-                                spacing: -2
+                                spacing: -2 * Appearance.effectiveScale
                                 StyledText {
                                     text: modelData.alias || "No Alias"
                                     font.pixelSize: Appearance.font.pixelSize.normal
@@ -81,9 +82,9 @@ import Quickshell
                             Item { Layout.fillWidth: true }
 
                             RippleButton {
-                                implicitWidth: 36
-                                implicitHeight: 36
-                                buttonRadius: 18
+                                implicitWidth: 36 * Appearance.effectiveScale
+                                implicitHeight: 36 * Appearance.effectiveScale
+                                buttonRadius: 18 * Appearance.effectiveScale
                                 colBackground: "transparent"
                                 onClicked: {
                                     let list = [];
@@ -95,7 +96,7 @@ import Quickshell
                                 MaterialSymbol {
                                     anchors.centerIn: parent
                                     text: "delete"
-                                    iconSize: 20
+                                    iconSize: 20 * Appearance.effectiveScale
                                     color: Appearance.m3colors.m3error
                                 }
                             }
@@ -106,39 +107,39 @@ import Quickshell
                 // Add new disk card (Joined to the segmented list)
                 SegmentedWrapper {
                     Layout.fillWidth: true
-                    implicitHeight: addDiskRow.implicitHeight + 40
+                    implicitHeight: addDiskRow.implicitHeight + 40 * Appearance.effectiveScale
                     orientation: Qt.Vertical
                     forceFirst: ((Config.ready && Config.options.system) ? Config.options.system.monitoredDisks.length : 0) === 0
                     forceLast: true
                     forceNotStandalone: true
-                    smallRadius: 8
-                    fullRadius: 20
+                    smallRadius: 8 * Appearance.effectiveScale
+                    fullRadius: 20 * Appearance.effectiveScale
                     Layout.topMargin: 0 // Joined to above
                     color: Appearance.m3colors.m3surfaceContainerHigh
 
                     RowLayout {
                         id: addDiskRow
                         anchors.fill: parent
-                        anchors.margins: 20
-                        spacing: 20
+                        anchors.margins: 20 * Appearance.effectiveScale
+                        spacing: 20 * Appearance.effectiveScale
 
                         ColumnLayout {
                             Layout.fillWidth: true
-                            spacing: 8
+                            spacing: 8 * Appearance.effectiveScale
 
                             Rectangle {
                                 Layout.fillWidth: true
-                                Layout.preferredHeight: 48
-                                radius: 12
+                                Layout.preferredHeight: 48 * Appearance.effectiveScale
+                                radius: 12 * Appearance.effectiveScale
                                 color: Appearance.m3colors.m3surfaceContainerLow
-                                border.width: addDiskPathInput.activeFocus ? 2 : 0
+                                border.width: addDiskPathInput.activeFocus ? Math.max(1, 2 * Appearance.effectiveScale) : 0
                                 border.color: Appearance.colors.colPrimary
 
                                 TextInput {
                                     id: addDiskPathInput
                                     anchors.fill: parent
-                                    anchors.leftMargin: 16
-                                    anchors.rightMargin: 16
+                                    anchors.leftMargin: 16 * Appearance.effectiveScale
+                                    anchors.rightMargin: 16 * Appearance.effectiveScale
                                     verticalAlignment: TextInput.AlignVCenter
                                     font.family: Appearance.font.family.main
                                     font.pixelSize: Appearance.font.pixelSize.normal
@@ -156,17 +157,17 @@ import Quickshell
 
                             Rectangle {
                                 Layout.fillWidth: true
-                                Layout.preferredHeight: 48
-                                radius: 12
+                                Layout.preferredHeight: 48 * Appearance.effectiveScale
+                                radius: 12 * Appearance.effectiveScale
                                 color: Appearance.m3colors.m3surfaceContainerLow
-                                border.width: addDiskAliasInput.activeFocus ? 2 : 0
+                                border.width: addDiskAliasInput.activeFocus ? Math.max(1, 2 * Appearance.effectiveScale) : 0
                                 border.color: Appearance.colors.colPrimary
 
                                 TextInput {
                                     id: addDiskAliasInput
                                     anchors.fill: parent
-                                    anchors.leftMargin: 16
-                                    anchors.rightMargin: 16
+                                    anchors.leftMargin: 16 * Appearance.effectiveScale
+                                    anchors.rightMargin: 16 * Appearance.effectiveScale
                                     verticalAlignment: TextInput.AlignVCenter
                                     font.family: Appearance.font.family.main
                                     font.pixelSize: Appearance.font.pixelSize.normal
@@ -184,9 +185,9 @@ import Quickshell
                         }
 
                         RippleButton {
-                            implicitWidth: 48
-                            implicitHeight: 48
-                            buttonRadius: 24
+                            implicitWidth: 48 * Appearance.effectiveScale
+                            implicitHeight: 48 * Appearance.effectiveScale
+                            buttonRadius: 24 * Appearance.effectiveScale
                             colBackground: Appearance.colors.colPrimary
                             onClicked: {
                                 const path = addDiskPathInput.text.trim();
@@ -207,7 +208,7 @@ import Quickshell
                             MaterialSymbol {
                                 anchors.centerIn: parent
                                 text: "add"
-                                iconSize: 24
+                                iconSize: 24 * Appearance.effectiveScale
                                 color: Appearance.colors.colOnPrimary
                             }
                         }

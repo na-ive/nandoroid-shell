@@ -46,6 +46,9 @@ Variants {
         implicitWidth: contentLoader.item ? contentLoader.item.implicitWidth : 0
         implicitHeight: contentLoader.item ? contentLoader.item.implicitHeight : 0
 
+        width: implicitWidth
+        height: implicitHeight
+
         HyprlandFocusGrab {
             id: focusGrab
             active: GlobalStates.notificationCenterOpen && isActive

@@ -10,18 +10,18 @@ import Quickshell
 
         ColumnLayout {
             Layout.fillWidth: true
-            spacing: 4
-            Layout.topMargin: 16
+            spacing: 4 * Appearance.effectiveScale
+            Layout.topMargin: 16 * Appearance.effectiveScale
 
             SearchHandler { searchString: "Search Engine" }
 
             RowLayout {
 
-                    spacing: 12
-                    Layout.bottomMargin: 8
+                    spacing: 12 * Appearance.effectiveScale
+                    Layout.bottomMargin: 8 * Appearance.effectiveScale
                     MaterialSymbol {
                         text: "search"
-                        iconSize: 24
+                        iconSize: 24 * Appearance.effectiveScale
                         color: Appearance.colors.colPrimary
                     }
                     StyledText {
@@ -35,19 +35,19 @@ import Quickshell
 
                 SegmentedWrapper {
                     Layout.fillWidth: true
-                    implicitHeight: mathRow.implicitHeight + 40
+                    implicitHeight: mathRow.implicitHeight + 40 * Appearance.effectiveScale
                     orientation: Qt.Vertical
-                    maxRadius: 20
+                    maxRadius: 20 * Appearance.effectiveScale
                     color: Appearance.m3colors.m3surfaceContainerHigh
 
                     RowLayout {
                         id: mathRow
                         anchors.fill: parent
-                        anchors.margins: 20
-                        spacing: 20
+                        anchors.margins: 20 * Appearance.effectiveScale
+                        spacing: 20 * Appearance.effectiveScale
 
                         ColumnLayout {
-                            spacing: 2
+                            spacing: 2 * Appearance.effectiveScale
                             StyledText {
                                 text: "Math Prefix"
                                 font.pixelSize: Appearance.font.pixelSize.normal
@@ -63,11 +63,11 @@ import Quickshell
                         Item { Layout.fillWidth: true }
                         
                         Rectangle {
-                            width: 120
-                            height: 48
-                            radius: 12
+                            width: 120 * Appearance.effectiveScale
+                            height: 48 * Appearance.effectiveScale
+                            radius: 12 * Appearance.effectiveScale
                             color: Appearance.m3colors.m3surfaceContainerLow
-                            border.width: mathInput.activeFocus ? 2 : 0
+                            border.width: mathInput.activeFocus ? Math.max(1, 2 * Appearance.effectiveScale) : 0
                             border.color: Appearance.colors.colPrimary
 
                             TextInput {
@@ -88,19 +88,19 @@ import Quickshell
                 // 2. Web Search Prefix Card
                 SegmentedWrapper {
                     Layout.fillWidth: true
-                    implicitHeight: webRow.implicitHeight + 40
+                    implicitHeight: webRow.implicitHeight + 40 * Appearance.effectiveScale
                     orientation: Qt.Vertical
-                    maxRadius: 20
+                    maxRadius: 20 * Appearance.effectiveScale
                     color: Appearance.m3colors.m3surfaceContainerHigh
 
                     RowLayout {
                         id: webRow
                         anchors.fill: parent
-                        anchors.margins: 20
-                        spacing: 20
+                        anchors.margins: 20 * Appearance.effectiveScale
+                        spacing: 20 * Appearance.effectiveScale
 
                         ColumnLayout {
-                            spacing: 2
+                            spacing: 2 * Appearance.effectiveScale
                             StyledText {
                                 text: "Web Search Prefix"
                                 font.pixelSize: Appearance.font.pixelSize.normal
@@ -116,11 +116,11 @@ import Quickshell
                         Item { Layout.fillWidth: true }
                         
                         Rectangle {
-                            width: 120
-                            height: 48
-                            radius: 12
+                            width: 120 * Appearance.effectiveScale
+                            height: 48 * Appearance.effectiveScale
+                            radius: 12 * Appearance.effectiveScale
                             color: Appearance.m3colors.m3surfaceContainerLow
-                            border.width: webInput.activeFocus ? 2 : 0
+                            border.width: webInput.activeFocus ? Math.max(1, 2 * Appearance.effectiveScale) : 0
                             border.color: Appearance.colors.colPrimary
 
                             TextInput {
@@ -141,19 +141,19 @@ import Quickshell
                 // 3. Emoji Prefix Card
                 SegmentedWrapper {
                     Layout.fillWidth: true
-                    implicitHeight: emojiRow.implicitHeight + 40
+                    implicitHeight: emojiRow.implicitHeight + 40 * Appearance.effectiveScale
                     orientation: Qt.Vertical
-                    maxRadius: 20
+                    maxRadius: 20 * Appearance.effectiveScale
                     color: Appearance.m3colors.m3surfaceContainerHigh
 
                     RowLayout {
                         id: emojiRow
                         anchors.fill: parent
-                        anchors.margins: 20
-                        spacing: 20
+                        anchors.margins: 20 * Appearance.effectiveScale
+                        spacing: 20 * Appearance.effectiveScale
 
                         ColumnLayout {
-                            spacing: 2
+                            spacing: 2 * Appearance.effectiveScale
                             StyledText {
                                 text: "Emoji Prefix"
                                 font.pixelSize: Appearance.font.pixelSize.normal
@@ -169,11 +169,11 @@ import Quickshell
                         Item { Layout.fillWidth: true }
                         
                         Rectangle {
-                            width: 120
-                            height: 48
-                            radius: 12
+                            width: 120 * Appearance.effectiveScale
+                            height: 48 * Appearance.effectiveScale
+                            radius: 12 * Appearance.effectiveScale
                             color: Appearance.m3colors.m3surfaceContainerLow
-                            border.width: emojiInput.activeFocus ? 2 : 0
+                            border.width: emojiInput.activeFocus ? Math.max(1, 2 * Appearance.effectiveScale) : 0
                             border.color: Appearance.colors.colPrimary
 
                             TextInput {
@@ -194,19 +194,19 @@ import Quickshell
                 // 4. Clipboard Prefix Card
                 SegmentedWrapper {
                     Layout.fillWidth: true
-                    implicitHeight: clipRow.implicitHeight + 40
+                    implicitHeight: clipRow.implicitHeight + 40 * Appearance.effectiveScale
                     orientation: Qt.Vertical
-                    maxRadius: 20
+                    maxRadius: 20 * Appearance.effectiveScale
                     color: Appearance.m3colors.m3surfaceContainerHigh
 
                     RowLayout {
                         id: clipRow
                         anchors.fill: parent
-                        anchors.margins: 20
-                        spacing: 20
+                        anchors.margins: 20 * Appearance.effectiveScale
+                        spacing: 20 * Appearance.effectiveScale
 
                         ColumnLayout {
-                            spacing: 2
+                            spacing: 2 * Appearance.effectiveScale
                             StyledText {
                                 text: "Clipboard Prefix"
                                 font.pixelSize: Appearance.font.pixelSize.normal
@@ -222,11 +222,11 @@ import Quickshell
                         Item { Layout.fillWidth: true }
                         
                         Rectangle {
-                            width: 120
-                            height: 48
-                            radius: 12
+                            width: 120 * Appearance.effectiveScale
+                            height: 48 * Appearance.effectiveScale
+                            radius: 12 * Appearance.effectiveScale
                             color: Appearance.m3colors.m3surfaceContainerLow
-                            border.width: clipInput.activeFocus ? 2 : 0
+                            border.width: clipInput.activeFocus ? Math.max(1, 2 * Appearance.effectiveScale) : 0
                             border.color: Appearance.colors.colPrimary
 
                             TextInput {
@@ -247,19 +247,19 @@ import Quickshell
                 // 5. File Search Prefix Card
                 SegmentedWrapper {
                     Layout.fillWidth: true
-                    implicitHeight: fileRow.implicitHeight + 40
+                    implicitHeight: fileRow.implicitHeight + 40 * Appearance.effectiveScale
                     orientation: Qt.Vertical
-                    maxRadius: 20
+                    maxRadius: 20 * Appearance.effectiveScale
                     color: Appearance.m3colors.m3surfaceContainerHigh
 
                     RowLayout {
                         id: fileRow
                         anchors.fill: parent
-                        anchors.margins: 20
-                        spacing: 20
+                        anchors.margins: 20 * Appearance.effectiveScale
+                        spacing: 20 * Appearance.effectiveScale
 
                         ColumnLayout {
-                            spacing: 2
+                            spacing: 2 * Appearance.effectiveScale
                             StyledText {
                                 text: "File Search Prefix"
                                 font.pixelSize: Appearance.font.pixelSize.normal
@@ -275,11 +275,11 @@ import Quickshell
                         Item { Layout.fillWidth: true }
                         
                         Rectangle {
-                            width: 120
-                            height: 48
-                            radius: 12
+                            width: 120 * Appearance.effectiveScale
+                            height: 48 * Appearance.effectiveScale
+                            radius: 12 * Appearance.effectiveScale
                             color: Appearance.m3colors.m3surfaceContainerLow
-                            border.width: fileInput.activeFocus ? 2 : 0
+                            border.width: fileInput.activeFocus ? Math.max(1, 2 * Appearance.effectiveScale) : 0
                             border.color: Appearance.colors.colPrimary
 
                             TextInput {
@@ -300,19 +300,19 @@ import Quickshell
                 // 6. Command Prefix Card
                 SegmentedWrapper {
                     Layout.fillWidth: true
-                    implicitHeight: cmdRow.implicitHeight + 40
+                    implicitHeight: cmdRow.implicitHeight + 40 * Appearance.effectiveScale
                     orientation: Qt.Vertical
-                    maxRadius: 20
+                    maxRadius: 20 * Appearance.effectiveScale
                     color: Appearance.m3colors.m3surfaceContainerHigh
 
                     RowLayout {
                         id: cmdRow
                         anchors.fill: parent
-                        anchors.margins: 20
-                        spacing: 20
+                        anchors.margins: 20 * Appearance.effectiveScale
+                        spacing: 20 * Appearance.effectiveScale
 
                         ColumnLayout {
-                            spacing: 2
+                            spacing: 2 * Appearance.effectiveScale
                             StyledText {
                                 text: "Command Prefix"
                                 font.pixelSize: Appearance.font.pixelSize.normal
@@ -328,11 +328,11 @@ import Quickshell
                         Item { Layout.fillWidth: true }
                         
                         Rectangle {
-                            width: 120
-                            height: 48
-                            radius: 12
+                            width: 120 * Appearance.effectiveScale
+                            height: 48 * Appearance.effectiveScale
+                            radius: 12 * Appearance.effectiveScale
                             color: Appearance.m3colors.m3surfaceContainerLow
-                            border.width: cmdInput.activeFocus ? 2 : 0
+                            border.width: cmdInput.activeFocus ? Math.max(1, 2 * Appearance.effectiveScale) : 0
                             border.color: Appearance.colors.colPrimary
 
                             TextInput {
@@ -353,19 +353,19 @@ import Quickshell
                 // 7. App Usage Tracking Toggle
                 SegmentedWrapper {
                     Layout.fillWidth: true
-                    implicitHeight: usageRow.implicitHeight + 40
+                    implicitHeight: usageRow.implicitHeight + 40 * Appearance.effectiveScale
                     orientation: Qt.Vertical
-                    maxRadius: 20
+                    maxRadius: 20 * Appearance.effectiveScale
                     color: Appearance.m3colors.m3surfaceContainerHigh
 
                     RowLayout {
                         id: usageRow
                         anchors.fill: parent
-                        anchors.margins: 20
-                        spacing: 20
+                        anchors.margins: 20 * Appearance.effectiveScale
+                        spacing: 20 * Appearance.effectiveScale
 
                         ColumnLayout {
-                            spacing: 2
+                            spacing: 2 * Appearance.effectiveScale
                             StyledText {
                                 text: "App Usage Tracking"
                                 font.pixelSize: Appearance.font.pixelSize.normal

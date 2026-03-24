@@ -11,11 +11,11 @@ import Quickshell.Io
 
 ColumnLayout {
     id: creditsRoot
-    spacing: 24
+    spacing: 24 * Appearance.effectiveScale
 
     ColumnLayout {
         Layout.fillWidth: true
-        spacing: 8
+        spacing: 8 * Appearance.effectiveScale
         
         StyledText {
             Layout.fillWidth: true
@@ -29,7 +29,7 @@ ColumnLayout {
     // --- Inspiration Cards ---
     ColumnLayout {
         Layout.fillWidth: true
-        spacing: 12
+        spacing: 12 * Appearance.effectiveScale
 
         ProjectCard {
             title: "illogical-impulse"
@@ -73,8 +73,8 @@ ColumnLayout {
         property color accentColor
 
         Layout.fillWidth: true
-        Layout.preferredHeight: layoutCol.implicitHeight + 40
-        radius: 28
+        Layout.preferredHeight: layoutCol.implicitHeight + (40 * Appearance.effectiveScale)
+        radius: 28 * Appearance.effectiveScale
         color: Appearance.m3colors.m3surfaceContainerHigh
         
         RippleButton {
@@ -87,21 +87,21 @@ ColumnLayout {
         ColumnLayout {
             id: layoutCol
             anchors.fill: parent
-            anchors.margins: 20
-            spacing: 16
+            anchors.margins: 20 * Appearance.effectiveScale
+            spacing: 16 * Appearance.effectiveScale
 
             RowLayout {
-                spacing: 16
+                spacing: 16 * Appearance.effectiveScale
                 Image {
                     source: projRoot.iconSource
-                    sourceSize: Qt.size(64, 64)
-                    Layout.preferredWidth: 64
-                    Layout.preferredHeight: 64
+                    sourceSize: Qt.size(64 * Appearance.effectiveScale, 64 * Appearance.effectiveScale)
+                    Layout.preferredWidth: 64 * Appearance.effectiveScale
+                    Layout.preferredHeight: 64 * Appearance.effectiveScale
                     fillMode: Image.PreserveAspectFit
                 }
                 
                 ColumnLayout {
-                    spacing: 2
+                    spacing: 2 * Appearance.effectiveScale
                     StyledText {
                         text: projRoot.title
                         font.pixelSize: Appearance.font.pixelSize.large

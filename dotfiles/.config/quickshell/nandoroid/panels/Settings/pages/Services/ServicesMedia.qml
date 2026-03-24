@@ -10,17 +10,17 @@ import Quickshell
 
 ColumnLayout {
     Layout.fillWidth: true
-    spacing: 4
-    Layout.topMargin: 16
+    spacing: 4 * Appearance.effectiveScale
+    Layout.topMargin: 16 * Appearance.effectiveScale
     
     SearchHandler { searchString: "Media Controls" }
 
     RowLayout {
-        spacing: 12
-        Layout.bottomMargin: 8
+        spacing: 12 * Appearance.effectiveScale
+        Layout.bottomMargin: 8 * Appearance.effectiveScale
         MaterialSymbol {
             text: "music_note"
-            iconSize: 24
+            iconSize: 24 * Appearance.effectiveScale
             color: Appearance.colors.colPrimary
         }
         StyledText {
@@ -33,20 +33,20 @@ ColumnLayout {
 
     SegmentedWrapper {
         Layout.fillWidth: true
-        implicitHeight: mediaRow.implicitHeight + 40
+        implicitHeight: mediaRow.implicitHeight + 40 * Appearance.effectiveScale
         orientation: Qt.Vertical
-        maxRadius: 20
+        maxRadius: 20 * Appearance.effectiveScale
         color: Appearance.m3colors.m3surfaceContainerHigh
 
         RowLayout {
             id: mediaRow
             anchors.fill: parent
-            anchors.margins: 20
-            spacing: 20
+            anchors.margins: 20 * Appearance.effectiveScale
+            spacing: 20 * Appearance.effectiveScale
 
             ColumnLayout {
-                spacing: 2
-                Layout.maximumWidth: 400
+                spacing: 2 * Appearance.effectiveScale
+                Layout.maximumWidth: 400 * Appearance.effectiveScale
                 StyledText {
                     text: "Media Player Priority"
                     font.pixelSize: Appearance.font.pixelSize.normal
@@ -64,18 +64,18 @@ ColumnLayout {
             Item { Layout.fillWidth: true }
             
             Rectangle {
-                Layout.preferredWidth: 200
-                height: 48
-                radius: 12
+                Layout.preferredWidth: 200 * Appearance.effectiveScale
+                height: 48 * Appearance.effectiveScale
+                radius: 12 * Appearance.effectiveScale
                 color: Appearance.m3colors.m3surfaceContainerLow
-                border.width: priorityInput.activeFocus ? 2 : 0
+                border.width: priorityInput.activeFocus ? Math.max(1, 2 * Appearance.effectiveScale) : 0
                 border.color: Appearance.colors.colPrimary
 
                 TextInput {
                     id: priorityInput
                     anchors.fill: parent
-                    anchors.leftMargin: 16
-                    anchors.rightMargin: 16
+                    anchors.leftMargin: 16 * Appearance.effectiveScale
+                    anchors.rightMargin: 16 * Appearance.effectiveScale
                     verticalAlignment: TextInput.AlignVCenter
                     font.family: Appearance.font.family.main
                     font.pixelSize: Appearance.font.pixelSize.normal
@@ -90,20 +90,20 @@ ColumnLayout {
     // --- Show Media Card Toggle (Notification Center) ---
     SegmentedWrapper {
         Layout.fillWidth: true
-        implicitHeight: showMediaCardRow.implicitHeight + 40
+        implicitHeight: showMediaCardRow.implicitHeight + 40 * Appearance.effectiveScale
         orientation: Qt.Vertical
-        maxRadius: 20
+        maxRadius: 20 * Appearance.effectiveScale
         color: Appearance.m3colors.m3surfaceContainerHigh
 
         RowLayout {
             id: showMediaCardRow
             anchors.fill: parent
-            anchors.margins: 20
-            spacing: 20
+            anchors.margins: 20 * Appearance.effectiveScale
+            spacing: 20 * Appearance.effectiveScale
 
             ColumnLayout {
-                spacing: 2
-                Layout.maximumWidth: 400
+                spacing: 2 * Appearance.effectiveScale
+                Layout.maximumWidth: 400 * Appearance.effectiveScale
                 StyledText {
                     text: "Show Media Card"
                     font.pixelSize: Appearance.font.pixelSize.normal
@@ -122,19 +122,19 @@ ColumnLayout {
 
             // Custom Switch
             Rectangle {
-                implicitWidth: 52
-                implicitHeight: 28
-                radius: 14
+                implicitWidth: 52 * Appearance.effectiveScale
+                implicitHeight: 28 * Appearance.effectiveScale
+                radius: 14 * Appearance.effectiveScale
                 color: (Config.ready && Config.options.media && Config.options.media.showMediaCard)
                     ? Appearance.colors.colPrimary
                     : Appearance.m3colors.m3surfaceContainerLowest
 
                 Rectangle {
-                    width: 20
-                    height: 20
-                    radius: 10
+                    width: 20 * Appearance.effectiveScale
+                    height: 20 * Appearance.effectiveScale
+                    radius: 10 * Appearance.effectiveScale
                     anchors.verticalCenter: parent.verticalCenter
-                    x: (Config.ready && Config.options.media && Config.options.media.showMediaCard) ? parent.width - width - 4 : 4
+                    x: (Config.ready && Config.options.media && Config.options.media.showMediaCard) ? parent.width - width - 4 * Appearance.effectiveScale : 4 * Appearance.effectiveScale
                     color: (Config.ready && Config.options.media && Config.options.media.showMediaCard)
                         ? Appearance.colors.colOnPrimary
                         : Appearance.colors.colSubtext
@@ -157,20 +157,20 @@ ColumnLayout {
     // --- Dynamic Island Hover Toggle ---
     SegmentedWrapper {
         Layout.fillWidth: true
-        implicitHeight: dynamicIslandHoverRow.implicitHeight + 40
+        implicitHeight: dynamicIslandHoverRow.implicitHeight + 40 * Appearance.effectiveScale
         orientation: Qt.Vertical
-        maxRadius: 20
+        maxRadius: 20 * Appearance.effectiveScale
         color: Appearance.m3colors.m3surfaceContainerHigh
 
         RowLayout {
             id: dynamicIslandHoverRow
             anchors.fill: parent
-            anchors.margins: 20
-            spacing: 20
+            anchors.margins: 20 * Appearance.effectiveScale
+            spacing: 20 * Appearance.effectiveScale
 
             ColumnLayout {
-                spacing: 2
-                Layout.maximumWidth: 400
+                spacing: 2 * Appearance.effectiveScale
+                Layout.maximumWidth: 400 * Appearance.effectiveScale
                 StyledText {
                     text: "Dynamic Island Hover"
                     font.pixelSize: Appearance.font.pixelSize.normal
@@ -189,19 +189,19 @@ ColumnLayout {
 
             // Custom Switch
             Rectangle {
-                implicitWidth: 52
-                implicitHeight: 28
-                radius: 14
+                implicitWidth: 52 * Appearance.effectiveScale
+                implicitHeight: 28 * Appearance.effectiveScale
+                radius: 14 * Appearance.effectiveScale
                 color: (Config.ready && Config.options.media && Config.options.media.enableMediaHover)
                     ? Appearance.colors.colPrimary
                     : Appearance.m3colors.m3surfaceContainerLowest
 
                 Rectangle {
-                    width: 20
-                    height: 20
-                    radius: 10
+                    width: 20 * Appearance.effectiveScale
+                    height: 20 * Appearance.effectiveScale
+                    radius: 10 * Appearance.effectiveScale
                     anchors.verticalCenter: parent.verticalCenter
-                    x: (Config.ready && Config.options.media && Config.options.media.enableMediaHover) ? parent.width - width - 4 : 4
+                    x: (Config.ready && Config.options.media && Config.options.media.enableMediaHover) ? parent.width - width - 4 * Appearance.effectiveScale : 4 * Appearance.effectiveScale
                     color: (Config.ready && Config.options.media && Config.options.media.enableMediaHover)
                         ? Appearance.colors.colOnPrimary
                         : Appearance.colors.colSubtext
@@ -224,20 +224,20 @@ ColumnLayout {
     // --- Notch Media Style (Only visible if Hover is enabled) ---
     SegmentedWrapper {
         Layout.fillWidth: true
-        implicitHeight: notchMediaStyleRow.implicitHeight + 40
+        implicitHeight: notchMediaStyleRow.implicitHeight + 40 * Appearance.effectiveScale
         orientation: Qt.Vertical
-        maxRadius: 20
+        maxRadius: 20 * Appearance.effectiveScale
         color: Appearance.m3colors.m3surfaceContainerHigh
         visible: Config.ready && Config.options.media && Config.options.media.enableMediaHover
 
         RowLayout {
             id: notchMediaStyleRow
             anchors.fill: parent
-            anchors.margins: 20
-            spacing: 20
+            anchors.margins: 20 * Appearance.effectiveScale
+            spacing: 20 * Appearance.effectiveScale
 
             ColumnLayout {
-                spacing: 2
+                spacing: 2 * Appearance.effectiveScale
                 Layout.fillWidth: true
                 StyledText {
                     text: "Notch Media Style"
@@ -255,7 +255,7 @@ ColumnLayout {
             }
 
             RowLayout {
-                spacing: 2
+                spacing: 2 * Appearance.effectiveScale
                 Repeater {
                     model: [
                         { id: "mini", label: "Mini HUD" },
@@ -281,20 +281,20 @@ ColumnLayout {
     // --- Dynamic Island Balanced Ears Toggle ---
     SegmentedWrapper {
         Layout.fillWidth: true
-        implicitHeight: balancedEarsRow.implicitHeight + 40
+        implicitHeight: balancedEarsRow.implicitHeight + 40 * Appearance.effectiveScale
         orientation: Qt.Vertical
-        maxRadius: 20
+        maxRadius: 20 * Appearance.effectiveScale
         color: Appearance.m3colors.m3surfaceContainerHigh
 
         RowLayout {
             id: balancedEarsRow
             anchors.fill: parent
-            anchors.margins: 20
-            spacing: 20
+            anchors.margins: 20 * Appearance.effectiveScale
+            spacing: 20 * Appearance.effectiveScale
 
             ColumnLayout {
-                spacing: 2
-                Layout.maximumWidth: 400
+                spacing: 2 * Appearance.effectiveScale
+                Layout.maximumWidth: 400 * Appearance.effectiveScale
                 StyledText {
                     text: "Balanced Media Ears"
                     font.pixelSize: Appearance.font.pixelSize.normal
@@ -313,19 +313,19 @@ ColumnLayout {
 
             // Custom Switch
             Rectangle {
-                implicitWidth: 52
-                implicitHeight: 28
-                radius: 14
+                implicitWidth: 52 * Appearance.effectiveScale
+                implicitHeight: 28 * Appearance.effectiveScale
+                radius: 14 * Appearance.effectiveScale
                 color: (Config.ready && Config.options.media && Config.options.media.balancedEars)
                     ? Appearance.colors.colPrimary
                     : Appearance.m3colors.m3surfaceContainerLowest
 
                 Rectangle {
-                    width: 20
-                    height: 20
-                    radius: 10
+                    width: 20 * Appearance.effectiveScale
+                    height: 20 * Appearance.effectiveScale
+                    radius: 10 * Appearance.effectiveScale
                     anchors.verticalCenter: parent.verticalCenter
-                    x: (Config.ready && Config.options.media && Config.options.media.balancedEars) ? parent.width - width - 4 : 4
+                    x: (Config.ready && Config.options.media && Config.options.media.balancedEars) ? parent.width - width - 4 * Appearance.effectiveScale : 4 * Appearance.effectiveScale
                     color: (Config.ready && Config.options.media && Config.options.media.balancedEars)
                         ? Appearance.colors.colOnPrimary
                         : Appearance.colors.colSubtext

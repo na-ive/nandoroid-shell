@@ -19,15 +19,15 @@ ColumnLayout {
 
             ColumnLayout {
                 Layout.fillWidth: true
-                Layout.topMargin: 12
-                spacing: 16
+                Layout.topMargin: 12 * Appearance.effectiveScale
+                spacing: 16 * Appearance.effectiveScale
                 
                 RowLayout {
-                    spacing: 12
-                    Layout.bottomMargin: 4
+                    spacing: 12 * Appearance.effectiveScale
+                    Layout.bottomMargin: 4 * Appearance.effectiveScale
                     MaterialSymbol {
                         text: "schedule"
-                        iconSize: 24
+                        iconSize: 24 * Appearance.effectiveScale
                         color: Appearance.colors.colPrimary
                     }
                     StyledText {
@@ -40,23 +40,23 @@ ColumnLayout {
     
                 ColumnLayout {
                     Layout.fillWidth: true
-                    spacing: 4
+                    spacing: 4 * Appearance.effectiveScale
     
                     // Time Format Card
                     SegmentedWrapper {
                         Layout.fillWidth: true
-                        implicitHeight: timeRow.implicitHeight + 36
+                        implicitHeight: timeRow.implicitHeight + (36 * Appearance.effectiveScale)
                         orientation: Qt.Vertical
-                        maxRadius: 20
+                        maxRadius: 20 * Appearance.effectiveScale
                         color: Appearance.m3colors.m3surfaceContainerHigh
                         
                         RowLayout {
                             id: timeRow
                             anchors.fill: parent
-                            anchors.margins: 16
-                            spacing: 16
+                            anchors.margins: 16 * Appearance.effectiveScale
+                            spacing: 16 * Appearance.effectiveScale
                             
-                            MaterialSymbol { text: "pace"; iconSize: 24; color: Appearance.colors.colPrimary }
+                            MaterialSymbol { text: "pace"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
                             StyledText {
                                 text: "Time Format"
                                 color: Appearance.colors.colOnLayer1
@@ -64,8 +64,8 @@ ColumnLayout {
                             }
     
                             RowLayout {
-                                spacing: 4
-                                Layout.preferredHeight: 48
+                                spacing: 4 * Appearance.effectiveScale
+                                Layout.preferredHeight: 48 * Appearance.effectiveScale
                                 
                                 Repeater {
                                     model: [
@@ -79,8 +79,8 @@ ColumnLayout {
                                         Layout.fillHeight: true
                                         
                                         buttonText: modelData.label
-                                        leftPadding: 16
-                                        rightPadding: 16
+                                        leftPadding: 16 * Appearance.effectiveScale
+                                        rightPadding: 16 * Appearance.effectiveScale
                                         
                                         colInactive: Appearance.m3colors.m3surfaceContainerLow
                                         colActive: Appearance.m3colors.m3primary
@@ -96,18 +96,18 @@ ColumnLayout {
                     // Date Format Card
                     SegmentedWrapper {
                         Layout.fillWidth: true
-                        implicitHeight: dateRow.implicitHeight + 36
+                        implicitHeight: dateRow.implicitHeight + (36 * Appearance.effectiveScale)
                         orientation: Qt.Vertical
-                        maxRadius: 20
+                        maxRadius: 20 * Appearance.effectiveScale
                         color: Appearance.m3colors.m3surfaceContainerHigh
                         
                         RowLayout {
                             id: dateRow
                             anchors.fill: parent
-                            anchors.margins: 16
-                            spacing: 16
+                            anchors.margins: 16 * Appearance.effectiveScale
+                            spacing: 16 * Appearance.effectiveScale
                             
-                            MaterialSymbol { text: "calendar_month"; iconSize: 24; color: Appearance.colors.colPrimary }
+                            MaterialSymbol { text: "calendar_month"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
                             StyledText {
                                 text: "Date Format"
                                 color: Appearance.colors.colOnLayer1
@@ -115,8 +115,8 @@ ColumnLayout {
                             }
     
                             RowLayout {
-                                spacing: 4
-                                Layout.preferredHeight: 48
+                                spacing: 4 * Appearance.effectiveScale
+                                Layout.preferredHeight: 48 * Appearance.effectiveScale
                                 
                                 Repeater {
                                     model: [
@@ -130,8 +130,8 @@ ColumnLayout {
                                         Layout.fillHeight: true
                                         
                                         buttonText: modelData.label
-                                        leftPadding: 16
-                                        rightPadding: 16
+                                        leftPadding: 16 * Appearance.effectiveScale
+                                        rightPadding: 16 * Appearance.effectiveScale
                                         
                                         colInactive: Appearance.m3colors.m3surfaceContainerLow
                                         colActive: Appearance.m3colors.m3primary

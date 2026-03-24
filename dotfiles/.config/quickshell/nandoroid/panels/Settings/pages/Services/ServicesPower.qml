@@ -10,17 +10,17 @@ import Quickshell
 
         ColumnLayout {
             Layout.fillWidth: true
-            spacing: 4
-            Layout.topMargin: 16
+            spacing: 4 * Appearance.effectiveScale
+            Layout.topMargin: 16 * Appearance.effectiveScale
             
             SearchHandler { searchString: "Power Management" }
 
             RowLayout {
-                spacing: 12
-                Layout.bottomMargin: 4
+                spacing: 12 * Appearance.effectiveScale
+                Layout.bottomMargin: 4 * Appearance.effectiveScale
                 MaterialSymbol {
                     text: "bolt"
-                    iconSize: 24
+                    iconSize: 24 * Appearance.effectiveScale
                     color: Appearance.colors.colPrimary
                 }
                 StyledText {
@@ -34,20 +34,20 @@ import Quickshell
             // 1. Enable Toggle Card
             SegmentedWrapper {
                 Layout.fillWidth: true
-                implicitHeight: powerEnableRow.implicitHeight + 40
+                implicitHeight: powerEnableRow.implicitHeight + 40 * Appearance.effectiveScale
                 orientation: Qt.Vertical
                 forceLast: false
-                maxRadius: 20
+                maxRadius: 20 * Appearance.effectiveScale
                 color: Appearance.m3colors.m3surfaceContainerHigh
 
                 RowLayout {
                     id: powerEnableRow
                     anchors.fill: parent
-                    anchors.margins: 20
-                    spacing: 20
+                    anchors.margins: 20 * Appearance.effectiveScale
+                    spacing: 20 * Appearance.effectiveScale
 
                     ColumnLayout {
-                        spacing: 2
+                        spacing: 2 * Appearance.effectiveScale
                         StyledText {
                             text: "Custom Power Profile"
                             font.pixelSize: Appearance.font.pixelSize.normal
@@ -65,19 +65,19 @@ import Quickshell
                     
                     // Custom Switch
                     Rectangle {
-                        implicitWidth: 52
-                        implicitHeight: 28
-                        radius: 14
+                        implicitWidth: 52 * Appearance.effectiveScale
+                        implicitHeight: 28 * Appearance.effectiveScale
+                        radius: 14 * Appearance.effectiveScale
                         color: (Config.ready && Config.options.powerProfile && Config.options.powerProfile.enabled)
                             ? Appearance.colors.colPrimary
-                            : Appearance.colors.colLayer3
+                            : Appearance.m3colors.m3surfaceContainerLowest
 
                         Rectangle {
-                            width: 20
-                            height: 20
-                            radius: 10
+                            width: 20 * Appearance.effectiveScale
+                            height: 20 * Appearance.effectiveScale
+                            radius: 10 * Appearance.effectiveScale
                             anchors.verticalCenter: parent.verticalCenter
-                            x: (Config.ready && Config.options.powerProfile && Config.options.powerProfile.enabled) ? parent.width - width - 4 : 4
+                            x: (Config.ready && Config.options.powerProfile && Config.options.powerProfile.enabled) ? parent.width - width - 4 * Appearance.effectiveScale : 4 * Appearance.effectiveScale
                             color: (Config.ready && Config.options.powerProfile && Config.options.powerProfile.enabled)
                                 ? Appearance.colors.colOnPrimary
                                 : Appearance.colors.colSubtext
@@ -100,11 +100,11 @@ import Quickshell
             // 2. Custom Path Card
             SegmentedWrapper {
                 Layout.fillWidth: true
-                implicitHeight: powerPathRow.implicitHeight + 40
+                implicitHeight: powerPathRow.implicitHeight + 40 * Appearance.effectiveScale
                 orientation: Qt.Vertical
                 forceFirst: false
                 forceLast: true
-                maxRadius: 20
+                maxRadius: 20 * Appearance.effectiveScale
                 color: Appearance.m3colors.m3surfaceContainerHigh
                 opacity: (Config.ready && Config.options.powerProfile && Config.options.powerProfile.enabled) ? 1.0 : 0.4
                 enabled: (Config.ready && Config.options.powerProfile && Config.options.powerProfile.enabled)
@@ -113,12 +113,12 @@ import Quickshell
                 RowLayout {
                     id: powerPathRow
                     anchors.fill: parent
-                    anchors.margins: 20
-                    spacing: 20
+                    anchors.margins: 20 * Appearance.effectiveScale
+                    spacing: 20 * Appearance.effectiveScale
 
                     ColumnLayout {
-                        spacing: 2
-                        Layout.maximumWidth: 400
+                        spacing: 2 * Appearance.effectiveScale
+                        Layout.maximumWidth: 400 * Appearance.effectiveScale
                         StyledText {
                             text: "Custom Profile Path"
                             font.pixelSize: Appearance.font.pixelSize.normal
@@ -135,18 +135,18 @@ import Quickshell
                     Item { Layout.fillWidth: true }
 
                     Rectangle {
-                        Layout.preferredWidth: 250
-                        Layout.preferredHeight: 48
-                        radius: 12
+                        Layout.preferredWidth: 250 * Appearance.effectiveScale
+                        Layout.preferredHeight: 48 * Appearance.effectiveScale
+                        radius: 12 * Appearance.effectiveScale
                         color: Appearance.m3colors.m3surfaceContainerLow
-                        border.width: powerPathInput.activeFocus ? 2 : 0
+                        border.width: powerPathInput.activeFocus ? Math.max(1, 2 * Appearance.effectiveScale) : 0
                         border.color: Appearance.colors.colPrimary
 
                         TextInput {
                             id: powerPathInput
                             anchors.fill: parent
-                            anchors.leftMargin: 16
-                            anchors.rightMargin: 16
+                            anchors.leftMargin: 16 * Appearance.effectiveScale
+                            anchors.rightMargin: 16 * Appearance.effectiveScale
                             verticalAlignment: TextInput.AlignVCenter
                             font.family: Appearance.font.family.main
                             font.pixelSize: Appearance.font.pixelSize.normal

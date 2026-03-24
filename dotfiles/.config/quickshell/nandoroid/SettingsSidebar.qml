@@ -11,7 +11,7 @@ import Qt5Compat.GraphicalEffects
  */
 Rectangle {
     id: root
-    implicitWidth: expanded ? 220 : 72
+    implicitWidth: expanded ? 220 * Appearance.effectiveScale : 72 * Appearance.effectiveScale
     color: Appearance.colors.colLayer0
     
     property bool expanded: true
@@ -24,13 +24,13 @@ Rectangle {
 
     ColumnLayout {
         anchors.fill: parent
-        anchors.margins: 12
-        spacing: 16
+        anchors.margins: 12 * Appearance.effectiveScale
+        spacing: 16 * Appearance.effectiveScale
 
         RippleButton {
             Layout.fillWidth: true
-            implicitHeight: 48
-            buttonRadius: 16
+            implicitHeight: 48 * Appearance.effectiveScale
+            buttonRadius: 16 * Appearance.effectiveScale
             colBackground: Appearance.colors.colPrimary
             colBackgroundHover: Appearance.colors.colPrimaryHover
             colRipple: Functions.ColorUtils.transparentize(Appearance.colors.colOnPrimary, 0.88)
@@ -45,10 +45,10 @@ Rectangle {
 
             RowLayout {
                 anchors.centerIn: parent
-                spacing: 8
+                spacing: 8 * Appearance.effectiveScale
                 MaterialSymbol {
                     text: "edit"
-                    iconSize: 20
+                    iconSize: 20 * Appearance.effectiveScale
                     color: Appearance.colors.colOnPrimary
                 }
                 StyledText {
@@ -60,13 +60,13 @@ Rectangle {
         }
         
         // Gap below config button
-        Item { Layout.preferredHeight: 12 }
+        Item { Layout.preferredHeight: 12 * Appearance.effectiveScale }
         
         // Icon for collapsed state
         MaterialSymbol {
             Layout.alignment: Qt.AlignHCenter
             text: "settings"
-            iconSize: 24
+            iconSize: 24 * Appearance.effectiveScale
             color: Appearance.colors.colPrimary
             visible: !root.expanded
         }
@@ -74,7 +74,7 @@ Rectangle {
         // Navigation Items
         ColumnLayout {
             Layout.fillWidth: true
-            spacing: 8
+            spacing: 8 * Appearance.effectiveScale
 
             Repeater {
                 model: [
@@ -89,8 +89,8 @@ Rectangle {
 
                 delegate: RippleButton {
                     Layout.fillWidth: true
-                    implicitHeight: 48
-                    buttonRadius: 16
+                    implicitHeight: 48 * Appearance.effectiveScale
+                    buttonRadius: 16 * Appearance.effectiveScale
                     colBackground: root.currentIndex === index 
                         ? Functions.ColorUtils.transparentize(Appearance.colors.colPrimary, 0.88)
                         : "transparent"
@@ -105,13 +105,13 @@ Rectangle {
 
                     RowLayout {
                         anchors.fill: parent
-                        anchors.leftMargin: root.expanded ? 16 : 0
-                        spacing: 16
+                        anchors.leftMargin: root.expanded ? 16 * Appearance.effectiveScale : 0
+                        spacing: 16 * Appearance.effectiveScale
 
                         MaterialSymbol {
                             Layout.alignment: Qt.AlignCenter
                             text: modelData.icon
-                            iconSize: 24
+                            iconSize: 24 * Appearance.effectiveScale
                             color: root.currentIndex === index 
                                 ? Appearance.colors.colPrimary 
                                 : Appearance.colors.colSubtext

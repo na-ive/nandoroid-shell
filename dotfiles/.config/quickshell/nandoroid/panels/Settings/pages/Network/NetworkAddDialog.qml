@@ -11,8 +11,8 @@ import Quickshell
         id: addNetworkDialog
         parent: root
         anchors.centerIn: parent
-        width: Math.min(500, root.width * 0.9)
-        implicitHeight: addCol.implicitHeight + 48
+        width: Math.min(500 * Appearance.effectiveScale, root.width * 0.9)
+        implicitHeight: addCol.implicitHeight + 48 * Appearance.effectiveScale
         padding: 0
         modal: true
         dim: false
@@ -37,8 +37,8 @@ import Quickshell
             StyledRectangularShadow {
                 target: parent
                 z: -1
-                offset: Qt.vector2d(0, 8)
-                blur: 20
+                offset: Qt.vector2d(0, 8 * Appearance.effectiveScale)
+                blur: 20 * Appearance.effectiveScale
                 color: Qt.rgba(0, 0, 0, 0.3)
             }
         }
@@ -46,23 +46,23 @@ import Quickshell
         contentItem: ColumnLayout {
             id: addCol
             anchors.fill: parent
-            anchors.margins: 24
-            spacing: 20
+            anchors.margins: 24 * Appearance.effectiveScale
+            spacing: 20 * Appearance.effectiveScale
 
             // Header Section
             ColumnLayout {
-                spacing: 20
+                spacing: 20 * Appearance.effectiveScale
                 Layout.fillWidth: true
                 
                 MaterialSymbol {
                     Layout.alignment: Qt.AlignHCenter
                     text: "network_wifi"
-                    iconSize: 32
+                    iconSize: 32 * Appearance.effectiveScale
                     color: Appearance.colors.colPrimary
                 }
                 
                 ColumnLayout {
-                    spacing: 4
+                    spacing: 4 * Appearance.effectiveScale
                     StyledText {
                         Layout.fillWidth: true
                         horizontalAlignment: Text.AlignHCenter
@@ -84,24 +84,24 @@ import Quickshell
 
             // Inputs (Polkit Style)
             ColumnLayout {
-                spacing: 20
+                spacing: 20 * Appearance.effectiveScale
                 Layout.fillWidth: true
 
                 // SSID Input
                 Rectangle {
                     Layout.fillWidth: true
-                    Layout.preferredHeight: 52
-                    radius: 8
+                    Layout.preferredHeight: 52 * Appearance.effectiveScale
+                    radius: 8 * Appearance.effectiveScale
                     color: "transparent"
-                    border.width: ssidInput.activeFocus ? 2 : 1
+                    border.width: ssidInput.activeFocus ? Math.max(1, 2 * Appearance.effectiveScale) : Math.max(1, 1 * Appearance.effectiveScale)
                     border.color: ssidInput.activeFocus ? Appearance.m3colors.m3primary : Appearance.m3colors.m3outline
 
                     // Floating Label
                     Rectangle {
-                        x: 12
-                        y: -8
-                        width: ssidLabel.width + 8
-                        height: 16
+                        x: 12 * Appearance.effectiveScale
+                        y: -8 * Appearance.effectiveScale
+                        width: ssidLabel.width + 8 * Appearance.effectiveScale
+                        height: 16 * Appearance.effectiveScale
                         color: Appearance.m3colors.m3surfaceContainerHigh
                         
                         StyledText {
@@ -117,8 +117,8 @@ import Quickshell
                     TextInput {
                         id: ssidInput
                         anchors.fill: parent
-                        anchors.leftMargin: 16
-                        anchors.rightMargin: 16
+                        anchors.leftMargin: 16 * Appearance.effectiveScale
+                        anchors.rightMargin: 16 * Appearance.effectiveScale
                         verticalAlignment: TextInput.AlignVCenter
                         color: Appearance.colors.colOnLayer1
                         font.pixelSize: Appearance.font.pixelSize.normal
@@ -137,18 +137,18 @@ import Quickshell
                 // Password Input
                 Rectangle {
                     Layout.fillWidth: true
-                    Layout.preferredHeight: 52
-                    radius: 8
+                    Layout.preferredHeight: 52 * Appearance.effectiveScale
+                    radius: 8 * Appearance.effectiveScale
                     color: "transparent"
-                    border.width: hiddenPassInput.activeFocus ? 2 : 1
+                    border.width: hiddenPassInput.activeFocus ? Math.max(1, 2 * Appearance.effectiveScale) : Math.max(1, 1 * Appearance.effectiveScale)
                     border.color: hiddenPassInput.activeFocus ? Appearance.m3colors.m3primary : Appearance.m3colors.m3outline
 
                     // Floating Label
                     Rectangle {
-                        x: 12
-                        y: -8
-                        width: passLabel.width + 8
-                        height: 16
+                        x: 12 * Appearance.effectiveScale
+                        y: -8 * Appearance.effectiveScale
+                        width: passLabel.width + 8 * Appearance.effectiveScale
+                        height: 16 * Appearance.effectiveScale
                         color: Appearance.m3colors.m3surfaceContainerHigh
                         
                         StyledText {
@@ -163,8 +163,8 @@ import Quickshell
 
                     RowLayout {
                         anchors.fill: parent
-                        anchors.leftMargin: 16
-                        anchors.rightMargin: 8
+                        anchors.leftMargin: 16 * Appearance.effectiveScale
+                        anchors.rightMargin: 8 * Appearance.effectiveScale
                         
                         TextInput {
                             id: hiddenPassInput
@@ -185,15 +185,15 @@ import Quickshell
                         }
 
                         RippleButton {
-                            implicitWidth: 32
-                            implicitHeight: 32
-                            buttonRadius: 16
+                            implicitWidth: 32 * Appearance.effectiveScale
+                            implicitHeight: 32 * Appearance.effectiveScale
+                            buttonRadius: 16 * Appearance.effectiveScale
                             colBackground: "transparent"
                             onClicked: addNetworkDialog.showPassword = !addNetworkDialog.showPassword
                             contentItem: MaterialSymbol {
                                 anchors.centerIn: parent
                                 text: addNetworkDialog.showPassword ? "visibility_off" : "visibility"
-                                iconSize: 20
+                                iconSize: 20 * Appearance.effectiveScale
                                 color: Appearance.colors.colSubtext
                             }
                         }
@@ -205,23 +205,23 @@ import Quickshell
             MouseArea {
                 id: hiddenToggleArea
                 Layout.fillWidth: true
-                Layout.preferredHeight: 32
+                Layout.preferredHeight: 32 * Appearance.effectiveScale
                 cursorShape: Qt.PointingHandCursor
                 onClicked: addNetworkDialog.isHidden = !addNetworkDialog.isHidden
                 
                 RowLayout {
                     anchors.fill: parent
-                    spacing: 8
+                    spacing: 8 * Appearance.effectiveScale
                     
                     RippleButton {
-                        implicitWidth: 32
-                        implicitHeight: 32
-                        buttonRadius: 8
+                        implicitWidth: 32 * Appearance.effectiveScale
+                        implicitHeight: 32 * Appearance.effectiveScale
+                        buttonRadius: 8 * Appearance.effectiveScale
                         colBackground: "transparent"
                         contentItem: MaterialSymbol {
                             anchors.centerIn: parent
                             text: addNetworkDialog.isHidden ? "check_box" : "check_box_outline_blank"
-                            iconSize: 20
+                            iconSize: 20 * Appearance.effectiveScale
                             color: addNetworkDialog.isHidden ? Appearance.colors.colPrimary : Appearance.colors.colSubtext
                         }
                     }
@@ -239,15 +239,15 @@ import Quickshell
             // Actions
             RowLayout {
                 Layout.fillWidth: true
-                Layout.topMargin: 12
-                spacing: 12
+                Layout.topMargin: 12 * Appearance.effectiveScale
+                spacing: 12 * Appearance.effectiveScale
                 
                 Item { Layout.fillWidth: true }
                 
                 RippleButton {
                     buttonText: "Cancel"
-                    implicitWidth: 100
-                    implicitHeight: 40
+                    implicitWidth: 100 * Appearance.effectiveScale
+                    implicitHeight: 40 * Appearance.effectiveScale
                     buttonRadius: Appearance.rounding.button
                     colBackground: "transparent"
                     colBackgroundHover: Appearance.colors.colLayer2Hover
@@ -256,8 +256,8 @@ import Quickshell
                 
                 RippleButton {
                     buttonText: "Connect"
-                    implicitWidth: 100
-                    implicitHeight: 40
+                    implicitWidth: 100 * Appearance.effectiveScale
+                    implicitHeight: 40 * Appearance.effectiveScale
                     buttonRadius: Appearance.rounding.button
                     colBackground: Appearance.colors.colPrimary
                     colText: Appearance.colors.colOnPrimary

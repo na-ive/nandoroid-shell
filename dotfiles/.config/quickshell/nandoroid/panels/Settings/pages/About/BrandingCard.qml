@@ -17,8 +17,8 @@ Rectangle {
     property string logoSource: ""
     property bool isSystemIcon: false
 
-    implicitHeight: 180
-    radius: 24
+    implicitHeight: 180 * Appearance.effectiveScale
+    radius: 24 * Appearance.effectiveScale
     color: Appearance.m3colors.m3surfaceContainerHigh
     
     layer.enabled: true
@@ -45,8 +45,8 @@ Rectangle {
 
     ColumnLayout {
         anchors.fill: parent
-        anchors.margins: 20
-        spacing: 4
+        anchors.margins: 20 * Appearance.effectiveScale
+        spacing: 4 * Appearance.effectiveScale
 
         StyledText {
             text: title
@@ -59,11 +59,11 @@ Rectangle {
 
         RowLayout {
             Layout.fillWidth: true
-            spacing: 12
+            spacing: 12 * Appearance.effectiveScale
 
             ColumnLayout {
                 Layout.fillWidth: true
-                spacing: 4
+                spacing: 4 * Appearance.effectiveScale
 
                 StyledText {
                     text: name
@@ -75,10 +75,10 @@ Rectangle {
                 }
 
                 RowLayout {
-                    spacing: 6
+                    spacing: 6 * Appearance.effectiveScale
                     MaterialSymbol {
                         text: icon
-                        iconSize: 16
+                        iconSize: 16 * Appearance.effectiveScale
                         color: accentColor
                     }
                     StyledText {
@@ -93,8 +93,8 @@ Rectangle {
 
             // Distribution / Shell Logo
             Loader {
-                Layout.preferredWidth: 64
-                Layout.preferredHeight: 64
+                Layout.preferredWidth: 64 * Appearance.effectiveScale
+                Layout.preferredHeight: 64 * Appearance.effectiveScale
                 active: logoSource !== ""
                 sourceComponent: isSystemIcon ? sysIconComp : localIconComp
                 
@@ -102,7 +102,7 @@ Rectangle {
                     id: sysIconComp
                     IconImage {
                         source: Quickshell.iconPath(logoSource)
-                        width: 64; height: 64
+                        width: 64 * Appearance.effectiveScale; height: 64 * Appearance.effectiveScale
                     }
                 }
                 
@@ -110,8 +110,8 @@ Rectangle {
                     id: localIconComp
                     Image {
                         source: logoSource
-                        width: 64; height: 64
-                        sourceSize: Qt.size(128, 128) // Higher res for scaling
+                        width: 64 * Appearance.effectiveScale; height: 64 * Appearance.effectiveScale
+                        sourceSize: Qt.size(128 * Appearance.effectiveScale, 128 * Appearance.effectiveScale) // Higher res for scaling
                         fillMode: Image.PreserveAspectFit
                         opacity: 0.8
                     }

@@ -30,29 +30,29 @@ Item {
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: 0
-        spacing: 24
+        spacing: 24 * Appearance.effectiveScale
 
         // ── Header ──
         ColumnLayout {
-            spacing: 4
+            spacing: 4 * Appearance.effectiveScale
             Layout.fillWidth: true
             
             RowLayout {
                 Layout.fillWidth: true
-                spacing: 12
+                spacing: 12 * Appearance.effectiveScale
 
                 // Back Button (only in sub-pages)
                 RippleButton {
                     visible: root.currentView !== "main"
-                    implicitWidth: 40
-                    implicitHeight: 40
-                    buttonRadius: 20
+                    implicitWidth: 40 * Appearance.effectiveScale
+                    implicitHeight: 40 * Appearance.effectiveScale
+                    buttonRadius: 20 * Appearance.effectiveScale
                     colBackground: Appearance.colors.colLayer1
                     onClicked: root.currentView = "main"
                     contentItem: MaterialSymbol {
                         anchors.centerIn: parent
                         text: "arrow_back"
-                        iconSize: 24
+                        iconSize: 24 * Appearance.effectiveScale
                         color: Appearance.colors.colOnLayer1
                     }
                 }
@@ -72,20 +72,20 @@ Item {
                 
                 RowLayout {
                     visible: root.currentView === "main"
-                    spacing: 12
+                    spacing: 12 * Appearance.effectiveScale
                     
                     // Refresh Button
                     RippleButton {
-                        implicitWidth: 40
-                        implicitHeight: 40
-                        buttonRadius: 20
+                        implicitWidth: 40 * Appearance.effectiveScale
+                        implicitHeight: 40 * Appearance.effectiveScale
+                        buttonRadius: 20 * Appearance.effectiveScale
                         colBackground: Appearance.colors.colLayer1
                         onClicked: Network.rescanWifi()
                         
                         MaterialSymbol {
                             anchors.centerIn: parent
                             text: "refresh"
-                            iconSize: 20
+                            iconSize: 20 * Appearance.effectiveScale
                             color: Appearance.colors.colOnLayer1
                             
                             RotationAnimation on rotation {
@@ -101,34 +101,34 @@ Item {
 
                     // Add Network Button
                     RippleButton {
-                        implicitWidth: 40
-                        implicitHeight: 40
-                        buttonRadius: 20
+                        implicitWidth: 40 * Appearance.effectiveScale
+                        implicitHeight: 40 * Appearance.effectiveScale
+                        buttonRadius: 20 * Appearance.effectiveScale
                         colBackground: Appearance.colors.colLayer1
                         onClicked: addNetworkDialog.open()
                         contentItem: MaterialSymbol {
                             anchors.centerIn: parent
                             text: "add"
-                            iconSize: 20
+                            iconSize: 20 * Appearance.effectiveScale
                             color: Appearance.colors.colOnLayer1
                         }
                     }
 
                     // Global WiFi Toggle
                     Rectangle {
-                        implicitWidth: 52
-                        implicitHeight: 28
-                        radius: 14
+                        implicitWidth: 52 * Appearance.effectiveScale
+                        implicitHeight: 28 * Appearance.effectiveScale
+                        radius: 14 * Appearance.effectiveScale
                         color: Network.wifiEnabled
                             ? Appearance.colors.colPrimary
                             : Appearance.colors.colLayer2
 
                         Rectangle {
-                            width: 20
-                            height: 20
-                            radius: 10
+                            width: 20 * Appearance.effectiveScale
+                            height: 20 * Appearance.effectiveScale
+                            radius: 10 * Appearance.effectiveScale
                             anchors.verticalCenter: parent.verticalCenter
-                            x: Network.wifiEnabled ? parent.width - width - 4 : 4
+                            x: Network.wifiEnabled ? parent.width - width - 4 * Appearance.effectiveScale : 4 * Appearance.effectiveScale
                             color: Network.wifiEnabled
                                 ? Appearance.colors.colOnPrimary
                                 : Appearance.colors.colSubtext
@@ -169,7 +169,7 @@ Item {
             ColumnLayout {
                 id: contentCol
                 width: parent.width
-                spacing: 24
+                spacing: 24 * Appearance.effectiveScale
 
                 NetworkMainView {
                     id: mainViewCol
@@ -193,24 +193,24 @@ Item {
         RowLayout {
             id: bottomManagementRow
             Layout.fillWidth: true
-            Layout.margins: 16
+            Layout.margins: 16 * Appearance.effectiveScale
             Layout.topMargin: 0
-            spacing: 12
+            spacing: 12 * Appearance.effectiveScale
             visible: root.currentView === "main"
 
             RippleButton {
                 Layout.fillWidth: true
-                Layout.preferredHeight: 48
-                buttonRadius: 16
+                Layout.preferredHeight: 48 * Appearance.effectiveScale
+                buttonRadius: 16 * Appearance.effectiveScale
                 colBackground: Appearance.colors.colLayer1
                 onClicked: root.currentView = "wired"
                 
                 RowLayout {
                     anchors.centerIn: parent
-                    spacing: 8
+                    spacing: 8 * Appearance.effectiveScale
                     MaterialSymbol {
                         text: "lan"
-                        iconSize: 20
+                        iconSize: 20 * Appearance.effectiveScale
                         color: Appearance.colors.colOnLayer1
                     }
                     StyledText {
@@ -223,17 +223,17 @@ Item {
 
             RippleButton {
                 Layout.fillWidth: true
-                Layout.preferredHeight: 48
-                buttonRadius: 16
+                Layout.preferredHeight: 48 * Appearance.effectiveScale
+                buttonRadius: 16 * Appearance.effectiveScale
                 colBackground: Appearance.colors.colLayer1
                 onClicked: root.currentView = "saved"
                 
                 RowLayout {
                     anchors.centerIn: parent
-                    spacing: 8
+                    spacing: 8 * Appearance.effectiveScale
                     MaterialSymbol {
                         text: "history"
-                        iconSize: 20
+                        iconSize: 20 * Appearance.effectiveScale
                         color: Appearance.colors.colOnLayer1
                     }
                     StyledText {

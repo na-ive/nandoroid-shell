@@ -10,16 +10,16 @@ import Quickshell.Bluetooth
 import QtQuick.Shapes
 
 ColumnLayout {
-            spacing: 24
+            spacing: 24 * Appearance.effectiveScale
             
 
             // Header
             RowLayout {
-                spacing: 16
+                spacing: 16 * Appearance.effectiveScale
                 RippleButton {
-                    implicitWidth: 40
-                    implicitHeight: 40
-                    buttonRadius: 20
+                    implicitWidth: 40 * Appearance.effectiveScale
+                    implicitHeight: 40 * Appearance.effectiveScale
+                    buttonRadius: 20 * Appearance.effectiveScale
                     colBackground: "transparent"
                     onClicked: {
                         BluetoothStatus.stopDiscovery();
@@ -28,7 +28,7 @@ ColumnLayout {
                     MaterialSymbol {
                         anchors.centerIn: parent
                         text: "arrow_back"
-                        iconSize: 24
+                        iconSize: 24 * Appearance.effectiveScale
                         color: Appearance.colors.colOnLayer1
                     }
                 }
@@ -50,7 +50,7 @@ ColumnLayout {
 
             // Local Info
             ColumnLayout {
-                spacing: 4
+                spacing: 4 * Appearance.effectiveScale
                 StyledText {
                     text: "Device name"
                     font.pixelSize: Appearance.font.pixelSize.normal
@@ -67,7 +67,7 @@ ColumnLayout {
             // Available Devices Section
             RowLayout {
                 Layout.fillWidth: true
-                Layout.topMargin: 12
+                Layout.topMargin: 12 * Appearance.effectiveScale
                 StyledText {
                     text: "Available devices"
                     font.pixelSize: Appearance.font.pixelSize.large
@@ -77,8 +77,8 @@ ColumnLayout {
                 }
                 // Solid Arc Spinner
                 Item {
-                    implicitWidth: 24
-                    implicitHeight: 24
+                    implicitWidth: 24 * Appearance.effectiveScale
+                    implicitHeight: 24 * Appearance.effectiveScale
                     visible: BluetoothStatus.enabled
 
                     Shape {
@@ -89,12 +89,12 @@ ColumnLayout {
                         ShapePath {
                             fillColor: "transparent"
                             strokeColor: Appearance.colors.colPrimary
-                            strokeWidth: 3
+                            strokeWidth: 3 * Appearance.effectiveScale
                             capStyle: ShapePath.RoundCap
                             
                             PathAngleArc {
-                                centerX: 12; centerY: 12
-                                radiusX: 9; radiusY: 9
+                                centerX: 12 * Appearance.effectiveScale; centerY: 12 * Appearance.effectiveScale
+                                radiusX: 9 * Appearance.effectiveScale; radiusY: 9 * Appearance.effectiveScale
                                 startAngle: -90
                                 sweepAngle: 270
                             }
@@ -114,22 +114,22 @@ ColumnLayout {
             Rectangle {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                radius: 16
+                radius: 16 * Appearance.effectiveScale
                 color: Appearance.colors.colLayer1
                 clip: true
 
                 ListView {
                     id: unpairedList
                     anchors.fill: parent
-                    anchors.margins: 8
+                    anchors.margins: 8 * Appearance.effectiveScale
                     clip: true
-                    spacing: 4
+                    spacing: 4 * Appearance.effectiveScale
                     model: BluetoothStatus.unpairedDevices
 
                     delegate: RippleButton {
                         width: unpairedList.width
-                        implicitHeight: 64
-                        buttonRadius: 16
+                        implicitHeight: 64 * Appearance.effectiveScale
+                        buttonRadius: 16 * Appearance.effectiveScale
                         colBackground: "transparent"
                         onClicked: {
                             BluetoothStatus.pairAndTrust(modelData);
@@ -138,9 +138,9 @@ ColumnLayout {
 
                         RowLayout {
                             anchors.fill: parent
-                            anchors.leftMargin: 16
-                            anchors.rightMargin: 16
-                            spacing: 16
+                            anchors.leftMargin: 16 * Appearance.effectiveScale
+                            anchors.rightMargin: 16 * Appearance.effectiveScale
+                            spacing: 16 * Appearance.effectiveScale
 
                             MaterialSymbol {
                                 text: {
@@ -150,7 +150,7 @@ ColumnLayout {
                                     if (type === "audio-card") return "headset";
                                     return "bluetooth";
                                 }
-                                iconSize: 24
+                                iconSize: 24 * Appearance.effectiveScale
                                 color: Appearance.colors.colSubtext
                             }
 

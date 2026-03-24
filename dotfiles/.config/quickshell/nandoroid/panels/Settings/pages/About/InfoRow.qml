@@ -7,16 +7,16 @@ SegmentedWrapper {
     property string label
     property string value
     Layout.fillWidth: true
-    Layout.preferredHeight: 52
+    Layout.preferredHeight: 52 * Appearance.effectiveScale
     orientation: Qt.Vertical
-    maxRadius: 20
+    maxRadius: 20 * Appearance.effectiveScale
     color: Appearance.m3colors.m3surfaceContainerHigh
     
     RowLayout {
         anchors.fill: parent
-        anchors.leftMargin: 20
-        anchors.rightMargin: 20
-        spacing: 20
+        anchors.leftMargin: 20 * Appearance.effectiveScale
+        anchors.rightMargin: 20 * Appearance.effectiveScale
+        spacing: 20 * Appearance.effectiveScale
 
         StyledText {
             text: label
