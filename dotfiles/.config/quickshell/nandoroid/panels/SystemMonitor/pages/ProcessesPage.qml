@@ -150,7 +150,7 @@ Item {
             opacity: 0.98
             radius: Appearance.rounding.normal
             border.color: Appearance.colors.colOutlineVariant
-            border.width: 1
+            border.width: Math.max(1, 1 * Appearance.effectiveScale)
         }
 
         component StyledMenuItem: MenuItem {
@@ -159,7 +159,7 @@ Item {
             implicitHeight: Appearance.sizes.contextMenuItemHeight
             
             contentItem: RowLayout {
-                spacing: 12
+                spacing: 12 * Appearance.effectiveScale
                 MaterialSymbol {
                     text: {
                         if (menuItem.text.includes("Kill")) return "delete_forever";
@@ -183,13 +183,13 @@ Item {
             
             background: Rectangle {
                 anchors.fill: parent
-                anchors.margins: 4
+                anchors.margins: 4 * Appearance.effectiveScale
                 color: menuItem.highlighted ? Functions.ColorUtils.applyAlpha(Appearance.colors.colPrimary, 0.12) : "transparent"
                 radius: Appearance.rounding.small
             }
         }
         
-        padding: 6
+        padding: 6 * Appearance.effectiveScale
 
         StyledMenuItem {
             text: "Stop (Pause)"
@@ -202,11 +202,11 @@ Item {
         
         MenuSeparator {
             contentItem: Rectangle { 
-                implicitHeight: 1 
+                implicitHeight: Math.max(1, 1 * Appearance.effectiveScale) 
                 color: Appearance.colors.colOutlineVariant 
                 opacity: 0.3
-                Layout.leftMargin: 12 
-                Layout.rightMargin: 12 
+                Layout.leftMargin: 12 * Appearance.effectiveScale 
+                Layout.rightMargin: 12 * Appearance.effectiveScale 
             }
         }
 
@@ -222,11 +222,11 @@ Item {
 
         MenuSeparator {
             contentItem: Rectangle { 
-                implicitHeight: 1 
+                implicitHeight: Math.max(1, 1 * Appearance.effectiveScale) 
                 color: Appearance.colors.colOutlineVariant 
                 opacity: 0.3
-                Layout.leftMargin: 12 
-                Layout.rightMargin: 12 
+                Layout.leftMargin: 12 * Appearance.effectiveScale 
+                Layout.rightMargin: 12 * Appearance.effectiveScale 
             }
         }
 

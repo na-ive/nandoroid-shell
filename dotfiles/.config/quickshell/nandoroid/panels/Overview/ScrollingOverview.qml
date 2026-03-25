@@ -179,7 +179,7 @@ Rectangle {
         RowLayout {
             id: mainContentRow
             Layout.alignment: Qt.AlignHCenter
-            spacing: 12
+            spacing: 12 * Appearance.effectiveScale
 
             Item {
                 id: flickableContainer

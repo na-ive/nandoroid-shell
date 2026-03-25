@@ -14,8 +14,8 @@ Item {
     property string lineColor: Appearance.colors.colPrimary
     property string fillColor: Appearance.colors.colPrimary
     
-    implicitWidth: 200
-    implicitHeight: 60
+    implicitWidth: 200 * Appearance.effectiveScale
+    implicitHeight: 60 * Appearance.effectiveScale
     property real fillOpacity: 0.1
     property real lineWidth: 2 * Appearance.effectiveScale
     property bool inverted: false

@@ -137,7 +137,7 @@ Rectangle {
                             id: networkItem
                             Layout.fillWidth: true
                             implicitHeight: 56 * Appearance.effectiveScale
-                            buttonRadius: 16
+                            buttonRadius: 16 * Appearance.effectiveScale
                             colBackground: {
                                 if (delegateRoot.modelData.active) return Functions.ColorUtils.mix(Appearance.colors.colLayer0, Appearance.colors.colPrimary, 0.85);
                                 if (delegateRoot.modelData.askingPassword) return Appearance.colors.colLayer2;
@@ -173,16 +173,16 @@ Rectangle {
                                 Rectangle {
                                     anchors.bottom: parent.bottom
                                     width: parent.width
-                                    height: 12
+                                    height: 12 * Appearance.effectiveScale
                                     color: parent.color
                                 }
                             }
 
                             contentItem: RowLayout {
                                 anchors.fill: parent
-                                anchors.leftMargin: 12
-                                anchors.rightMargin: 12
-                                spacing: 12
+                                anchors.leftMargin: 12 * Appearance.effectiveScale
+                                anchors.rightMargin: 12 * Appearance.effectiveScale
+                                spacing: 12 * Appearance.effectiveScale
 
                                 MaterialSymbol {
                                     text: {
@@ -225,7 +225,7 @@ Rectangle {
                                 MaterialSymbol {
                                     visible: delegateRoot.modelData.isSecure && !delegateRoot.modelData.active
                                     text: "lock"
-                                    iconSize: 18
+                                    iconSize: 18 * Appearance.effectiveScale
                                     color: Appearance.colors.colSubtext
                                 }
                             }
@@ -247,7 +247,7 @@ Rectangle {
                             // Merge with header by making top square
                             Rectangle {
                                 width: parent.width
-                                height: 12
+                                height: 12 * Appearance.effectiveScale
                                 color: parent.color
                                 visible: delegateRoot.modelData.askingPassword
                                 anchors.top: parent.top
@@ -256,11 +256,11 @@ Rectangle {
 
                             RowLayout {
                                 anchors.fill: parent
-                                anchors.leftMargin: 12
-                                anchors.rightMargin: 12
-                                anchors.topMargin: 8
-                                anchors.bottomMargin: 8
-                                spacing: 8
+                                anchors.leftMargin: 12 * Appearance.effectiveScale
+                                anchors.rightMargin: 12 * Appearance.effectiveScale
+                                anchors.topMargin: 8 * Appearance.effectiveScale
+                                anchors.bottomMargin: 8 * Appearance.effectiveScale
+                                spacing: 8 * Appearance.effectiveScale
 
 
                                 // Password Input Field
@@ -271,13 +271,13 @@ Rectangle {
                                     visible: delegateRoot.modelData.isSecure
                                     color: Appearance.colors.colLayer1
                                     border.color: passwordInput.activeFocus ? Appearance.colors.colPrimary : "transparent"
-                                    border.width: 1
+                                    border.width: Math.max(1, 1 * Appearance.effectiveScale)
 
                                     RowLayout {
                                         anchors.fill: parent
-                                        anchors.leftMargin: 12
-                                        anchors.rightMargin: 4
-                                        spacing: 8
+                                        anchors.leftMargin: 12 * Appearance.effectiveScale
+                                        anchors.rightMargin: 4 * Appearance.effectiveScale
+                                        spacing: 8 * Appearance.effectiveScale
 
                                         TextInput {
                                             id: passwordInput
@@ -307,15 +307,15 @@ Rectangle {
                                         RippleButton {
                                             id: showPasswordBtn
                                             property bool revealed: false
-                                            implicitWidth: 32
-                                            implicitHeight: 32
-                                            buttonRadius: 16
+                                            implicitWidth: 32 * Appearance.effectiveScale
+                                            implicitHeight: 32 * Appearance.effectiveScale
+                                            buttonRadius: 16 * Appearance.effectiveScale
                                             colBackground: "transparent"
                                             onClicked: revealed = !revealed
                                             MaterialSymbol {
                                                 anchors.centerIn: parent
                                                 text: showPasswordBtn.revealed ? "visibility" : "visibility_off"
-                                                iconSize: 18
+                                                iconSize: 18 * Appearance.effectiveScale
                                                 color: showPasswordBtn.revealed ? Appearance.colors.colPrimary : Appearance.colors.colSubtext
                                             }
                                         }

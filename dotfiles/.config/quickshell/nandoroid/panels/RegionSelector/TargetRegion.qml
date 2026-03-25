@@ -16,12 +16,12 @@ Rectangle {
     property color borderColor
     property color fillColor: "transparent"
     property string text: ""
-    property real textPadding: 10
+    property real textPadding: 10 * Appearance.effectiveScale
     z: 2
     color: fillColor
     border.color: borderColor
-    border.width: targeted ? 4 : 2
-    radius: 4
+    border.width: (targeted ? 4 : 2) * Appearance.effectiveScale
+    radius: 4 * Appearance.effectiveScale
 
     Behavior on color {
         ColorAnimation { duration: 100 }
@@ -47,11 +47,11 @@ Rectangle {
         
         active: root.showLabel
         sourceComponent: Rectangle {
-            property real verticalPadding: 5
-            property real horizontalPadding: 10
-            radius: 10
+            property real verticalPadding: 5 * Appearance.effectiveScale
+            property real horizontalPadding: 10 * Appearance.effectiveScale
+            radius: 10 * Appearance.effectiveScale
             color: root.colBackground
-            border.width: 1
+            border.width: Math.max(1, 1 * Appearance.effectiveScale)
             border.color: Appearance.colors.colOutlineVariant
             implicitWidth: regionInfoRow.implicitWidth + horizontalPadding * 2
             implicitHeight: regionInfoRow.implicitHeight + verticalPadding * 2
@@ -59,7 +59,7 @@ Rectangle {
             Row {
                 id: regionInfoRow
                 anchors.centerIn: parent
-                spacing: 4
+                spacing: 4 * Appearance.effectiveScale
 
                 Text {
                     id: regionText

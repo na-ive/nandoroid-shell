@@ -22,18 +22,18 @@ ColumnLayout {
             ColumnLayout {
                 id: launcherIconsSection
                 Layout.fillWidth: true
-                Layout.topMargin: 12
-                spacing: 16
+                Layout.topMargin: 12 * Appearance.effectiveScale
+                spacing: 16 * Appearance.effectiveScale
                 
                 property bool showAllShapes: false
                 readonly property var allShapes: ["Square", "Circle", "Diamond", "Pill", "Clover4Leaf", "Burst", "Heart", "Flower", "Arch", "Fan", "Gem", "Sunny", "VerySunny", "Slanted", "Arrow", "SemiCircle", "Oval", "ClamShell", "Pentagon", "Ghostish", "Clover8Leaf", "SoftBurst", "Boom", "SoftBoom", "Puffy", "PuffyDiamond", "Bun", "Cookie4Sided", "Cookie6Sided", "Cookie7Sided", "Cookie9Sided", "Cookie12Sided", "PixelCircle", "PixelTriangle", "Triangle"]
     
                 RowLayout {
-                    spacing: 12
-                    Layout.bottomMargin: 4
+                    spacing: 12 * Appearance.effectiveScale
+                    Layout.bottomMargin: 4 * Appearance.effectiveScale
                     MaterialSymbol {
                         text: "apps"
-                        iconSize: 24
+                        iconSize: 24 * Appearance.effectiveScale
                         color: Appearance.colors.colPrimary
                     }
                     StyledText {
@@ -47,21 +47,21 @@ ColumnLayout {
                 GridLayout {
                     Layout.fillWidth: true
                     columns: 4
-                    rowSpacing: 12
-                    columnSpacing: 12
-                    Layout.leftMargin: 4
-                    Layout.rightMargin: 4
+                    rowSpacing: 12 * Appearance.effectiveScale
+                    columnSpacing: 12 * Appearance.effectiveScale
+                    Layout.leftMargin: 4 * Appearance.effectiveScale
+                    Layout.rightMargin: 4 * Appearance.effectiveScale
     
                     Repeater {
                         model: parent.parent.showAllShapes ? parent.parent.allShapes : parent.parent.allShapes.slice(0, 8)
                         delegate: RippleButton {
                             id: shapeBtn
                             Layout.fillWidth: true
-                            Layout.preferredHeight: 84
+                            Layout.preferredHeight: 84 * Appearance.effectiveScale
                             
                             readonly property bool isSelected: Config.ready && Config.options.search.iconShape === modelData
                             
-                            buttonRadius: isSelected ? 14 : 28
+                            buttonRadius: (isSelected ? 14 : 28) * Appearance.effectiveScale
                             colBackground: isSelected ? Appearance.m3colors.m3primaryContainer : Appearance.m3colors.m3surfaceContainerHigh
                             colRipple: Appearance.m3colors.m3primary
                             
@@ -69,18 +69,18 @@ ColumnLayout {
                             
                             ColumnLayout {
                                 anchors.centerIn: parent
-                                spacing: 8
+                                spacing: 8 * Appearance.effectiveScale
                                 MaterialShape {
                                     Layout.alignment: Qt.AlignHCenter
-                                    Layout.preferredWidth: 32
-                                    Layout.preferredHeight: 32
+                                    Layout.preferredWidth: 32 * Appearance.effectiveScale
+                                    Layout.preferredHeight: 32 * Appearance.effectiveScale
                                     shapeString: modelData
                                     color: shapeBtn.isSelected ? Appearance.colors.colNotchText : Appearance.m3colors.m3onSurfaceVariant
                                 }
                                 StyledText {
                                     Layout.alignment: Qt.AlignHCenter
                                     text: modelData
-                                    font.pixelSize: 10
+                                    font.pixelSize: 10 * Appearance.effectiveScale
                                     font.weight: shapeBtn.isSelected ? Font.Bold : Font.Normal
                                     color: shapeBtn.isSelected ? Appearance.colors.colNotchText : Appearance.m3colors.m3onSurface
                                 }
@@ -92,17 +92,17 @@ ColumnLayout {
                 // More / Less Toggle Button (Bluetooth Style)
                 RippleButton {
                     Layout.fillWidth: true
-                    Layout.preferredHeight: 48
-                    buttonRadius: 16
+                    Layout.preferredHeight: 48 * Appearance.effectiveScale
+                    buttonRadius: 16 * Appearance.effectiveScale
                     colBackground: Appearance.m3colors.m3surfaceContainerHigh
                     onClicked: launcherIconsSection.showAllShapes = !launcherIconsSection.showAllShapes
                     
                     RowLayout {
                         anchors.centerIn: parent
-                        spacing: 8
+                        spacing: 8 * Appearance.effectiveScale
                         MaterialSymbol {
                             text: launcherIconsSection.showAllShapes ? "expand_less" : "expand_more"
-                            iconSize: 20
+                            iconSize: 20 * Appearance.effectiveScale
                             color: Appearance.colors.colPrimary
                         }
                         StyledText {
