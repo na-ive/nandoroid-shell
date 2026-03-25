@@ -14,6 +14,7 @@ import Quickshell.Hyprland
  * Quick Actions view — Floating HUD style for the bottom.
  * Large version (Original scale).
  * Wrapped in FocusScope for reliable keyboard navigation.
+ * Features animated tab-style highlight.
  */
 FocusScope {
     id: root
@@ -21,7 +22,7 @@ FocusScope {
     
     property string position: "bottom"
     
-    // Total height of the bar (Increased to match large style)
+    // Total height of the bar
     implicitHeight: 72 * Appearance.effectiveScale
     implicitWidth: backgroundRect.width
 
@@ -29,6 +30,15 @@ FocusScope {
 
     property int currentIndex: 0
     property int totalItems: 11
+    
+    // Animated stretch-highlight properties (Dashboard style)
+    property int idx1: 0
+    property int idx2: 0
+    
+    onCurrentIndexChanged: {
+        idx1 = currentIndex
+        Qt.callLater(() => { idx2 = currentIndex })
+    }
 
     focus: true
     
@@ -155,6 +165,63 @@ FocusScope {
             corner: RoundCorner.CornerEnum.BottomLeft
         }
         
+        // --- Animated Tab Highlight ---
+        Rectangle {
+            id: tabHighlight
+            
+            readonly property real buttonWidth: 44 * Appearance.effectiveScale
+            readonly property real buttonHeight: 44 * Appearance.effectiveScale
+            readonly property real spacing: 8 * Appearance.effectiveScale
+            readonly property real separatorWidth: 1 * Appearance.effectiveScale
+            readonly property real separatorTotalMargin: 12 * Appearance.effectiveScale
+            
+            function getXForIndex(i) {
+                // Calculation based on layout spacing and fixed widths
+                // items 0, 1, 2
+                // separator (idx 2.5)
+                // items 3, 4, 5, 6
+                // separator (idx 6.5)
+                // items 7, 8, 9, 10
+                
+                let x = 20 * Appearance.effectiveScale // Starting margin
+                
+                for (let j = 0; indexCounter < i; indexCounter++) {
+                    // Logic needs to account for separators
+                }
+                
+                // Simpler: rely on Item positioning from the layout
+                const targetBtn = layout.children[i >= 7 ? i + 2 : (i >= 3 ? i + 1 : i)]
+                if (targetBtn) {
+                    const pos = targetBtn.mapToItem(backgroundRect, 0, 0)
+                    return pos.x
+                }
+                return 0
+            }
+            
+            // To make the mapToItem work reliably, we'll use properties mapped from the actual buttons
+            property real animX1: 0
+            property real animX2: 0
+            
+            readonly property Item targetBtn1: layout.children[idx1 >= 7 ? idx1 + 2 : (idx1 >= 3 ? idx1 + 1 : idx1)]
+            readonly property Item targetBtn2: layout.children[idx2 >= 7 ? idx2 + 2 : (idx2 >= 3 ? idx2 + 1 : idx2)]
+            
+            onTargetBtn1Changed: if (targetBtn1) animX1 = targetBtn1.x + layout.x
+            onTargetBtn2Changed: if (targetBtn2) animX2 = targetBtn2.x + layout.x
+            
+            x: Math.min(animX1, animX2)
+            width: Math.abs(animX2 - animX1) + buttonWidth
+            height: buttonHeight
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.verticalCenterOffset: -2 * Appearance.effectiveScale
+            radius: Appearance.rounding.button
+            
+            color: Appearance.m3colors.darkmode ? Appearance.colors.colNotchPrimary : Appearance.colors.colPrimaryContainer
+            visible: root.focus
+            
+            Behavior on animX1 { NumberAnimation { duration: 120; easing.type: Easing.OutSine } }
+            Behavior on animX2 { NumberAnimation { duration: 380; easing.type: Easing.OutCubic } }
+        }
+
         // --- Content Layout ---
         RowLayout {
             id: layout
@@ -167,6 +234,7 @@ FocusScope {
             ToolButton { idx: 2; iconName: "folder_open"; tooltip: "Open Screenshots"; onClicked: executeItem(2) }
             
             Rectangle {
+                id: sep1
                 width: 1 * Appearance.effectiveScale
                 height: 32 * Appearance.effectiveScale
                 color: Qt.rgba(1, 1, 1, 0.2)
@@ -180,6 +248,7 @@ FocusScope {
             ToolButton { idx: 6; iconName: "folder_managed"; tooltip: "Open Recordings"; onClicked: executeItem(6) }
 
             Rectangle {
+                id: sep2
                 width: 1 * Appearance.effectiveScale
                 height: 32 * Appearance.effectiveScale
                 color: Qt.rgba(1, 1, 1, 0.2)
@@ -205,11 +274,14 @@ FocusScope {
         buttonRadius: 22 * Appearance.effectiveScale
         iconSize: 24 * Appearance.effectiveScale
         
-        // Match workspace indicator color style
+        // Manual color handling: highlighted recording buttons stay colored
+        // Focused button gets dark text regardless of recording state
+        readonly property bool isFocused: root.currentIndex === idx && root.focus
+        
         readonly property color activeColor: Appearance.m3colors.darkmode ? Appearance.colors.colNotchPrimary : Appearance.colors.colPrimaryContainer
         
-        colBackground: (isHighlighted || (root.currentIndex === idx && root.focus)) ? activeColor : "transparent"
-        color: (isHighlighted || (root.currentIndex === idx && root.focus)) ? "#1E1E1E" : Qt.rgba(1, 1, 1, 0.7)
+        colBackground: isHighlighted ? activeColor : "transparent"
+        color: (isFocused || isHighlighted) ? "#1E1E1E" : Qt.rgba(1, 1, 1, 0.7)
         isM3Highlighted: false
         
         StyledToolTip {
