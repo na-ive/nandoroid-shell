@@ -86,6 +86,17 @@ FocusScope {
         root.closed(); 
     }
 
+    property string pendingFullScreenshotPath: ""
+    Process {
+        id: fullScreenshotProc
+        onExited: (exitCode, exitStatus) => {
+            if (exitCode === 0 && pendingFullScreenshotPath !== "") {
+                GlobalStates.screenshotTaken(pendingFullScreenshotPath);
+                pendingFullScreenshotPath = "";
+            }
+        }
+    }
+
     function openFolder(folderPath) {
         Quickshell.execDetached(["bash", "-c", `dir="${folderPath}"; mkdir -p "$dir"; xdg-open "$dir"`]);
         close();
@@ -112,8 +123,9 @@ FocusScope {
                         bashCmd = `mkdir -p "${tempDir}" && grim - | tee "${tempPath}" ${copyCmd} > /dev/null`;
                     }
                     
-                    Quickshell.execDetached(["bash", "-c", bashCmd]);
-                    GlobalStates.screenshotTaken(tempPath);
+                    root.pendingFullScreenshotPath = tempPath;
+                    fullScreenshotProc.command = ["bash", "-c", bashCmd];
+                    fullScreenshotProc.running = true;
                 });
                 break;
             case 1: // Region Screenshot
