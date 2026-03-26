@@ -10,7 +10,6 @@ A Quickshell-based desktop shell for Hyprland adopting Android 16 design element
 ## Key Features
 
 - **Universal Dynamic Island:** Displays media playback indicators, workspace switching, pomodoro timers, and popup notifications inside a single central notch.
-- **Android 16 Screenshot Overlay:** Modern floating preview with quick actions (Google Lens, Copy, Save, Delete) and dynamic aspect ratio thumbnails.
 - **Deep Customizability:** Extensive personalization options (clocks, lockscreen visuals, UI sizing) accessible directly via the built-in Settings panel.
 - **Auto-generated Colors:** Entire shell theme dynamically generated from your wallpaper's colors using Material 3 design tokens (via Matugen).
 - **Wallhaven Integration:** Browse, favorite, and apply thousands of high-quality wallpapers directly from the shell with infinite scroll and smart downloading.
