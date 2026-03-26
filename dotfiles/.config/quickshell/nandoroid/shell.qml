@@ -309,6 +309,11 @@ ShellRoot {
         description: "Records the selected region with sound"
         onPressed: regionSelector.recordWithSound()
     }
+    GlobalShortcut {
+        name: "regionQRCode"
+        description: "Scans a QR code in the selected region"
+        onPressed: regionSelector.qrcode()
+    }
 
     // ── Phase 15: Screenshot Overlay ──
     Variants {

@@ -90,6 +90,7 @@ The interactive installer guides you through dependency installation, config cop
 | **Search** | `fd` | Fast file search functionality in Spotlight. |
 | **Calculator** | `libqalculate` | Math calculator functionality in Spotlight (`qalc`). |
 | **Dialogs** | `zenity` | File and directory selection dialogs. |
+| **QR Scan** | `zbar` | QR code scanning functionality (`zbarimg`). |
 | **OCR (Opt.)** | `tesseract` | OCR functionality in region tools. |
 | **Biometric (Opt.)** | `fprintd` | Fingerprint sensor support on lockscreen. |
 | **VPN (Opt.)** | `warp-cli` | Cloudflare WARP client integration. |
@@ -162,6 +163,7 @@ Trigger selection-based actions.
 | **Region Screenshot** | `region` | `screenshot`      | `qs -c nandoroid ipc call region screenshot`      |
 | **Visual Search**     | `region` | `search`          | `qs -c nandoroid ipc call region search`          |
 | **Text OCR**          | `region` | `ocr`             | `qs -c nandoroid ipc call region ocr`             |
+| **QR Code Scan**      | `region` | `qrcode`          | `qs -c nandoroid ipc call region qrcode`          |
 | **Record Region**     | `region` | `record`          | `qs -c nandoroid ipc call region record`          |
 | **Record w/ Audio**   | `region` | `recordWithSound` | `qs -c nandoroid ipc call region recordWithSound` |
 
@@ -191,6 +193,7 @@ Nandoroid uses native Quickshell Global Shortcuts for specialized tool operation
 | `regionScreenshot`      | Capture selected region          | `bindd = SUPER, S, Region screenshot, global, quickshell:regionScreenshot`                 |
 | `regionOcr`             | Extract text from region         | `bindd = SUPER SHIFT, S, Region OCR, global, quickshell:regionOcr`                         |
 | `regionSearch`          | Visual search from region        | `bindd = SUPER, Z, Visual search, global, quickshell:regionSearch`                         |
+| `regionQRCode`          | Scan QR code from region         | `bindd = SUPER SHIFT, Z, Region QR scan, global, quickshell:regionQRCode`                  |
 | `regionRecord`          | Record selected region           | `bindd = SUPER, R, Record region, global, quickshell:regionRecord`                         |
 | `regionRecordWithSound` | Record region with audio         | `bindd = SUPER SHIFT, R, Record region w/ audio, global, quickshell:regionRecordWithSound` |
 
