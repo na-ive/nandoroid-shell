@@ -33,7 +33,9 @@ Singleton {
         id: checkProcess
         command: [
             "bash", "-c", 
-            "JSON_FILE=\"" + Directories.home + "/.config/quickshell/nandoroid/data/dependencies.json\"; " +
+            "HOME_PATH=\"" + Directories.home.toString().replace('file://', '') + "\"; " +
+            "JSON_FILE=\"$HOME_PATH/.config/quickshell/nandoroid/data/dependencies.json\"; " +
+            "if ! command -v jq >/dev/null 2>&1; then echo 'ERROR: jq not found'; exit 1; fi; " +
             "if [ ! -f \"$JSON_FILE\" ]; then echo 'ERROR: File not found'; exit 1; fi; " +
             "jq -c '.core[], .fonts[], .optional[]' \"$JSON_FILE\" | while read -r item; do " +
             "  name=$(echo \"$item\" | jq -r '.name'); " +
@@ -47,12 +49,17 @@ Singleton {
 
         stdout: StdioCollector {
             onStreamFinished: {
-                if (this.text.startsWith("ERROR")) {
+                if (this.text.includes("ERROR")) {
+                    console.error("[SysCheck] Error: " + this.text.trim());
                     root.isChecking = false;
                     return;
                 }
                 
                 const lines = this.text.split("\n").filter(line => line.trim() !== "");
+                if (lines.length === 0) {
+                    root.isChecking = false;
+                    return;
+                }
                 let newData = [];
                 let missing = 0;
                 
