@@ -1,4 +1,5 @@
 import QtQuick
+import Qt5Compat.GraphicalEffects
 import Quickshell
 import Quickshell.Services.SystemTray
 import Quickshell.Widgets
@@ -6,6 +7,10 @@ import "../../core"
 import "../../core/functions" as Functions
 import "../../widgets"
 
+/**
+ * System Tray Item with a solid halo (stroke-like) for maximum visibility.
+ * Optimized with caching and fixed icon sizing to prevent Steam icon distortion.
+ */
 MouseArea {
     id: root
     required property SystemTrayItem item
@@ -16,6 +21,7 @@ MouseArea {
     acceptedButtons: Qt.LeftButton | Qt.RightButton
     cursorShape: Qt.PointingHandCursor
     
+    // STRICT 16x16 layout to keep Steam icon original
     implicitWidth: 16 * Appearance.effectiveScale
     implicitHeight: 16 * Appearance.effectiveScale
 
@@ -28,14 +34,32 @@ MouseArea {
         event.accepted = true;
     }
 
-    IconImage {
-        id: trayIcon
-        source: (root.item && root.item.icon) ? root.item.icon : ""
-        visible: source !== ""
-        anchors.centerIn: parent
-        width: 16 * Appearance.effectiveScale
-        height: 16 * Appearance.effectiveScale
-        asynchronous: true
+    Item {
+        anchors.fill: parent
+        
+        IconImage {
+            id: trayIcon
+            source: (root.item && root.item.icon) ? root.item.icon : ""
+            visible: source !== ""
+            anchors.centerIn: parent
+            // Keep original 16x16 size
+            width: 16 * Appearance.effectiveScale
+            height: 16 * Appearance.effectiveScale
+            asynchronous: true
+            
+            // Apply a thick, solid-looking halo (stroke)
+            layer.enabled: true
+            layer.effect: DropShadow {
+                transparentBorder: true
+                horizontalOffset: 0
+                verticalOffset: 0
+                radius: 3 * Appearance.effectiveScale // Larger radius for thickness
+                samples: 12
+                spread: 0.5 // Medium spread makes it look like a soft stroke
+                color: Functions.ColorUtils.applyAlpha("#000000", 0.8)
+                cached: true // High performance
+            }
+        }
     }
 
     Loader {

@@ -306,7 +306,7 @@ Item {
                             clip: true; interactive: true
                             
                             // Memory optimization: Load only what's necessary (about 1.5 extra screen heights)
-                            cacheBuffer: height * 1.5
+                            cacheBuffer: Math.max(0, height * 1.5)
                             
                             model: mainSelector.wallhavenMode ? WallhavenService.results : (mainSelector.favMode ? favModel : Wallpapers.folderModel)
                             
