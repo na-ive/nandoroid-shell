@@ -346,7 +346,7 @@ ColumnLayout {
                                 spacing: 8 * Appearance.effectiveScale
                                 visible: Config.ready && advancedPanel.analogCfg.backgroundStyle === "shape"
                                 Repeater {
-                                    model: ["Circle", "Square", "Slanted", "Arch", "Fan", "Arrow", "SemiCircle", "Oval", "Pill", "Triangle", "Diamond", "ClamShell", "Pentagon", "Gem", "Sunny", "VerySunny", "Cookie4Sided", "Cookie6Sided", "Cookie9Sided", "Cookie12Sided", "Clover4Leaf", "Burst", "SoftBurst", "Flower", "Puffy", "Heart"]
+                                    model: ["Circle", "Square", "Slanted", "Oval", "Pill", "Triangle", "Diamond", "PuffyDiamond", "Pentagon", "Gem", "ClamShell", "Flower", "Ghostish", "Bun", "Heart", "Clover4Leaf", "Clover8Leaf", "Sunny", "VerySunny", "Burst", "SoftBurst", "Boom", "SoftBoom", "Cookie4Sided", "Cookie6Sided", "Cookie7Sided", "Cookie9Sided", "Cookie12Sided", "PixelCircle", "PixelTriangle"]
                                     delegate: RippleButton {
                                         required property string modelData
                                         width: 56 * Appearance.effectiveScale; height: 56 * Appearance.effectiveScale
