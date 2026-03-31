@@ -56,26 +56,62 @@ Variants {
         QuickActionsContent {
             id: content
             anchors.horizontalCenter: parent.horizontalCenter
-            position: "bottom"
+            anchors.bottom: parent.bottom
             
-            // Animation logic similar to launcher
-            y: (GlobalStates.quickActionsOpen && isActive) 
-                ? parent.height - height 
-                : parent.height
-            opacity: (GlobalStates.quickActionsOpen && isActive) ? 1 : 0
-            
-            Behavior on y {
-                NumberAnimation {
-                    duration: 300
-                    easing.bezierCurve: (GlobalStates.quickActionsOpen && isActive) 
-                        ? Appearance.animationCurves.emphasizedDecel 
-                        : Appearance.animationCurves.emphasized
+            // Initial state: pushed down by its own height
+            anchors.bottomMargin: -height
+            opacity: 0
+
+            states: [
+                State {
+                    name: "active"
+                    when: GlobalStates.quickActionsOpen && isActive
+                    PropertyChanges {
+                        target: content
+                        anchors.bottomMargin: 0
+                        opacity: 1
+                    }
                 }
-            }
-            
-            Behavior on opacity {
-                NumberAnimation { duration: 200 }
-            }
+            ]
+
+            transitions: [
+                Transition {
+                    from: ""
+                    to: "active"
+                    ParallelAnimation {
+                        NumberAnimation {
+                            target: content
+                            property: "anchors.bottomMargin"
+                            duration: 300
+                            easing.bezierCurve: Appearance.animationCurves.emphasizedDecel
+                        }
+                        NumberAnimation {
+                            target: content
+                            property: "opacity"
+                            duration: 200
+                        }
+                    }
+                },
+                Transition {
+                    from: "active"
+                    to: ""
+                    ParallelAnimation {
+                        NumberAnimation {
+                            target: content
+                            property: "anchors.bottomMargin"
+                            to: -content.height
+                            duration: 300
+                            easing.bezierCurve: Appearance.animationCurves.emphasized
+                        }
+                        NumberAnimation {
+                            target: content
+                            property: "opacity"
+                            to: 0
+                            duration: 200
+                        }
+                    }
+                }
+            ]
 
             onClosed: {
                 GlobalStates.quickActionsOpen = false;
