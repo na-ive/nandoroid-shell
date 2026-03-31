@@ -150,6 +150,13 @@ ShellRoot {
         }
     }
 
+    Connections {
+        target: Wallpapers
+        function onPickerFinished() {
+            GlobalStates.wallpaperSelectorOpen = true;
+        }
+    }
+
     IpcHandler {
         target: "settings"
         function open() { GlobalStates.activateSettings() }

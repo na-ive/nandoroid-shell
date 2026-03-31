@@ -19,8 +19,8 @@ Variants {
             screen: modelData
             exclusiveZone: 0
             WlrLayershell.namespace: "nandoroid:wallpaperselector"
-            WlrLayershell.layer: WlrLayer.Overlay
-            WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
+            WlrLayershell.layer: WlrLayer.Top
+            WlrLayershell.keyboardFocus: content.pickerActive ? WlrKeyboardFocus.None : WlrKeyboardFocus.OnDemand
             color: "transparent"
 
             anchors {

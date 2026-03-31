@@ -107,6 +107,7 @@ Singleton {
                     property string autoCycleDirectory: Directories.home + "/Pictures/Wallpapers"
                     property int autoCycleInterval: 30 // in minutes
                     property list<string> favorites: []
+                    property list<string> customFolders: []
                 }
                 property JsonObject screenCorners: JsonObject {
                     // mode: 0 (Off), 1 (On, hide on fullscreen), 2 (Always On)

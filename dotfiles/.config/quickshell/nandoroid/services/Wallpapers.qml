@@ -331,6 +331,46 @@ Singleton {
         }
     }
 
+    // --- Sorting ---
+    property int sortField: FolderListModel.Name
+    property bool sortReversed: false
+
+    // --- Folder Picker ---
+    Process {
+        id: folderPickerProc
+        command: ["zenity", "--file-selection", "--directory", "--title=Select Wallpaper Folder"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                const path = this.text.trim();
+                if (path !== "") {
+                    let current = (Config.options.appearance.background.customFolders || []).slice();
+                    if (!current.includes(path)) {
+                        current.push(path);
+                        Config.options.appearance.background.customFolders = current;
+                        root.customFoldersChanged();
+                    }
+                }
+                // Use a timer to ensure the process has fully detached before reopening UI
+                reopenTimer.start();
+            }
+        }
+    }
+
+    Timer {
+        id: reopenTimer
+        interval: 100
+        repeat: false
+        onTriggered: root.pickerFinished()
+    }
+
+    signal customFoldersChanged()
+    signal pickerFinished()
+
+    function browseFolder() {
+        GlobalStates.wallpaperSelectorOpen = false;
+        folderPickerProc.running = true;
+    }
+
     // Model for grid view
     property alias folderModel: model
     FolderListModel {
@@ -355,7 +395,8 @@ Singleton {
         }
         showDirs: false
         showDotAndDotDot: false
-        sortField: FolderListModel.Name
+        sortField: root.sortField
+        sortReversed: root.sortReversed
         onCountChanged: {
             if (count > 0 && root._autoCycleEnabled && root.autoCyclePending) {
                 root.autoCyclePending = false;
