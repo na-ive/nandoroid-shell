@@ -10,11 +10,28 @@ Revealer { // Scroll hint
     property bool hovered: false
     property color color: Appearance.colors.colStatusBarText
     
-    // Safety check for panel states
-    readonly property bool anyPanelOpen: GlobalStates.notificationCenterOpen || GlobalStates.quickSettingsOpen || GlobalStates.dashboardOpen || GlobalStates.overviewOpen
+    // Core logic: only show for a limited duration even if hovered
+    property bool durationActive: false
     
-    // Only show if hovered, no panel is covering it, and screen is NOT locked
-    reveal: hovered && !anyPanelOpen && !GlobalStates.screenLocked
+    // Reveal only if duration hasn't expired
+    reveal: hovered && durationActive
+    
+    onHoveredChanged: {
+        if (hovered) {
+            durationActive = true;
+            hideTimer.restart();
+        } else {
+            durationActive = false;
+            hideTimer.stop();
+        }
+    }
+
+    Timer {
+        id: hideTimer
+        interval: 3000
+        repeat: false
+        onTriggered: root.durationActive = false
+    }
     
     MouseArea {
         id: mouseArea
