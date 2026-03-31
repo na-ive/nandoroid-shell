@@ -718,6 +718,8 @@ ColumnLayout {
             Layout.fillWidth: true; spacing: 4 * Appearance.effectiveScale
             SegmentedWrapper {
                 Layout.fillWidth: true; implicitHeight: 64 * Appearance.effectiveScale; color: Appearance.m3colors.m3surfaceContainerHigh
+                orientation: Qt.Vertical
+                maxRadius: 20 * Appearance.effectiveScale
                 RowLayout {
                     anchors.fill: parent; anchors.margins: 16 * Appearance.effectiveScale
                     MaterialSymbol { text: "sync"; color: Appearance.colors.colPrimary }
@@ -735,6 +737,8 @@ ColumnLayout {
             }
             SegmentedWrapper {
                 Layout.fillWidth: true; implicitHeight: 64 * Appearance.effectiveScale; color: Appearance.m3colors.m3surfaceContainerHigh
+                orientation: Qt.Vertical
+                maxRadius: 20 * Appearance.effectiveScale
                 RowLayout {
                     anchors.fill: parent; anchors.margins: 16 * Appearance.effectiveScale
                     MaterialSymbol { text: "desktop_windows"; color: Appearance.colors.colPrimary }
@@ -744,6 +748,8 @@ ColumnLayout {
             }
             SegmentedWrapper {
                 Layout.fillWidth: true; implicitHeight: 64 * Appearance.effectiveScale; color: Appearance.m3colors.m3surfaceContainerHigh
+                orientation: Qt.Vertical
+                maxRadius: 20 * Appearance.effectiveScale
                 RowLayout {
                     anchors.fill: parent; anchors.margins: 16 * Appearance.effectiveScale
                     MaterialSymbol { text: "calendar_today"; color: Appearance.colors.colPrimary }
