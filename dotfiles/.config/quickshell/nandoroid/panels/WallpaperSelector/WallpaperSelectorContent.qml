@@ -211,6 +211,8 @@ Item {
                                     font.pixelSize: headerSearch.font.pixelSize
                                     color: Appearance.colors.colSubtext
                                     anchors.verticalCenter: parent.verticalCenter
+                                    anchors.verticalCenterOffset: 1 * Appearance.effectiveScale
+                                    verticalAlignment: Text.AlignVCenter
                                 }
                             }
                         }
