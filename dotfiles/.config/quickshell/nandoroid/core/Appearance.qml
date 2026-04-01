@@ -20,9 +20,8 @@ Singleton {
 
     function updateScale() {
         if (!Config.ready) {
-            // Try to guess scale from screen height even if config isn't ready
             const screenHeight = Quickshell.screens[0]?.height ?? 1080;
-            effectiveScale = Math.max(0.5, Math.min(2.5, screenHeight / 1080.0));
+            effectiveScale = Math.round(Math.max(0.5, Math.min(2.5, screenHeight / 1080.0)) * 20) / 20;
             return;
         }
         const appearance = Config.options.appearance;
@@ -30,7 +29,15 @@ Singleton {
         
         if (appearance.autoScale === true) {
             const screenHeight = Quickshell.screens[0]?.height ?? 1080;
-            effectiveScale = Math.max(0.5, Math.min(2.5, screenHeight / 1080.0));
+            const rawScale = Math.max(0.5, Math.min(2.5, screenHeight / 1080.0));
+            
+            if (screenHeight < 1000) {
+                // Low Res (720p, etc): Force 0.25 steps to ensure sharp pixels.
+                effectiveScale = Math.round(rawScale * 4) / 4;
+            } else {
+                // High Res (1080p, 2K, 4K): 0.05 steps for smooth & precise scaling.
+                effectiveScale = Math.round(rawScale * 20) / 20;
+            }
         } else {
             effectiveScale = appearance.globalScale ?? 1.0;
         }
