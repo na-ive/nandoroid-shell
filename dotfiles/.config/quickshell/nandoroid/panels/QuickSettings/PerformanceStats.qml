@@ -193,7 +193,7 @@ Rectangle {
                     anchors.centerIn: parent
                     text: statItem.isTemperature ? (statItem.value > 0 ? `${Math.round(statItem.value)}°C` : "--") : `${Math.round(statItem.value * 100)}%`
                     font.pixelSize: 10 * Appearance.effectiveScale
-                    font.weight: Font.Black
+                    font.weight: Font.DemiBold
                     color: Appearance.m3colors.m3onSurface
                 }
             }
