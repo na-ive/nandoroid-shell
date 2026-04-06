@@ -45,8 +45,8 @@ Item {
     }
 
     // Responsive sizing
-    width: Math.min(1100 * Appearance.effectiveScale, (parent ? parent.width : 1200) * 0.9)
-    height: Math.min(800 * Appearance.effectiveScale, (parent ? parent.height : 900) * 0.85)
+    width: Math.min(1380 * Appearance.effectiveScale, (parent ? parent.width : 1500) * 0.95)
+    height: Math.min(840 * Appearance.effectiveScale, (parent ? parent.height : 900) * 0.85)
     
     implicitWidth: width
     implicitHeight: height
@@ -59,6 +59,11 @@ Item {
     property bool favMode: false
     property bool wallhavenMode: false
     property bool naiveMode: false
+    property bool liveMode: false
+    
+    // Selection state for right sidebar
+    property var selectedWallpaper: null
+    property bool showDetails: liveMode && selectedWallpaper !== null
     
     // Independent search states
     property string localSearch: ""
@@ -104,6 +109,10 @@ Item {
         wallhavenMode = (mode === "wallhaven");
         naiveMode = (mode === "naive");
         favMode = (mode === "fav");
+        liveMode = (mode === "live");
+        
+        // Clear selection when switching modes
+        selectedWallpaper = null;
         
         // Restore search state
         if (wallhavenMode) {
@@ -113,9 +122,12 @@ Item {
         } else if (naiveMode) {
             headerSearch.text = naiveSearch;
             NaIveWallpaperService.fetch();
+        } else if (liveMode) {
+            headerSearch.text = "";
+            WallpaperEngineService.fetch();
         } else {
             headerSearch.text = localSearch;
-            if (!favMode) {
+            if (!favMode && !liveMode) {
                 Wallpapers.searchQuery = localSearch;
             }
         }
@@ -334,6 +346,32 @@ Item {
                                 width: sidebarScroll.availableWidth
                                 spacing: 4 * Appearance.effectiveScale
 
+                                // --- Live Wallpaper (Engine) ---
+                                RippleButton {
+                                    id: liveSideBtn
+                                    width: parent.width
+                                    implicitHeight: 52 * Appearance.effectiveScale
+                                    buttonRadius: 16 * Appearance.effectiveScale
+                                    toggled: mainSelector.liveMode
+                                    colBackground: toggled ? Appearance.colors.colPrimary : Appearance.colors.colLayer1
+                                    colBackgroundHover: toggled ? Appearance.colors.colPrimaryHover : Appearance.colors.colLayer1Hover
+                                    
+                                    onClicked: mainSelector.switchMode("live")
+
+                                    RowLayout {
+                                        anchors.fill: parent; anchors.leftMargin: 20 * Appearance.effectiveScale; spacing: 16 * Appearance.effectiveScale
+                                        MaterialSymbol { 
+                                            text: "movie"; iconSize: 22 * Appearance.effectiveScale
+                                            color: liveSideBtn.toggled ? Appearance.colors.colOnPrimary : Appearance.colors.colPrimary
+                                        }
+                                        StyledText { 
+                                            text: "Live Wallpaper"; Layout.fillWidth: true; 
+                                            font.weight: liveSideBtn.toggled ? Font.DemiBold : Font.Normal
+                                            color: liveSideBtn.toggled ? Appearance.colors.colOnPrimary : Appearance.colors.colOnLayer0
+                                        }
+                                    }
+                                }
+
                                 // --- Top Special Button (Wallhaven - Online) ---
                                 RippleButton {
                                     id: wallhavenSideBtn
@@ -426,10 +464,11 @@ Item {
                                         width: parent.width
                                         implicitHeight: 52 * Appearance.effectiveScale
                                         buttonRadius: 26 * Appearance.effectiveScale
-                                        
-                                        readonly property bool isActive: !mainSelector.wallhavenMode && !mainSelector.naiveMode && !mainSelector.favMode && mainSelector.normalizePath(Wallpapers.directory) === mainSelector.normalizePath(modelData.path)
-                                        
+
+                                        readonly property bool isActive: !mainSelector.wallhavenMode && !mainSelector.naiveMode && !mainSelector.favMode && !mainSelector.liveMode && mainSelector.normalizePath(Wallpapers.directory) === mainSelector.normalizePath(modelData.path)
+
                                         toggled: isActive
+
                                         colBackground: "transparent"
                                         colBackgroundToggled: Appearance.m3colors.m3primaryContainer
                                         
@@ -462,7 +501,7 @@ Item {
                                         implicitHeight: 52 * Appearance.effectiveScale
                                         buttonRadius: 26 * Appearance.effectiveScale
                                         
-                                        readonly property bool isActive: !mainSelector.wallhavenMode && !mainSelector.naiveMode && !mainSelector.favMode && mainSelector.normalizePath(Wallpapers.directory) === mainSelector.normalizePath(model.path)
+                                        readonly property bool isActive: !mainSelector.wallhavenMode && !mainSelector.naiveMode && !mainSelector.favMode && !mainSelector.liveMode && mainSelector.normalizePath(Wallpapers.directory) === mainSelector.normalizePath(model.path)
                                         
                                         toggled: isActive
                                         colBackground: "transparent"
@@ -548,21 +587,36 @@ Item {
                         Layout.fillWidth: true; Layout.fillHeight: true; Layout.margins: 12 * Appearance.effectiveScale
                         color: Appearance.colors.colLayer1; radius: 28 * Appearance.effectiveScale; clip: true; opacity: 0.98
 
-                        GridView {
-                            id: grid
-                            anchors.fill: parent; anchors.margins: 20 * Appearance.effectiveScale
-                            cellWidth: width / 3; cellHeight: cellWidth * 9/16 + (40 * Appearance.effectiveScale)
-                            clip: true; interactive: true
-                            
-                            // Memory optimization: Load only what's necessary (about 1.5 extra screen heights)
-                            cacheBuffer: Math.max(0, height * 1.5)
-                            
-                            model: {
-                                if (mainSelector.wallhavenMode) return WallhavenService.results;
-                                if (mainSelector.naiveMode) return NaIveWallpaperService.results;
-                                if (mainSelector.favMode) return favModel;
-                                return Wallpapers.folderModel;
-                            }
+                        RowLayout {
+                            anchors.fill: parent
+                            spacing: 0
+
+                            GridView {
+                                id: grid
+                                Layout.fillWidth: true; Layout.fillHeight: true; Layout.margins: 20 * Appearance.effectiveScale
+                                cellWidth: width / 4; cellHeight: cellWidth * 9/16 + (40 * Appearance.effectiveScale)
+                                clip: true; interactive: true
+                                
+                                // Memory optimization: Load only what's necessary (about 1.5 extra screen heights)
+                                cacheBuffer: Math.max(0, height * 1.5)
+                                
+                                model: {
+                                    if (mainSelector.wallhavenMode) return WallhavenService.results;
+                                    if (mainSelector.naiveMode) return NaIveWallpaperService.results;
+                                    if (mainSelector.favMode) return favModel;
+                                    if (mainSelector.liveMode) return WallpaperEngineService.results;
+                                    return Wallpapers.folderModel;
+                                }
+
+                                Connections {
+                                    target: WallpaperEngineService
+                                    function onLoadingChanged() {
+                                        if (!WallpaperEngineService.loading) {
+                                            // Force a tiny refresh if needed, though results is a ListModel
+                                            // so GridView should handle it.
+                                        }
+                                    }
+                                }
                             
                             onContentYChanged: {
                                 if (mainSelector.wallhavenMode && !WallhavenService.loading && contentY > contentHeight - height - (400 * Appearance.effectiveScale)) {
@@ -626,10 +680,13 @@ Item {
                                 readonly property bool inWallhavenMode: delegateRoot.selector.wallhavenMode
                                 readonly property bool inNaiveMode: delegateRoot.selector.naiveMode
                                 readonly property bool inFavMode: delegateRoot.selector.favMode
+                                readonly property bool inLiveMode: delegateRoot.selector.liveMode
                                 
-                                readonly property string currentFilePath: (delegateRoot.inWallhavenMode || delegateRoot.inNaiveMode) ? (model.full || "") : (delegateRoot.inFavMode ? (model.filePath || "") : (filePath || ""))
-                                readonly property string currentFileName: delegateRoot.inWallhavenMode ? ("wallhaven-" + (model.id || "")) : (delegateRoot.inNaiveMode ? model.filename : (delegateRoot.inFavMode ? (model.fileName || "") : (fileName || "")))
-                                readonly property string previewPath: (delegateRoot.inWallhavenMode || delegateRoot.inNaiveMode) ? (model.preview || "") : ("file://" + currentFilePath)
+                                readonly property string currentFilePath: (delegateRoot.inWallhavenMode || delegateRoot.inNaiveMode) ? (model.full || "") : (delegateRoot.inFavMode ? (model.filePath || "") : (delegateRoot.inLiveMode ? (model.folder || "") : (filePath || "")))
+                                readonly property string currentFileName: delegateRoot.inWallhavenMode ? ("wallhaven-" + (model.id || "")) : (delegateRoot.inNaiveMode ? model.filename : (delegateRoot.inFavMode ? (model.fileName || "") : (delegateRoot.inLiveMode ? (model.title || "") : (fileName || ""))))
+                                readonly property string previewPath: (delegateRoot.inWallhavenMode || delegateRoot.inNaiveMode || delegateRoot.inLiveMode) ? (model.preview || "") : ("file://" + currentFilePath)
+                                
+                                readonly property bool isSelected: delegateRoot.selector.selectedWallpaper !== null && (delegateRoot.inLiveMode ? delegateRoot.selector.selectedWallpaper.id === model.id : delegateRoot.selector.selectedWallpaper.filePath === currentFilePath)
                                 
                                 readonly property string wallhavenId: {
                                     if (delegateRoot.inWallhavenMode) return model.id || "";
@@ -668,12 +725,21 @@ Item {
                                             }
 
                                             Image {
-                                                anchors.fill: parent; source: (delegateRoot.inWallhavenMode || delegateRoot.inNaiveMode) ? previewPath : ""
+                                                anchors.fill: parent; source: (delegateRoot.inWallhavenMode || delegateRoot.inNaiveMode || delegateRoot.inLiveMode) ? previewPath : ""
                                                 fillMode: Image.PreserveAspectCrop
-                                                visible: (delegateRoot.inWallhavenMode || delegateRoot.inNaiveMode) && source != ""
+                                                visible: (delegateRoot.inWallhavenMode || delegateRoot.inNaiveMode || delegateRoot.inLiveMode) && source != ""
                                                 asynchronous: true; cache: true
                                             }
 
+                                            Rectangle {
+                                                anchors.fill: parent
+                                                border.width: 3 * Appearance.effectiveScale
+                                                border.color: Appearance.colors.colPrimary
+                                                radius: 18 * Appearance.effectiveScale
+                                                color: "transparent"
+                                                visible: delegateRoot.isSelected
+                                            }
+                                            
                                             Rectangle {
                                                 anchors.fill: parent
                                                 gradient: Gradient {
@@ -692,10 +758,19 @@ Item {
                                                 id: mArea; anchors.fill: parent; hoverEnabled: true
                                                 // Arrow cursor in online modes as requested
                                                 cursorShape: (delegateRoot.inWallhavenMode || delegateRoot.inNaiveMode) ? Qt.ArrowCursor : Qt.PointingHandCursor
-                                                enabled: !delegateRoot.inWallhavenMode && !delegateRoot.inNaiveMode
                                                 onClicked: {
-                                                    if (currentFilePath !== "") {
-                                                        delegateRoot.selector.selectWallpaper("file://" + currentFilePath)
+                                                    if (delegateRoot.inLiveMode) {
+                                                        delegateRoot.selector.selectedWallpaper = {
+                                                            "id": model.id,
+                                                            "title": model.title,
+                                                            "folder": model.folder,
+                                                            "metadata": model.metadata,
+                                                            "preview": model.preview
+                                                        };
+                                                    } else if (!delegateRoot.inWallhavenMode && !delegateRoot.inNaiveMode) {
+                                                        if (currentFilePath !== "") {
+                                                            delegateRoot.selector.selectWallpaper("file://" + currentFilePath)
+                                                        }
                                                     }
                                                 }
                                             }
@@ -795,7 +870,7 @@ Item {
                             ColumnLayout {
                                 anchors.centerIn: parent; visible: grid.count === 0; spacing: 12 * Appearance.effectiveScale
                                 MaterialSymbol {
-                                    visible: (mainSelector.wallhavenMode && WallhavenService.loading) || (mainSelector.naiveMode && NaIveWallpaperService.loading)
+                                    visible: (mainSelector.wallhavenMode && WallhavenService.loading) || (mainSelector.naiveMode && NaIveWallpaperService.loading) || (mainSelector.liveMode && WallpaperEngineService.loading)
                                     text: "progress_activity"; iconSize: 32 * Appearance.effectiveScale; color: Appearance.colors.colPrimary
                                     Layout.alignment: Qt.AlignHCenter
                                     RotationAnimation on rotation { from: 0; to: 360; duration: 1000; loops: Animation.Infinite; running: parent.visible }
@@ -812,16 +887,128 @@ Item {
                                             if (NaIveWallpaperService.loading) return "Fetching Na-ive collection...";
                                             return "No wallpapers in collection";
                                         }
+                                        if (mainSelector.liveMode) {
+                                            if (WallpaperEngineService.errorMessage !== "") return WallpaperEngineService.errorMessage;
+                                            if (WallpaperEngineService.loading) return "Scanning Steam Workshop...";
+                                            return "No Wallpaper Engine wallpapers found";
+                                        }
                                         return mainSelector.favMode ? "No favorite wallpapers" : "No wallpapers found";
                                     }
-                                    color: (WallhavenService.errorMessage !== "" || NaIveWallpaperService.errorMessage !== "") ? Appearance.m3colors.m3error : Appearance.colors.colSubtext
+                                    color: (WallhavenService.errorMessage !== "" || NaIveWallpaperService.errorMessage !== "" || WallpaperEngineService.errorMessage !== "") ? Appearance.m3colors.m3error : Appearance.colors.colSubtext
                                     Layout.alignment: Qt.AlignHCenter
                                 }
                             }
-                        }
-                    }
-            }
-        }
+
+                                    }
+
+                                    // ── Vertical Divider ──
+                                    Rectangle {
+                                    Layout.fillHeight: true
+                                    width: mainSelector.showDetails ? 1 : 0
+                                    color: Appearance.colors.colOutlineVariant
+                                    visible: mainSelector.showDetails
+                                    }
+
+                                    // ── Right Sidebar (Details & Settings) ──
+                                    Item {
+                                    id: detailsSidebar
+                                    Layout.fillHeight: true
+                                    Layout.preferredWidth: mainSelector.showDetails ? 320 * Appearance.effectiveScale : 0
+                                    visible: mainSelector.showDetails
+                                    clip: true
+
+                                    Behavior on Layout.preferredWidth {
+                                    NumberAnimation { duration: 250; easing.type: Easing.OutQuart }
+                                    }
+
+                                    ColumnLayout {
+                                    anchors.fill: parent
+                                    anchors.margins: 16 * Appearance.effectiveScale
+                                    spacing: 16 * Appearance.effectiveScale
+
+                                    StyledText {
+                                        text: mainSelector.selectedWallpaper ? mainSelector.selectedWallpaper.title : "Wallpaper Details"
+                                        font.pixelSize: Appearance.font.pixelSize.normal
+                                        font.weight: Font.DemiBold
+                                        color: Appearance.colors.colOnLayer1
+                                        Layout.fillWidth: true
+                                        elide: Text.ElideRight
+                                    }
+
+                                    // Preview & Info
+                                    Rectangle {
+                                        Layout.fillWidth: true
+                                        Layout.preferredHeight: 180 * Appearance.effectiveScale
+                                        radius: 12 * Appearance.effectiveScale
+                                        color: Appearance.colors.colLayer2
+                                        clip: true
+
+                                        Image {
+                                            anchors.fill: parent
+                                            source: mainSelector.selectedWallpaper ? mainSelector.selectedWallpaper.preview : ""
+                                            fillMode: Image.PreserveAspectCrop
+                                            asynchronous: true
+                                        }
+
+                                        Rectangle {
+                                            anchors.fill: parent
+                                            gradient: Gradient {
+                                                GradientStop { position: 0.0; color: "transparent" }
+                                                GradientStop { position: 1.0; color: Qt.rgba(0,0,0, 0.5) }
+                                            }
+                                        }
+
+                                        StyledText {
+                                            anchors.bottom: parent.bottom; anchors.left: parent.left; anchors.margins: 12 * Appearance.effectiveScale
+                                            text: mainSelector.selectedWallpaper ? mainSelector.selectedWallpaper.id : ""
+                                            color: "white"
+                                            font.pixelSize: Appearance.font.pixelSize.smallest
+                                            opacity: 0.8
+                                        }
+                                    }
+                                    ScrollView {
+                                    Layout.fillWidth: true
+                                    Layout.fillHeight: true
+                                    clip: true
+
+                                    ColumnLayout {
+                                        width: parent.width
+                                        spacing: 12 * Appearance.effectiveScale
+
+                                        StyledText {
+                                            text: "Properties"
+                                            font.pixelSize: Appearance.font.pixelSize.small
+                                            font.weight: Font.Medium
+                                            color: Appearance.colors.colSubtext
+                                        }
+
+                                        // This will be dynamic based on --list-properties
+                                        StyledText {
+                                            text: "No properties available yet."
+                                            font.pixelSize: Appearance.font.pixelSize.smaller
+                                            color: Appearance.colors.colSubtext
+                                            Layout.fillWidth: true
+                                            wrapMode: Text.WordWrap
+                                        }
+                                    }
+                                    }
+
+                                    RippleButton {
+                                    Layout.fillWidth: true
+                                    implicitHeight: 44 * Appearance.effectiveScale
+                                    buttonText: "Apply Wallpaper"
+                                    colBackground: Appearance.colors.colPrimary
+                                    colText: Appearance.colors.colOnPrimary
+                                    onClicked: {
+                                        // TODO: Implement apply logic for Wallpaper Engine
+                                    }
+                                    }
+                                    }
+                                    }
+                                    }
+                                    }
+                                    }
+                                    }
 
         // --- Sorting Overlay & Popup (drawn last for z-index) ---
         MouseArea {
