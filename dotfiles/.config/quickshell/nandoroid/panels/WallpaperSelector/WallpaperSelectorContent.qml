@@ -153,6 +153,12 @@ Item {
         }
     }
 
+    onSelectedWallpaperChanged: {
+        if (selectedWallpaper && mainSelector.liveMode) {
+            WallpaperEngineService.fetchProperties(selectedWallpaper.folder, selectedWallpaper.id);
+        }
+    }
+
     function close() { 
         WallhavenService.results.clear();
         NaIveWallpaperService.results.clear();
@@ -1002,12 +1008,13 @@ Item {
                         }
 
                         ScrollView {
+                            id: detailsScroll
                             Layout.fillWidth: true
                             Layout.fillHeight: true
                             clip: true
 
                             ColumnLayout {
-                                width: parent.width
+                                width: detailsScroll.availableWidth
                                 spacing: 12 * Appearance.effectiveScale
 
                                 StyledText {
@@ -1015,30 +1022,127 @@ Item {
                                     font.pixelSize: Appearance.font.pixelSize.small
                                     font.weight: Font.Medium
                                     color: Appearance.colors.colSubtext
+                                    visible: WallpaperEngineService.currentProperties.count > 0
                                 }
 
-                                // This will be dynamic based on --list-properties
+                                Repeater {
+                                    model: WallpaperEngineService.currentProperties
+                                    delegate: ColumnLayout {
+                                        Layout.fillWidth: true
+                                        spacing: 8 * Appearance.effectiveScale
+
+                                        RowLayout {
+                                            Layout.fillWidth: true
+                                            StyledText {
+                                                text: propText || ""
+                                                font.pixelSize: Appearance.font.pixelSize.smaller
+                                                color: Appearance.colors.colOnLayer1
+                                                Layout.fillWidth: true
+                                            }
+                                            
+                                            // Boolean Checkbox
+                                            AndroidToggle {
+                                                visible: propType === "bool"
+                                                checked: valBool
+                                                onToggled: {
+                                                    WallpaperEngineService.updateProperty(propKey, !checked);
+                                                }
+                                            }
+                                        }
+
+                                        // Slider for numbers
+                                        StyledSlider {
+                                            visible: propType === "slider"
+                                            Layout.fillWidth: true
+                                            from: propMin
+                                            to: propMax
+                                            value: valNum
+                                            // Use onMoved to only trigger update when user actively changes it
+                                            onMoved: {
+                                                WallpaperEngineService.updateProperty(propKey, value);
+                                            }
+                                        }
+                                        
+                                        // Combo Box
+                                        StyledComboBox {
+                                            visible: propType === "combo"
+                                            Layout.fillWidth: true
+                                            searchable: false
+                                            text: {
+                                                if (!options_json || options_json === "" || options_json === "[]") return "";
+                                                try {
+                                                    let opts = JSON.parse(options_json);
+                                                    let current = opts.find(o => String(o.value) === String(valNum) || String(o.value) === String(valStr));
+                                                    return current ? current.label : "";
+                                                } catch(e) { return ""; }
+                                            }
+                                            model: {
+                                                if (!options_json || options_json === "" || options_json === "[]") return [];
+                                                try {
+                                                    let opts = JSON.parse(options_json);
+                                                    return opts.map(o => o.label);
+                                                } catch(e) { return []; }
+                                            }
+                                            onAccepted: (label) => {
+                                                try {
+                                                    let opts = JSON.parse(options_json);
+                                                    let found = opts.find(o => o.label === label);
+                                                    if (found) {
+                                                        WallpaperEngineService.updateProperty(propKey, found.value);
+                                                    }
+                                                } catch(e) {}
+                                            }
+                                        }
+
+                                        Item { Layout.preferredHeight: 4 * Appearance.effectiveScale }
+                                    }
+                                }
+
+                                // Placeholder if no properties
                                 StyledText {
-                                    text: "No properties available yet."
+                                    text: "No properties available for this wallpaper."
                                     font.pixelSize: Appearance.font.pixelSize.smaller
                                     color: Appearance.colors.colSubtext
                                     Layout.fillWidth: true
                                     wrapMode: Text.WordWrap
+                                    visible: WallpaperEngineService.currentProperties.count === 0 && !WallpaperEngineService.loading
                                 }
                             }
                         }
 
-                        RippleButton {
+                        RowLayout {
                             Layout.fillWidth: true
-                            implicitHeight: 44 * Appearance.effectiveScale
-                            buttonText: "Apply Wallpaper"
-                            colBackground: Appearance.colors.colPrimary
-                            colText: Appearance.colors.colOnPrimary
-                            onClicked: {
-                                if (mainSelector.selectedWallpaper) {
-                                    WallpaperEngineService.apply(mainSelector.selectedWallpaper.folder, mainSelector.selectedWallpaper.preview);
-                                    mainSelector.close();
+                            spacing: 12 * Appearance.effectiveScale
+
+                            RippleButton {
+                                Layout.fillWidth: true
+                                Layout.preferredWidth: 1
+                                implicitHeight: 44 * Appearance.effectiveScale
+                                buttonText: "Apply"
+                                colBackground: Appearance.colors.colPrimary
+                                colText: Appearance.colors.colOnPrimary
+                                onClicked: {
+                                    if (mainSelector.selectedWallpaper) {
+                                        WallpaperEngineService.apply(mainSelector.selectedWallpaper.folder, mainSelector.selectedWallpaper.preview);
+                                        mainSelector.close();
+                                    }
                                 }
+                            }
+
+                            RippleButton {
+                                Layout.fillWidth: true
+                                Layout.preferredWidth: 1
+                                implicitHeight: 44 * Appearance.effectiveScale
+                                buttonText: "Reset"
+                                colBackground: Appearance.colors.colLayer2
+                                colText: Appearance.colors.colOnLayer2
+                                visible: WallpaperEngineService.currentProperties.count > 0
+                                onClicked: {
+                                    if (mainSelector.selectedWallpaper) {
+                                        WallpaperEngineService.resetProperties(mainSelector.selectedWallpaper.folder);
+                                    }
+                                }
+                                StyledToolTip { text: "Reset properties to default" }
                             }
                         }
                     }

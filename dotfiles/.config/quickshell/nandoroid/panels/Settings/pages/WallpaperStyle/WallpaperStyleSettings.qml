@@ -339,7 +339,7 @@ Flickable {
                     Layout.preferredWidth: 1
                     title: "Desktop wallpaper"
                     source: {
-                        if (WallpaperEngineService.active) return "file://" + WallpaperEngineService.screenshotPath;
+                        if (WallpaperEngineService.active) return "file://" + WallpaperEngineService.screenshotPath + "?v=" + WallpaperEngineService.screenshotVersion;
                         return (Config.ready && Config.options.appearance && Config.options.appearance.background) ? Config.options.appearance.background.wallpaperPath : "";
                     }
                     showCheckmark: false
@@ -357,7 +357,7 @@ Flickable {
                     source: {
                         if (!Config.ready || !Config.options.lock) return "";
                         if (!Config.options.lock.useSeparateWallpaper) {
-                            if (WallpaperEngineService.active) return "file://" + WallpaperEngineService.screenshotPath;
+                            if (WallpaperEngineService.active) return "file://" + WallpaperEngineService.screenshotPath + "?v=" + WallpaperEngineService.screenshotVersion;
                             return (Config.options.appearance && Config.options.appearance.background ? Config.options.appearance.background.wallpaperPath : "");
                         }
                         return Config.options.lock.wallpaperPath;

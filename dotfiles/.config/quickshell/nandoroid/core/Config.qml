@@ -487,7 +487,6 @@ Singleton {
                 property bool showPreview: true
                 property bool autoCopy: true
             }
-
         }
     }
 }

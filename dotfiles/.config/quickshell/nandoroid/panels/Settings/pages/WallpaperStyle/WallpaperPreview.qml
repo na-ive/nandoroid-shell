@@ -33,13 +33,14 @@ ColumnLayout {
             }
 
             Image { 
-                anchors.fill: parent; 
+                anchors.fill: parent
                 source: previewComp.source
                 fillMode: Image.PreserveAspectCrop
                 asynchronous: true
+                cache: false
                 opacity: status === Image.Ready ? 1 : 0
                 Behavior on opacity { NumberAnimation { duration: 300 } }
-            }            
+            }
             // 1. Selection indicator (Primary tint) - Only when Synced/Selected
             Rectangle {
                 anchors.fill: parent
