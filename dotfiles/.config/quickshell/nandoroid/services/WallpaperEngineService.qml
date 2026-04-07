@@ -46,7 +46,10 @@ Singleton {
                     try { 
                         root.savedConfigs = JSON.parse(this.text);
                         console.log("[WallpaperEngine] Cache loaded");
-                    } catch(e) { root.savedConfigs = {}; }
+                    } catch(e) { 
+                        console.error("[WallpaperEngine] Cache parse error:", e);
+                        root.savedConfigs = {}; 
+                    }
                 }
                 root.checkInitialApply();
             }
@@ -180,7 +183,7 @@ print(json.dumps(props))
         let cleanPath = folderPath.toString();
         if (cleanPath.startsWith("file://")) cleanPath = cleanPath.substring(7);
         
-        root.isApplying = true;
+        root.isApplying = true; // Block auto-pause until screenshot ready
         stopInternal();
         
         if (Config.ready) {
@@ -231,14 +234,23 @@ print(json.dumps(props))
             activeProcess.running = true;
             matugenWatchTimer.attempts = 0;
             matugenWatchTimer.restart();
-            applyFinishTimer.restart();
+            
+            // Failsafe: stop forced running after 8 seconds even if screenshot fails
+            applyFinishFailsafe.restart();
         }
     }
 
     Timer {
-        id: applyFinishTimer
-        interval: 1500; repeat: false
-        onTriggered: { root.isApplying = false; root.updatePauseState(); }
+        id: applyFinishFailsafe
+        interval: 8000
+        repeat: false
+        onTriggered: {
+            if (root.isApplying) {
+                console.log("[WallpaperEngine] Apply failsafe triggered");
+                root.isApplying = false;
+                root.updatePauseState();
+            }
+        }
     }
 
     function fetch() {
@@ -299,19 +311,32 @@ print(json.dumps(wallpapers))
         command: ["ls", root.screenshotPath]
         onExited: (code) => {
             if (code === 0) {
+                console.log("[WallpaperEngine] Screenshot detected, processing Matugen...");
                 matugenWatchTimer.stop();
                 root.screenshotVersion++;
                 Wallpapers.generateColors(root.screenshotPath);
+                
+                // CRITICAL: Now we can safely allow the process to be auto-paused
+                if (root.isApplying) {
+                    root.isApplying = false;
+                    // updatePauseState will be called by next window list change or manually here
+                    root.updatePauseState();
+                }
             }
         }
     }
 
     Timer {
         id: matugenWatchTimer
-        interval: 1500; repeat: true; property int attempts: 0
+        interval: 1000; repeat: true; property int attempts: 0
         onTriggered: {
             attempts++;
-            if (attempts > 10) { stopInternal(); return; }
+            if (attempts > 15) { 
+                console.warn("[WallpaperEngine] Matugen watch timeout - no screenshot produced");
+                matugenWatchTimer.stop(); 
+                if (root.isApplying) { root.isApplying = false; root.updatePauseState(); }
+                return; 
+            }
             checkFileProc.running = true;
         }
     }
