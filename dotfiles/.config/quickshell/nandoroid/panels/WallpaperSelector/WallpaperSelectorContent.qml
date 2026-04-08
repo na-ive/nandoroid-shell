@@ -159,12 +159,12 @@ Item {
         }
     }
 
-    function close() { 
+    function close() {
+        Wallpapers.searchQuery = "";
         WallhavenService.results.clear();
         NaIveWallpaperService.results.clear();
-        mainSelector.closed() 
+        mainSelector.closed()
     }
-
     function selectWallpaper(path) {
         // Stop Wallpaper Engine if switching to static on desktop
         if (GlobalStates.wallpaperSelectorTarget === "desktop") {
