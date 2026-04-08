@@ -42,7 +42,7 @@ PanelWindow {
 
     // Fix: Mask ensures clicks pass through transparent areas
     mask: Region {
-        item: mainContent
+        item: maskContainer
     }
 
     onImagePathChanged: {
@@ -75,6 +75,15 @@ PanelWindow {
                 if (containsMouse) hideTimer.stop();
                 else if (root.visible) hideTimer.restart();
             }
+        }
+
+        // Invisible container that bounds only the visual parts
+        Item {
+            id: maskContainer
+            anchors.left: parent.left
+            anchors.bottom: parent.bottom
+            width: Math.max(actionPillIsland.width, thumbnailIsland.width)
+            height: actionPillIsland.height + thumbnailIsland.height + thumbnailIsland.anchors.bottomMargin
         }
 
         // 1. Action Pill Island
