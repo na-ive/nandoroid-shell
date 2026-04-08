@@ -263,6 +263,7 @@ print(json.dumps(props))
             if (root.isApplying) {
                 console.log("[WallpaperEngine] Apply failsafe triggered");
                 root.isApplying = false;
+                CavaService.restart();
                 root.updatePauseState();
             }
         }
@@ -334,6 +335,7 @@ print(json.dumps(wallpapers))
                 // CRITICAL: Now we can safely allow the process to be auto-paused
                 if (root.isApplying) {
                     root.isApplying = false;
+                    CavaService.restart();
                     // updatePauseState will be called by next window list change or manually here
                     root.updatePauseState();
                 }

@@ -10,6 +10,7 @@ Singleton {
 
     property list<int> values: []
     property int barCount: 128
+    property bool _internalRestart: true
     property int refCount: 0
     property bool cavaAvailable: false
 
@@ -17,10 +18,25 @@ Singleton {
         if (refCount < 0) refCount = 0;
     }
 
+    function restart() {
+        _internalRestart = false;
+        restartTimer.start();
+    }
+
+    Timer {
+        id: restartTimer
+        interval: 500
+        repeat: false
+        onTriggered: {
+            Quickshell.execDetached(["pkill", "-9", "cava"]);
+            _internalRestart = true;
+        }
+    }
+
     onBarCountChanged: {
         if (cavaProcess.running) {
-            cavaProcess.running = false;
-            Qt.callLater(() => { if (root.refCount > 0) cavaProcess.running = true; });
+            _internalRestart = false;
+            Qt.callLater(() => { _internalRestart = true; });
         }
     }
 
@@ -44,7 +60,7 @@ Singleton {
     Process {
         id: cavaProcess
         // Re-evaluate running state whenever dependencies change
-        running: root.cavaAvailable && root.refCount > 0
+        running: root.cavaAvailable && root.refCount > 0 && _internalRestart
         command: ["bash", "-c", `cat <<'CAVACONF' | cava -p /dev/stdin
 [general]
 framerate=60
