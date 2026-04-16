@@ -51,6 +51,7 @@ Singleton {
 
         const xhr = new XMLHttpRequest();
         xhr.open("GET", url);
+        xhr.setRequestHeader("User-Agent", "NAnDoroid/1.0 (Linux; quickshell)");
         xhr.onreadystatechange = function() {
             if (xhr.readyState === XMLHttpRequest.DONE) {
                 root.loading = false;
