@@ -69,6 +69,7 @@ Item {
     property string localSearch: ""
     property string wallhavenSearch: ""
     property string naiveSearch: ""
+    property string liveSearch: ""
     
     // Sorting state
     property string sortMode: "name_asc" // name_asc, name_desc
@@ -88,9 +89,11 @@ Item {
         if (sortMode === "name_asc") {
             Wallpapers.sortField = FolderListModel.Name;
             Wallpapers.sortReversed = false;
+            WallpaperEngineService.sortReversed = false;
         } else if (sortMode === "name_desc") {
             Wallpapers.sortField = FolderListModel.Name;
             Wallpapers.sortReversed = true;
+            WallpaperEngineService.sortReversed = true;
         }
     }
 
@@ -103,6 +106,7 @@ Item {
         // Save current search state
         if (wallhavenMode) wallhavenSearch = headerSearch.text;
         else if (naiveMode) naiveSearch = headerSearch.text;
+        else if (liveMode) liveSearch = headerSearch.text;
         else localSearch = headerSearch.text;
         
         // Update modes
@@ -123,7 +127,8 @@ Item {
             headerSearch.text = naiveSearch;
             NaIveWallpaperService.fetch();
         } else if (liveMode) {
-            headerSearch.text = "";
+            headerSearch.text = liveSearch;
+            WallpaperEngineService.searchQuery = liveSearch;
             WallpaperEngineService.fetch();
         } else {
             headerSearch.text = localSearch;
@@ -148,6 +153,8 @@ Item {
             }
         } else if (naiveMode) {
             // ...
+        } else if (liveMode) {
+            WallpaperEngineService.searchQuery = searchFilter
         } else {
             Wallpapers.searchQuery = searchFilter
         }
@@ -161,6 +168,11 @@ Item {
 
     function close() {
         Wallpapers.searchQuery = "";
+        WallpaperEngineService.searchQuery = "";
+        localSearch = "";
+        wallhavenSearch = "";
+        naiveSearch = "";
+        liveSearch = "";
         WallhavenService.results.clear();
         NaIveWallpaperService.results.clear();
         mainSelector.closed()
@@ -263,9 +275,12 @@ Item {
                                     // Save state immediately on change
                                     if (mainSelector.wallhavenMode) mainSelector.wallhavenSearch = text;
                                     else if (mainSelector.naiveMode) mainSelector.naiveSearch = text;
+                                    else if (mainSelector.liveMode) mainSelector.liveSearch = text;
                                     else mainSelector.localSearch = text;
 
-                                    if (!mainSelector.wallhavenMode && !mainSelector.naiveMode) {
+                                    if (mainSelector.liveMode) {
+                                        WallpaperEngineService.searchQuery = text;
+                                    } else if (!mainSelector.wallhavenMode && !mainSelector.naiveMode) {
                                         Wallpapers.searchQuery = text
                                     } else if (text === "" && mainSelector.wallhavenMode) {
                                         WallhavenService.search("");

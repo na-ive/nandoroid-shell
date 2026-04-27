@@ -20,6 +20,8 @@ Singleton {
     property var activeProperties: ({}) 
     property var savedConfigs: ({})
     property string selectedWallpaperId: ""
+    property string searchQuery: ""
+    property bool sortReversed: false
     // Settings (Bound to Config)
     property int targetFps: Config.ready ? Config.options.wallpaperEngine.fps : 30
     property int volume: Config.ready ? Config.options.wallpaperEngine.volume : 15
@@ -40,8 +42,42 @@ Singleton {
     property int screenshotVersion: 0
 
     readonly property ListModel currentProperties: ListModel { id: propsModel }
+    readonly property ListModel allResults: ListModel { id: allResultsModel }
     readonly property ListModel results: ListModel { id: resultsModel }
 
+    onSearchQueryChanged: updateFilteredResults()
+    onSortReversedChanged: updateFilteredResults()
+
+    function updateFilteredResults() {
+        resultsModel.clear();
+        const query = searchQuery.toLowerCase().trim();
+        const tempResults = [];
+        
+        for (let i = 0; i < allResultsModel.count; i++) {
+            const item = allResultsModel.get(i);
+            if (query === "" || 
+            item.title.toLowerCase().includes(query) || 
+            item.id.toLowerCase().includes(query)) {
+
+            // Deep copy item data to append
+            const copy = {};
+            for (let key in item) {
+                if (key !== "index") copy[key] = item[key];
+            }
+            tempResults.push(copy);
+            }
+        }
+
+        // Sort results by title (case-insensitive)
+        tempResults.sort((a, b) => {
+            const cmp = a.title.localeCompare(b.title, undefined, {sensitivity: 'base'});
+            return sortReversed ? -cmp : cmp;
+        });
+
+        for (let item of tempResults) {
+            resultsModel.append(item);
+        }
+    }
     Timer {
         id: lowerTimer
         interval: 1000
@@ -305,7 +341,7 @@ print(json.dumps(props))
 
     function fetch() {
         if (loading) return;
-        loading = true; errorMessage = ""; results.clear();
+        loading = true; errorMessage = ""; allResults.clear();
         scanProcess.running = true;
     }
 
@@ -340,7 +376,10 @@ print(json.dumps(wallpapers))
                 try {
                     const data = JSON.parse(this.text);
                     if (data.length === 0) root.errorMessage = "No wallpapers found";
-                    else { for (let item of data) root.results.append(item); }
+                    else { 
+                        for (let item of data) root.allResults.append(item); 
+                        root.updateFilteredResults();
+                    }
                 } catch (e) { root.errorMessage = "Error parsing wallpaper data"; }
             }
         }

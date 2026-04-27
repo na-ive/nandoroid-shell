@@ -531,6 +531,7 @@ Singleton {
         showDotAndDotDot: false
         sortField: root.sortField
         sortReversed: root.sortReversed
+        sortCaseSensitive: false
         onCountChanged: {
             if (count > 0 && root._autoCycleEnabled && root.autoCyclePending) {
                 root.autoCyclePending = false;
