@@ -4,10 +4,10 @@
 # Restarts the quickshell instance safely
 
 # 1. Kill existing instances
-killall quickshell 2>/dev/null
+killall qs quickshell 2>/dev/null
 
-# 2. Wait a moment
-sleep 0.5
+# 2. Wait a moment to ensure they are truly dead
+sleep 1
 
 # 3. Start new instance
 nohup quickshell -c nandoroid > /dev/null 2>&1 &
