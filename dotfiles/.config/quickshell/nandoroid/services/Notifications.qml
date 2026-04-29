@@ -262,38 +262,56 @@ Singleton {
             const notif = notifServer.trackedNotifications.values[serverIndex];
             
             if (actionIdentifier === "default") {
-                // --- Smart Focus Logic (Native Hyprland) ---
+                // --- Smart Focus Logic (Enhanced with Overview-style Fuzzy Matching) ---
                 const appName = (notif.appName || "").toLowerCase();
                 const summary = (notif.summary || "").toLowerCase();
                 
                 if (appName !== "" || summary !== "") {
                     let bestMatch = null;
-                    let highestScore = 0;
+                    let highestScore = -1;
 
-                    // Search through all known toplevels (windows)
+                    const fuzzyScore = (query, target) => {
+                        if (!query || !target) return -1;
+                        const lowQuery = query.toLowerCase();
+                        const lowTarget = target.toLowerCase();
+                        
+                        if (lowTarget === lowQuery) return 2000; // Perfect match
+                        if (lowTarget.includes(lowQuery)) return 1000 + (100 - lowTarget.length); // Substring match
+                        
+                        let queryIndex = 0, consecutiveMatches = 0, maxConsecutive = 0, score = 0;
+                        for (let i = 0; i < lowTarget.length && queryIndex < lowQuery.length; i++) {
+                            if (lowTarget[i] === lowQuery[queryIndex]) {
+                                queryIndex++; consecutiveMatches++;
+                                maxConsecutive = Math.max(maxConsecutive, consecutiveMatches);
+                                if (i === 0 || lowTarget[i - 1] === ' ' || lowTarget[i - 1] === '-' || lowTarget[i - 1] === '_') score += 50;
+                            } else { consecutiveMatches = 0; }
+                        }
+                        return queryIndex === lowQuery.length ? score + maxConsecutive * 5 : -1;
+                    };
+
                     for (let i = 0; i < Hyprland.toplevels.values.length; i++) {
                         const tl = Hyprland.toplevels.values[i];
-                        let score = 0;
-                        const cClass = (tl.class || "").toLowerCase();
-                        const cTitle = (tl.title || "").toLowerCase();
-                        const cInitial = (tl.initialClass || "").toLowerCase();
+                        const cClass = tl.class || "";
+                        const cTitle = tl.title || "";
+                        const cInitial = tl.initialClass || "";
 
-                        if (appName !== "") {
-                            if (cClass === appName || cInitial === appName) score += 100;
-                            else if (cClass.includes(appName) || appName.includes(cClass)) score += 50;
-                        }
+                        // Calculate scores for various properties
+                        const classScore = fuzzyScore(appName, cClass);
+                        const initialScore = fuzzyScore(appName, cInitial);
+                        const titleScore = Math.max(fuzzyScore(appName, cTitle), fuzzyScore(summary, cTitle) * 0.8);
                         
-                        if (summary !== "" && cTitle.includes(summary)) score += 30;
-                        if (appName !== "" && cTitle.includes(appName)) score += 20;
+                        const currentMax = Math.max(classScore, initialScore, titleScore);
 
-                        if (score > highestScore) {
-                            highestScore = score;
+                        if (currentMax > highestScore) {
+                            highestScore = currentMax;
                             bestMatch = tl;
                         }
                     }
 
                     if (bestMatch && highestScore > 0) {
                         Hyprland.dispatch(`focuswindow address:0x${bestMatch.address}`);
+                        GlobalStates.notificationCenterOpen = false;
+                        GlobalStates.dashboardOpen = false;
                     }
                 }
 

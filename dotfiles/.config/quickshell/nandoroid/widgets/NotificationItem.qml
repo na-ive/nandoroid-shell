@@ -260,21 +260,75 @@ Item { // Notification item area
 
                             NotificationActionButton {
                                 Layout.fillWidth: true
+                                buttonText: "View"
+                                urgency: notificationObject.urgency
+                                implicitWidth: (notificationObject.actions.length == 0) ? ((actionsFlickable.width - actionRowLayout.spacing * 2) / 3) : 
+                                    (contentItem.implicitWidth + leftPadding + rightPadding)
+
+                                onClicked: {
+                                    Notifications.attemptInvokeAction(notificationObject.notificationId, "default");
+                                }
+
+                                contentItem: Item {
+                                    implicitWidth: innerRow.implicitWidth
+                                    implicitHeight: innerRow.implicitHeight
+                                    Row {
+                                        id: innerRow
+                                        spacing: 4 * Appearance.effectiveScale
+                                        anchors.centerIn: parent
+                                        MaterialSymbol {
+                                            iconSize: 16 * Appearance.effectiveScale
+                                            anchors.verticalCenter: parent.verticalCenter
+                                            color: (notificationObject.urgency == NotificationUrgency.Critical) ? 
+                                                Appearance.m3colors.m3onSurfaceVariant : Appearance.m3colors.m3onSurface
+                                            text: "visibility"
+                                        }
+                                        StyledText {
+                                            text: "View"
+                                            font.pixelSize: 12 * Appearance.effectiveScale
+                                            anchors.verticalCenter: parent.verticalCenter
+                                            visible: parent.parent.parent.width > 60 * Appearance.effectiveScale
+                                            color: (notificationObject.urgency == NotificationUrgency.Critical) ? 
+                                                Appearance.m3colors.m3onSurfaceVariant : Appearance.m3colors.m3onSurface
+                                        }
+                                    }
+                                }
+                            }
+
+                            NotificationActionButton {
+                                Layout.fillWidth: true
                                 buttonText: "Close"
                                 urgency: notificationObject.urgency
-                                implicitWidth: (notificationObject.actions.length == 0) ? ((actionsFlickable.width - actionRowLayout.spacing) / 2) : 
+                                implicitWidth: (notificationObject.actions.length == 0) ? ((actionsFlickable.width - actionRowLayout.spacing * 2) / 3) : 
                                     (contentItem.implicitWidth + leftPadding + rightPadding)
 
                                 onClicked: {
                                     root.destroyWithAnimation()
                                 }
 
-                                contentItem: MaterialSymbol {
-                                    iconSize: Appearance.font.pixelSize.larger
-                                    horizontalAlignment: Text.AlignHCenter
-                                    color: (notificationObject.urgency == NotificationUrgency.Critical) ? 
-                                        Appearance.m3colors.m3onSurfaceVariant : Appearance.m3colors.m3onSurface
-                                    text: "close"
+                                contentItem: Item {
+                                    implicitWidth: innerRowClose.implicitWidth
+                                    implicitHeight: innerRowClose.implicitHeight
+                                    Row {
+                                        id: innerRowClose
+                                        spacing: 4 * Appearance.effectiveScale
+                                        anchors.centerIn: parent
+                                        MaterialSymbol {
+                                            iconSize: 16 * Appearance.effectiveScale
+                                            anchors.verticalCenter: parent.verticalCenter
+                                            color: (notificationObject.urgency == NotificationUrgency.Critical) ? 
+                                                Appearance.m3colors.m3onSurfaceVariant : Appearance.m3colors.m3onSurface
+                                            text: "close"
+                                        }
+                                        StyledText {
+                                            text: "Close"
+                                            font.pixelSize: 12 * Appearance.effectiveScale
+                                            anchors.verticalCenter: parent.verticalCenter
+                                            visible: parent.parent.parent.width > 60 * Appearance.effectiveScale
+                                            color: (notificationObject.urgency == NotificationUrgency.Critical) ? 
+                                                Appearance.m3colors.m3onSurfaceVariant : Appearance.m3colors.m3onSurface
+                                        }
+                                    }
                                 }
                             }
 
@@ -295,8 +349,9 @@ Item { // Notification item area
 
                             NotificationActionButton {
                                 Layout.fillWidth: true
+                                buttonText: "Copy"
                                 urgency: notificationObject.urgency
-                                implicitWidth: (notificationObject.actions.length == 0) ? ((actionsFlickable.width - actionRowLayout.spacing) / 2) : 
+                                implicitWidth: (notificationObject.actions.length == 0) ? ((actionsFlickable.width - actionRowLayout.spacing * 2) / 3) : 
                                     (contentItem.implicitWidth + leftPadding + rightPadding)
 
                                 onClicked: {
@@ -314,13 +369,30 @@ Item { // Notification item area
                                     }
                                 }
 
-                                contentItem: MaterialSymbol {
-                                    id: copyIcon
-                                    iconSize: Appearance.font.pixelSize.larger
-                                    horizontalAlignment: Text.AlignHCenter
-                                    color: (notificationObject.urgency == NotificationUrgency.Critical) ? 
-                                        Appearance.m3colors.m3onSurfaceVariant : Appearance.m3colors.m3onSurface
-                                    text: "content_copy"
+                                contentItem: Item {
+                                    implicitWidth: innerRowCopy.implicitWidth
+                                    implicitHeight: innerRowCopy.implicitHeight
+                                    Row {
+                                        id: innerRowCopy
+                                        spacing: 4 * Appearance.effectiveScale
+                                        anchors.centerIn: parent
+                                        MaterialSymbol {
+                                            id: copyIcon
+                                            iconSize: 16 * Appearance.effectiveScale
+                                            anchors.verticalCenter: parent.verticalCenter
+                                            color: (notificationObject.urgency == NotificationUrgency.Critical) ? 
+                                                Appearance.m3colors.m3onSurfaceVariant : Appearance.m3colors.m3onSurface
+                                            text: "content_copy"
+                                        }
+                                        StyledText {
+                                            text: "Copy"
+                                            font.pixelSize: 12 * Appearance.effectiveScale
+                                            anchors.verticalCenter: parent.verticalCenter
+                                            visible: parent.parent.parent.width > 60 * Appearance.effectiveScale
+                                            color: (notificationObject.urgency == NotificationUrgency.Critical) ? 
+                                                Appearance.m3colors.m3onSurfaceVariant : Appearance.m3colors.m3onSurface
+                                        }
+                                    }
                                 }
                             }
                             
