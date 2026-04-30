@@ -17,6 +17,7 @@ MaterialShape { // App icon
     property var summary: ""
     property var urgency: NotificationUrgency.Normal
     property bool isUrgent: urgency === NotificationUrgency.Critical
+    property bool isRestart: false
     property var image: ""
     property real materialIconScale: 0.57
     property real appIconScale: 0.8
@@ -30,23 +31,26 @@ MaterialShape { // App icon
         MaterialShape.Shape.VerySunny,
         MaterialShape.Shape.SoftBurst,
     ]
-    shape: isUrgent ? urgentShapes[Math.floor(Math.random() * urgentShapes.length)] : MaterialShape.Shape.Circle
+    
+    shape: isRestart ? MaterialShape.Shape.Squircle : (isUrgent ? urgentShapes[Math.floor(Math.random() * urgentShapes.length)] : MaterialShape.Shape.Circle)
 
-    color: isUrgent ? Appearance.colors.colPrimaryContainer : Appearance.colors.colSecondaryContainer
+    color: isRestart ? Appearance.colors.colWarning : (isUrgent ? Appearance.colors.colPrimaryContainer : Appearance.colors.colSecondaryContainer)
     
     Loader {
         id: materialSymbolLoader
-        active: root.appIcon == ""
+        active: root.appIcon == "" || root.isRestart
         anchors.fill: parent
+        z: 10
         sourceComponent: MaterialSymbol {
             text: {
+                if (root.isRestart) return "restart_alt";
                 const defaultIcon = NotificationUtils.findSuitableMaterialSymbol("")
                 const guessedIcon = NotificationUtils.findSuitableMaterialSymbol(root.summary)
                 return (root.urgency == NotificationUrgency.Critical && guessedIcon === defaultIcon) ?
                     "priority_high" : guessedIcon
             }
             anchors.fill: parent
-            color: isUrgent ? Appearance.colors.colOnPrimaryContainer : Appearance.colors.colOnSecondaryContainer
+            color: isRestart ? Appearance.colors.colOnWarning : (isUrgent ? Appearance.colors.colOnPrimaryContainer : Appearance.colors.colOnSecondaryContainer)
             iconSize: root.materialIconSize
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
@@ -55,7 +59,7 @@ MaterialShape { // App icon
     
     Loader {
         id: appIconLoader
-        active: root.image == "" && root.appIcon != ""
+        active: !root.isRestart && root.image == "" && root.appIcon != ""
         anchors.centerIn: parent
         sourceComponent: IconImage {
             id: appIconImage

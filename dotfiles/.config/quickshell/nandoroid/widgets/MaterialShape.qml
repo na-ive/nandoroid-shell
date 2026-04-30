@@ -43,7 +43,8 @@ Item {
         PixelCircle,
         PixelTriangle,
         Bun,
-        Heart
+        Heart,
+        Squircle
     }
 
     // Map strings to enum values
@@ -82,7 +83,8 @@ Item {
         "PixelCircle": MaterialShape.Shape.PixelCircle,
         "PixelTriangle": MaterialShape.Shape.PixelTriangle,
         "Bun": MaterialShape.Shape.Bun,
-        "Heart": MaterialShape.Shape.Heart
+        "Heart": MaterialShape.Shape.Heart,
+        "Squircle": MaterialShape.Shape.Squircle
     })
 
     function getShape(str) {
@@ -150,6 +152,7 @@ Item {
             case MaterialShape.Shape.PixelTriangle: return MaterialShapes.getPixelTriangle();
             case MaterialShape.Shape.Bun: return MaterialShapes.getBun();
             case MaterialShape.Shape.Heart: return MaterialShapes.getHeart();
+            case MaterialShape.Shape.Squircle: return MaterialShapes.getCookie4Sided();
             default: return MaterialShapes.getCircle();
         }
     }

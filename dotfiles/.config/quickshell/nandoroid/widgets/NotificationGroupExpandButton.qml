@@ -11,6 +11,7 @@ RippleButton { // Expand button
     id: root
     required property int count
     required property bool expanded
+    property bool isRestart: false
     property real fontSize: Appearance.font.pixelSize.smaller
     property real iconSize: Appearance.font.pixelSize.normal
     implicitHeight: fontSize + (4 * 2) * Appearance.effectiveScale
@@ -19,9 +20,15 @@ RippleButton { // Expand button
     Layout.fillHeight: false
 
     buttonRadius: Appearance.rounding.full
-    colBackground: Functions.ColorUtils.mix(Appearance.colors.colLayer2, Appearance.colors.colLayer2Hover, 0.5)
-    colBackgroundHover: Appearance.colors.colLayer2Hover
-    colRipple: Appearance.colors.colLayer2Active
+    colBackground: isRestart ? 
+        Functions.ColorUtils.applyAlpha(Appearance.colors.colOnWarningContainer, 0.1) :
+        Functions.ColorUtils.mix(Appearance.colors.colLayer2, Appearance.colors.colLayer2Hover, 0.5)
+    colBackgroundHover: isRestart ? 
+        Functions.ColorUtils.applyAlpha(Appearance.colors.colOnWarningContainer, 0.2) :
+        Appearance.colors.colLayer2Hover
+    colRipple: isRestart ? 
+        Functions.ColorUtils.applyAlpha(Appearance.colors.colOnWarningContainer, 0.3) :
+        Appearance.colors.colLayer2Active
 
     contentItem: Item {
         id: contentContainerItem
@@ -36,12 +43,12 @@ RippleButton { // Expand button
                 visible: root.count > 1
                 text: root.count
                 font.pixelSize: root.fontSize
-                color: Appearance.colors.colOnLayer2
+                color: isRestart ? Appearance.colors.colOnWarningContainer : Appearance.colors.colOnLayer2
             }
             MaterialSymbol {
                 text: "keyboard_arrow_down"
                 iconSize: root.iconSize
-                color: Appearance.colors.colOnLayer2
+                color: isRestart ? Appearance.colors.colOnWarningContainer : Appearance.colors.colOnLayer2
                 rotation: expanded ? 180 : 0
                 Behavior on rotation {
                     animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(this)

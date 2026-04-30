@@ -184,8 +184,11 @@ Singleton {
         property color colOnError: m3colors.m3onError
         property color colErrorContainer: m3colors.m3errorContainer
         property color colOnErrorContainer: m3colors.m3onErrorContainer
-        // Warning (Mapped to Tertiary in M3 if not specific)
-        property color colWarning: m3colors.m3tertiary 
+        // Warning Colors (Vivid Orange/Red standard)
+        property color colWarning: "#FF5722"
+        property color colOnWarning: "#FFFFFF"
+        property color colWarningContainer: m3colors.darkmode ? "#3E1A11" : "#FFDAD5"
+        property color colOnWarningContainer: m3colors.darkmode ? "#FFCCBC" : "#410001"
         // Background alias
         property color colBackground: colLayer0
         // Misc

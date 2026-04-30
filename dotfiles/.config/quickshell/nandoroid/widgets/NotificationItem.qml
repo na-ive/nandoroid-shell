@@ -130,10 +130,12 @@ Item { // Notification item area
             }
         }
 
-        color: (expanded && !onlyNotification) ? 
-            (notificationObject.urgency == NotificationUrgency.Critical) ? 
-                Functions.ColorUtils.mix(Appearance.m3colors.m3secondaryContainer, Appearance.colors.colLayer2, 0.35) :
-                (Appearance.colors.colLayer3) :
+        color: (notificationObject.isRestartRequired) ?
+            Appearance.colors.colWarningContainer :
+            (expanded && !onlyNotification) ? 
+                (notificationObject.urgency == NotificationUrgency.Critical) ? 
+                    Functions.ColorUtils.mix(Appearance.m3colors.m3secondaryContainer, Appearance.colors.colLayer2, 0.35) :
+                    (Appearance.colors.colLayer3) :
             "transparent"
 
         implicitHeight: expanded ? (contentColumn.implicitHeight + padding * 2) : summaryRow.implicitHeight
@@ -162,7 +164,8 @@ Item { // Notification item area
                     Layout.fillWidth: summaryTextMetrics.width >= summaryRow.implicitWidth * root.summaryElideRatio
                     visible: !root.onlyNotification
                     font.pixelSize: root.fontSize
-                    color: Appearance.colors.colOnLayer3
+                    font.weight: notificationObject.isRestartRequired ? Font.Bold : Font.Normal
+                    color: notificationObject.isRestartRequired ? Appearance.colors.colOnWarningContainer : Appearance.colors.colOnLayer3
                     elide: Text.ElideRight
                     text: root.notificationObject.summary || ""
                 }
@@ -175,7 +178,7 @@ Item { // Notification item area
                         animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(this)
                     }
                     font.pixelSize: root.fontSize
-                    color: Appearance.colors.colSubtext
+                    color: notificationObject.isRestartRequired ? Appearance.colors.colOnWarningContainer : Appearance.colors.colSubtext
                     elide: Text.ElideRight
                     maximumLineCount: 1
                     textFormat: Text.StyledText
@@ -198,7 +201,7 @@ Item { // Notification item area
                     }
                     Layout.fillWidth: true
                     font.pixelSize: root.fontSize
-                    color: Appearance.colors.colSubtext
+                    color: notificationObject.isRestartRequired ? Appearance.colors.colOnWarningContainer : Appearance.colors.colSubtext
                     wrapMode: Text.WrapAnywhere
                     elide: Text.ElideRight
                     textFormat: Text.RichText
@@ -233,8 +236,10 @@ Item { // Notification item area
                     ScrollEdgeFade {
                         target: actionsFlickable
                         vertical: false
-                        fadeSize: 20 * Appearance.effectiveScale
-                        color: Functions.ColorUtils.transparentize(Appearance.m3colors.m3shadow, 0.96) // Super subtle
+                        fadeSize: 32 * Appearance.effectiveScale
+                        color: notificationObject.isRestartRequired ? 
+                            Appearance.colors.colWarningContainer : 
+                            (expanded && !onlyNotification ? Appearance.colors.colLayer3 : "transparent")
                     }
 
                     StyledFlickable { // Notification actions
@@ -257,12 +262,61 @@ Item { // Notification item area
                             id: actionRowLayout
                             Layout.alignment: Qt.AlignBottom
                             spacing: 8 * Appearance.effectiveScale
+                            
+                            readonly property bool isWarning: notificationObject.isRestartRequired
+                            readonly property color btnBg: isWarning ? "transparent" : (notificationObject.urgency == NotificationUrgency.Critical ? Appearance.m3colors.m3secondaryContainer : Appearance.m3colors.m3surfaceContainerHighest)
+                            readonly property color btnHover: isWarning ? Functions.ColorUtils.applyAlpha("white", 0.05) : (notificationObject.urgency == NotificationUrgency.Critical ? Appearance.m3colors.m3secondaryFixedDim : Appearance.m3colors.m3surfaceBright)
 
                             NotificationActionButton {
+                                id: restartBtn
+                                visible: actionRowLayout.isWarning
+                                Layout.fillWidth: true
+                                buttonText: "Restart"
+                                urgency: notificationObject.urgency
+                                colBackground: Appearance.colors.colWarning
+                                colBackgroundHover: Functions.ColorUtils.mix(Appearance.colors.colWarning, "white", 0.85)
+                                colText: Appearance.colors.colOnWarning
+                                implicitWidth: (notificationObject.actions.length == 0) ? ((actionsFlickable.width - actionRowLayout.spacing * 3) / 4) : 
+                                    (contentItem.implicitWidth + leftPadding + rightPadding)
+
+                                onClicked: {
+                                    Session.reboot();
+                                }
+
+                                contentItem: Item {
+                                    implicitWidth: innerRowRestart.implicitWidth
+                                    implicitHeight: innerRowRestart.implicitHeight
+                                    Row {
+                                        id: innerRowRestart
+                                        spacing: 4 * Appearance.effectiveScale
+                                        anchors.centerIn: parent
+                                        MaterialSymbol {
+                                            iconSize: 16 * Appearance.effectiveScale
+                                            anchors.verticalCenter: parent.verticalCenter
+                                            color: Appearance.colors.colOnWarning
+                                            text: "restart_alt"
+                                        }
+                                        StyledText {
+                                            text: "Restart"
+                                            font.pixelSize: 12 * Appearance.effectiveScale
+                                            anchors.verticalCenter: parent.verticalCenter
+                                            visible: parent.parent.parent.width > 60 * Appearance.effectiveScale
+                                            color: Appearance.colors.colOnWarning
+                                        }
+                                    }
+                                }
+                            }
+
+                            NotificationActionButton {
+                                id: viewBtn
                                 Layout.fillWidth: true
                                 buttonText: "View"
                                 urgency: notificationObject.urgency
-                                implicitWidth: (notificationObject.actions.length == 0) ? ((actionsFlickable.width - actionRowLayout.spacing * 2) / 3) : 
+                                colBackground: actionRowLayout.btnBg
+                                colBackgroundHover: actionRowLayout.btnHover
+                                colText: actionRowLayout.isWarning ? Appearance.colors.colOnWarningContainer : 
+                                    (notificationObject.urgency == NotificationUrgency.Critical) ? Appearance.m3colors.m3onSurfaceVariant : Appearance.m3colors.m3onSurface
+                                implicitWidth: (notificationObject.actions.length == 0) ? (actionRowLayout.isWarning ? ((actionsFlickable.width - actionRowLayout.spacing * 3) / 4) : ((actionsFlickable.width - actionRowLayout.spacing * 2) / 3)) : 
                                     (contentItem.implicitWidth + leftPadding + rightPadding)
 
                                 onClicked: {
@@ -279,8 +333,7 @@ Item { // Notification item area
                                         MaterialSymbol {
                                             iconSize: 16 * Appearance.effectiveScale
                                             anchors.verticalCenter: parent.verticalCenter
-                                            color: (notificationObject.urgency == NotificationUrgency.Critical) ? 
-                                                Appearance.m3colors.m3onSurfaceVariant : Appearance.m3colors.m3onSurface
+                                            color: viewBtn.colText
                                             text: "visibility"
                                         }
                                         StyledText {
@@ -288,18 +341,22 @@ Item { // Notification item area
                                             font.pixelSize: 12 * Appearance.effectiveScale
                                             anchors.verticalCenter: parent.verticalCenter
                                             visible: parent.parent.parent.width > 60 * Appearance.effectiveScale
-                                            color: (notificationObject.urgency == NotificationUrgency.Critical) ? 
-                                                Appearance.m3colors.m3onSurfaceVariant : Appearance.m3colors.m3onSurface
+                                            color: viewBtn.colText
                                         }
                                     }
                                 }
                             }
 
                             NotificationActionButton {
+                                id: closeBtn
                                 Layout.fillWidth: true
                                 buttonText: "Close"
                                 urgency: notificationObject.urgency
-                                implicitWidth: (notificationObject.actions.length == 0) ? ((actionsFlickable.width - actionRowLayout.spacing * 2) / 3) : 
+                                colBackground: actionRowLayout.btnBg
+                                colBackgroundHover: actionRowLayout.btnHover
+                                colText: actionRowLayout.isWarning ? Appearance.colors.colOnWarningContainer : 
+                                    (notificationObject.urgency == NotificationUrgency.Critical) ? Appearance.m3colors.m3onSurfaceVariant : Appearance.m3colors.m3onSurface
+                                implicitWidth: (notificationObject.actions.length == 0) ? (actionRowLayout.isWarning ? ((actionsFlickable.width - actionRowLayout.spacing * 3) / 4) : ((actionsFlickable.width - actionRowLayout.spacing * 2) / 3)) : 
                                     (contentItem.implicitWidth + leftPadding + rightPadding)
 
                                 onClicked: {
@@ -316,8 +373,7 @@ Item { // Notification item area
                                         MaterialSymbol {
                                             iconSize: 16 * Appearance.effectiveScale
                                             anchors.verticalCenter: parent.verticalCenter
-                                            color: (notificationObject.urgency == NotificationUrgency.Critical) ? 
-                                                Appearance.m3colors.m3onSurfaceVariant : Appearance.m3colors.m3onSurface
+                                            color: closeBtn.colText
                                             text: "close"
                                         }
                                         StyledText {
@@ -325,8 +381,7 @@ Item { // Notification item area
                                             font.pixelSize: 12 * Appearance.effectiveScale
                                             anchors.verticalCenter: parent.verticalCenter
                                             visible: parent.parent.parent.width > 60 * Appearance.effectiveScale
-                                            color: (notificationObject.urgency == NotificationUrgency.Critical) ? 
-                                                Appearance.m3colors.m3onSurfaceVariant : Appearance.m3colors.m3onSurface
+                                            color: closeBtn.colText
                                         }
                                     }
                                 }
@@ -341,6 +396,10 @@ Item { // Notification item area
                                     Layout.fillWidth: true
                                     buttonText: modelData.text
                                     urgency: notificationObject.urgency
+                                    colBackground: actionRowLayout.btnBg
+                                    colBackgroundHover: actionRowLayout.btnHover
+                                    colText: actionRowLayout.isWarning ? Appearance.colors.colOnWarningContainer : 
+                                        (urgency == NotificationUrgency.Critical) ? Appearance.m3colors.m3onSurfaceVariant : Appearance.m3colors.m3onSurface
                                     onClicked: {
                                         Notifications.attemptInvokeAction(notificationObject.notificationId, modelData.identifier);
                                     }
@@ -348,10 +407,15 @@ Item { // Notification item area
                             }
 
                             NotificationActionButton {
+                                id: copyBtn
                                 Layout.fillWidth: true
                                 buttonText: "Copy"
                                 urgency: notificationObject.urgency
-                                implicitWidth: (notificationObject.actions.length == 0) ? ((actionsFlickable.width - actionRowLayout.spacing * 2) / 3) : 
+                                colBackground: actionRowLayout.btnBg
+                                colBackgroundHover: actionRowLayout.btnHover
+                                colText: actionRowLayout.isWarning ? Appearance.colors.colOnWarningContainer : 
+                                    (notificationObject.urgency == NotificationUrgency.Critical) ? Appearance.m3colors.m3onSurfaceVariant : Appearance.m3colors.m3onSurface
+                                implicitWidth: (notificationObject.actions.length == 0) ? (actionRowLayout.isWarning ? ((actionsFlickable.width - actionRowLayout.spacing * 3) / 4) : ((actionsFlickable.width - actionRowLayout.spacing * 2) / 3)) : 
                                     (contentItem.implicitWidth + leftPadding + rightPadding)
 
                                 onClicked: {
@@ -380,8 +444,7 @@ Item { // Notification item area
                                             id: copyIcon
                                             iconSize: 16 * Appearance.effectiveScale
                                             anchors.verticalCenter: parent.verticalCenter
-                                            color: (notificationObject.urgency == NotificationUrgency.Critical) ? 
-                                                Appearance.m3colors.m3onSurfaceVariant : Appearance.m3colors.m3onSurface
+                                            color: copyBtn.colText
                                             text: "content_copy"
                                         }
                                         StyledText {
@@ -389,8 +452,7 @@ Item { // Notification item area
                                             font.pixelSize: 12 * Appearance.effectiveScale
                                             anchors.verticalCenter: parent.verticalCenter
                                             visible: parent.parent.parent.width > 60 * Appearance.effectiveScale
-                                            color: (notificationObject.urgency == NotificationUrgency.Critical) ? 
-                                                Appearance.m3colors.m3onSurfaceVariant : Appearance.m3colors.m3onSurface
+                                            color: copyBtn.colText
                                         }
                                     }
                                 }

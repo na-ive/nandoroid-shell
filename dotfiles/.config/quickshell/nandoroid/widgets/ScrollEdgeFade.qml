@@ -6,8 +6,8 @@ Item {
     id: root
     z: 99
     required property Item target
-    property real fadeSize: Appearance.m3colors.darkmode ? 40 : 20
-    property color color: Functions.ColorUtils.transparentize(Appearance.m3colors.m3shadow, Appearance.m3colors.darkmode ? 0.85 : 0.9)
+    property real fadeSize: Appearance.m3colors.darkmode ? 40 * Appearance.effectiveScale : 20 * Appearance.effectiveScale
+    property color color: "black" // Should be passed from parent to match background
     property bool vertical: true
 
     anchors.fill: target
@@ -19,10 +19,7 @@ Item {
 
         opacity: shown ? 1 : 0
         visible: opacity > 0
-        Behavior on opacity {
-            animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(this)
-        }
-
+        
         gradient: Gradient {
             orientation: root.vertical ? Gradient.Vertical : Gradient.Horizontal
             GradientStop {
@@ -31,8 +28,12 @@ Item {
             }
             GradientStop {
                 position: 1.0
-                color: Functions.ColorUtils.transparentize(root.color)
+                color: "transparent"
             }
+        }
+        
+        Behavior on opacity {
+            animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(this)
         }
     }
 

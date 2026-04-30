@@ -17,6 +17,7 @@ MouseArea { // Notification group area
     property var notifications: notificationGroup?.notifications ?? []
     property int notificationCount: notifications.length
     property bool multipleNotifications: notificationCount > 1
+    property bool anyRestartRequired: notifications.some(n => n.isRestartRequired)
     property bool expanded: false
     property bool popup: false
     property real padding: 10 * Appearance.effectiveScale
@@ -130,7 +131,9 @@ MouseArea { // Notification group area
         id: background
         anchors.left: parent.left
         width: parent.width
-        color: popup ? Appearance.m3colors.m3surfaceContainer : Appearance.colors.colLayer2
+        color: root.anyRestartRequired ? 
+            Functions.ColorUtils.applyAlpha(Appearance.colors.colWarningContainer, 0.95) :
+            popup ? Appearance.m3colors.m3surfaceContainer : Appearance.colors.colLayer2
         orientation: Qt.Vertical
         maxRadius: 24 * Appearance.effectiveScale
         
@@ -138,6 +141,23 @@ MouseArea { // Notification group area
         forceLast: root.isLast
         
         anchors.leftMargin: root.xOffset
+
+        // Border for Restart Warning
+        Rectangle {
+            anchors.fill: parent
+            z: 99
+            color: "transparent"
+            border.width: 0
+            border.color: "transparent"
+            radius: background.maxRadius || 24 * Appearance.effectiveScale
+            visible: false
+            
+            // Explicitly set radii to match SegmentedWrapper logic
+            topLeftRadius: background.rTopLeft || radius
+            topRightRadius: background.rTopRight || radius
+            bottomLeftRadius: background.rBottomLeft || radius
+            bottomRightRadius: background.rBottomRight || radius
+        }
 
         Behavior on anchors.leftMargin {
             enabled: !dragManager.dragging
@@ -171,6 +191,7 @@ MouseArea { // Notification group area
                 image: root?.multipleNotifications ? "" : notificationGroup?.notifications[0]?.image ?? ""
                 appIcon: root.notificationGroup?.appIcon
                 summary: root.notificationGroup?.notifications[root.notificationCount - 1]?.summary
+                isRestart: root.anyRestartRequired
                 urgency: root.notifications.some(n => n.urgency == NotificationUrgency.Critical) ? 
                     NotificationUrgency.Critical : NotificationUrgency.Normal
             }
@@ -208,9 +229,11 @@ MouseArea { // Notification group area
                             font.pixelSize: topRow.showAppName ?
                                 topRow.fontSize :
                                 Appearance.font.pixelSize.small
-                            color: topRow.showAppName ?
-                                Appearance.colors.colSubtext :
-                                Appearance.colors.colOnLayer2
+                            color: root.anyRestartRequired ? 
+                                Appearance.colors.colOnWarningContainer : 
+                                topRow.showAppName ?
+                                    Appearance.colors.colSubtext :
+                                    Appearance.colors.colOnLayer2
                         }
                         StyledText {
                             id: timeText
@@ -218,7 +241,9 @@ MouseArea { // Notification group area
                             horizontalAlignment: Text.AlignLeft
                             text: NotificationUtils.getFriendlyNotifTimeString(notificationGroup?.time)
                             font.pixelSize: topRow.fontSize
-                            color: Appearance.colors.colSubtext
+                            color: root.anyRestartRequired ? 
+                                Appearance.colors.colOnWarningContainer : 
+                                Appearance.colors.colSubtext
                         }
                     }
                     NotificationGroupExpandButton {
@@ -227,6 +252,7 @@ MouseArea { // Notification group area
                         anchors.verticalCenter: parent.verticalCenter
                         count: root.notificationCount
                         expanded: root.expanded
+                        isRestart: root.anyRestartRequired
                         fontSize: topRow.fontSize
                         onClicked: { root.toggleExpanded() }
                         altAction: () => { root.toggleExpanded() }

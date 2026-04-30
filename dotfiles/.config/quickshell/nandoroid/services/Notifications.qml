@@ -2,6 +2,7 @@ pragma Singleton
 pragma ComponentBehavior: Bound
 
 import "../core"
+import "../services"
 import QtQuick
 import Quickshell
 import Quickshell.Io
@@ -32,11 +33,11 @@ Singleton {
         const groups = {};
         for (let i = 0; i < list.length; i++) {
             const n = list[i];
-            const name = n.appName || "Unknown";
+            const name = n.isRestartRequired ? "System" : (n.appName || "Unknown");
             if (!groups[name]) {
                 groups[name] = {
                     appName: name,
-                    appIcon: n.appIcon, 
+                    appIcon: n.isRestartRequired ? "restart_alt" : n.appIcon, 
                     time: n.time,
                     notifications: []
                 };
@@ -52,11 +53,11 @@ Singleton {
         const popupList = list.filter(n => n.popup);
         for (let i = 0; i < popupList.length; i++) {
             const n = popupList[i];
-            const name = n.appName || "Unknown";
+            const name = n.isRestartRequired ? "System" : (n.appName || "Unknown");
             if (!groups[name]) {
                 groups[name] = {
                     appName: name,
-                    appIcon: n.appIcon, 
+                    appIcon: n.isRestartRequired ? "restart_alt" : n.appIcon, 
                     time: n.time,
                     notifications: []
                 };
@@ -71,6 +72,12 @@ Singleton {
     
     function sortApps(apps, groups) {
         return apps.sort((a, b) => {
+            const anyRestartA = groups[a]?.notifications.some(n => n.isRestartRequired) || false;
+            const anyRestartB = groups[b]?.notifications.some(n => n.isRestartRequired) || false;
+            
+            if (anyRestartA && !anyRestartB) return -1;
+            if (!anyRestartA && anyRestartB) return 1;
+
             const timeA = groups[a]?.time || 0;
             const timeB = groups[b]?.time || 0;
             return timeB - timeA; // Newest first
@@ -115,6 +122,7 @@ Singleton {
         property double time
         property Timer timer
         property bool expanded: false
+        property bool isRestartRequired: false
 
         property list<var> actions: {
             if (notification && notification.actions) {
@@ -170,6 +178,13 @@ Singleton {
                 root.activePopup = null;
             }
 
+            const summaryLower = (notification.summary || "").toLowerCase();
+            const bodyLower = (notification.body || "").toLowerCase();
+            const appNameLower = (notification.appName || "").toLowerCase();
+            
+            const restartKeywords = ["restart", "reboot", "kernel update", "needs to be restarted"];
+            const isRestart = restartKeywords.some(kw => summaryLower.includes(kw) || bodyLower.includes(kw));
+
             const newNotif = notifComponent.createObject(root, {
                 "notificationId": notification.id + root.idOffset,
                 "notification": notification,
@@ -180,6 +195,7 @@ Singleton {
                 "summary":  notification.summary  ?? "",
                 "urgency":  notification.urgency?.toString() ?? "normal",
                 "time":     Date.now(),
+                "isRestartRequired": isRestart
             });
             
             // Add to list and handle popup state
@@ -340,6 +356,7 @@ Singleton {
             summary: n.summary,
             time: n.time,
             urgency: n.urgency,
+            isRestartRequired: n.isRestartRequired
         })), null, 2);
     }
 
@@ -362,6 +379,7 @@ Singleton {
                     "summary": n.summary ?? "",
                     "time": n.time ?? 0,
                     "urgency": n.urgency ?? "normal",
+                    "isRestartRequired": n.isRestartRequired ?? false
                 }));
                 // Find max ID to avoid collisions
                 let maxId = 0;

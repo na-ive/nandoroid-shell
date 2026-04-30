@@ -6,6 +6,7 @@ RippleButton {
     id: button
     property string buttonText
     property string urgency
+    property color colText: (urgency == NotificationUrgency.Critical) ? Appearance.m3colors.m3onSurfaceVariant : Appearance.m3colors.m3onSurface
 
     implicitHeight: 34 * Appearance.effectiveScale
     leftPadding: 15 * Appearance.effectiveScale
@@ -18,6 +19,6 @@ RippleButton {
     contentItem: StyledText {
         horizontalAlignment: Text.AlignHCenter
         text: buttonText
-        color: (urgency == NotificationUrgency.Critical) ? Appearance.m3colors.m3onSurfaceVariant : Appearance.m3colors.m3onSurface
+        color: button.colText
     }
 }
