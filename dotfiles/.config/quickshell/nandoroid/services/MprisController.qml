@@ -107,7 +107,14 @@ Singleton {
 
     function startNextDownload() {
         if (_pendingUrl === "") return;
-        coverArtDownloader.exec(["sh", "-c", '[ -f "$2" ] || curl -sSL "$1" -o "$2"', "sh", _pendingUrl, _pendingDest]);
+        
+        // Safety check: Don't pass massive Base64 strings or non-URLs to curl
+        if (_pendingUrl.startsWith("data:") || _pendingUrl.length > 1024) {
+            _pendingUrl = "";
+            return;
+        }
+
+        coverArtDownloader.exec(["sh", "-c", '[ -f "$2" ] || curl -sSL "$1" -o "$2" > /dev/null 2>&1', "sh", _pendingUrl, _pendingDest]);
         _pendingUrl = "" 
     }
 
