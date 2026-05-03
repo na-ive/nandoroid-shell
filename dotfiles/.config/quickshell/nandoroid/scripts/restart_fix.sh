@@ -6,6 +6,7 @@
 
 # 1. Kill existing quickshell instances
 killall qs quickshell 2>/dev/null
+pkill -9 cava 2>/dev/null
 
 # 2. Clean up D-Bus name for System Tray
 # Often kded6 or other services hold this name but don't provide the service, 

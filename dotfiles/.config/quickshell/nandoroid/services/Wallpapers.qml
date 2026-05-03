@@ -112,6 +112,8 @@ Singleton {
         property string filePath
         property string scheme: Config.options.appearance.background.matugenScheme || "scheme-tonal-spot"
         
+        onRunningChanged: if (running) CavaService.stop(); else CavaService.start();
+
         stderr: StdioCollector {
             onStreamFinished: {
                 // Look for actual fatal error markers (Matugen v4 specific fatal markers)
@@ -131,6 +133,8 @@ Singleton {
             if (Config.ready && !Config.options.appearance.background.matugen) return "scheme-tonal-spot";
             return Config.options.appearance.background.matugenScheme || "scheme-tonal-spot";
         }
+
+        onRunningChanged: if (running) CavaService.stop(); else CavaService.start();
 
         stderr: StdioCollector {
             onStreamFinished: {
