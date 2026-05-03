@@ -41,6 +41,7 @@ Scope {
         Item {
             id: maskItem
             anchors.horizontalCenter: parent.horizontalCenter
+            anchors.horizontalCenterOffset: (listview.activeDelegate) ? listview.activeDelegate.currentXOffset : 0
             width: listview.width
             anchors.top: listview.top
             height: listview.contentHeight
@@ -50,6 +51,7 @@ Scope {
 
         ListView {
             id: listview
+            property var activeDelegate: null
             anchors {
                 top: parent.top
                 horizontalCenter: parent.horizontalCenter
@@ -62,8 +64,12 @@ Scope {
             
             model: Notifications.activePopup ? [Notifications.activePopup] : []
             delegate: NotificationPopupItem {
+                id: delegateItem
                 width: listview.width
                 notificationObject: modelData
+
+                Component.onCompleted: listview.activeDelegate = delegateItem
+                Component.onDestruction: if (listview.activeDelegate == delegateItem) listview.activeDelegate = null
             }
 
             // Transitions for replacement
@@ -76,10 +82,7 @@ Scope {
             }
 
             remove: Transition {
-                ParallelAnimation {
-                    NumberAnimation { property: "opacity"; to: 0; duration: 250 }
-                    NumberAnimation { property: "x"; to: 500; duration: 300; easing.type: Easing.InQuint }
-                }
+                NumberAnimation { property: "opacity"; to: 0; duration: 200 }
             }
         }
     }

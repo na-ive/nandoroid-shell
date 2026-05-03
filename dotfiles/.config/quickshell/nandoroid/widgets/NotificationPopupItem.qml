@@ -19,6 +19,34 @@ Item {
     property bool expanded: false
     property real padding: 16 * Appearance.effectiveScale
 
+    property alias dragDiffX: dragManager.dragDiffX
+    property alias dragging: dragManager.dragging
+    property bool wasDragging: false
+    readonly property real currentXOffset: background.anchors.leftMargin
+
+    function destroyWithAnimation(left = false) {
+        dragManager.resetDrag();
+        background.anchors.leftMargin = background.anchors.leftMargin; // Break binding
+        destroyAnimation.left = left;
+        destroyAnimation.running = true;
+    }
+
+    SequentialAnimation {
+        id: destroyAnimation
+        property bool left: true
+        running: false
+        NumberAnimation {
+            target: background.anchors
+            property: "leftMargin"
+            to: (root.width + 100 * Appearance.effectiveScale) * (destroyAnimation.left ? -1 : 1)
+            duration: 300
+            easing.type: Easing.InQuint
+        }
+        onFinished: {
+            if (notificationObject) Notifications.discardNotification(notificationObject.notificationId);
+        }
+    }
+
     implicitHeight: background.height
     width: parent ? parent.width : 400 * Appearance.effectiveScale
 
@@ -47,6 +75,27 @@ Item {
         }
     }
 
+    DragManager {
+        id: dragManager
+        anchors.fill: background
+        interactive: true
+        automaticallyReset: false
+        onPressed: root.wasDragging = false
+        onDraggingChanged: if (dragging) root.wasDragging = true
+        onClicked: {
+            if (!root.wasDragging && Math.abs(dragDiffX) < 5 * Appearance.effectiveScale) {
+                root.expanded = !root.expanded;
+            }
+        }
+        onDragReleased: (diffX, diffY) => {
+            if (Math.abs(diffX) > 70 * Appearance.effectiveScale) {
+                root.destroyWithAnimation(diffX < 0);
+            } else {
+                dragManager.resetDrag();
+            }
+        }
+    }
+
     Rectangle {
         id: background
         anchors.left: parent.left
@@ -56,14 +105,16 @@ Item {
             Appearance.colors.colWarningContainer : Appearance.m3colors.m3surfaceContainer
         clip: true
         
+        opacity: 1 - (Math.abs(anchors.leftMargin) / (root.width * 1.2))
+
         // MD3 Outline Style
         border.width: Math.max(1, 1 * Appearance.effectiveScale)
         border.color: (notificationObject && notificationObject.isRestartRequired) ? 
             Functions.ColorUtils.applyAlpha(Appearance.colors.colWarning, 0.12) : Functions.ColorUtils.applyAlpha(Appearance.m3colors.m3onSurface, 0.12)
 
-        anchors.leftMargin: 0
+        anchors.leftMargin: dragManager.dragDiffX
         Behavior on anchors.leftMargin {
-            enabled: !dragManager.dragging
+            enabled: !dragManager.dragging && !destroyAnimation.running
             NumberAnimation {
                 duration: 300
                 easing.type: Easing.OutQuint
@@ -78,26 +129,6 @@ Item {
         HoverHandler {
             id: hoverHandler
             onHoveredChanged: root.updateTimerState()
-        }
-
-        DragManager {
-            id: dragManager
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.top: parent.top
-            height: bodyText.y + bodyText.height + root.padding // Only cover text area
-            interactive: true
-            automaticallyReset: false
-            onClicked: {
-                root.expanded = !root.expanded;
-            }
-            onDragReleased: (diffX, diffY) => {
-                if (Math.abs(diffX) > 70 * Appearance.effectiveScale) {
-                    if (notificationObject) Notifications.discardNotification(notificationObject.notificationId);
-                } else {
-                    dragManager.resetDrag();
-                }
-            }
         }
 
         Column {
