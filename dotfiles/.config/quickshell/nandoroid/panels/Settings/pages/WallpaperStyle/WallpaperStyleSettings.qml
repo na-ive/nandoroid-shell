@@ -73,6 +73,7 @@ Flickable {
 
     property var matugenPreviews: ({})
     property var pendingPreviews: ({})
+    property string currentSourceHex: ""
 
     Timer {
         id: batchUpdateTimer
@@ -102,7 +103,9 @@ Flickable {
 
     Process {
         id: previewMatugen
-        command: ["bash", "-c", `[ -f "$3" ] && matugen -c ~/.config/matugen/config.toml -t "$1" -m "$2" image "$3" --dry-run -j hex --old-json-output --source-color-index 0`, "matugen", currentScheme, (Config.options.appearance.background.darkmode ? "dark" : "light"), currentPath]
+        command: root.currentSourceHex === "" 
+            ? ["bash", "-c", `[ -f "$3" ] && matugen -c ~/.config/matugen/config.toml -t "$1" -m "$2" image "$3" --dry-run -j hex --old-json-output --source-color-index 0`, "matugen", currentScheme, (Config.options.appearance.background.darkmode ? "dark" : "light"), currentPath]
+            : ["bash", "-c", `matugen -c ~/.config/matugen/config.toml -t "$1" -m "$2" color hex "$3" --dry-run -j hex --old-json-output`, "matugen", currentScheme, (Config.options.appearance.background.darkmode ? "dark" : "light"), root.currentSourceHex]
         property string currentScheme: ""
         property string currentPath: ""
         property string currentSource: ""
@@ -129,6 +132,13 @@ Flickable {
                     }
                     
                     const data = JSON.parse(rawText.substring(jsonStart, jsonEnd + 1));
+                    
+                    if (root.currentSourceHex === "" && data.colors && data.colors.source_color) {
+                        const sc = data.colors.source_color;
+                        let extracted = sc.default || (sc.light ? sc.light : (sc.dark ? sc.dark : ""));
+                        if (typeof extracted === 'object') extracted = extracted.color || "";
+                        if (typeof extracted === 'string' && extracted.startsWith("#")) root.currentSourceHex = extracted;
+                    }
                     
                     const mode = Config.options.appearance.background.darkmode ? "dark" : "light";
                     let colors = [];
@@ -215,6 +225,7 @@ Flickable {
         previewIndex = 0;
         previewSource = "desktop";
         root.pendingPreviews = {};
+        root.currentSourceHex = "";
         previewIterateTimer.restart();
     }
 

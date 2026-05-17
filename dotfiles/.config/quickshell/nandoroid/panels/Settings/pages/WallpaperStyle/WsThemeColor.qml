@@ -111,11 +111,20 @@ ColumnLayout {
                 spacing: 16 * Appearance.effectiveScale
                 visible: colorSwitcherRow.currentTab === "wallpaper"
 
-                GridLayout {
+                Item {
                     Layout.fillWidth: true
-                    columns: 5
-                    rowSpacing: 16 * Appearance.effectiveScale
-                    columnSpacing: 16 * Appearance.effectiveScale
+                    implicitHeight: matugenColorGrid.implicitHeight
+
+                    GridLayout {
+                        id: matugenColorGrid
+                        anchors.fill: parent
+                        columns: 5
+                        rowSpacing: 16 * Appearance.effectiveScale
+                        columnSpacing: 16 * Appearance.effectiveScale
+
+                        opacity: (previewIterateTimer.running || previewMatugen.running) ? 0.3 : 1.0
+                        Behavior on opacity { NumberAnimation { duration: 300; easing.type: Easing.InOutQuad } }
+                        enabled: !(previewIterateTimer.running || previewMatugen.running)
 
                     // Desktop Schemes (Show 8 when collapsed + 1 Picker + 1 Lockscreen = 10)
                     Repeater {
@@ -200,6 +209,22 @@ ColumnLayout {
                         onClicked: {
                             GlobalStates.accentPickerTarget = "lock"
                             GlobalStates.accentPickerOpen = true
+                        }
+                    }
+                    }
+
+                    MaterialSymbol {
+                        text: "sync"
+                        anchors.centerIn: parent
+                        visible: previewIterateTimer.running || previewMatugen.running
+                        iconSize: 42 * Appearance.effectiveScale
+                        color: Appearance.colors.colPrimary
+                        RotationAnimation on rotation {
+                            loops: Animation.Infinite
+                            from: 0
+                            to: 360
+                            duration: 1000
+                            running: parent.visible
                         }
                     }
                 }
