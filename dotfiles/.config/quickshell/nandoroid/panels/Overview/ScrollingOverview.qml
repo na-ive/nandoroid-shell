@@ -85,7 +85,7 @@ Rectangle {
     function navigateToSelectedWindow() {
         if (matchingWindows.length === 0 || selectedMatchIndex < 0) return;
         const win = matchingWindows[selectedMatchIndex]; if (!win) return;
-        GlobalStates.closeAllPanels(); Qt.callLater(() => { Hyprland.dispatch(`focuswindow address:${win.address}`); });
+        GlobalStates.closeAllPanels(); Qt.callLater(() => { Hyprland.dispatch(HyprlandCompat.dspFocusWindow(`address:${win.address}`)); });
     }
 
     function selectNextMatch() { if (matchingWindows.length > 0) selectedMatchIndex = (selectedMatchIndex + 1) % matchingWindows.length; }
@@ -160,10 +160,10 @@ Rectangle {
                     }
                     Keys.onPressed: (event) => {
                         if (event.key === Qt.Key_Tab || event.key === Qt.Key_Down || event.key === Qt.Key_Right) {
-                            if (searchInput.text === "") Hyprland.dispatch("workspace r+1"); else scrollingOverviewRoot.selectNextMatch();
+                            if (searchInput.text === "") Hyprland.dispatch(HyprlandCompat.dspWorkspace("r+1")); else scrollingOverviewRoot.selectNextMatch();
                             event.accepted = true;
                         } else if (event.key === Qt.Key_Backtab || event.key === Qt.Key_Up || event.key === Qt.Key_Left) {
-                            if (searchInput.text === "") Hyprland.dispatch("workspace r-1"); else scrollingOverviewRoot.selectPrevMatch();
+                            if (searchInput.text === "") Hyprland.dispatch(HyprlandCompat.dspWorkspace("r-1")); else scrollingOverviewRoot.selectPrevMatch();
                             event.accepted = true;
                         } else if (event.key === Qt.Key_Escape) {
                             if (searchInput.text !== "") searchInput.text = ""; else GlobalStates.closeAllPanels();

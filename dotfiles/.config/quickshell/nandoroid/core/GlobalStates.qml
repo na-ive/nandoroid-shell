@@ -244,6 +244,12 @@ Singleton {
     }
 
     function activateSettings() {
+        const moveCmd = Hyprland.usingLua
+            ? "hyprctl dispatch \"hl.dsp.window.move({ workspace = \\\"name:$CUR_WS\\\", window = \\\"address:$ADDR\\\", follow = false })\""
+            : "hyprctl dispatch movetoworkspacesilent name:$CUR_WS, address:$ADDR";
+        const focusCmd = Hyprland.usingLua
+            ? "hyprctl dispatch \"hl.dsp.focus({ window = \\\"address:$ADDR\\\" })\""
+            : "hyprctl dispatch focuswindow address:$ADDR";
         const cmd = `
             # Find settings window address
             ADDR=$(hyprctl clients -j | jq -r '.[] | select(.title == "Settings" and .class == "org.quickshell") | .address')
@@ -265,17 +271,23 @@ Singleton {
                 CUR_WS=$(hyprctl activeworkspace -j | jq -r .name)
                 
                 # Move window to current workspace silently
-                hyprctl dispatch movetoworkspacesilent "name:$CUR_WS,address:$ADDR"
+                ${moveCmd}
                 
                 # Micro-delay to let Hyprland update internal state, then focus
                 sleep 0.05
-                hyprctl dispatch focuswindow "address:$ADDR"
+                ${focusCmd}
             fi
         `;
         Quickshell.execDetached(["bash", "-c", cmd]);
     }
 
     function activateSystemMonitor() {
+        const moveCmd = Hyprland.usingLua
+            ? "hyprctl dispatch \"hl.dsp.window.move({ workspace = \\\"name:$CUR_WS\\\", window = \\\"address:$ADDR\\\", follow = false })\""
+            : "hyprctl dispatch movetoworkspacesilent name:$CUR_WS, address:$ADDR";
+        const focusCmd = Hyprland.usingLua
+            ? "hyprctl dispatch \"hl.dsp.focus({ window = \\\"address:$ADDR\\\" })\""
+            : "hyprctl dispatch focuswindow address:$ADDR";
         const cmd = `
             # Find System Monitor window address
             ADDR=$(hyprctl clients -j | jq -r '.[] | select(.title == "System Monitor" and .class == "org.quickshell") | .address')
@@ -297,11 +309,11 @@ Singleton {
                 CUR_WS=$(hyprctl activeworkspace -j | jq -r .name)
                 
                 # Move window to current workspace silently
-                hyprctl dispatch movetoworkspacesilent "name:$CUR_WS,address:$ADDR"
+                ${moveCmd}
                 
                 # Micro-delay
                 sleep 0.05
-                hyprctl dispatch focuswindow "address:$ADDR"
+                ${focusCmd}
             fi
         `;
         Quickshell.execDetached(["bash", "-c", cmd]);

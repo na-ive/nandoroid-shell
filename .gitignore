@@ -3,6 +3,7 @@
 Thumbs.db
 *~
 *.bak
+.vscode
 
 # Cache
 **/cache/

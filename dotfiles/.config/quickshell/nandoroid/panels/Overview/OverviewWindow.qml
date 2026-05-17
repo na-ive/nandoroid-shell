@@ -323,14 +323,14 @@ Item {
                         const percentageY = Math.round((relativeY / root.availableWorkspaceHeight) * 100);
                         
                         // Set position in target workspace
-                        Hyprland.dispatch(`movetoworkspacesilent ${targetWorkspace}, address:${windowData?.address}`);
-                        Hyprland.dispatch(`movewindowpixel exact ${percentageX}% ${percentageY}%, address:${windowData?.address}`);
+                        Hyprland.dispatch(HyprlandCompat.dspMoveToWsSilent(targetWorkspace, `address:${windowData?.address}`));
+                        Hyprland.dispatch(HyprlandCompat.dspMoveWindowPixel(`exact ${percentageX}% ${percentageY}%`, `address:${windowData?.address}`));
                         
                         // Force immediate window data update
                         HyprlandData.updateWindowList();
                     } else {
                         // Just move workspace without repositioning
-                        Hyprland.dispatch(`movetoworkspacesilent ${targetWorkspace}, address:${windowData?.address}`);
+                        Hyprland.dispatch(HyprlandCompat.dspMoveToWsSilent(targetWorkspace, `address:${windowData?.address}`));
                         HyprlandData.updateWindowList();
                     }
                     
@@ -348,7 +348,7 @@ Item {
                     const draggedX = root.x;
                     const draggedY = root.y;
                     
-                    Hyprland.dispatch(`movewindowpixel exact ${percentageX}% ${percentageY}%, address:${windowData?.address}`);
+                    Hyprland.dispatch(HyprlandCompat.dspMoveWindowPixel(`exact ${percentageX}% ${percentageY}%`, `address:${windowData?.address}`));
                     
                     // Force immediate window data update
                     HyprlandData.updateWindowList();
@@ -376,7 +376,7 @@ Item {
 
             if (mouse.button === Qt.LeftButton) {
                 // Single click just focuses the window without closing overview
-                Hyprland.dispatch(`focuswindow address:${windowData.address}`);
+                Hyprland.dispatch(HyprlandCompat.dspFocusWindow(`address:${windowData.address}`));
             } else if (mouse.button === Qt.MiddleButton) {
                 root.windowClosed();
             }

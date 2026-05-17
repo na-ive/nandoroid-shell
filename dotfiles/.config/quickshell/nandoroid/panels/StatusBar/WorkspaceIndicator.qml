@@ -72,9 +72,9 @@ Item {
     WheelHandler {
         onWheel: (event) => {
             if (event.angleDelta.y > 0) {
-                if (root.activeWsId > 1) Hyprland.dispatch("workspace r-1")
+                if (root.activeWsId > 1) Hyprland.dispatch(HyprlandCompat.dspWorkspace("r-1"))
             } else if (event.angleDelta.y < 0) {
-                Hyprland.dispatch("workspace r+1")
+                Hyprland.dispatch(HyprlandCompat.dspWorkspace("r+1"))
             }
         }
     }
@@ -207,7 +207,7 @@ Item {
                     anchors.margins: -4 * Appearance.effectiveScale
                     hoverEnabled: true
                     cursorShape: Qt.PointingHandCursor
-                    onClicked: Hyprland.dispatch(`workspace ${dot.wsId}`)
+                    onClicked: Hyprland.dispatch(HyprlandCompat.dspWorkspace(dot.wsId))
                 }
             }
         }

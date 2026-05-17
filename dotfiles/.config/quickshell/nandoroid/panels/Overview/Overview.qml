@@ -101,7 +101,7 @@ Rectangle {
         const win = matchingWindows[selectedMatchIndex];
         if (!win) return;
         GlobalStates.closeAllPanels();
-        Qt.callLater(() => { Hyprland.dispatch(`focuswindow address:${win.address}`); });
+        Qt.callLater(() => { Hyprland.dispatch(HyprlandCompat.dspFocusWindow(`address:${win.address}`)); });
     }
 
     function selectNextMatch() { if (matchingWindows.length > 0) selectedMatchIndex = (selectedMatchIndex + 1) % matchingWindows.length; }
@@ -196,11 +196,11 @@ Rectangle {
 
                     Keys.onPressed: (event) => {
                         if (event.key === Qt.Key_Tab || event.key === Qt.Key_Down || event.key === Qt.Key_Right) {
-                            if (searchInput.text === "") Hyprland.dispatch("workspace r+1");
+                            if (searchInput.text === "") Hyprland.dispatch(HyprlandCompat.dspWorkspace("r+1"));
                             else standardOverviewRoot.selectNextMatch();
                             event.accepted = true;
                         } else if (event.key === Qt.Key_Backtab || event.key === Qt.Key_Up || event.key === Qt.Key_Left) {
-                            if (searchInput.text === "") Hyprland.dispatch("workspace r-1");
+                            if (searchInput.text === "") Hyprland.dispatch(HyprlandCompat.dspWorkspace("r-1"));
                             else standardOverviewRoot.selectPrevMatch();
                             event.accepted = true;
                         } else if (event.key === Qt.Key_Escape) {
@@ -265,8 +265,8 @@ Rectangle {
 
                                 MouseArea {
                                     anchors.fill: parent; acceptedButtons: Qt.LeftButton
-                                    onClicked: if (standardOverviewRoot.draggingTargetWorkspace === -1) Hyprland.dispatch(`workspace ${workspaceValue}`);
-                                    onDoubleClicked: if (standardOverviewRoot.draggingTargetWorkspace === -1) { Hyprland.dispatch(`workspace ${workspaceValue}`); }
+                                    onClicked: if (standardOverviewRoot.draggingTargetWorkspace === -1) Hyprland.dispatch(HyprlandCompat.dspWorkspace(workspaceValue));
+                                    onDoubleClicked: if (standardOverviewRoot.draggingTargetWorkspace === -1) { Hyprland.dispatch(HyprlandCompat.dspWorkspace(workspaceValue)); }
                                 }
 
                                 DropArea {
@@ -327,9 +327,9 @@ Rectangle {
                         xOffset: Math.round((standardOverviewRoot.workspaceImplicitWidth + workspacePadding + workspaceSpacing) * workspaceColIndex + workspacePadding / 2)
                         yOffset: Math.round((standardOverviewRoot.workspaceImplicitHeight + workspacePadding + workspaceSpacing) * workspaceRowIndex + workspacePadding / 2)
                         onDragStarted: standardOverviewRoot.draggingFromWorkspace = windowData?.workspace.id || -1
-                        onDragFinished: targetWorkspace => { standardOverviewRoot.draggingFromWorkspace = -1; if (targetWorkspace !== -1 && targetWorkspace !== windowData?.workspace.id) Hyprland.dispatch(`movetoworkspacesilent ${targetWorkspace}, address:${windowData?.address}`); }
-                        onWindowClicked: { GlobalStates.closeAllPanels(); Qt.callLater(() => { Hyprland.dispatch(`focuswindow address:${windowData.address}`); }); }
-                        onWindowClosed: { Hyprland.dispatch(`closewindow address:${windowData.address}`); }
+                        onDragFinished: targetWorkspace => { standardOverviewRoot.draggingFromWorkspace = -1; if (targetWorkspace !== -1 && targetWorkspace !== windowData?.workspace.id) Hyprland.dispatch(HyprlandCompat.dspMoveToWsSilent(targetWorkspace, `address:${windowData?.address}`)); }
+                        onWindowClicked: { GlobalStates.closeAllPanels(); Qt.callLater(() => { Hyprland.dispatch(HyprlandCompat.dspFocusWindow(`address:${windowData.address}`)); }); }
+                        onWindowClosed: { Hyprland.dispatch(HyprlandCompat.dspClose(`address:${windowData.address}`)); }
                     }
                 }
 

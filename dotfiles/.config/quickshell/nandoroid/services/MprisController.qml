@@ -280,10 +280,10 @@ Singleton {
             
             // Use case-insensitive regex to find the window
             // class:^(?i)(target)$ matches the class exactly but ignores case
-            Quickshell.execDetached(["hyprctl", "dispatch", "focuswindow", `class:^(?i)(${target})$`]);
+            Quickshell.execDetached(["hyprctl", "dispatch", HyprlandCompat.dspFocusWindow(`class:^(?i)(${target})$`)]);
             
             // Fallback to substring match if exact match fails
-            Quickshell.execDetached(["hyprctl", "dispatch", "focuswindow", `title:(?i)${target}`]);
+            Quickshell.execDetached(["hyprctl", "dispatch", HyprlandCompat.dspFocusWindow(`title:(?i)${target}`)]);
             
             GlobalStates.notificationCenterOpen = false;
             GlobalStates.dashboardOpen = false;

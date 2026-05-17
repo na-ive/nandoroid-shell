@@ -45,18 +45,18 @@ Singleton {
             }
 
             const batchCmd = [
-                "animations:enabled 0",
-                "decoration:shadow:enabled 0",
-                "decoration:blur:enabled 0",
-                "general:gaps_in 0",
-                "general:gaps_out 0",
-                "general:border_size 1",
-                "decoration:rounding 0",
-                "general:allow_tearing 1"
+                HyprlandCompat.keywordStr("animations", "enabled", 0),
+                HyprlandCompat.keywordStr("decoration", "shadow:enabled", 0),
+                HyprlandCompat.keywordStr("decoration", "blur:enabled", 0),
+                HyprlandCompat.keywordStr("general", "gaps_in", 0),
+                HyprlandCompat.keywordStr("general", "gaps_out", 0),
+                HyprlandCompat.keywordStr("general", "border_size", 1),
+                HyprlandCompat.keywordStr("decoration", "rounding", 0),
+                HyprlandCompat.keywordStr("general", "allow_tearing", 1)
             ];
             
             // Apply via hyprctl immediately
-            Quickshell.execDetached(["bash", "-c", `hyprctl --batch "keyword ${batchCmd.join('; keyword ')}"`])
+            Quickshell.execDetached(HyprlandCompat.batch(batchCmd))
             
             // Persist to file
             const persistCmd = `sed -i '/animations:enabled/d; /decoration:shadow:enabled/d; /decoration:blur:enabled/d; /general:gaps_in/d; /general:gaps_out/d; /general:border_size/d; /decoration:rounding/d; /general:allow_tearing/d' ${root.persistencePath} 2>/dev/null || true; ` +
@@ -86,7 +86,7 @@ Singleton {
                 if (typeof HyprlandData !== 'undefined') {
                     // Restore layout explicitly if we saved it
                     if (Config.options.gameModeState.previousLayout !== "") {
-                        Quickshell.execDetached(["hyprctl", "keyword", "general:layout", Config.options.gameModeState.previousLayout]);
+                        Quickshell.execDetached(HyprlandCompat.keyword("general", "layout", `"${Config.options.gameModeState.previousLayout}"`));
                     }
 
                     const reapplyCmd = `cat ${root.persistencePath} 2>/dev/null | sed 's/ = / /g' | xargs -I {} hyprctl keyword {} || true`;

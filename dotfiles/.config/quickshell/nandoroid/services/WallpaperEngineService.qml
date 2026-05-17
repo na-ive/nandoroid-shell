@@ -84,7 +84,7 @@ Singleton {
         repeat: true
         property int count: 0
         onTriggered: {
-            Quickshell.execDetached(["hyprctl", "dispatch", "lower", "class:.*wallpaperengine.*"]);
+            Quickshell.execDetached(["hyprctl", "dispatch", HyprlandCompat.dspLower("class:.*wallpaperengine.*")]);
             count++;
             if (count > 5) {
                 count = 0;
@@ -277,18 +277,18 @@ print(json.dumps(props))
             
             // Batch Hyprland commands to reduce IPC overhead
             const batchCmd = [
-                "keyword layerrule 'layer:background,linux-wallpaperengine'",
-                "keyword layerrule 'layer:background,class:.*wallpaperengine.*'",
-                "keyword windowrule 'workspace -1,class:.*wallpaperengine.*'",
-                "keyword windowrule 'noanim,class:.*wallpaperengine.*'",
-                "keyword windowrule 'noinitialfocus,class:.*wallpaperengine.*'",
-                "keyword windowrule 'pin,class:.*wallpaperengine.*'",
-                "keyword windowrule 'float,class:.*wallpaperengine.*'",
-                "keyword windowrule 'size 100% 100%,class:.*wallpaperengine.*'",
-                "keyword windowrule 'move 0 0,class:.*wallpaperengine.*'",
-                "keyword windowrule 'nofocus,class:.*wallpaperengine.*'",
-                "keyword windowrule 'noshadow,class:.*wallpaperengine.*'",
-                "keyword windowrule 'noblur,class:.*wallpaperengine.*'"
+                HyprlandCompat.rawKeywordStr("layerrule", "'layer:background,linux-wallpaperengine'"),
+                HyprlandCompat.rawKeywordStr("layerrule", "'layer:background,class:.*wallpaperengine.*'"),
+                HyprlandCompat.rawKeywordStr("windowrule", "'workspace -1,class:.*wallpaperengine.*'"),
+                HyprlandCompat.rawKeywordStr("windowrule", "'noanim,class:.*wallpaperengine.*'"),
+                HyprlandCompat.rawKeywordStr("windowrule", "'noinitialfocus,class:.*wallpaperengine.*'"),
+                HyprlandCompat.rawKeywordStr("windowrule", "'pin,class:.*wallpaperengine.*'"),
+                HyprlandCompat.rawKeywordStr("windowrule", "'float,class:.*wallpaperengine.*'"),
+                HyprlandCompat.rawKeywordStr("windowrule", "'size 100% 100%,class:.*wallpaperengine.*'"),
+                HyprlandCompat.rawKeywordStr("windowrule", "'move 0 0,class:.*wallpaperengine.*'"),
+                HyprlandCompat.rawKeywordStr("windowrule", "'nofocus,class:.*wallpaperengine.*'"),
+                HyprlandCompat.rawKeywordStr("windowrule", "'noshadow,class:.*wallpaperengine.*'"),
+                HyprlandCompat.rawKeywordStr("windowrule", "'noblur,class:.*wallpaperengine.*'")
             ].join(" ; ");
             
             Quickshell.execDetached(["hyprctl", "--batch", batchCmd]);

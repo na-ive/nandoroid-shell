@@ -24,16 +24,18 @@ Scope {
         interval: 150
         repeat: false
         onTriggered: {
-            var batch = ""
+            var batch = []
             for (var j = 0; j < Quickshell.screens.length; ++j) {
                 var monName = Quickshell.screens[j].name
                 var wsId = root.savedWorkspaces[monName]
                 if (wsId !== undefined) {
-                    batch += "dispatch focusmonitor " + monName + "; dispatch workspace " + wsId + "; "
+                    batch.push("dispatch " + HyprlandCompat.dspFocusMonitor(monName))
+                    batch.push("dispatch " + HyprlandCompat.dspWorkspace(wsId))
                 }
             }
             if (batch.length > 0) {
-                Quickshell.execDetached(["hyprctl", "--batch", batch + "reload"])
+                batch.push("reload")
+                Quickshell.execDetached(HyprlandCompat.batch(batch))
             }
         }
     }
@@ -72,16 +74,18 @@ Scope {
             if (GlobalStates.screenLocked) {
                 // Save workspaces and push to temp workspace
                 var next = {}
-                var batch = "keyword animation workspaces,1,7,default,slidevert; "
+                var batch = [HyprlandCompat.keywordStr("animation", "workspaces", '"1,7,default,slidevert"')]
                 for (var i = 0; i < Quickshell.screens.length; ++i) {
                     var mon = Quickshell.screens[i].name
                     var mData = HyprlandData.monitors.find(m => m.name === mon)
                     var ws = (mData?.activeWorkspace?.id ?? 1)
                     next[mon] = ws
-                    batch += "dispatch focusmonitor " + mon + "; dispatch workspace " + (2147483647 - ws) + "; "
+                    batch.push("dispatch " + HyprlandCompat.dspFocusMonitor(mon))
+                    batch.push("dispatch " + HyprlandCompat.dspWorkspace(2147483647 - ws))
                 }
                 root.savedWorkspaces = next
-                Quickshell.execDetached(["hyprctl", "--batch", batch + "reload"])
+                batch.push("reload")
+                Quickshell.execDetached(HyprlandCompat.batch(batch))
                 // Reset auth state and try fingerprint
                 LockContext.reset()
                 LockContext.tryFingerUnlock()
@@ -108,7 +112,7 @@ Scope {
             // Plain unlock
             GlobalStates.screenLocked = false
             Quickshell.execDetached(["bash", "-c",
-                `sleep 0.2; hyprctl --batch "dispatch togglespecialworkspace; dispatch togglespecialworkspace"`])
+                `sleep 0.2; hyprctl --batch "dispatch ${HyprlandCompat.dspToggleSpecial()} ; dispatch ${HyprlandCompat.dspToggleSpecial()}"`])
             LockContext.reset()
         }
     }

@@ -4,6 +4,7 @@ singleton BluetoothStatus BluetoothStatus.qml
 singleton Brightness Brightness.qml
 singleton DateTime DateTime.qml
 singleton HyprlandData HyprlandData.qml
+singleton HyprlandCompat HyprlandCompat.qml
 singleton Hyprsunset Hyprsunset.qml
 singleton MaterialThemeLoader MaterialThemeLoader.qml
 singleton MprisController MprisController.qml

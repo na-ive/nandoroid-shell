@@ -354,10 +354,10 @@ Item {
             }
             onScrollUp: {
                 if (root.monitor && root.monitor.activeWorkspace && root.monitor.activeWorkspace.id > 1) {
-                    Hyprland.dispatch("workspace r-1")
+                    Hyprland.dispatch(HyprlandCompat.dspWorkspace("r-1"))
                 }
             }
-            onScrollDown: Hyprland.dispatch("workspace r+1")
+            onScrollDown: Hyprland.dispatch(HyprlandCompat.dspWorkspace("r+1"))
         }
     }
 }

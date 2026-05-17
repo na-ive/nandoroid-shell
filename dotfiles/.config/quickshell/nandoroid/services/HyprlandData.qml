@@ -73,7 +73,7 @@ Singleton {
         const nextLayout = layouts[index];
         
         // Apply immediately
-        layoutProc.exec(["hyprctl", "keyword", "general:layout", nextLayout]);
+        layoutProc.exec(HyprlandCompat.keyword("general", "layout", `"${nextLayout}"`));
         
         // Persist to file
         const cmd = `sed -i '/general:layout/d' ${root.persistencePath} 2>/dev/null || true; echo "general:layout = ${nextLayout}" >> ${root.persistencePath}`;

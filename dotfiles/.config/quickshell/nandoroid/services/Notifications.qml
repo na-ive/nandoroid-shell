@@ -349,7 +349,7 @@ Singleton {
                     }
 
                     if (bestMatch && highestScore > 0) {
-                        Hyprland.dispatch(`focuswindow address:0x${bestMatch.address}`);
+                        Hyprland.dispatch(HyprlandCompat.dspFocusWindow(`address:0x${bestMatch.address}`));
                         GlobalStates.notificationCenterOpen = false;
                         GlobalStates.dashboardOpen = false;
                     }
