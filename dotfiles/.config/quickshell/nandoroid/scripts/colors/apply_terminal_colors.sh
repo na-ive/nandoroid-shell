@@ -12,19 +12,10 @@ if not os.path.exists(SEQUENCES_FILE):
 
 def apply_colors():
     try:
-        with open(SEQUENCES_FILE, "rb") as f:
-            raw_data = f.read()
-
-        for d in os.listdir("/dev/pts"):
-            if d.isdigit():
-                pts_path = os.path.join("/dev/pts", d)
-                if os.access(pts_path, os.W_OK):
-                    try:
-                        with open(pts_path, "wb") as pts:
-                            pts.write(raw_data)
-                            pts.flush()
-                    except Exception:
-                        pass
+        # The /dev/pts/ broadcast was causing terminal emulators (like Kitty/Konsole)
+        # to trigger "Activity in Background" or "Bell" desktop notifications.
+        # Instead, we will gracefully tell Kitty to reload its colors via IPC.
+        os.system("kitty @ set-colors -a -c ~/.config/kitty/current-theme.conf >/dev/null 2>&1 || true")
     except Exception as e:
         print(f"Error applying colors: {e}", file=sys.stderr)
 
