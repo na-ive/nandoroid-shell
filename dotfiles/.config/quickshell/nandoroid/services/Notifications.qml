@@ -182,8 +182,41 @@ Singleton {
             const bodyLower = (notification.body || "").toLowerCase();
             const appNameLower = (notification.appName || "").toLowerCase();
             
-            const restartKeywords = ["restart", "reboot", "kernel update", "needs to be restarted"];
-            const isRestart = restartKeywords.some(kw => summaryLower.includes(kw) || bodyLower.includes(kw));
+            // Check if this is a system/PC/device restart requirement
+            let isRestart = false;
+
+            // 1. Explicit system restart/reboot triggers
+            const systemRestartPhrases = [
+                "restart pc", "restart system", "restart computer", "restart device",
+                "reboot pc", "reboot system", "reboot computer", "reboot device",
+                "system restart", "system reboot", "kernel update",
+                "system needs to be restarted", "computer needs to be restarted",
+                "device needs to be restarted"
+            ];
+            const hasExplicitSystemRestart = systemRestartPhrases.some(phrase => 
+                summaryLower.includes(phrase) || bodyLower.includes(phrase)
+            );
+
+            // 2. Generic restart/reboot keywords that might indicate system restart
+            const genericRestartKeywords = ["restart", "reboot", "kernel update", "needs to be restarted"];
+            const hasGenericRestart = genericRestartKeywords.some(kw => 
+                summaryLower.includes(kw) || bodyLower.includes(kw)
+            );
+
+            // 3. Exclude indicators that point to an application restart
+            const appPattern = /\b(app|apps|application|applications|vesktop|discord|spotify|steam|firefox|chrome|chromium|brave|slack|signal|telegram|service|quickshell|hyprland|cava|extension)\b/i;
+            const isAppRelated = appPattern.test(summaryLower) || appPattern.test(bodyLower) || appPattern.test(appNameLower);
+
+            if (hasExplicitSystemRestart) {
+                isRestart = true;
+            } else if (hasGenericRestart && !isAppRelated) {
+                // If it's not app-related and has a restart keyword, check if it's sent by a system app/empty app name
+                const systemApps = ["", "system", "systemd", "update", "package", "software", "discover", "pkcon", "pacman", "dnf", "yay", "nandoroid", "notify-send", "bash", "sh"];
+                const isSystemApp = systemApps.some(app => appNameLower.includes(app));
+                if (isSystemApp) {
+                    isRestart = true;
+                }
+            }
 
             const newNotif = notifComponent.createObject(root, {
                 "notificationId": notification.id + root.idOffset,
