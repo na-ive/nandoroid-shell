@@ -12,7 +12,9 @@ Singleton {
     id: root
 
     property bool active: false
-    readonly property string persistencePath: "~/.config/hypr/nandoroid/user_persistence.conf"
+    readonly property string persistencePath: HyprlandCompat.isLua
+        ? "~/.config/hypr/nandoroid/user_persistence.lua"
+        : "~/.config/hypr/nandoroid/user_persistence.conf"
 
     function toggle() {
         root.active = !root.active
@@ -59,10 +61,44 @@ Singleton {
             Quickshell.execDetached(HyprlandCompat.batch(batchCmd))
             
             // Persist to file
-            const persistCmd = `sed -i '/animations:enabled/d; /decoration:shadow:enabled/d; /decoration:blur:enabled/d; /general:gaps_in/d; /general:gaps_out/d; /general:border_size/d; /decoration:rounding/d; /general:allow_tearing/d' ${root.persistencePath} 2>/dev/null || true; ` +
-                batchCmd.map(c => `echo "${c.replace(' ', ' = ')}" >> ${root.persistencePath}`).join('; ');
-            
-            Quickshell.execDetached(["bash", "-c", persistCmd]);
+            const realPath = root.persistencePath.replace(/^~/, Directories.home.replace("file://", ""));
+            if (HyprlandCompat.isLua) {
+                const luaBlock = `-- GAMEMODE_START\n` +
+                                 `hl.config({\n` +
+                                 `    animations = { enabled = false },\n` +
+                                 `    decoration = {\n` +
+                                 `        shadow = { enabled = false },\n` +
+                                 `        blur = { enabled = false },\n` +
+                                 `        rounding = 0\n` +
+                                 `    },\n` +
+                                 `    general = {\n` +
+                                 `        gaps_in = 0,\n` +
+                                 `        gaps_out = 0,\n` +
+                                 `        border_size = 1,\n` +
+                                 `        allow_tearing = true\n` +
+                                 `    }\n` +
+                                 `})\n` +
+                                 `-- GAMEMODE_END`;
+                const pyCmd = `import sys\n` +
+                              `path = sys.argv[1]\n` +
+                              `new_block = sys.argv[2]\n` +
+                              `try:\n` +
+                              `    content = open(path).read()\n` +
+                              `except Exception:\n` +
+                              `    content = ""\n` +
+                              `import re\n` +
+                              `content = re.sub(r"-- GAMEMODE_START.*?-- GAMEMODE_END\\\\s*", "", content, flags=re.DOTALL)\n` +
+                              `content = content.strip()\n` +
+                              `if content:\n` +
+                              `    content += chr(10) + chr(10)\n` +
+                              `content += new_block + chr(10)\n` +
+                              `open(path, "w").write(content)`
+                Quickshell.execDetached(["python3", "-c", pyCmd, realPath, luaBlock]);
+            } else {
+                const persistCmd = `sed -i '/animations:enabled/d; /decoration:shadow:enabled/d; /decoration:blur:enabled/d; /general:gaps_in/d; /general:gaps_out/d; /general:border_size/d; /decoration:rounding/d; /general:allow_tearing/d' ${realPath} 2>/dev/null || true; ` +
+                    batchCmd.map(c => `echo "${c.replace(' ', ' = ')}" >> ${realPath}`).join('; ');
+                Quickshell.execDetached(["bash", "-c", persistCmd]);
+            }
 
         } else {
             // --- 1. REVERT WALLPAPER ---
@@ -76,7 +112,10 @@ Singleton {
 
             // --- 2. REVERT HYPRLAND ---
             // Cleanup from persistence file BEFORE reload
-            const cleanupCmd = `sed -i '/animations:enabled/d; /decoration:shadow:enabled/d; /decoration:blur:enabled/d; /general:gaps_in/d; /general:gaps_out/d; /general:border_size/d; /decoration:rounding/d; /general:allow_tearing/d' ${root.persistencePath} 2>/dev/null || true`;
+            const realPath = root.persistencePath.replace(/^~/, Directories.home.replace("file://", ""));
+            const cleanupCmd = HyprlandCompat.isLua
+                ? `sed -i '/-- GAMEMODE_START/,/-- GAMEMODE_END/d' ${realPath} 2>/dev/null || true`
+                : `sed -i '/animations:enabled/d; /decoration:shadow:enabled/d; /decoration:blur:enabled/d; /general:gaps_in/d; /general:gaps_out/d; /general:border_size/d; /decoration:rounding/d; /general:allow_tearing/d' ${realPath} 2>/dev/null || true`;
             
             Quickshell.execDetached(["bash", "-c", `${cleanupCmd} && hyprctl reload`]);
 
@@ -89,8 +128,10 @@ Singleton {
                         Quickshell.execDetached(HyprlandCompat.keyword("general", "layout", `"${Config.options.gameModeState.previousLayout}"`));
                     }
 
-                    const reapplyCmd = `cat ${root.persistencePath} 2>/dev/null | sed 's/ = / /g' | xargs -I {} hyprctl keyword {} || true`;
-                    Quickshell.execDetached(["bash", "-c", reapplyCmd]);
+                    if (!HyprlandCompat.isLua) {
+                        const reapplyCmd = `cat ${realPath} 2>/dev/null | sed 's/ = / /g' | xargs -I {} hyprctl keyword {} || true`;
+                        Quickshell.execDetached(["bash", "-c", reapplyCmd]);
+                    }
                     HyprlandData.fetchInitialLayout();
                 }
                 
@@ -155,7 +196,7 @@ Singleton {
     Process {
         id: fetchActiveStateProc
         running: true
-        command: ["bash", "-c", `test "$(hyprctl getoption animations:enabled -j | jq ".int")" -eq 0`]
+        command: ["bash", "-c", "hyprctl getoption animations:enabled -j | jq -e '.int == 0 or .bool == false' >/dev/null"]
         onExited: (code) => {
             root.active = (code === 0)
             if (root.active && Config.ready) {

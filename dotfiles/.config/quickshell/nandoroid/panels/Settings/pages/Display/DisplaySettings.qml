@@ -96,13 +96,14 @@ Item {
 
     // ── Staged Changes State ──
     property var stagedChanges: ({})
-    readonly property bool hasPendingChanges: Object.keys(stagedChanges).length > 0
+    property bool hasPendingChanges: false
 
     function setStagedChange(monitorName, property, value) {
         let changes = JSON.parse(JSON.stringify(stagedChanges));
         if (!changes[monitorName]) changes[monitorName] = {};
         changes[monitorName][property] = value;
         stagedChanges = changes;
+        hasPendingChanges = Object.keys(stagedChanges).length > 0;
     }
 
     // ── Previous State for Revert ──
@@ -131,11 +132,17 @@ Item {
 
     function confirmChanges() {
         root.stagedChanges = {};
+        hasPendingChanges = false;
+        HyprlandData.updateMonitors();
+        HyprlandData.updateMonitorsDelayed(800);
     }
 
     function revertChanges() {
         DisplayService.batchApply(root.previousState);
         root.stagedChanges = {};
+        hasPendingChanges = false;
+        HyprlandData.updateMonitors();
+        HyprlandData.updateMonitorsDelayed(800);
     }
 
     Flickable {
@@ -423,13 +430,14 @@ Item {
                                         root.setStagedChange(cur.name, "x", nx);
                                         root.setStagedChange(cur.name, "y", ny);
                                         
-                                        DisplayService.applyMonitorSettings(
-                                            cur.name, 
-                                            cur.currentResolution, 
-                                            nx + "x" + ny, 
-                                            cur.scale, 
-                                            cur.transform
-                                        );
+                                        DisplayService.applyMonitorSettings({
+                                            name: cur.name, 
+                                            resolution: cur.currentResolution, 
+                                            x: nx,
+                                            y: ny, 
+                                            scale: cur.scale, 
+                                            transform: cur.transform
+                                        });
                                         
                                         // Clear just the position from staged changes after a small delay
                                         // or let the user confirm. Actually, since it's auto-apply,
@@ -617,7 +625,7 @@ Item {
                             font.weight: Font.Medium
                             color: Appearance.colors.colSubtext
                         }
-                        onClicked: root.stagedChanges = {}
+                        onClicked: { root.stagedChanges = {}; root.hasPendingChanges = false; }
                     }
                     
                     MouseArea {

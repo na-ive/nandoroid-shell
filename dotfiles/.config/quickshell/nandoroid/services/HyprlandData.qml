@@ -46,6 +46,12 @@ Singleton {
 
     function updateActiveWindow() { getActiveWindow.running = true; }
     
+    function updateMonitorsDelayed(delayMs) {
+        const d = delayMs !== undefined ? delayMs : 800;
+        monitorUpdateTimer.interval = d;
+        monitorUpdateTimer.restart();
+    }
+    
     // Targeted Update Timers
     Timer { id: windowUpdateTimer; interval: 350; repeat: false; onTriggered: updateWindowList() }
     Timer { id: workspaceUpdateTimer; interval: 200; repeat: false; onTriggered: updateWorkspaces() }
@@ -56,7 +62,9 @@ Singleton {
         id: layoutProc
     }
 
-    readonly property string persistencePath: "~/.config/hypr/nandoroid/user_persistence.conf"
+    readonly property string persistencePath: HyprlandCompat.isLua
+        ? "~/.config/hypr/nandoroid/user_persistence.lua"
+        : "~/.config/hypr/nandoroid/user_persistence.conf"
 
     function cycleLayout(forward = true) {
         const layouts = ["dwindle", "master", "scrolling"];
@@ -75,9 +83,32 @@ Singleton {
         // Apply immediately
         layoutProc.exec(HyprlandCompat.keyword("general", "layout", `"${nextLayout}"`));
         
-        // Persist to file
-        const cmd = `sed -i '/general:layout/d' ${root.persistencePath} 2>/dev/null || true; echo "general:layout = ${nextLayout}" >> ${root.persistencePath}`;
-        Quickshell.execDetached(["bash", "-c", cmd]);
+        if (HyprlandCompat.isLua) {
+            const luaBlock = `-- LAYOUT_START\n` +
+                             `hl.config({\n` +
+                             `    general = {\n` +
+                             `        layout = "${nextLayout}"\n` +
+                             `    }\n` +
+                             `})\n` +
+                             `-- LAYOUT_END`
+            const pyCmd = `import sys, re; path = sys.argv[1]; new_block = sys.argv[2]\n` +
+                          `try:\n` +
+                          `    content = open(path).read()\n` +
+                          `except Exception:\n` +
+                          `    content = ""\n` +
+                          `pattern = r"-- LAYOUT_START.*?-- LAYOUT_END\\s*"\n` +
+                          `content = re.sub(pattern, "", content, flags=re.DOTALL)\n` +
+                          `content = content.strip()\n` +
+                          `if content:\n` +
+                          `    content += chr(10) + chr(10)\n` +
+                          `content += new_block + chr(10)\n` +
+                          `open(path, "w").write(content)`
+            const realPath = root.persistencePath.replace(/^~/, Directories.home.replace("file://", ""));
+            Quickshell.execDetached(["python3", "-c", pyCmd, realPath, luaBlock]);
+        } else {
+            const cmd = `sed -i '/general:layout/d' ${root.persistencePath} 2>/dev/null || true; echo "general:layout = ${nextLayout}" >> ${root.persistencePath}`;
+            Quickshell.execDetached(["bash", "-c", cmd]);
+        }
         
         GlobalStates.hyprlandLayout = nextLayout;
         root.layoutChanged();
