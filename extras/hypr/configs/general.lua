@@ -139,8 +139,8 @@ hl.config({
         disable_splash_rendering = true,
         vfr = true,
         vrr = true,
-        mouse_move_enables_dpms = true,
-        key_press_enables_dpms = true,
+        mouse_move_enables_dpms = false,
+        key_press_enables_dpms = false,
         initial_workspace_tracking = false,
         focus_on_activate = true
     }
