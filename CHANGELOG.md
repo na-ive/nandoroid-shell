@@ -1,3 +1,48 @@
+# Nandoroid Shell v1.4.0 Release Notes
+
+## Overview
+This major release migrates the core Hyprland configurations to Lua, introduces a unified and restructured System Settings page, and implements a deep integration with Steam's Wallpaper Engine. It also enhances the notification system with swipe-to-dismiss feedback, smart routing, and horizontal actions scrolling, alongside significant performance optimizations that minimize background CPU/GPU overhead.
+
+## Changelog
+
+**Hyprland Lua Migration**
+- Migrate core Hyprland configurations to Lua format (compatible with Hyprland 0.55+)
+- Implement a robust compatibility layer to handle newer Hyprland updates
+- Align Settings controls (Display, Layout, GameMode) with the Lua backend
+
+**System Settings & UI**
+- Introduce a dedicated System Settings module to centralize system-related panels
+- Integrate the System page into the global settings search registry and navigation
+- Clean up Services and WallpaperStyle layouts and fix double margins on connection cards
+
+**Wallpaper Engine & Selector**
+- Implement Wallpaper Engine workshop discovery, custom property editor, and search/sort
+- Add high-performance webp thumbnail caching using grabToImage
+- Refactor WallpaperSelector to an elegant "Island" layout and make sidebar scrollable
+- Add error detection, forced-resume logic, and automatic favorite wallpaper fallback
+- Implement custom accent color picker using hyprpicker
+
+**Notification System**
+- Implement swipe-to-dismiss feedback and dynamic input masks for popup notifications
+- Add smart 'View' actions and internal routing for About page sub-sections
+- Add horizontal scrolling for actions and enforce maximum expansion heights on popups
+- Resolve hover-based timer pause issues and restore precise click-through masks
+
+**Performance & Game Mode**
+- Implement Game Mode persistence and smart performance adjustments for live wallpapers
+- Optimize Matugen color application to run asynchronously, removing synchronous wait lag
+- Isolate wallpaper color cache between lockscreen and desktop previews
+- Refine background tracking services to reduce CPU and GPU overhead
+
+**Stability & Core Fixes**
+- Prevent CAVA visualizer freezing during theme changes and shell restarts via direct process management
+- Synchronize system tray context menus and improve desktop right-click menu behavior
+- Resolve Wallhaven 403 Forbidden errors by adding a standard User-Agent header
+- Add global Escape key handling to close the Overview workspace panel
+- Implement adaptive smart rounding for global scaling across all widgets
+
+---
+
 # Nandoroid Shell v1.3.1 Release Notes
 
 ## Overview

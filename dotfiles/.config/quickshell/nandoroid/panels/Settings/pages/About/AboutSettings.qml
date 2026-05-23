@@ -50,7 +50,7 @@ Flickable {
         watchChanges: true
         JsonAdapter {
             id: versionData
-            property string version: "1.3.0"
+            property string version: "1.4.0"
         }
     }
 
