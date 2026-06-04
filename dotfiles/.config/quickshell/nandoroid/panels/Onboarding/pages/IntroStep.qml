@@ -99,6 +99,28 @@ Item {
                     }
                 }
             }
+            
+            Item {
+                Layout.preferredHeight: 16 * Appearance.effectiveScale
+            }
+
+            // Keyboard Hint for Intro
+            RowLayout {
+                Layout.alignment: Qt.AlignHCenter
+                spacing: 8 * Appearance.effectiveScale
+                opacity: 0.6
+                
+                MaterialSymbol {
+                    text: "keyboard"
+                    iconSize: 16 * Appearance.effectiveScale
+                    color: Appearance.colors.colSubtext
+                }
+                StyledText {
+                    text: "Use ← / → to navigate, Enter to continue, Esc to close"
+                    font.pixelSize: 12 * Appearance.effectiveScale
+                    color: Appearance.colors.colSubtext
+                }
+            }
         }
     }
 }

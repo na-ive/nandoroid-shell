@@ -56,6 +56,24 @@ Scope {
 
             focus: visible
             Keys.onEscapePressed: GlobalStates.onboardingOpen = false
+            Keys.onRightPressed: {
+                if (GlobalStates.onboardingStep < 6) {
+                    GlobalStates.onboardingStep++;
+                }
+            }
+            Keys.onLeftPressed: {
+                if (GlobalStates.onboardingStep > 0) {
+                    GlobalStates.onboardingStep--;
+                }
+            }
+            Keys.onReturnPressed: {
+                if (GlobalStates.onboardingStep >= 6) {
+                    Config.options.system.onboardingCompleted = true;
+                    GlobalStates.onboardingOpen = false;
+                } else {
+                    GlobalStates.onboardingStep++;
+                }
+            }
 
             color: Appearance.colors.colLayer0
             border.color: Functions.ColorUtils.applyAlpha(Appearance.m3colors.m3onSurface, 0.12)
@@ -164,7 +182,26 @@ Scope {
                         }
                     }
                     
-                    Item { Layout.fillWidth: true }
+                    Item {
+                        Layout.fillWidth: true
+                        
+                        RowLayout {
+                            anchors.centerIn: parent
+                            spacing: 8 * Appearance.effectiveScale
+                            opacity: 0.6
+                            
+                            MaterialSymbol {
+                                text: "keyboard"
+                                iconSize: 16 * Appearance.effectiveScale
+                                color: Appearance.colors.colSubtext
+                            }
+                            StyledText {
+                                text: "Use ← / → to navigate, Enter to continue, Esc to close"
+                                font.pixelSize: 12 * Appearance.effectiveScale
+                                color: Appearance.colors.colSubtext
+                            }
+                        }
+                    }
                     
                     RippleButton {
                         implicitWidth: 120 * Appearance.effectiveScale
