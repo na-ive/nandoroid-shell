@@ -31,6 +31,7 @@ Item {
     property alias pill: backgroundPill
 
     // --- State Logic ---
+    property string islandStateOverride: ""
     property bool mediaShowing: false
     Timer { id: mediaTimer; interval: 3000; onTriggered: root.mediaShowing = false }
 
@@ -49,6 +50,7 @@ Item {
     }
 
     readonly property string islandState: {
+        if (islandStateOverride !== "") return islandStateOverride
         if (Notifications.activePopup) return "notification"
         if (ScreenRecord.active) return "recording"
         if ((mediaShowing || GlobalStates.mediaNotchOpen) && MprisController.activePlayer) return "media"
@@ -135,15 +137,15 @@ Item {
                 visible: islandState === "notification"
                 opacity: parent.parent.width > (24 * Appearance.effectiveScale) ? 1 : 0
                 Behavior on opacity { NumberAnimation { duration: 200 } }
-                appIcon: Notifications.activePopup?.appIcon || Notifications.activePopup?.appName || ""
+                appIcon: Notifications.activePopup?.appIcon || (islandStateOverride !== "" ? "chat" : "")
                 image: Notifications.activePopup?.image || ""
-                summary: Notifications.activePopup?.summary || ""
+                summary: Notifications.activePopup?.summary || (islandStateOverride !== "" ? "New Message" : "")
                 urgency: Notifications.activePopup?.urgency || "normal"
                 color: "transparent"
             }
             StyledText {
                 id: notifAppNameLabel
-                text: Notifications.activePopup?.appName || "Notification"
+                text: Notifications.activePopup?.appName || (islandStateOverride !== "" ? "Messages" : "Notification")
                 visible: islandState === "notification"
                 opacity: parent.parent.width > (30 * Appearance.effectiveScale) ? 1 : 0
                 Behavior on opacity { NumberAnimation { duration: 200 } }
@@ -261,7 +263,7 @@ Item {
 
         StyledText {
             id: notifSummaryLabel; anchors.centerIn: parent
-            text: Notifications.activePopup?.summary || ""
+            text: Notifications.activePopup?.summary || (islandStateOverride !== "" ? "New Message" : "")
             visible: islandState === "notification"
             opacity: parent.width > (20 * Appearance.effectiveScale) ? 1 : 0
             Behavior on opacity { NumberAnimation { duration: 200 } }

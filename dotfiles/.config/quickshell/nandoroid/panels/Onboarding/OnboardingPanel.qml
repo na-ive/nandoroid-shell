@@ -130,7 +130,8 @@ Scope {
                             switch(GlobalStates.onboardingStep) {
                                 case 0: return "pages/IntroStep.qml";
                                 case 1: return "pages/WelcomeStep.qml";
-                                default: return "pages/WelcomeStep.qml"; // Temporarily load WelcomeStep for all
+                                case 2: return "pages/IslandStep.qml";
+                                default: return "pages/IslandStep.qml"; // Placeholder for step 3
                             }
                         }
                     }
