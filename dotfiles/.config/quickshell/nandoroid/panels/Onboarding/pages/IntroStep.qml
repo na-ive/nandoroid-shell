@@ -60,7 +60,7 @@ Item {
                     buttonRadius: 24 * Appearance.effectiveScale
                     colBackground: Appearance.colors.colLayer1
                     onClicked: {
-                        GlobalStates.onboardingStep = 5;
+                        GlobalStates.onboardingStep = 6;
                     }
                     
                     StyledText {

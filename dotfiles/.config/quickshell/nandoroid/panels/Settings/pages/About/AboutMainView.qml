@@ -287,7 +287,7 @@ ColumnLayout {
                             colBackground: "transparent"
                             onClicked: {
                                 GlobalStates.settingsOpen = false;
-                                GlobalStates.onboardingStep = 4;
+                                GlobalStates.onboardingStep = 5; // Jump to IPC step
                                 GlobalStates.onboardingOpen = true;
                             }
                             

@@ -131,11 +131,12 @@ Scope {
                         source: {
                             switch(GlobalStates.onboardingStep) {
                                 case 0: return "pages/IntroStep.qml";
-                                case 1: return "pages/WelcomeStep.qml";
-                                case 2: return "pages/IslandStep.qml";
-                                case 3: return "pages/GesturesStep.qml";
-                                case 4: return "pages/IpcStep.qml";
-                                case 5: return "pages/FinishStep.qml";
+                                case 1: return "pages/DependencyStep.qml";
+                                case 2: return "pages/WelcomeStep.qml";
+                                case 3: return "pages/IslandStep.qml";
+                                case 4: return "pages/GesturesStep.qml";
+                                case 5: return "pages/IpcStep.qml";
+                                case 6: return "pages/FinishStep.qml";
                                 default: return "pages/FinishStep.qml";
                             }
                         }
@@ -171,7 +172,7 @@ Scope {
                         buttonRadius: 20 * Appearance.effectiveScale
                         colBackground: Appearance.colors.colPrimary
                         onClicked: {
-                            if (GlobalStates.onboardingStep >= 5) {
+                            if (GlobalStates.onboardingStep >= 6) {
                                 Config.options.system.onboardingCompleted = true;
                                 GlobalStates.onboardingOpen = false;
                             } else {
@@ -181,7 +182,7 @@ Scope {
                         
                         StyledText {
                             anchors.centerIn: parent
-                            text: GlobalStates.onboardingStep === 0 ? "Start" : (GlobalStates.onboardingStep >= 5 ? "Finish" : "Next")
+                            text: GlobalStates.onboardingStep === 0 ? "Start" : (GlobalStates.onboardingStep >= 6 ? "Finish" : "Next")
                             font.pixelSize: 14 * Appearance.effectiveScale
                             font.weight: Font.DemiBold
                             color: Appearance.colors.colOnPrimary
