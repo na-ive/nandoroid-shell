@@ -23,6 +23,7 @@ import "panels/RegionSelector"
 import "panels/ScreenCorners"
 import "panels/Overview"
 import "panels/Dock"
+import "panels/Onboarding"
 
 import "panels/QuickActions"
 
@@ -107,8 +108,9 @@ ShellRoot {
     // ── Phase 11: Dashboard ──
     Dashboard {}
 
-    // ── Phase 12: System Monitor ──
+    // ── Phase 12: System Monitor & Onboarding ──
     SystemMonitorPanel {}
+    OnboardingPanel {}
 
     // ── Phase 13: Polkit Agent ──
     PolkitPanel {}
