@@ -76,7 +76,6 @@ Item {
                 color: Appearance.colors.colOnLayer1
                 verticalAlignment: TextInput.AlignVCenter
                 readOnly: !root.searchable
-                focus: root.searchable
                 selectByMouse: root.searchable
                 clip: true
                 

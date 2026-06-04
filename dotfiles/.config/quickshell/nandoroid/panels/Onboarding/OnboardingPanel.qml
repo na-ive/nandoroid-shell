@@ -2,6 +2,7 @@ import "../../core"
 import "../../core/functions" as Functions
 import "../../services"
 import "../../widgets"
+import "pages"
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
@@ -18,7 +19,7 @@ Scope {
     FloatingWindow {
         id: onboardingWindow
         visible: GlobalStates.onboardingOpen
-        title: "Welcome to Nandoroid"
+        title: "Welcome to NAnDoroid"
         
         readonly property var screen: Quickshell.screens[0]
 
@@ -79,7 +80,7 @@ Scope {
                         spacing: 20 * Appearance.effectiveScale
 
                         StyledText {
-                            text: "Welcome to Nandoroid"
+                            text: "Welcome to NAnDoroid"
                             font.pixelSize: 24 * Appearance.effectiveScale
                             font.weight: Font.DemiBold
                             color: Appearance.colors.colOnLayer0
@@ -112,24 +113,33 @@ Scope {
                     }
                 }
 
-                // Main Content Area (will be implemented in later steps)
+                // Main Content Area
                 Rectangle {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
                     color: Appearance.colors.colLayer1
-                    radius: 16 * Appearance.effectiveScale
+                    radius: 28 * Appearance.effectiveScale
+                    clip: true
 
-                    StyledText {
-                        anchors.centerIn: parent
-                        text: "Onboarding Content (Step " + (GlobalStates.onboardingStep + 1) + ")"
-                        font.pixelSize: 20 * Appearance.effectiveScale
-                        color: Appearance.colors.colSubtext
+                    Loader {
+                        id: stepLoader
+                        anchors.fill: parent
+                        anchors.margins: 24 * Appearance.effectiveScale
+                        
+                        source: {
+                            switch(GlobalStates.onboardingStep) {
+                                case 0: return "pages/IntroStep.qml";
+                                case 1: return "pages/WelcomeStep.qml";
+                                default: return "pages/WelcomeStep.qml"; // Temporarily load WelcomeStep for all
+                            }
+                        }
                     }
                 }
                 
                 // Footer Navigation
                 RowLayout {
                     Layout.fillWidth: true
+                    visible: GlobalStates.onboardingStep > 0
                     
                     RippleButton {
                         implicitWidth: 120 * Appearance.effectiveScale
@@ -156,7 +166,7 @@ Scope {
                         colBackground: Appearance.colors.colPrimary
                         onClicked: {
                             // Temporary: just close if we reach max steps
-                            if (GlobalStates.onboardingStep >= 4) {
+                            if (GlobalStates.onboardingStep >= 5) {
                                 GlobalStates.onboardingOpen = false;
                             } else {
                                 GlobalStates.onboardingStep++;
@@ -165,7 +175,7 @@ Scope {
                         
                         StyledText {
                             anchors.centerIn: parent
-                            text: GlobalStates.onboardingStep >= 4 ? "Finish" : "Next"
+                            text: GlobalStates.onboardingStep === 0 ? "Start" : (GlobalStates.onboardingStep >= 5 ? "Finish" : "Next")
                             font.pixelSize: 14 * Appearance.effectiveScale
                             font.weight: Font.DemiBold
                             color: Appearance.colors.colOnPrimary
