@@ -25,7 +25,7 @@ ColumnLayout {
         }
         
         StyledText {
-            text: "The Status Bar is your central hub. Click the left side for Notifications, the center for the Dashboard, and the right side for Quick Settings.\n\nThe notch in the middle acts as a Dynamic Island for media, Pomodoro timers, and screen recording status. Try simulating different states below!"
+            text: "The Status Bar is your central hub. Click the left side for Notifications, the center for the Dashboard, and the right side for Quick Settings.\n\nYou can also intuitively scroll on the left side to adjust Brightness, or scroll on the right side to adjust Volume.\n\nThe notch in the middle acts as a Dynamic Island for media, Pomodoro timers, and screen recording status. Try simulating different states below!"
             font.pixelSize: Appearance.font.pixelSize.normal
             color: Appearance.colors.colSubtext
             wrapMode: Text.WordWrap

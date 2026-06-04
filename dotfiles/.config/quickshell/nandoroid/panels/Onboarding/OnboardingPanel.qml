@@ -39,6 +39,8 @@ Scope {
             target: GlobalStates
             function onOnboardingOpenChanged() {
                 if (!GlobalStates.onboardingOpen) {
+                    Config.options.system.onboardingCompleted = true;
+                    // reset step when closed
                     GlobalStates.onboardingStep = 0;
                 }
             }
@@ -169,8 +171,8 @@ Scope {
                         buttonRadius: 20 * Appearance.effectiveScale
                         colBackground: Appearance.colors.colPrimary
                         onClicked: {
-                            // Temporary: just close if we reach max steps
                             if (GlobalStates.onboardingStep >= 5) {
+                                Config.options.system.onboardingCompleted = true;
                                 GlobalStates.onboardingOpen = false;
                             } else {
                                 GlobalStates.onboardingStep++;

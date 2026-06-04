@@ -50,30 +50,52 @@ Item {
                 Layout.preferredHeight: 16 * Appearance.effectiveScale
             }
 
-            RippleButton {
+            RowLayout {
                 Layout.alignment: Qt.AlignHCenter
-                implicitWidth: 160 * Appearance.effectiveScale
-                implicitHeight: 48 * Appearance.effectiveScale
-                buttonRadius: 24 * Appearance.effectiveScale
-                colBackground: Appearance.colors.colPrimary
-                onClicked: {
-                    GlobalStates.onboardingStep++;
-                }
-                
-                RowLayout {
-                    anchors.centerIn: parent
-                    spacing: 8 * Appearance.effectiveScale
+                spacing: 16 * Appearance.effectiveScale
+
+                RippleButton {
+                    implicitWidth: 120 * Appearance.effectiveScale
+                    implicitHeight: 48 * Appearance.effectiveScale
+                    buttonRadius: 24 * Appearance.effectiveScale
+                    colBackground: Appearance.colors.colLayer1
+                    onClicked: {
+                        GlobalStates.onboardingStep = 5;
+                    }
                     
                     StyledText {
-                        text: "Start Tour"
+                        anchors.centerIn: parent
+                        text: "Skip"
                         font.pixelSize: 16 * Appearance.effectiveScale
-                        font.weight: Font.DemiBold
-                        color: Appearance.colors.colOnPrimary
+                        font.weight: Font.Medium
+                        color: Appearance.colors.colOnLayer1
                     }
-                    MaterialSymbol {
-                        text: "arrow_forward"
-                        iconSize: 20 * Appearance.effectiveScale
-                        color: Appearance.colors.colOnPrimary
+                }
+
+                RippleButton {
+                    implicitWidth: 160 * Appearance.effectiveScale
+                    implicitHeight: 48 * Appearance.effectiveScale
+                    buttonRadius: 24 * Appearance.effectiveScale
+                    colBackground: Appearance.colors.colPrimary
+                    onClicked: {
+                        GlobalStates.onboardingStep++;
+                    }
+                    
+                    RowLayout {
+                        anchors.centerIn: parent
+                        spacing: 8 * Appearance.effectiveScale
+                        
+                        StyledText {
+                            text: "Start Tour"
+                            font.pixelSize: 16 * Appearance.effectiveScale
+                            font.weight: Font.DemiBold
+                            color: Appearance.colors.colOnPrimary
+                        }
+                        MaterialSymbol {
+                            text: "arrow_forward"
+                            iconSize: 20 * Appearance.effectiveScale
+                            color: Appearance.colors.colOnPrimary
+                        }
                     }
                 }
             }

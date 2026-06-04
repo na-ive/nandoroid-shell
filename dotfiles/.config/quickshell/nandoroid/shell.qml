@@ -44,6 +44,15 @@ ShellRoot {
         SmartAutomation.runAutomationCycle() // Kickstart smart automation
     }
 
+    Connections {
+        target: Config
+        function onReadyChanged() {
+            if (Config.ready && !Config.options.system.onboardingCompleted) {
+                GlobalStates.onboardingOpen = true;
+            }
+        }
+    }
+
     // ── Phase 0: Lock Screen ──
     Lock {}
 
