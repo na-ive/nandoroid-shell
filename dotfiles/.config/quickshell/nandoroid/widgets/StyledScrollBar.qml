@@ -8,7 +8,28 @@ ScrollBar {
     policy: ScrollBar.AsNeeded
     topPadding: Appearance.rounding.small
     bottomPadding: Appearance.rounding.small
-    active: hovered || pressed
+    
+    // Allow default active behavior (scrolling) + custom hover/press + flashing
+    property bool isHoveredOrPressed: hovered || pressed
+    property bool flashing: false
+    
+    active: isHoveredOrPressed || flashing
+    
+    Component.onCompleted: {
+        // Delay checking size slightly to let Flickable layout its content
+        Qt.callLater(() => {
+            if (root.size > 0 && root.size < 1.0) {
+                root.flashing = true;
+                flashTimer.start();
+            }
+        });
+    }
+
+    Timer {
+        id: flashTimer
+        interval: 2000 // Flash for 2 seconds
+        onTriggered: root.flashing = false
+    }
 
     contentItem: Rectangle {
         implicitWidth: 4 * Appearance.effectiveScale

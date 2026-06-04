@@ -27,6 +27,8 @@ Singleton {
     property bool spotlightOpen: false
     property string initialSpotlightQuery: ""
     property bool settingsOpen: false
+    property bool onboardingOpen: false
+    property int onboardingStep: 0
     property bool accentPickerOpen: false
     onAccentPickerOpenChanged: {
         if (accentPickerOpen) {

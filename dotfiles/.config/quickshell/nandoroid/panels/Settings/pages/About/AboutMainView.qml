@@ -215,7 +215,7 @@ ColumnLayout {
                         color: Appearance.colors.colPrimary
                     }
                     StyledText {
-                        text: "Links"
+                        text: "Links & Resources"
                         font.pixelSize: Appearance.font.pixelSize.large
                         font.weight: Font.Medium
                         color: Appearance.colors.colOnLayer1
@@ -225,6 +225,103 @@ ColumnLayout {
                 ColumnLayout {
                     Layout.fillWidth: true
                     spacing: 4 * Appearance.effectiveScale
+
+                    SegmentedWrapper {
+                        id: onboardingLinkWrapper
+                        Layout.fillWidth: true
+                        implicitHeight: 52 * Appearance.effectiveScale
+                        orientation: Qt.Vertical
+                        maxRadius: 20 * Appearance.effectiveScale
+                        color: Appearance.m3colors.m3surfaceContainerHigh
+
+                        RippleButton {
+                            anchors.fill: parent
+                            colBackground: "transparent"
+                            onClicked: {
+                                GlobalStates.settingsOpen = false;
+                                GlobalStates.onboardingOpen = true;
+                            }
+                            
+                            // Explicitly inherit radii from SegmentedWrapper for hover alignment
+                            topLeftRadius: onboardingLinkWrapper.rTopLeft
+                            topRightRadius: onboardingLinkWrapper.rTopRight
+                            bottomLeftRadius: onboardingLinkWrapper.rBottomLeft
+                            bottomRightRadius: onboardingLinkWrapper.rBottomRight
+
+                            RowLayout {
+                                anchors.fill: parent
+                                anchors.leftMargin: 20 * Appearance.effectiveScale
+                                anchors.rightMargin: 12 * Appearance.effectiveScale
+                                spacing: 12 * Appearance.effectiveScale
+                                
+                                MaterialSymbol {
+                                    text: "explore"
+                                    iconSize: 20 * Appearance.effectiveScale
+                                    color: Appearance.colors.colPrimary
+                                }
+                                StyledText {
+                                    Layout.fillWidth: true
+                                    text: "Start Onboarding Tour"
+                                    font.pixelSize: Appearance.font.pixelSize.normal
+                                    color: Appearance.colors.colOnLayer0
+                                }
+                                MaterialSymbol {
+                                    text: "chevron_right"
+                                    iconSize: 20 * Appearance.effectiveScale
+                                    color: Appearance.colors.colSubtext
+                                }
+                            }
+                        }
+                    }
+
+                    SegmentedWrapper {
+                        id: ipcLinkWrapper
+                        Layout.fillWidth: true
+                        implicitHeight: 52 * Appearance.effectiveScale
+                        orientation: Qt.Vertical
+                        maxRadius: 20 * Appearance.effectiveScale
+                        color: Appearance.m3colors.m3surfaceContainerHigh
+
+                        RippleButton {
+                            anchors.fill: parent
+                            colBackground: "transparent"
+                            onClicked: {
+                                GlobalStates.settingsOpen = false;
+                                GlobalStates.onboardingStep = 5; // Jump to IPC step
+                                GlobalStates.onboardingOpen = true;
+                            }
+                            
+                            // Explicitly inherit radii from SegmentedWrapper for hover alignment
+                            topLeftRadius: ipcLinkWrapper.rTopLeft
+                            topRightRadius: ipcLinkWrapper.rTopRight
+                            bottomLeftRadius: ipcLinkWrapper.rBottomLeft
+                            bottomRightRadius: ipcLinkWrapper.rBottomRight
+
+                            RowLayout {
+                                anchors.fill: parent
+                                anchors.leftMargin: 20 * Appearance.effectiveScale
+                                anchors.rightMargin: 12 * Appearance.effectiveScale
+                                spacing: 12 * Appearance.effectiveScale
+                                
+                                MaterialSymbol {
+                                    text: "terminal"
+                                    iconSize: 20 * Appearance.effectiveScale
+                                    color: Appearance.colors.colPrimary
+                                }
+                                StyledText {
+                                    Layout.fillWidth: true
+                                    text: "IPC Integration Guide"
+                                    font.pixelSize: Appearance.font.pixelSize.normal
+                                    color: Appearance.colors.colOnLayer0
+                                }
+                                MaterialSymbol {
+                                    text: "chevron_right"
+                                    iconSize: 20 * Appearance.effectiveScale
+                                    color: Appearance.colors.colSubtext
+                                }
+                            }
+                        }
+                    }
 
                     SegmentedWrapper {
                         id: sourceLinkWrapper

@@ -19,6 +19,8 @@ Flickable {
     contentHeight: mainCol.implicitHeight + (48 * Appearance.effectiveScale)
     clip: true
     
+    property bool isOnboarding: false
+    
     ScrollBar.vertical: StyledScrollBar {}
 
     SequentialAnimation {
@@ -283,6 +285,7 @@ Flickable {
         // ── Header ──
         ColumnLayout {
             spacing: 4 * Appearance.effectiveScale
+            visible: !root.isOnboarding
             StyledText {
                 text: "Wallpaper & Style"
                 font.pixelSize: Appearance.font.pixelSize.huge
@@ -352,8 +355,9 @@ Flickable {
             }
             
             // ── Wallpaper Auto-Cycle ──
-            WsWallpaperCycle { 
+            WsWallpaperCycle {
                 Layout.fillWidth: true
+                visible: !root.isOnboarding
             }
         }
 
@@ -406,31 +410,31 @@ Flickable {
         WsThemeColor { Layout.fillWidth: true }
 
         // ── Launcher Settings Section ──
-        WsLauncher { Layout.fillWidth: true }
+        WsLauncher { Layout.fillWidth: true; visible: !root.isOnboarding }
 
         // ── Dock Settings Section ──
-        WsDock { Layout.fillWidth: true }
+        WsDock { Layout.fillWidth: true; visible: !root.isOnboarding }
 
         // ── Overview Settings Section ──
-        WsOverview { Layout.fillWidth: true }
+        WsOverview { Layout.fillWidth: true; visible: !root.isOnboarding }
 
         // ── Clock Style Section ──
-        WsClock { Layout.fillWidth: true }
+        WsClock { Layout.fillWidth: true; visible: !root.isOnboarding }
 
         // ── Visualizer Section ──
-        WsCava { Layout.fillWidth: true }
+        WsCava { Layout.fillWidth: true; visible: !root.isOnboarding }
 
         // ── Lockscreen Section ──
-        WsLockscreen { Layout.fillWidth: true }
+        WsLockscreen { Layout.fillWidth: true; visible: !root.isOnboarding }
 
         // ── Status Bar Section ──
-        WsStatusBar { Layout.fillWidth: true }
+        WsStatusBar { Layout.fillWidth: true; visible: !root.isOnboarding }
 
         // ── Screen Decor Section ──
-        WsScreenDecor { Layout.fillWidth: true }
+        WsScreenDecor { Layout.fillWidth: true; visible: !root.isOnboarding }
 
         // ── Typography Section ──
-        WsTypography { Layout.fillWidth: true }
+        WsTypography { Layout.fillWidth: true; visible: !root.isOnboarding }
 
         Item { Layout.fillHeight: true; Layout.preferredHeight: 32 * Appearance.effectiveScale }
     }

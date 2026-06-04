@@ -28,7 +28,6 @@
     { "name": "ffmpeg", "command": "ffmpeg", "description": "Multimedia framework" },
     { "name": "songrec", "command": "songrec", "description": "Music recognition" },
     { "name": "cava", "command": "cava", "description": "Audio visualizer" },
-    { "name": "easyeffects", "command": "easyeffects", "description": "Audio enhancement" },
     { "name": "hyprpicker", "command": "hyprpicker", "description": "Color picker" },
     { "name": "hyprlock", "command": "hyprlock", "description": "System locker" },
     { "name": "hyprsunset", "command": "hyprsunset", "description": "Blue light filter" },
@@ -56,6 +55,8 @@
   "optional": [
     { "name": "kitty", "command": "kitty", "description": "Terminal emulator" },
     { "name": "fish", "command": "fish", "description": "Interactive shell" },
-    { "name": "starship", "command": "starship", "description": "Shell prompt" }
+    { "name": "starship", "command": "starship", "description": "Shell prompt" },
+    { "name": "easyeffects", "command": "easyeffects", "description": "Audio enhancement" },
+    { "name": "warp-cli", "command": "warp-cli", "description": "Cloudflare WARP client" }
   ]
 }
