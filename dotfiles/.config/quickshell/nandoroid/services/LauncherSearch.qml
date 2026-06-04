@@ -437,7 +437,11 @@ Singleton {
         } else if (strippedQuery.startsWith(Config.options.search.commandPrefix)) {
             const cmdQuery = strippedQuery.slice(Config.options.search.commandPrefix.length).toLowerCase().trim();
             const cmdResults = [];
-            for (const cmd of root.quickCommands) {
+            
+            // Search both commands and tools under the command prefix
+            const allCommandsAndTools = root.quickCommands.concat(root.quickTools);
+            
+            for (const cmd of allCommandsAndTools) {
                 if (cmd.name.toLowerCase().includes(cmdQuery) || cmd.id.toLowerCase().includes(cmdQuery) || cmdQuery === "") {
                     cmdResults.push(cmd);
                 }
@@ -486,6 +490,17 @@ Singleton {
 
         if (!isPluginSearch) {
             const loweredQuery = strippedQuery.toLowerCase();
+            
+            const matchingTools = root.quickTools.filter(tool => 
+                tool.name.toLowerCase().includes(loweredQuery) || 
+                tool.id.toLowerCase().includes(loweredQuery)
+            );
+            
+            const matchingCommands = root.quickCommands.filter(cmd => 
+                cmd.name.toLowerCase().includes(loweredQuery) || 
+                cmd.id.toLowerCase().includes(loweredQuery)
+            );
+            
             const filteredApps = allApps.filter(app =>
                 app.name.toLowerCase().includes(loweredQuery) ||
                 app.id.toLowerCase().includes(loweredQuery)
@@ -506,6 +521,9 @@ Singleton {
                 
                 return nameA.localeCompare(nameB);
             });
+            
+            results.push(...matchingTools);
+            results.push(...matchingCommands);
             results.push(...filteredApps);
         }
 
