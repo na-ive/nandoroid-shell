@@ -131,7 +131,8 @@ Scope {
                                 case 0: return "pages/IntroStep.qml";
                                 case 1: return "pages/WelcomeStep.qml";
                                 case 2: return "pages/IslandStep.qml";
-                                default: return "pages/IslandStep.qml"; // Placeholder for step 3
+                                case 3: return "pages/GesturesStep.qml";
+                                default: return "pages/GesturesStep.qml"; // Placeholder for step 5
                             }
                         }
                     }
