@@ -491,16 +491,7 @@ Singleton {
         if (!isPluginSearch) {
             const loweredQuery = strippedQuery.toLowerCase();
             
-            const matchingTools = root.quickTools.filter(tool => 
-                tool.name.toLowerCase().includes(loweredQuery) || 
-                tool.id.toLowerCase().includes(loweredQuery)
-            );
-            
-            const matchingCommands = root.quickCommands.filter(cmd => 
-                cmd.name.toLowerCase().includes(loweredQuery) || 
-                cmd.id.toLowerCase().includes(loweredQuery)
-            );
-            
+
             const filteredApps = allApps.filter(app =>
                 app.name.toLowerCase().includes(loweredQuery) ||
                 app.id.toLowerCase().includes(loweredQuery)
@@ -522,8 +513,7 @@ Singleton {
                 return nameA.localeCompare(nameB);
             });
             
-            results.push(...matchingTools);
-            results.push(...matchingCommands);
+
             results.push(...filteredApps);
         }
 
