@@ -30,9 +30,9 @@ Item {
 
     // Update internal search model when text changes or model changes
     property var filteredModel: {
-        if (!searchable || !isFiltering || text === "") return model;
+        if (!searchable || !isFiltering || input.text === "") return model;
         let results = [];
-        const lowerText = text.toLowerCase();
+        const lowerText = input.text.toLowerCase();
         for (let i = 0; i < model.length; i++) {
             if (model[i].toLowerCase().includes(lowerText)) {
                 results.push(model[i]);
@@ -81,14 +81,24 @@ Item {
                 
                 onTextChanged: {
                     if (root.searchable && activeFocus && root.isOpened) {
-                        root.text = text;
                         root.isFiltering = true;
                     }
                     if (!activeFocus) cursorPosition = 0;
                 }
+                
+                Connections {
+                    target: root
+                    function onTextChanged() {
+                        if (!input.activeFocus) {
+                            input.text = root.text;
+                        }
+                    }
+                }
+
                 onActiveFocusChanged: {
                     if (activeFocus && root.searchable) {
                         root.isOpened = true;
+                        input.selectAll(); // Select all text so typing immediately replaces it
                     }
                 }
 
@@ -109,13 +119,16 @@ Item {
                         event.accepted = true;
                     } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
                         if (listView.currentIndex >= 0 && listView.currentIndex < listView.count) {
-                            root.selectItem(root.filteredModel[listView.currentIndex]);
+                            let selectedVal = root.filteredModel[listView.currentIndex];
+                            root.selectItem(selectedVal);
+                            input.text = selectedVal; // Manually update input text to fix visual lag
                             root.isOpened = false;
                             input.focus = false;
                         }
                         event.accepted = true;
                     } else if (event.key === Qt.Key_Escape) {
                         root.isOpened = false;
+                        input.text = root.text; // Restore original text
                         event.accepted = true;
                     }
                 }
@@ -151,10 +164,10 @@ Item {
         id: dropdownPopup
         y: bg.height + 4 * Appearance.effectiveScale
         width: root.width
-        visible: root.isOpened && filteredModel.length > 0
         padding: 0
         margins: 0
         z: 2000
+        closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutsideParent | Popup.CloseOnPressOutside
         
         background: Rectangle {
             radius: 12 * Appearance.effectiveScale
@@ -225,7 +238,21 @@ Item {
         }
     }
     
+    function syncPopup() {
+        if (root.isOpened && root.filteredModel.length > 0) {
+            dropdownPopup.open();
+        } else {
+            dropdownPopup.close();
+        }
+    }
+
+    onFilteredModelChanged: {
+        if (root.isOpened) syncPopup();
+    }
+
     onIsOpenedChanged: {
+        syncPopup();
+        
         if (isOpened) {
             // Mutual exclusion: Close other open dropdowns
             if (GlobalStates.activeComboBox && GlobalStates.activeComboBox !== root) {
@@ -257,6 +284,18 @@ Item {
                 GlobalStates.activeComboBox = null;
             }
             root.isFiltering = false;
+            // VERY IMPORTANT: Clear focus so it doesn't reopen when the window regains focus
+            input.focus = false;
+        }
+    }
+    
+    Connections {
+        target: Window.window
+        ignoreUnknownSignals: true
+        function onActiveChanged() {
+            if (Window.window && !Window.window.active) {
+                root.isOpened = false;
+            }
         }
     }
 
