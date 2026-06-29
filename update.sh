@@ -62,7 +62,30 @@ fi
 
 if [ "$MODE" == "all" ]; then
     echo "Updating all configs..."
-    cp -r "$PROJECT_ROOT/dotfiles/.config/"* "$HOME/.config/"
+    
+    for item in "$PROJECT_ROOT/dotfiles/.config/"*; do
+        item_name=$(basename "$item")
+        
+        if [[ "$item_name" == "matugen" ]] && [ -e "$HOME/.config/matugen" ]; then
+            if [ -f "$HOME/.config/matugen/config.toml" ] && grep -q "# Nandoroid Configuration" "$HOME/.config/matugen/config.toml"; then
+                : # It's ours, let it update
+            else
+                echo "Warning: You already have your own matugen configuration. Skipping update for matugen."
+                continue
+            fi
+        fi
+        
+        if [[ "$item_name" == "starship.toml" ]] && [ -e "$HOME/.config/starship.toml" ]; then
+            if grep -q "# Nandoroid Configuration" "$HOME/.config/starship.toml"; then
+                : # It's ours, let it update
+            else
+                echo "Warning: You already have your own starship configuration. Skipping update for starship."
+                continue
+            fi
+        fi
+        
+        cp -r "$item" "$HOME/.config/"
+    done
 elif [ "$MODE" == "shell" ]; then
     echo "Updating shell only..."
     mkdir -p "$HOME/.config/quickshell/nandoroid"

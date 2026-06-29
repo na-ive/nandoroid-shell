@@ -223,7 +223,32 @@ fi
 info "Copying configuration files..."
 substep "Copying dotfiles to ~/.config..."
 mkdir -p "$HOME/.config"
-cp -r dotfiles/.config/* "$HOME/.config/"
+
+for item in dotfiles/.config/*; do
+    item_name=$(basename "$item")
+    
+    if [[ "$item_name" == "matugen" ]] && [ -e "$HOME/.config/matugen" ]; then
+        if [ -f "$HOME/.config/matugen/config.toml" ] && grep -q "# Nandoroid Configuration" "$HOME/.config/matugen/config.toml"; then
+            : # It's ours, let it copy (replace)
+        else
+            substep "${C_YELLOW}Warning: You already have your own matugen configuration.${C_RST}"
+            substep "To use nandoroid config, you can copy from: ${C_ACCENT}$INSTALL_DIR/dotfiles/.config/matugen${C_RST}"
+            continue
+        fi
+    fi
+    
+    if [[ "$item_name" == "starship.toml" ]] && [ -e "$HOME/.config/starship.toml" ]; then
+        if grep -q "# Nandoroid Configuration" "$HOME/.config/starship.toml"; then
+            : # It's ours, let it copy
+        else
+            substep "${C_YELLOW}Warning: You already have your own starship configuration.${C_RST}"
+            substep "To use nandoroid config, you can copy from: ${C_ACCENT}$INSTALL_DIR/dotfiles/.config/starship.toml${C_RST}"
+            continue
+        fi
+    fi
+    
+    cp -r "$item" "$HOME/.config/"
+done
 
 # Ensure shell versioning is correctly initialized from project root
 substep "Setting up version metadata..."

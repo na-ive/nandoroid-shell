@@ -1,3 +1,6 @@
+# Nandoroid Configuration
+# Do not delete the comment above if you want to receive Nandoroid configuration updates.
+# Delete it if you want to use your own configuration and avoid it getting overridden.
 [config]
 # Matugen v4 Configuration
 # Using import_json_files if custom variables were needed, but keeping it simple for now.
