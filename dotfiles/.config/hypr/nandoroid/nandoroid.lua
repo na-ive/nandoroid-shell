@@ -34,7 +34,6 @@ hl.unbind("SUPER + Tab")
 hl.bind("SUPER + Q", hl.dsp.window.close())
 hl.bind("SUPER + T", hl.dsp.exec_cmd(scripts .. "/launch_first_available.sh kitty foot alacritty"))
 hl.bind("SUPER + Return", hl.dsp.exec_cmd(scripts .. "/launch_first_available.sh kitty foot alacritty"))
-hl.bind("SUPER + Enter", hl.dsp.exec_cmd(scripts .. "/launch_first_available.sh kitty foot alacritty"))
 hl.bind("SUPER + W", hl.dsp.exec_cmd(scripts .. "/launch_first_available.sh zen-browser firefox chromium google-chrome-stable"))
 hl.bind("SUPER + E", hl.dsp.exec_cmd(scripts .. "/launch_first_available.sh dolphin nautilus thunar thunar-mobile"))
 
