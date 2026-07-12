@@ -21,7 +21,7 @@ PanelWindow {
     color: "transparent"
 
     mask: Region {
-        item: lyricsWrapper
+        item: Config.options.appearance.lyrics.lyricsPinned ? lockIconContainer : lyricsWrapper
     }
 
     AbstractWidget {
@@ -111,6 +111,35 @@ PanelWindow {
             opacity: 0.6
             style: Text.Outline
             styleColor: "black"
+        }
+
+        Rectangle {
+            id: lockIconContainer
+            visible: Config.options.appearance.lyrics.lyricsPinned
+            width: 32
+            height: 32
+            radius: 16
+            color: lockMouseArea.containsMouse ? "black" : "transparent"
+            opacity: lockMouseArea.containsMouse ? 0.8 : 0.6
+            anchors.bottom: parent.bottom
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.bottomMargin: 4
+            Behavior on opacity { NumberAnimation { duration: 150 } }
+            
+            MaterialSymbol {
+                anchors.centerIn: parent
+                text: "lock"
+                iconSize: 18
+                color: "white"
+            }
+            
+            MouseArea {
+                id: lockMouseArea
+                anchors.fill: parent
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
+                onClicked: Config.options.appearance.lyrics.lyricsPinned = false
+            }
         }
     }
 }
