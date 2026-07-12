@@ -166,6 +166,7 @@ if [[ "$DEP_CHOICE" =~ ^[Yy] ]]; then
         "$VENV_PATH/bin/pip" install --upgrade pip < /dev/tty
         "$VENV_PATH/bin/pip" install "materialyoucolor<3.0.0" < /dev/tty
         "$VENV_PATH/bin/pip" install kde-material-you-colors < /dev/tty
+        "$VENV_PATH/bin/pip" install pykakasi korean_romanizer < /dev/tty
         success "KDE theming venv ready."
     else
         success "Skipped."

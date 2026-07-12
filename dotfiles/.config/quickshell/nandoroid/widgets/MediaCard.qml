@@ -314,6 +314,27 @@ Rectangle {
                         Behavior on color { ColorAnimation { duration: 150 } }
                     }
                 }
+
+                // Lyrics Toggle
+                RippleButton {
+                    id: lyricsBtn
+                    padding: 0
+                    implicitWidth: 24 * Appearance.effectiveScale; implicitHeight: 24 * Appearance.effectiveScale; buttonRadius: 12 * Appearance.effectiveScale
+                    colBackground: "transparent"
+                    colBackgroundHover: "transparent"
+                    colText: "transparent"
+                    rippleEnabled: false
+                    onClicked: {
+                        Config.options.appearance.lyrics.showFloatingLyrics = !Config.options.appearance.lyrics.showFloatingLyrics
+                    }
+
+                    MaterialSymbol {
+                        anchors.centerIn: parent
+                        text: "lyrics"; iconSize: 18 * Appearance.effectiveScale; fill: Config.options.appearance.lyrics.showFloatingLyrics ? 1 : 0
+                        color: (lyricsBtn.hovered || Config.options.appearance.lyrics.showFloatingLyrics) ? MprisController.dynPrimary : MprisController.dynOnSecondaryContainer
+                        Behavior on color { ColorAnimation { duration: 150 } }
+                    }
+                }
             }
         }
     }

@@ -24,6 +24,7 @@ import "panels/ScreenCorners"
 import "panels/Overview"
 import "panels/Dock"
 import "panels/Onboarding"
+import "panels/FloatingLyrics"
 
 import "panels/QuickActions"
 
@@ -59,6 +60,7 @@ ShellRoot {
     // ── Phase 1: Background ──
     Background {}
     DesktopWidgets {}
+    FloatingLyrics {}
 
     // ── Phase 2: Status Bar ──
     StatusBar {}

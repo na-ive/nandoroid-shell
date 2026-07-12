@@ -161,6 +161,18 @@ Variants {
                         onClicked: MprisController.next() 
                     }
                 }
+
+                // ── 5. Lyrics Toggle ──
+                MaterialSymbol {
+                    text: "lyrics"; iconSize: 22 * Appearance.effectiveScale; fill: Config.options.appearance.lyrics.showFloatingLyrics ? 1 : 0
+                    color: Config.options.appearance.lyrics.showFloatingLyrics ? MprisController.dynPrimary : Appearance.colors.colNotchText
+                    MouseArea { 
+                        anchors.fill: parent; cursorShape: Qt.PointingHandCursor;
+                        onClicked: {
+                            Config.options.appearance.lyrics.showFloatingLyrics = !Config.options.appearance.lyrics.showFloatingLyrics
+                        }
+                    }
+                }
             }
 
             // --- Style 2: Full Media Card ---

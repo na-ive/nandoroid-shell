@@ -250,6 +250,13 @@ Singleton {
                         property string pillColorStyle: "surfaceContainerHigh"
                     }
                 }
+                property JsonObject lyrics: JsonObject {
+                    property bool showFloatingLyrics: false
+                    property bool lyricsPinned: false
+                    property bool lyricsUseRomaji: false
+                    property real desktopX: -1
+                    property real desktopY: -1
+                }
             }
 
             // --- Language ---
