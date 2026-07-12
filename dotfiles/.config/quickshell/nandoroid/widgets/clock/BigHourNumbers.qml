@@ -11,6 +11,8 @@ Item {
     property color color: Appearance.colors.colOnSecondaryContainer || "#FFFFFF"
 
     property int hours: 12
+    property bool isLockscreen: false
+    readonly property string timeFontFamily: isLockscreen ? Appearance.font.family.lockscreenTimeFont : Appearance.font.family.desktopTimeFont
     property int numbers: 4
     property int fontSize: 80 * Appearance.effectiveScale
 
@@ -38,7 +40,7 @@ Item {
                     rotation: -numberItem.rotation
 
                     font {
-                        family: Appearance.font.family.numbers
+                        family: root.timeFontFamily
                         pixelSize: root.fontSize
                         weight: Font.Black
                     }

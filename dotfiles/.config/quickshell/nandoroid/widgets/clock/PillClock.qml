@@ -14,6 +14,9 @@ Rectangle {
     
     property bool isLockscreen: false
     property string alignment: "center"
+
+    readonly property string timeFontFamily: root.isLockscreen ? Appearance.font.family.lockscreenTimeFont : Appearance.font.family.desktopTimeFont
+    readonly property string dateFontFamily: root.isLockscreen ? Appearance.font.family.lockscreenDateFont : Appearance.font.family.desktopDateFont
     
     readonly property var cfg: {
         if (!Config.ready) return { size: 120, isVertical: false, showBackground: true, timeColorStyle: "onLayer0", dateColorStyle: "primary", pillColorStyle: "surfaceContainerHigh" }
@@ -90,6 +93,7 @@ Rectangle {
             text: parent.labelText
             font.pixelSize: parent.fontSize
             font.weight: parent.isBold ? Font.DemiBold : Font.Medium
+            font.family: root.dateFontFamily
             color: root.dateColor
         }
     }
@@ -109,6 +113,7 @@ Rectangle {
                 text: DateTime.hours.toString().padStart(2, '0')
                 font.pixelSize: (root.cfg.size * 0.5 || 60) * Appearance.effectiveScale
                 font.weight: Font.DemiBold
+                font.family: root.timeFontFamily
                 color: root.timeColor
             }
 
@@ -124,6 +129,7 @@ Rectangle {
                 text: DateTime.minutes.toString().padStart(2, '0')
                 font.pixelSize: (root.cfg.size * 0.5 || 60) * Appearance.effectiveScale
                 font.weight: Font.DemiBold
+                font.family: root.timeFontFamily
                 color: root.timeColor
                 opacity: 0.8
             }
@@ -139,6 +145,7 @@ Rectangle {
                 text: Qt.formatDate(new Date(), "dddd")
                 font.pixelSize: (root.cfg.size * 0.18 || 22) * Appearance.effectiveScale
                 font.weight: Font.DemiBold
+                font.family: root.dateFontFamily
                 color: root.timeColor
                 Layout.alignment: Qt.AlignHCenter
             }
@@ -146,6 +153,7 @@ Rectangle {
                 text: Qt.formatDate(new Date(), "d MMMM, yyyy")
                 font.pixelSize: (root.cfg.size * 0.12 || 14) * Appearance.effectiveScale
                 font.weight: Font.Light
+                font.family: root.dateFontFamily
                 color: root.dateColor
                 opacity: 0.6
                 Layout.alignment: Qt.AlignHCenter
@@ -173,6 +181,7 @@ Rectangle {
             text: DateTime.hours.toString().padStart(2, '0')
             font.pixelSize: (root.cfg.size * 0.5 || 60) * Appearance.effectiveScale
             font.weight: Font.DemiBold
+            font.family: root.timeFontFamily
             color: root.timeColor
             Layout.alignment: Qt.AlignHCenter
         }
@@ -189,6 +198,7 @@ Rectangle {
             text: DateTime.minutes.toString().padStart(2, '0')
             font.pixelSize: (root.cfg.size * 0.5 || 60) * Appearance.effectiveScale
             font.weight: Font.DemiBold
+            font.family: root.timeFontFamily
             color: root.timeColor
             opacity: 0.8
             Layout.alignment: Qt.AlignHCenter

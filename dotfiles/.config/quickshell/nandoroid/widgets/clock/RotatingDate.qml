@@ -10,6 +10,8 @@ Item {
 
     anchors.fill: parent
     property color color: Appearance.colors.colOnSecondaryContainer
+    property bool isLockscreen: false
+    readonly property string dateFontFamily: isLockscreen ? Appearance.font.family.lockscreenDateFont : Appearance.font.family.desktopDateFont
     property real angleStep: 12 * Math.PI / 180
     property string dateText: {
         const _ = DateTime.currentDate; // reactive
@@ -37,7 +39,7 @@ Item {
 
             color: root.color
             font {
-                family: Appearance.font.family.expressive
+                family: root.dateFontFamily
                 pixelSize: 30 * Appearance.effectiveScale
                 weight: Font.Black
                 variableAxes: Appearance.font.variableAxes.expressive

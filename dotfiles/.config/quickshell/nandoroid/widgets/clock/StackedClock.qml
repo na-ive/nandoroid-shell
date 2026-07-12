@@ -9,6 +9,9 @@ ColumnLayout {
     
     property bool isLockscreen: false
 
+    readonly property string timeFontFamily: root.isLockscreen ? Appearance.font.family.lockscreenTimeFont : Appearance.font.family.desktopTimeFont
+    readonly property string dateFontFamily: root.isLockscreen ? Appearance.font.family.lockscreenDateFont : Appearance.font.family.desktopDateFont
+
     // Internal default config to ensure we never have undefined access
     readonly property var defaultCfg: ({
         fontSize: 64 * Appearance.effectiveScale,
@@ -103,7 +106,7 @@ ColumnLayout {
         visible: root.showDate
         text: root.dayName
         font.pixelSize: cfg.labelFontSize || 24 * Appearance.effectiveScale
-        font.family: cfg.fontFamily || "sans"
+        font.family: root.dateFontFamily
         font.weight: root.fontW(cfg.labelFontWeight)
         color: root.labelColor
         opacity: 0.8
@@ -115,7 +118,7 @@ ColumnLayout {
         visible: root.showDate
         text: root.dayNumber
         font.pixelSize: cfg.fontSize || 64 * Appearance.effectiveScale
-        font.family: cfg.fontFamily || "sans"
+        font.family: root.dateFontFamily
         font.weight: root.fontW(cfg.labelFontWeight)
         color: root.labelColor
         Layout.alignment: root.mapAlign(cfg.alignment)
@@ -126,7 +129,7 @@ ColumnLayout {
     Text {
         text: root.displayHours + ":" + root.displayMinutes
         font.pixelSize: cfg.fontSize || 64 * Appearance.effectiveScale
-        font.family: cfg.fontFamily || "sans"
+        font.family: root.timeFontFamily
         font.weight: root.fontW(cfg.fontWeight)
         color: root.mainColor
         Layout.alignment: root.mapAlign(cfg.alignment)
@@ -138,7 +141,7 @@ ColumnLayout {
         visible: !root.is24H
         text: root.amPm
         font.pixelSize: (cfg.labelFontSize || 24 * Appearance.effectiveScale) + 6 * Appearance.effectiveScale
-        font.family: cfg.fontFamily || "sans"
+        font.family: root.timeFontFamily
         font.weight: root.fontW(cfg.labelFontWeight)
         color: root.labelColor
         opacity: 0.8

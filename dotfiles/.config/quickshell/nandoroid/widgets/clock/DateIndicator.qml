@@ -11,6 +11,7 @@ Item {
     property string style: "bubble"
     property color color: Appearance.colors.colOnSecondaryContainer
     property real dateSquareSize: 64 * Appearance.effectiveScale
+    property bool isLockscreen: false
 
     // Rotating date
     FadeLoader {
@@ -18,6 +19,7 @@ Item {
         shown: indicatorRoot.style === "border"
         sourceComponent: RotatingDate {
             color: indicatorRoot.color
+            isLockscreen: indicatorRoot.isLockscreen
         }
     }
 
@@ -37,6 +39,7 @@ Item {
             radius: Appearance.rounding.small
             implicitWidth: (45 * Appearance.effectiveScale) * rectLoader.opacity
             implicitHeight: (30 * Appearance.effectiveScale) * rectLoader.opacity
+            isLockscreen: indicatorRoot.isLockscreen
         }
     }
 
@@ -55,6 +58,7 @@ Item {
             implicitHeight: dayBubbleLoader.targetSize
             isMonth: false
             targetSize: dayBubbleLoader.targetSize
+            isLockscreen: indicatorRoot.isLockscreen
         }
     }
 

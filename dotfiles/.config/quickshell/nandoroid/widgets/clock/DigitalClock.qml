@@ -49,7 +49,8 @@ ColumnLayout {
     readonly property int   cfgDateGap:    Config.ready ? (cfg.dateGap || 4) * Appearance.effectiveScale : 4 * Appearance.effectiveScale
     readonly property string cfgWeight:    "Bold"
     readonly property string cfgDateWeight:"Medium"
-    readonly property string cfgFamily:    Appearance.font.family.title
+    readonly property string cfgFamily:    root.isLockscreen ? Appearance.font.family.lockscreenTimeFont : Appearance.font.family.desktopTimeFont
+    readonly property string cfgDateFamily: root.isLockscreen ? Appearance.font.family.lockscreenDateFont : Appearance.font.family.desktopDateFont
 
     readonly property bool isVertical: Config.ready && cfg.isVertical
     readonly property bool showDate:   Config.ready && Config.options.appearance.clock.showDate
@@ -103,7 +104,7 @@ ColumnLayout {
         color:   root.dateColor
         font.pixelSize: root.cfgDateSize
         font.weight:    root.fontW(root.cfgDateWeight)
-        font.family:    Appearance.font.family.main
+        font.family:    root.cfgDateFamily
         font.hintingPreference: Font.PreferDefaultHinting
         renderType: Text.NativeRendering
         Layout.alignment: Qt.AlignHCenter

@@ -10,6 +10,7 @@ Item {
     property color color: Appearance.colors.colOnSecondaryContainer
     property string style: Config.options.appearance.clock.analog.dialStyle // "dots", "numbers", "full", "hide"
     property string dateStyle : Config.options.appearance.clock.analog.dateStyle
+    property bool isLockscreen: false
 
     // 12 Dots
     FadeLoader {
@@ -34,6 +35,7 @@ Item {
             numberSize: 80 * Appearance.effectiveScale
             color: root.color
             margins: (20 * Appearance.effectiveScale) - (10 * Appearance.effectiveScale) * bigHourNumbersLoader.opacity
+            isLockscreen: root.isLockscreen
         }
     }
 

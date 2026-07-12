@@ -94,6 +94,12 @@ Singleton {
                     property string title: "Google Sans Flex"
                     property string monospace: "JetBrains Mono NF"
                 }
+                property JsonObject clockFonts: JsonObject {
+                    property string desktopTimeFont: ""
+                    property string desktopDateFont: ""
+                    property string lockscreenTimeFont: ""
+                    property string lockscreenDateFont: ""
+                }
                 property JsonObject background: JsonObject {
                     property string wallpaperPath: "file://" + Directories.assetsPath + "/wallpapers/default_wallpaper.png"
                     property bool darkmode: true

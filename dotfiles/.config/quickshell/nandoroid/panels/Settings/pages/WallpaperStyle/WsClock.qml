@@ -713,23 +713,94 @@ ColumnLayout {
             }
         }
 
+        // Clock Fonts
+        ColumnLayout {
+            Layout.fillWidth: true; spacing: 4 * Appearance.effectiveScale
+            z: 10 // Ensure dropdowns overlap below elements
+
+            Rectangle {
+                Layout.fillWidth: true; implicitHeight: 64 * Appearance.effectiveScale; color: Appearance.m3colors.m3surfaceContainerHigh
+                topLeftRadius: 20 * Appearance.effectiveScale
+                topRightRadius: 20 * Appearance.effectiveScale
+                bottomLeftRadius: (Appearance.rounding.unsharpenmore || 6) * Appearance.effectiveScale
+                bottomRightRadius: (Appearance.rounding.unsharpenmore || 6) * Appearance.effectiveScale
+                z: 2 // Make sure top combo overlaps bottom combo
+                RowLayout {
+                    anchors.fill: parent; anchors.leftMargin: 16 * Appearance.effectiveScale; anchors.rightMargin: 16 * Appearance.effectiveScale
+                    spacing: 16 * Appearance.effectiveScale
+                    MaterialSymbol { text: "text_fields"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
+                    StyledText { 
+                        text: Config.options.appearance.clock.useSameStyle ? "Time Font" : (clockStyleSection.activeContext === "desktop" ? "Desktop Time Font" : "Lockscreen Time Font")
+                        Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 
+                    }
+                    StyledComboBox {
+                        Layout.preferredWidth: 300 * Appearance.effectiveScale
+                        model: SystemFonts.all
+                        text: {
+                            if (!Config.ready) return "Default";
+                            const val = clockStyleSection.activeContext === "desktop" ? Config.options.appearance.clockFonts.desktopTimeFont : Config.options.appearance.clockFonts.lockscreenTimeFont;
+                            return (val === "" || val === undefined) ? "Default" : val;
+                        }
+                        onAccepted: (val) => {
+                            if (!Config.ready) return;
+                            if (clockStyleSection.activeContext === "desktop") Config.options.appearance.clockFonts.desktopTimeFont = (val === "Default" ? "" : val);
+                            else Config.options.appearance.clockFonts.lockscreenTimeFont = (val === "Default" ? "" : val);
+                        }
+                    }
+                }
+            }
+
+            Rectangle {
+                Layout.fillWidth: true; implicitHeight: 64 * Appearance.effectiveScale; color: Appearance.m3colors.m3surfaceContainerHigh
+                topLeftRadius: (Appearance.rounding.unsharpenmore || 6) * Appearance.effectiveScale
+                topRightRadius: (Appearance.rounding.unsharpenmore || 6) * Appearance.effectiveScale
+                bottomLeftRadius: 20 * Appearance.effectiveScale
+                bottomRightRadius: 20 * Appearance.effectiveScale
+                z: 1
+                RowLayout {
+                    anchors.fill: parent; anchors.leftMargin: 16 * Appearance.effectiveScale; anchors.rightMargin: 16 * Appearance.effectiveScale
+                    spacing: 16 * Appearance.effectiveScale
+                    MaterialSymbol { text: "calendar_month"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
+                    StyledText { 
+                        text: Config.options.appearance.clock.useSameStyle ? "Date Font" : (clockStyleSection.activeContext === "desktop" ? "Desktop Date Font" : "Lockscreen Date Font")
+                        Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 
+                    }
+                    StyledComboBox {
+                        Layout.preferredWidth: 300 * Appearance.effectiveScale
+                        model: SystemFonts.all
+                        text: {
+                            if (!Config.ready) return "Default";
+                            const val = clockStyleSection.activeContext === "desktop" ? Config.options.appearance.clockFonts.desktopDateFont : Config.options.appearance.clockFonts.lockscreenDateFont;
+                            return (val === "" || val === undefined) ? "Default" : val;
+                        }
+                        onAccepted: (val) => {
+                            if (!Config.ready) return;
+                            if (clockStyleSection.activeContext === "desktop") Config.options.appearance.clockFonts.desktopDateFont = (val === "Default" ? "" : val);
+                            else Config.options.appearance.clockFonts.lockscreenDateFont = (val === "Default" ? "" : val);
+                        }
+                    }
+                }
+            }
+        }
+
         // Global Toggles
         ColumnLayout {
             Layout.fillWidth: true; spacing: 4 * Appearance.effectiveScale
+            z: 1 // Lower z-index than fonts
             SegmentedWrapper {
                 Layout.fillWidth: true; implicitHeight: 64 * Appearance.effectiveScale; color: Appearance.m3colors.m3surfaceContainerHigh
                 orientation: Qt.Vertical
                 maxRadius: 20 * Appearance.effectiveScale
                 RowLayout {
                     anchors.fill: parent; anchors.margins: 16 * Appearance.effectiveScale
-                    MaterialSymbol { text: "sync"; color: Appearance.colors.colPrimary }
-                    StyledText { text: "Use same style for lockscreen"; Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
+                    spacing: 16 * Appearance.effectiveScale
+                    MaterialSymbol { text: "sync"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
+                    StyledText { text: "Sync lockscreen with desktop"; Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
                     AndroidToggle {
                         checked: Config.ready && Config.options.appearance.clock.useSameStyle
                         onToggled: {
                             if (Config.ready) {
                                 Config.options.appearance.clock.useSameStyle = !Config.options.appearance.clock.useSameStyle
-                                if (Config.options.appearance.clock.useSameStyle) Config.options.appearance.clock.styleLocked = Config.options.appearance.clock.style
                             }
                         }
                     }
@@ -741,7 +812,8 @@ ColumnLayout {
                 maxRadius: 20 * Appearance.effectiveScale
                 RowLayout {
                     anchors.fill: parent; anchors.margins: 16 * Appearance.effectiveScale
-                    MaterialSymbol { text: "desktop_windows"; color: Appearance.colors.colPrimary }
+                    spacing: 16 * Appearance.effectiveScale
+                    MaterialSymbol { text: "desktop_windows"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
                     StyledText { text: "Show clock on desktop"; Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
                     AndroidToggle { checked: Config.ready && Config.options.appearance.clock.showOnDesktop; onToggled: if(Config.ready) Config.options.appearance.clock.showOnDesktop = !Config.options.appearance.clock.showOnDesktop }
                 }
@@ -752,7 +824,8 @@ ColumnLayout {
                 maxRadius: 20 * Appearance.effectiveScale
                 RowLayout {
                     anchors.fill: parent; anchors.margins: 16 * Appearance.effectiveScale
-                    MaterialSymbol { text: "calendar_today"; color: Appearance.colors.colPrimary }
+                    spacing: 16 * Appearance.effectiveScale
+                    MaterialSymbol { text: "calendar_today"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
                     StyledText { text: "Show date"; Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
                     AndroidToggle { checked: Config.ready && Config.options.appearance.clock.showDate; onToggled: if(Config.ready) Config.options.appearance.clock.showDate = !Config.options.appearance.clock.showDate }
                 }

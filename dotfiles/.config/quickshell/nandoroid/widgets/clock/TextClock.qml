@@ -17,6 +17,9 @@ ColumnLayout {
     
     property bool isLockscreen: false
     
+    readonly property string timeFontFamily: root.isLockscreen ? Appearance.font.family.lockscreenTimeFont : Appearance.font.family.desktopTimeFont
+    readonly property string dateFontFamily: root.isLockscreen ? Appearance.font.family.lockscreenDateFont : Appearance.font.family.desktopDateFont
+    
     readonly property var cfg: {
         if (!Config.ready) return { fontSize: 42, dateFontSize: 18, alignment: "center", timeColorStyle: "onSurface", dateColorStyle: "primary" }
         return isLockscreen && !Config.options.appearance.clock.useSameStyle 
@@ -85,6 +88,7 @@ ColumnLayout {
             text: "IT'S"
             font.pixelSize: root.fontSize
             font.weight: Font.Light
+            font.family: root.timeFontFamily
             color: root.timeColor
             opacity: 0.7
         }
@@ -93,6 +97,7 @@ ColumnLayout {
             text: m === 15 ? "QUARTER" : (m === 30 ? "HALF" : root.numberToWords(m))
             font.pixelSize: root.fontSize
             font.weight: Font.DemiBold
+            font.family: root.timeFontFamily
             color: root.timeColor
             visible: text !== "ZERO"
         }
@@ -100,6 +105,7 @@ ColumnLayout {
             text: "AFTER"
             font.pixelSize: root.fontSize
             font.weight: Font.Light
+            font.family: root.timeFontFamily
             color: root.timeColor
             opacity: 0.7
             visible: DateTime.minutes !== 0
@@ -120,12 +126,14 @@ ColumnLayout {
             text: root.numberToWords(DateTime.hours % 12 || 12)
             font.pixelSize: root.fontSize
             font.weight: Font.DemiBold
+            font.family: root.timeFontFamily
             color: root.timeColor
         }
         StyledText {
             text: getPeriodWords()
             font.pixelSize: root.fontSize
             font.weight: Font.Light
+            font.family: root.timeFontFamily
             color: root.timeColor
             opacity: 0.7
         }
@@ -144,11 +152,11 @@ ColumnLayout {
         readonly property var months: ["JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"]
         readonly property var ordinals: ["", "FIRST", "SECOND", "THIRD", "FOURTH", "FIFTH", "SIXTH", "SEVENTH", "EIGHTH", "NINTH", "TENTH", "ELEVENTH", "TWELFTH", "THIRTEENTH", "FOURTEEN", "FIFTEEN", "SIXTEEN", "SEVENTEEN", "EIGHTEEN", "NINETEEN", "TWENTIETH", "TWENTY FIRST", "TWENTY SECOND", "TWENTY THIRD", "TWENTY FOURTH", "TWENTY FIFTH", "TWENTY SIXTH", "TWENTY SEVENTH", "TWENTY EIGHTH", "TWENTY NINTH", "THIRTIETH", "THIRTY FIRST"]
 
-        StyledText { text: "ON"; font.pixelSize: parent.dateSize; font.weight: Font.Light; color: root.dateColor; opacity: 0.7 }
-        StyledText { text: parent.days[parent.now.getDay()]; font.pixelSize: parent.dateSize; font.weight: Font.DemiBold; color: root.dateColor }
-        StyledText { text: "THE"; font.pixelSize: parent.dateSize; font.weight: Font.Light; color: root.dateColor; opacity: 0.7 }
-        StyledText { text: parent.ordinals[parent.now.getDate()]; font.pixelSize: parent.dateSize; font.weight: Font.DemiBold; color: root.dateColor }
-        StyledText { text: "OF"; font.pixelSize: parent.dateSize; font.weight: Font.Light; color: root.dateColor; opacity: 0.7 }
-        StyledText { text: parent.months[parent.now.getMonth()]; font.pixelSize: parent.dateSize; font.weight: Font.DemiBold; color: root.dateColor }
+        StyledText { text: "ON"; font.pixelSize: parent.dateSize; font.weight: Font.Light; font.family: root.dateFontFamily; color: root.dateColor; opacity: 0.7 }
+        StyledText { text: parent.days[parent.now.getDay()]; font.pixelSize: parent.dateSize; font.weight: Font.DemiBold; font.family: root.dateFontFamily; color: root.dateColor }
+        StyledText { text: "THE"; font.pixelSize: parent.dateSize; font.weight: Font.Light; font.family: root.dateFontFamily; color: root.dateColor; opacity: 0.7 }
+        StyledText { text: parent.ordinals[parent.now.getDate()]; font.pixelSize: parent.dateSize; font.weight: Font.DemiBold; font.family: root.dateFontFamily; color: root.dateColor }
+        StyledText { text: "OF"; font.pixelSize: parent.dateSize; font.weight: Font.Light; font.family: root.dateFontFamily; color: root.dateColor; opacity: 0.7 }
+        StyledText { text: parent.months[parent.now.getMonth()]; font.pixelSize: parent.dateSize; font.weight: Font.DemiBold; font.family: root.dateFontFamily; color: root.dateColor }
     }
 }

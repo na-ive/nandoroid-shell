@@ -8,8 +8,10 @@ import "../../core"
 Item {
     id: root
     property bool isMonth: false
-    property real targetSize: 0
     property alias text: bubbleText.text
+    property bool isLockscreen: false
+    readonly property string dateFontFamily: isLockscreen ? Appearance.font.family.lockscreenDateFont : Appearance.font.family.desktopDateFont
+    property real targetSize: 0
 
     text: {
         // Trigger reactivity when date changes
@@ -39,7 +41,7 @@ Item {
         renderType: Text.NativeRendering
         color: root.isMonth ? Appearance.colors.colOnSecondaryContainer : Appearance.colors.colOnTertiaryContainer
         font {
-            family: Appearance.font.family.expressive
+            family: root.dateFontFamily
             pixelSize: 30 * Appearance.effectiveScale
             weight: Font.Black
             variableAxes: Appearance.font.variableAxes.expressive

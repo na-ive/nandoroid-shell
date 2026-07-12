@@ -101,6 +101,7 @@ Item {
         visible: root.showMarks
         color: root.colOnBackground
         style: Config.ready ? root.cfg.dialStyle : "dots"
+        isLockscreen: root.isLockscreen
     }
 
     // Hour Marks (inner ring: 12 tick marks around center)
@@ -116,6 +117,7 @@ Item {
         anchors.centerIn: parent
         visible: Config.ready && root.cfg.timeIndicators
         color: root.colBackgroundInfo
+        isLockscreen: root.isLockscreen
     }
 
     // Minute Hand
@@ -150,6 +152,7 @@ Item {
         visible: root.showDate
         style: Config.ready ? (root.cfg.dateStyle || "bubble") : "bubble"
         color: root.colBackgroundInfo
+        isLockscreen: root.isLockscreen
     }
 
     // Center Pin
