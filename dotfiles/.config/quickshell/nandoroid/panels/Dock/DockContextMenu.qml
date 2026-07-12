@@ -132,6 +132,7 @@ PanelWindow {
                     model: (root.desktopEntry && root.desktopEntry.actions) ? root.desktopEntry.actions : []
                     delegate: MenuItem {
                         menuText: modelData.name; menuIcon: modelData.icon || "bolt"
+                        isXdgIcon: modelData.icon !== undefined && modelData.icon !== ""
                         onClicked: { modelData.execute(); root.close() }
                     }
                 }
@@ -218,15 +219,25 @@ PanelWindow {
     component MenuItem : RippleButton {
         id: itemRoot
         property string menuText: ""; property string menuIcon: ""
+        property bool isXdgIcon: false
         Layout.fillWidth: true; Layout.preferredHeight: 32 * Appearance.effectiveScale
         buttonRadius: Appearance.rounding.verysmall; colBackground: "transparent"
         contentItem: RowLayout {
             anchors.fill: parent; anchors.leftMargin: 8 * Appearance.effectiveScale; anchors.rightMargin: 8 * Appearance.effectiveScale; spacing: 8 * Appearance.effectiveScale
-            MaterialSymbol {
-                text: itemRoot.menuIcon; iconSize: 18 * Appearance.effectiveScale
+            Item {
                 Layout.preferredWidth: 18 * Appearance.effectiveScale; Layout.preferredHeight: 18 * Appearance.effectiveScale
-                fill: (itemRoot.menuIcon === "power_settings_new" || itemRoot.menuIcon === "logout" || itemRoot.menuIcon === "restart_alt") ? 1 : 0
-                color: (itemRoot.menuIcon === "close" || itemRoot.menuIcon === "gavel" || itemRoot.menuIcon === "power_settings_new" || itemRoot.menuIcon === "logout" || itemRoot.menuIcon === "restart_alt") ? Appearance.colors.colError : Appearance.colors.colOnLayer0
+                MaterialSymbol {
+                    anchors.fill: parent
+                    visible: !itemRoot.isXdgIcon
+                    text: itemRoot.menuIcon; iconSize: 18 * Appearance.effectiveScale
+                    fill: (itemRoot.menuIcon === "power_settings_new" || itemRoot.menuIcon === "logout" || itemRoot.menuIcon === "restart_alt") ? 1 : 0
+                    color: (itemRoot.menuIcon === "close" || itemRoot.menuIcon === "gavel" || itemRoot.menuIcon === "power_settings_new" || itemRoot.menuIcon === "logout" || itemRoot.menuIcon === "restart_alt") ? Appearance.colors.colError : Appearance.colors.colOnLayer0
+                }
+                IconImage {
+                    anchors.fill: parent
+                    visible: itemRoot.isXdgIcon
+                    source: itemRoot.isXdgIcon ? (Quickshell.iconPath(itemRoot.menuIcon, "application-x-executable") || "") : ""
+                }
             }
             StyledText {
                 text: itemRoot.menuText; font.pixelSize: Appearance.font.pixelSize.small
