@@ -231,10 +231,17 @@ Item {
                         spacing: 8 * Appearance.effectiveScale
                     
                         readonly property bool isWarning: notificationObject && notificationObject.isRestartRequired
+                        readonly property bool hasDefaultAction: {
+                            if (!notificationObject) return false;
+                            for (var i = 0; i < notificationObject.actions.length; i++) {
+                                if (notificationObject.actions[i].identifier === "default") return true;
+                            }
+                            return false;
+                        }
                         readonly property color btnBg: isWarning ? "transparent" : (notificationObject && notificationObject.urgency == NotificationUrgency.Critical ? Appearance.m3colors.m3secondaryContainer : Appearance.m3colors.m3surfaceContainerHighest)
                         readonly property color btnHover: isWarning ? Functions.ColorUtils.applyAlpha("white", 0.05) : (notificationObject && notificationObject.urgency == NotificationUrgency.Critical ? Appearance.m3colors.m3secondaryFixedDim : Appearance.m3colors.m3surfaceBright)
 
-                        readonly property int totalButtons: (notificationObject ? notificationObject.actions.length : 0) + (notificationObject && notificationObject.isRestartRequired ? 4 : 3)
+                        readonly property int totalButtons: (notificationObject ? notificationObject.actions.length : 0) + (notificationObject && notificationObject.isRestartRequired ? 3 : 2)
                         readonly property real buttonWidth: Math.max(100 * Appearance.effectiveScale, (actionsFlickable.width - (spacing * (totalButtons - 1))) / totalButtons)
 
                         NotificationActionButton {
@@ -271,6 +278,7 @@ Item {
                         }
 
                         NotificationActionButton {
+                            visible: actionsRow.hasDefaultAction
                             width: actionsRow.buttonWidth
                             onClicked: {
                                 if (notificationObject) Notifications.attemptInvokeAction(notificationObject.notificationId, "default");
@@ -383,6 +391,7 @@ Item {
                         Repeater {
                             model: notificationObject ? notificationObject.actions : []
                             NotificationActionButton {
+                                visible: modelData.identifier !== "default"
                                 width: actionsRow.buttonWidth
                                 required property var modelData
                                 buttonText: modelData.text

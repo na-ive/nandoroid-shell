@@ -264,6 +264,12 @@ Item { // Notification item area
                             spacing: 8 * Appearance.effectiveScale
                             
                             readonly property bool isWarning: notificationObject.isRestartRequired
+                            readonly property bool hasDefaultAction: {
+                                for (var i = 0; i < notificationObject.actions.length; i++) {
+                                    if (notificationObject.actions[i].identifier === "default") return true;
+                                }
+                                return false;
+                            }
                             readonly property color btnBg: isWarning ? "transparent" : (notificationObject.urgency == NotificationUrgency.Critical ? Appearance.m3colors.m3secondaryContainer : Appearance.m3colors.m3surfaceContainerHighest)
                             readonly property color btnHover: isWarning ? Functions.ColorUtils.applyAlpha("white", 0.05) : (notificationObject.urgency == NotificationUrgency.Critical ? Appearance.m3colors.m3secondaryFixedDim : Appearance.m3colors.m3surfaceBright)
 
@@ -309,6 +315,8 @@ Item { // Notification item area
 
                             NotificationActionButton {
                                 id: viewBtn
+                                Component.onCompleted: console.log("hasDefaultAction: ", actionRowLayout.hasDefaultAction, " length: ", notificationObject.actions.length)
+                                visible: actionRowLayout.hasDefaultAction
                                 Layout.fillWidth: true
                                 buttonText: "View"
                                 urgency: notificationObject.urgency
@@ -393,6 +401,7 @@ Item { // Notification item area
                                 model: notificationObject.actions
                                 NotificationActionButton {
                                     id: notifAction
+                                    visible: modelData.identifier !== "default"
                                     required property var modelData
                                     Layout.fillWidth: true
                                     buttonText: modelData.text
