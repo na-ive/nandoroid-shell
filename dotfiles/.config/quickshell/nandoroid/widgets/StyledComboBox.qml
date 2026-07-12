@@ -120,15 +120,20 @@ Item {
                     } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
                         if (listView.currentIndex >= 0 && listView.currentIndex < listView.count) {
                             let selectedVal = root.filteredModel[listView.currentIndex];
-                            root.selectItem(selectedVal);
                             input.text = selectedVal; // Manually update input text to fix visual lag
-                            root.isOpened = false;
-                            input.focus = false;
+                            input.focus = false; // Drop focus synchronously
+                            root.selectItem(selectedVal);
+                            Qt.callLater(() => {
+                                root.isOpened = false;
+                            });
                         }
                         event.accepted = true;
                     } else if (event.key === Qt.Key_Escape) {
-                        root.isOpened = false;
                         input.text = root.text; // Restore original text
+                        input.focus = false;
+                        Qt.callLater(() => {
+                            root.isOpened = false;
+                        });
                         event.accepted = true;
                     }
                 }
@@ -175,6 +180,7 @@ Item {
             border.width: Math.max(1, 1 * Appearance.effectiveScale)
             border.color: Appearance.colors.colOutlineVariant
             clip: true
+            visible: root.filteredModel.length > 0
         }
 
         enter: Transition {
@@ -182,10 +188,7 @@ Item {
             NumberAnimation { property: "scale"; from: 0.95; to: 1; duration: 200; easing.type: Easing.OutBack }
         }
         
-        exit: Transition {
-            NumberAnimation { property: "opacity"; from: 1; to: 0; duration: 150; easing.type: Easing.InCubic }
-            NumberAnimation { property: "scale"; from: 1; to: 0.95; duration: 150; easing.type: Easing.InCubic }
-        }
+        // exit transition removed to prevent Wayland click grab bugs during fade out
 
         contentItem: ListView {
             id: listView
@@ -223,8 +226,12 @@ Item {
                 }
                 
                 onClicked: {
+                    input.text = modelData;
+                    input.focus = false; // Drop focus synchronously
                     root.selectItem(modelData);
-                    root.isOpened = false;
+                    Qt.callLater(() => {
+                        root.isOpened = false;
+                    });
                 }
             }
             
@@ -239,7 +246,7 @@ Item {
     }
     
     function syncPopup() {
-        if (root.isOpened && root.filteredModel.length > 0) {
+        if (root.isOpened) {
             dropdownPopup.open();
         } else {
             dropdownPopup.close();
