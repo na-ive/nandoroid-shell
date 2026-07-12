@@ -261,6 +261,44 @@ ColumnLayout {
                         }
                     }
 
+                    // ── Notification Position (Left / Right) ────────────
+                    SegmentedWrapper {
+                        Layout.fillWidth: true
+                        implicitHeight: notifPositionRow.implicitHeight + (36 * Appearance.effectiveScale)
+                        orientation: Qt.Vertical
+                        maxRadius: 20 * Appearance.effectiveScale
+                        color: Appearance.m3colors.m3surfaceContainerHigh
+                        RowLayout {
+                            id: notifPositionRow
+                            anchors.fill: parent
+                            anchors.margins: 16 * Appearance.effectiveScale
+                            spacing: 16 * Appearance.effectiveScale
+                            MaterialSymbol { text: "notifications"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
+                            StyledText { text: "Notification Counter"; Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
+                            RowLayout {
+                                spacing: 2 * Appearance.effectiveScale
+                                Repeater {
+                                    model: [
+                                        { id: "left", label: "Left" },
+                                        { id: "right", label: "Right" }
+                                    ]
+                                    delegate: SegmentedButton {
+                                        required property var modelData
+                                        buttonText: modelData.label
+                                        isHighlighted: Config.ready && Config.options.notifications
+                                            ? (Config.options.notifications.position ?? "right") === modelData.id
+                                            : modelData.id === "right"
+                                        colActive: Appearance.m3colors.m3primary
+                                        colActiveText: Appearance.m3colors.m3onPrimary
+                                        colInactive: Appearance.m3colors.m3surfaceContainerLow
+                                        onClicked: if (Config.ready && Config.options.notifications)
+                                            Config.options.notifications.position = modelData.id
+                                    }
+                                }
+                            }
+                        }
+                    }
+
                     // ── Centered Width (only visible when centered is active) ──
                     SegmentedWrapper {
                         Layout.fillWidth: true

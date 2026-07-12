@@ -361,6 +361,7 @@ Singleton {
             property JsonObject notifications: JsonObject {
                 property int timeout_ms: 2000
                 property string counterStyle: "counter" 
+                property string position: "right" 
             }
 
             // --- Battery ---

@@ -147,7 +147,8 @@ Item {
 
                 // Notification Counter OR Distro Icon
                 Item {
-                    readonly property bool showNotif: notificationCounter.style !== "hidden" && Notifications.unread > 0
+                    readonly property bool isLeftPosition: Config.ready && Config.options.notifications && Config.options.notifications.position === "left"
+                    readonly property bool showNotif: isLeftPosition && notificationCounterLeft.style !== "hidden" && Notifications.unread > 0
                     readonly property bool showDistro: Config.ready && Config.options.bar ? Config.options.bar.show_distro_icon : true
 
                     Layout.preferredWidth: Math.max(distroIcon.width, 20 * Appearance.effectiveScale)
@@ -176,7 +177,7 @@ Item {
 
                     // Notification counter
                     Item {
-                        id: notificationCounter
+                        id: notificationCounterLeft
                         anchors.fill: parent
                         readonly property string style: (Config.ready && Config.options.notifications) ? Config.options.notifications.counterStyle : "counter"
                         
@@ -309,6 +310,49 @@ Item {
                 color: root.contentColor
             }
 
+
+            // Notification counter (right side)
+            Item {
+                id: notificationCounterRight
+                readonly property string style: (Config.ready && Config.options.notifications) ? Config.options.notifications.counterStyle : "counter"
+                readonly property bool isRightPosition: !Config.ready || !Config.options.notifications || Config.options.notifications.position !== "left"
+                
+                visible: isRightPosition && style !== "hidden" && Notifications.unread > 0
+                Layout.preferredWidth: 20 * Appearance.effectiveScale
+                Layout.preferredHeight: 20 * Appearance.effectiveScale
+                Layout.alignment: Qt.AlignVCenter
+
+                MaterialSymbol {
+                    id: bellIconRight
+                    anchors.centerIn: parent
+                    text: "notifications_active"
+                    iconSize: 16 * Appearance.effectiveScale
+                    fill: 1
+                    color: root.contentColor
+                }
+
+                Rectangle {
+                    visible: parent.style === "counter"
+                    anchors.top: parent.top
+                    anchors.right: parent.right
+                    anchors.topMargin: -2 * Appearance.effectiveScale
+                    anchors.rightMargin: -2 * Appearance.effectiveScale
+                    width: Math.max(12 * Appearance.effectiveScale, badgeTextRight.implicitWidth + 4 * Appearance.effectiveScale)
+                    height: 12 * Appearance.effectiveScale
+                    radius: 6 * Appearance.effectiveScale
+                    color: root.contentColor
+
+                    StyledText {
+                        id: badgeTextRight
+                        anchors.centerIn: parent
+                        text: Notifications.unread > 99 ? "99+" : Notifications.unread.toString()
+                        font.pixelSize: 8 * Appearance.effectiveScale
+                        font.weight: Font.DemiBold
+                        // Inverse color of the badge to ensure contrast
+                        color: showBackground ? Appearance.m3colors.m3surface : (Appearance.colors.resolvedStatusBarDarkText ? "#F5F5F5" : "#1E1E1E")
+                    }
+                }
+            }
 
             // WiFi (real data from Network service)
             MaterialSymbol {
