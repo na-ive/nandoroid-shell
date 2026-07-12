@@ -129,6 +129,8 @@ Singleton {
                     property bool useSameStyle: true
                     property int offsetX: 0
                     property int offsetY: -50
+                    property real desktopX: -1
+                    property real desktopY: -1
                     property bool locked: false
 
                     property JsonObject digital: JsonObject {

@@ -3,6 +3,7 @@ pragma ComponentBehavior: Bound
 import "../../core"
 import "../../services"
 import "../../widgets"
+import "../../widgets/widgetCanvas"
 import QtQuick
 import Quickshell
 import Quickshell.Wayland
@@ -157,14 +158,44 @@ Variants {
             }
         }
 
-        NandoClock {
-            z: 10
-            isLockscreen: false
-            interactive: true
-            opacity: (!GlobalStates.screenLocked && visible) ? 1 : 0
-            Behavior on opacity { NumberAnimation { duration: 300 } }
-            onRequestContextMenu: (x, y, isClock) => {
-                desktopContextMenu.openAt(x, y, isClock);
+        WidgetCanvas {
+            id: widgetCanvas
+            anchors.fill: parent
+            z: 9
+            gridSize: 24
+
+            AbstractWidget {
+                id: clockWrapper
+                z: 10
+                width: nandoClockItem.width
+                height: nandoClockItem.height
+                gridSize: 24
+                draggable: Config.ready ? !Config.options.appearance.clock.locked : true
+
+                property real targetX: (Config.ready && Config.options.appearance.clock.desktopX !== -1) ? Config.options.appearance.clock.desktopX : (parent.width - width) / 2
+                property real targetY: (Config.ready && Config.options.appearance.clock.desktopY !== -1) ? Config.options.appearance.clock.desktopY : (parent.height - height) / 2
+                
+                x: targetX
+                y: targetY
+
+                onDragFinished: (newX, newY) => {
+                    if (Config.ready) {
+                        Config.options.appearance.clock.desktopX = newX;
+                        Config.options.appearance.clock.desktopY = newY;
+                    }
+                }
+
+                opacity: (!GlobalStates.screenLocked && nandoClockItem.visible) ? 1 : 0
+                Behavior on opacity { NumberAnimation { duration: 300 } }
+
+                NandoClock {
+                    id: nandoClockItem
+                    isLockscreen: false
+                    interactive: true
+                    onRequestContextMenu: (x, y, isClock) => {
+                        desktopContextMenu.openAt(x, y, isClock);
+                    }
+                }
             }
         }
 

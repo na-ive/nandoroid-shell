@@ -1,0 +1,129 @@
+import QtQuick
+import Quickshell
+import "../../core"
+
+/*
+ * Generic Widget Wrapper for Drag and Drop with Snap to Grid
+ */
+MouseArea {
+    id: root
+    property alias animateXPos: xBehavior.enabled
+    property alias animateYPos: yBehavior.enabled
+    property bool draggable: true
+    property int gridSize: 24
+    property bool snapEnabled: true
+    property int centerSnapMargin: 12
+    readonly property bool dragging: drag.active
+
+    signal dragFinished(real newX, real newY)
+
+    acceptedButtons: Qt.LeftButton | Qt.RightButton
+    drag.target: draggable ? dragProxy : undefined
+    cursorShape: (draggable && containsPress) ? Qt.ClosedHandCursor : draggable ? Qt.OpenHandCursor : Qt.ArrowCursor
+
+    function center() {
+        if (root.parent) {
+            root.x = (root.parent.width - root.width) / 2
+            root.y = (root.parent.height - root.height) / 2
+        }
+    }
+
+    function snapX(value) {
+        if (!root.parent) return value;
+        let centerTarget = (root.parent.width - root.width) / 2;
+        if (Math.abs(value - centerTarget) < centerSnapMargin) {
+            return centerTarget;
+        }
+        return Math.round(value / root.gridSize) * root.gridSize;
+    }
+
+    function snapY(value) {
+        if (!root.parent) return value;
+        let centerTarget = (root.parent.height - root.height) / 2;
+        if (Math.abs(value - centerTarget) < centerSnapMargin) {
+            return centerTarget;
+        }
+        return Math.round(value / root.gridSize) * root.gridSize;
+    }
+
+    function findCanvas(item) {
+        var p = item
+        while (p) {
+            if (p.isWidgetCanvas === true) return p
+            p = p.parent
+        }
+        return null
+    }
+
+    Item {
+        id: dragProxy
+        parent: root.parent
+        x: root.x
+        y: root.y
+    }
+
+    Binding {
+        target: root
+        property: "x"
+        value: root.snapEnabled ? root.snapX(dragProxy.x) : dragProxy.x
+        when: root.dragging
+        restoreMode: Binding.RestoreNone
+    }
+    Binding {
+        target: root
+        property: "y"
+        value: root.snapEnabled ? root.snapY(dragProxy.y) : dragProxy.y
+        when: root.dragging
+        restoreMode: Binding.RestoreNone
+    }
+
+    onXChanged: updateCanvasCenterLines()
+    onYChanged: updateCanvasCenterLines()
+
+    function updateCanvasCenterLines() {
+        if (!dragging) return;
+        var canvas = findCanvas(root.parent)
+        if (canvas && root.parent) {
+            let cx = (root.parent.width - root.width) / 2
+            let cy = (root.parent.height - root.height) / 2
+            canvas.activeCenterX = Math.abs(x - cx) < 1
+            canvas.activeCenterY = Math.abs(y - cy) < 1
+        }
+    }
+
+    onDraggingChanged: {
+        var canvas = findCanvas(root.parent)
+        if (canvas) {
+            canvas.setDragging(dragging)
+            if (!dragging) {
+                canvas.activeCenterX = false
+                canvas.activeCenterY = false
+            }
+        }
+
+        dragProxy.x = root.x
+        dragProxy.y = root.y
+
+        if (!dragging) {
+            root.dragFinished(root.x, root.y)
+        }
+    }
+
+    property bool isLoaded: false
+    Timer {
+        interval: 500
+        running: true
+        onTriggered: root.isLoaded = true
+    }
+
+    Behavior on x {
+        id: xBehavior
+        enabled: !root.dragging && root.isLoaded
+        NumberAnimation { duration: 300; easing.type: Easing.OutExpo }
+    }
+    Behavior on y {
+        id: yBehavior
+        enabled: !root.dragging && root.isLoaded
+        NumberAnimation { duration: 300; easing.type: Easing.OutExpo }
+    }
+}
