@@ -165,8 +165,30 @@ Singleton {
 
     function recordExecution(appId) {
         if (!appId || !Config.options.search.enableUsageTracking) return;
-        const currentCount = root.usageData[appId] || 0;
-        root.usageData[appId] = currentCount + 1;
+        
+        let currentUsage = root.usageData[appId];
+        
+        // Migrate old format (number) to new format (object)
+        if (typeof currentUsage === "number") {
+            currentUsage = { total: currentUsage, history: [] };
+        } else if (!currentUsage || typeof currentUsage !== "object") {
+            currentUsage = { total: 0, history: [] };
+        }
+        
+        const now = Date.now();
+        currentUsage.total += 1;
+        
+        if (!Array.isArray(currentUsage.history)) {
+            currentUsage.history = [];
+        }
+        currentUsage.history.push(now);
+        
+        // Clean up history older than 30 days
+        const thirtyDaysAgo = now - (30 * 24 * 60 * 60 * 1000);
+        currentUsage.history = currentUsage.history.filter(t => t > thirtyDaysAgo);
+        
+        root.usageData[appId] = currentUsage;
+        
         const dataStr = JSON.stringify(root.usageData);
         const path = Quickshell.shellPath("data/app_usage.json");
         Quickshell.execDetached(["sh", "-c", 'printf "%s" "$1" > "$2"', "sh", dataStr, path]);
@@ -276,6 +298,28 @@ Singleton {
                 else if (id.includes("graphic") || id.includes("draw") || id.includes("paint") || id.includes("photo") || id.includes("gimp") || id.includes("inkscape")) category = "Graphics";
             }
 
+            const usage = root.usageData[app.id];
+            let smartScore = 0;
+            if (typeof usage === "number") {
+                smartScore = usage;
+            } else if (usage && typeof usage === "object") {
+                let total = usage.total || 0;
+                let todayCount = 0;
+                let weekCount = 0;
+                const now = Date.now();
+                const oneDay = 24 * 60 * 60 * 1000;
+                const sevenDays = 7 * oneDay;
+                
+                if (Array.isArray(usage.history)) {
+                    for (let i = 0; i < usage.history.length; i++) {
+                        const t = usage.history[i];
+                        if (now - t <= oneDay) todayCount++;
+                        if (now - t <= sevenDays) weekCount++;
+                    }
+                }
+                smartScore = (total * 1) + (weekCount * 5) + (todayCount * 10);
+            }
+
             return {
                 name: app.name,
                 icon: app.icon || "application-x-executable",
@@ -284,12 +328,11 @@ Singleton {
                 isPlugin: false,
                 subtitle: app.id,
                 category: category,
-                emoji: ""
+                emoji: "",
+                smartScore: smartScore
             };
         }).sort((a, b) => {
-            const countA = root.usageData[a.id] || 0;
-            const countB = root.usageData[b.id] || 0;
-            if (countB !== countA) return countB - countA;
+            if (b.smartScore !== a.smartScore) return b.smartScore - a.smartScore;
             return a.name.localeCompare(b.name);
         });
         
