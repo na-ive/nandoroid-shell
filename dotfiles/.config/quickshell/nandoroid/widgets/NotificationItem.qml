@@ -321,6 +321,7 @@ Item { // Notification item area
 
                                 onClicked: {
                                     Notifications.attemptInvokeAction(notificationObject.notificationId, "default");
+                                    root.destroyWithAnimation()
                                 }
 
                                 contentItem: Item {
@@ -402,6 +403,7 @@ Item { // Notification item area
                                         (urgency == NotificationUrgency.Critical) ? Appearance.m3colors.m3onSurfaceVariant : Appearance.m3colors.m3onSurface
                                     onClicked: {
                                         Notifications.attemptInvokeAction(notificationObject.notificationId, modelData.identifier);
+                                        root.destroyWithAnimation()
                                     }
                                 }
                             }
