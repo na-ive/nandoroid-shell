@@ -124,7 +124,8 @@ Singleton {
                     property string style: "digital"
                     property string styleLocked: "digital"
                     property bool showOnDesktop: true
-                    property bool showDate: true
+                    property bool showDesktopDate: true
+                    property bool showLockscreenDate: true
                     property bool useSameStyle: true
                     property int offsetX: 0
                     property int offsetY: -50

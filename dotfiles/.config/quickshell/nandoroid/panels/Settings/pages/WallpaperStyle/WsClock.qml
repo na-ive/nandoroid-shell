@@ -826,8 +826,21 @@ ColumnLayout {
                     anchors.fill: parent; anchors.margins: 16 * Appearance.effectiveScale
                     spacing: 16 * Appearance.effectiveScale
                     MaterialSymbol { text: "calendar_today"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
-                    StyledText { text: "Show date"; Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
-                    AndroidToggle { checked: Config.ready && Config.options.appearance.clock.showDate; onToggled: if(Config.ready) Config.options.appearance.clock.showDate = !Config.options.appearance.clock.showDate }
+                    StyledText { text: Config.options.appearance.clock.useSameStyle ? "Show date" : "Show date on desktop"; Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
+                    AndroidToggle { checked: Config.ready && Config.options.appearance.clock.showDesktopDate; onToggled: if(Config.ready) Config.options.appearance.clock.showDesktopDate = !Config.options.appearance.clock.showDesktopDate }
+                }
+            }
+            SegmentedWrapper {
+                Layout.fillWidth: true; implicitHeight: 64 * Appearance.effectiveScale; color: Appearance.m3colors.m3surfaceContainerHigh
+                orientation: Qt.Vertical
+                maxRadius: 20 * Appearance.effectiveScale
+                visible: Config.ready && !Config.options.appearance.clock.useSameStyle
+                RowLayout {
+                    anchors.fill: parent; anchors.margins: 16 * Appearance.effectiveScale
+                    spacing: 16 * Appearance.effectiveScale
+                    MaterialSymbol { text: "event"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
+                    StyledText { text: "Show date on lockscreen"; Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
+                    AndroidToggle { checked: Config.ready && Config.options.appearance.clock.showLockscreenDate; onToggled: if(Config.ready) Config.options.appearance.clock.showLockscreenDate = !Config.options.appearance.clock.showLockscreenDate }
                 }
             }
         }

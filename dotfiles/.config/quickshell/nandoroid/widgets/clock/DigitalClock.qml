@@ -53,7 +53,7 @@ ColumnLayout {
     readonly property string cfgDateFamily: root.isLockscreen ? Appearance.font.family.lockscreenDateFont : Appearance.font.family.desktopDateFont
 
     readonly property bool isVertical: Config.ready && cfg.isVertical
-    readonly property bool showDate:   Config.ready && Config.options.appearance.clock.showDate
+    readonly property bool showDate: Config.ready ? (root.isLockscreen ? (Config.options.appearance.clock.useSameStyle ? Config.options.appearance.clock.showDesktopDate : Config.options.appearance.clock.showLockscreenDate) : Config.options.appearance.clock.showDesktopDate) : true
     readonly property bool hideAmPm:   Config.ready && cfg.hideAmPm
 
     // ── Time strings ───────────────────────────────────────────

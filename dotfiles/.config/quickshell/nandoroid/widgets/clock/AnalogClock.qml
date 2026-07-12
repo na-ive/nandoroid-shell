@@ -35,7 +35,7 @@ Item {
     property color colMinuteHand:      Appearance.colors.colTertiary
     property color colSecondHand:      Appearance.colors.colPrimary
 
-    readonly property bool showDate: Config.ready && Config.options.appearance.clock.showDate
+    readonly property bool showDate: Config.ready ? (root.isLockscreen ? (Config.options.appearance.clock.useSameStyle ? Config.options.appearance.clock.showDesktopDate : Config.options.appearance.clock.showLockscreenDate) : Config.options.appearance.clock.showDesktopDate) : true
     readonly property bool showMarks: Config.ready && cfg.showMarks
     readonly property string backgroundStyle: Config.ready ? (cfg.backgroundStyle || "shape") : "shape"
     
