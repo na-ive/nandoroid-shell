@@ -53,6 +53,7 @@ Item {
         anchors.fill: parent
         clip: false 
         interactive: contentWidth > root.maxWidth
+        pressDelay: 150
         
         Behavior on contentX { NumberAnimation { duration: 300; easing.type: Easing.OutCubic } }
         
