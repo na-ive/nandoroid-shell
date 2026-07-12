@@ -345,7 +345,7 @@ MouseArea {
                             text: Notifications.unread > 99 ? "99+" : Notifications.unread.toString()
                             font.pixelSize: 8 * Appearance.effectiveScale
                             font.weight: Font.DemiBold
-                            color: barBg.showBg ? Appearance.m3colors.m3surface : Appearance.colors.colLayer0
+                            color: Functions.ColorUtils.getContrastingTextColor(lockBellIcon.color)
                         }
                     }
                 }
