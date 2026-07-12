@@ -17,6 +17,7 @@ Rectangle {
 
     readonly property string timeFontFamily: root.isLockscreen ? Appearance.font.family.lockscreenTimeFont : Appearance.font.family.desktopTimeFont
     readonly property string dateFontFamily: root.isLockscreen ? Appearance.font.family.lockscreenDateFont : Appearance.font.family.desktopDateFont
+    readonly property bool showDate: Config.ready ? (root.isLockscreen ? (Config.options.appearance.clock.useSameStyle ? Config.options.appearance.clock.showDesktopDate : Config.options.appearance.clock.showLockscreenDate) : Config.options.appearance.clock.showDesktopDate) : true
     
     readonly property var cfg: {
         if (!Config.ready) return { size: 120, isVertical: false, showBackground: true, timeColorStyle: "onLayer0", dateColorStyle: "primary", pillColorStyle: "surfaceContainerHigh" }
@@ -139,7 +140,7 @@ Rectangle {
         ColumnLayout {
             spacing: 0
             Layout.alignment: Qt.AlignHCenter
-            visible: root.cfg.showBackground
+            visible: root.showDate && root.cfg.showBackground
 
             StyledText {
                 text: Qt.formatDate(new Date(), "dddd")
@@ -163,7 +164,7 @@ Rectangle {
         // Horizontal Pill Date (When background is OFF)
         AdaptivePill {
             Layout.alignment: Qt.AlignHCenter
-            visible: !root.cfg.showBackground
+            visible: root.showDate && !root.cfg.showBackground
             labelText: Qt.formatDate(new Date(), "dddd, d MMMM yyyy")
             isBold: true
             fontSize: (root.cfg.size * 0.14 || 16) * Appearance.effectiveScale
