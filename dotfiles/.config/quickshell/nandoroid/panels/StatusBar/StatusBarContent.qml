@@ -145,19 +145,76 @@ Item {
                 anchors.fill: parent
                 spacing: 10 * Appearance.effectiveScale
 
-                // Distro icon (config-driven visibility)
-                CustomIcon {
-                    visible: Config.ready && Config.options.bar ? Config.options.bar.show_distro_icon : true
-                    source: {
-                        if (!Config.ready || !Config.options.bar) return SystemInfo.distroIcon || "linux-symbolic";
-                        let custom = Config.options.bar.distroIcon;
-                        return (custom && custom !== "") ? custom : (SystemInfo.distroIcon || "linux-symbolic");
-                    }
-                    colorize: true
-                    color: root.contentColor
-                    width: (root.monitor && root.monitor.width && root.monitor.width > 2000) ? 20 * Appearance.effectiveScale : 18 * Appearance.effectiveScale
-                    height: (root.monitor && root.monitor.width && root.monitor.width > 2000) ? 20 * Appearance.effectiveScale : 18 * Appearance.effectiveScale
+                // Notification Counter OR Distro Icon
+                Item {
+                    readonly property bool showNotif: notificationCounter.style !== "hidden" && Notifications.unread > 0
+                    readonly property bool showDistro: Config.ready && Config.options.bar ? Config.options.bar.show_distro_icon : true
+
+                    Layout.preferredWidth: Math.max(distroIcon.width, 20 * Appearance.effectiveScale)
+                    Layout.preferredHeight: Math.max(distroIcon.height, 20 * Appearance.effectiveScale)
                     Layout.alignment: Qt.AlignVCenter
+                    visible: showDistro || showNotif
+
+                    // Distro icon (config-driven visibility)
+                    CustomIcon {
+                        id: distroIcon
+                        opacity: parent.showNotif ? 0 : (parent.showDistro ? 1 : 0)
+                        visible: opacity > 0
+                        Behavior on opacity { NumberAnimation { duration: 250; easing.type: Easing.InOutQuad } }
+                        
+                        source: {
+                            if (!Config.ready || !Config.options.bar) return SystemInfo.distroIcon || "linux-symbolic";
+                            let custom = Config.options.bar.distroIcon;
+                            return (custom && custom !== "") ? custom : (SystemInfo.distroIcon || "linux-symbolic");
+                        }
+                        colorize: true
+                        color: root.contentColor
+                        width: (root.monitor && root.monitor.width && root.monitor.width > 2000) ? 20 * Appearance.effectiveScale : 18 * Appearance.effectiveScale
+                        height: (root.monitor && root.monitor.width && root.monitor.width > 2000) ? 20 * Appearance.effectiveScale : 18 * Appearance.effectiveScale
+                        anchors.centerIn: parent
+                    }
+
+                    // Notification counter
+                    Item {
+                        id: notificationCounter
+                        anchors.fill: parent
+                        readonly property string style: (Config.ready && Config.options.notifications) ? Config.options.notifications.counterStyle : "counter"
+                        
+                        opacity: parent.showNotif ? 1 : 0
+                        visible: opacity > 0
+                        Behavior on opacity { NumberAnimation { duration: 250; easing.type: Easing.InOutQuad } }
+
+                        MaterialSymbol {
+                            id: bellIcon
+                            anchors.centerIn: parent
+                            text: "notifications_active"
+                            iconSize: 16 * Appearance.effectiveScale
+                            fill: 1
+                            color: root.contentColor
+                        }
+
+                        Rectangle {
+                            visible: parent.style === "counter"
+                            anchors.top: parent.top
+                            anchors.right: parent.right
+                            anchors.topMargin: -2 * Appearance.effectiveScale
+                            anchors.rightMargin: -2 * Appearance.effectiveScale
+                            width: Math.max(12 * Appearance.effectiveScale, badgeText.implicitWidth + 4 * Appearance.effectiveScale)
+                            height: 12 * Appearance.effectiveScale
+                            radius: 6 * Appearance.effectiveScale
+                            color: root.contentColor
+
+                            StyledText {
+                                id: badgeText
+                                anchors.centerIn: parent
+                                text: Notifications.unread > 99 ? "99+" : Notifications.unread.toString()
+                                font.pixelSize: 8 * Appearance.effectiveScale
+                                font.weight: Font.DemiBold
+                                // Inverse color of the badge to ensure contrast
+                                color: showBackground ? Appearance.m3colors.m3surface : (Appearance.colors.resolvedStatusBarDarkText ? "#F5F5F5" : "#1E1E1E")
+                            }
+                        }
+                    }
                 }
 
                 // Workspace indicator (moved to center)
@@ -252,47 +309,6 @@ Item {
                 color: root.contentColor
             }
 
-            // Notification counter (now moved before WiFi)
-            Item {
-                id: notificationCounter
-                readonly property string style: (Config.ready && Config.options.notifications) ? Config.options.notifications.counterStyle : "counter"
-                
-                visible: style !== "hidden" && Notifications.unread > 0
-                Layout.preferredWidth: 20 * Appearance.effectiveScale
-                Layout.preferredHeight: 20 * Appearance.effectiveScale
-                Layout.alignment: Qt.AlignVCenter
-
-                MaterialSymbol {
-                    id: bellIcon
-                    anchors.centerIn: parent
-                    text: "notifications_active"
-                    iconSize: 16 * Appearance.effectiveScale
-                    fill: 1
-                    color: root.contentColor
-                }
-
-                Rectangle {
-                    visible: parent.style === "counter"
-                    anchors.top: parent.top
-                    anchors.right: parent.right
-                    anchors.topMargin: -2 * Appearance.effectiveScale
-                    anchors.rightMargin: -2 * Appearance.effectiveScale
-                    width: Math.max(12 * Appearance.effectiveScale, badgeText.implicitWidth + 4 * Appearance.effectiveScale)
-                    height: 12 * Appearance.effectiveScale
-                    radius: 6 * Appearance.effectiveScale
-                    color: root.contentColor
-
-                    StyledText {
-                        id: badgeText
-                        anchors.centerIn: parent
-                        text: Notifications.unread > 99 ? "99+" : Notifications.unread.toString()
-                        font.pixelSize: 8 * Appearance.effectiveScale
-                        font.weight: Font.DemiBold
-                        // Inverse color of the badge to ensure contrast
-                        color: showBackground ? Appearance.m3colors.m3surface : (Appearance.colors.resolvedStatusBarDarkText ? "#F5F5F5" : "#1E1E1E")
-                    }
-                }
-            }
 
             // WiFi (real data from Network service)
             MaterialSymbol {
