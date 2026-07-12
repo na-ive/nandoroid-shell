@@ -45,7 +45,7 @@ ColumnLayout {
                     rowSpacing: 24 * Appearance.effectiveScale
                     columnSpacing: 24 * Appearance.effectiveScale
                     
-                    property var fontOptions: ["Google Sans Flex", "Google Sans Mono", "Cantarell", "JetBrainsMono Nerd Font", "FantasqueSansM Nerd Font", "Inter", "Roboto", "Outfit", "Lexend", "Cascadia Code", "Iosevka", "Public Sans"]
+                    // We use SystemFonts for dynamically fetching font models
     
                     ColumnLayout {
                         id: mainComboContainer
@@ -57,7 +57,7 @@ ColumnLayout {
                             id: mainCombo
                             Layout.fillWidth: true
                             text: Config.options.appearance.fonts.main
-                            model: parent.parent.fontOptions
+                            model: SystemFonts.all
                             onAccepted: (val) => Config.options.appearance.fonts.main = val
                         }
                     }
@@ -72,7 +72,7 @@ ColumnLayout {
                             id: titleCombo
                             Layout.fillWidth: true
                             text: Config.options.appearance.fonts.title
-                            model: parent.parent.fontOptions
+                            model: SystemFonts.all
                             onAccepted: (val) => Config.options.appearance.fonts.title = val
                         }
                     }
@@ -87,7 +87,7 @@ ColumnLayout {
                             id: numbersCombo
                             Layout.fillWidth: true
                             text: Config.options.appearance.fonts.numbers
-                            model: parent.parent.fontOptions
+                            model: SystemFonts.all
                             onAccepted: (val) => Config.options.appearance.fonts.numbers = val
                         }
                     }
@@ -102,7 +102,7 @@ ColumnLayout {
                             id: monoCombo
                             Layout.fillWidth: true
                             text: Config.options.appearance.fonts.monospace
-                            model: parent.parent.fontOptions
+                            model: SystemFonts.mono
                             onAccepted: (val) => Config.options.appearance.fonts.monospace = val
                         }
                     }
