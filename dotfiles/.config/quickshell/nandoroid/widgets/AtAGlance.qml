@@ -55,24 +55,16 @@ Item {
         id: quotesFile
         path: Directories.shellConfigPath + "/data/quotes.json"
         
-        JsonAdapter {
-            id: quotesAdapter
-            property var morning: []
-            property var afternoon: []
-            property var evening: []
-            property var midnight: []
-        }
-        
         onLoaded: {
-            // Need to convert QJSValue/arrays to proper JS arrays if needed, 
-            // but direct assignment usually works in QML for iteration
-            root.quotesData = {
-                morning: quotesAdapter.morning,
-                afternoon: quotesAdapter.afternoon,
-                evening: quotesAdapter.evening,
-                midnight: quotesAdapter.midnight
-            };
-            root.updateText();
+            try {
+                let content = quotesFile.text();
+                if (content) {
+                    root.quotesData = JSON.parse(content);
+                    root.updateText();
+                }
+            } catch(e) {
+                console.error("Failed to parse quotes:", e);
+            }
         }
     }
 
@@ -103,43 +95,48 @@ Item {
         id: mainLayout
         spacing: 8 * Appearance.effectiveScale
 
+        StyledText {
+            visible: cfg.showGreeting
+            text: currentGreeting + "."
+            font.pixelSize: fontSize * 1.2 * Appearance.effectiveScale
+            font.family: fontFamily
+            font.weight: Font.DemiBold
+            color: textColor
+            Layout.alignment: cfg.alignment === "center" ? Qt.AlignHCenter : (cfg.alignment === "right" ? Qt.AlignRight : Qt.AlignLeft)
+            horizontalAlignment: cfg.alignment === "center" ? Text.AlignHCenter : (cfg.alignment === "right" ? Text.AlignRight : Text.AlignLeft)
+        }
+
+        StyledText {
+            visible: cfg.showDate
+            text: "It's " + dateString
+            font.pixelSize: fontSize * Appearance.effectiveScale
+            font.family: fontFamily
+            color: Appearance.colors.colOnLayer1
+            Layout.alignment: cfg.alignment === "center" ? Qt.AlignHCenter : (cfg.alignment === "right" ? Qt.AlignRight : Qt.AlignLeft)
+            horizontalAlignment: cfg.alignment === "center" ? Text.AlignHCenter : (cfg.alignment === "right" ? Text.AlignRight : Text.AlignLeft)
+        }
+
         RowLayout {
-            spacing: 12 * Appearance.effectiveScale
+            visible: cfg.showQuote && currentQuote !== ""
+            spacing: 8 * Appearance.effectiveScale
             Layout.alignment: cfg.alignment === "center" ? Qt.AlignHCenter : (cfg.alignment === "right" ? Qt.AlignRight : Qt.AlignLeft)
 
             MaterialSymbol {
                 visible: cfg.showIcon
-                text: "wb_sunny" // You can bind this to weather service if you want
-                iconSize: fontSize * 1.5 * Appearance.effectiveScale
-                color: textColor
+                text: "navigation"
+                iconSize: fontSize * 0.9 * Appearance.effectiveScale
+                color: Appearance.colors.colOnLayer1
+                rotation: 45
             }
 
-            ColumnLayout {
-                spacing: 2 * Appearance.effectiveScale
-                
-                StyledText {
-                    visible: cfg.showGreeting || cfg.showDate
-                    text: {
-                        let parts = [];
-                        if (cfg.showGreeting) parts.push(currentGreeting + ".");
-                        if (cfg.showDate) parts.push("It's " + dateString + ".");
-                        return parts.join(" ");
-                    }
-                    font.pixelSize: fontSize * Appearance.effectiveScale
-                    font.family: fontFamily
-                    font.weight: Font.DemiBold
-                    color: textColor
-                }
-
-                StyledText {
-                    visible: cfg.showQuote && currentQuote !== ""
-                    text: currentQuote
-                    font.pixelSize: (fontSize * 0.75) * Appearance.effectiveScale
-                    font.family: fontFamily
-                    color: Appearance.colors.colOnLayer2
-                    wrapMode: Text.WordWrap
-                    Layout.maximumWidth: 400 * Appearance.effectiveScale
-                }
+            StyledText {
+                text: currentQuote
+                font.pixelSize: (fontSize * 0.8) * Appearance.effectiveScale
+                font.family: fontFamily
+                color: Appearance.colors.colOnLayer1
+                wrapMode: Text.WordWrap
+                Layout.maximumWidth: 400 * Appearance.effectiveScale
+                horizontalAlignment: cfg.alignment === "center" ? Text.AlignHCenter : (cfg.alignment === "right" ? Text.AlignRight : Text.AlignLeft)
             }
         }
     }
