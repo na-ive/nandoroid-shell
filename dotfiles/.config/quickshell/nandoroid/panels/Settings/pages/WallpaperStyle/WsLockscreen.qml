@@ -126,8 +126,14 @@ ColumnLayout {
                             }
                         }
                     }
+                    }
                 }
-            }
     
-
+            // ── Lockscreen Clock Section ──
+            WsClock { 
+                Layout.fillWidth: true
+                isDedicatedContext: true
+                dedicatedIsLock: true 
+            }
+    }
 }

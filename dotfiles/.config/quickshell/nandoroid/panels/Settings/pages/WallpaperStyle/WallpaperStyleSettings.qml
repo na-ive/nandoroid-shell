@@ -418,9 +418,6 @@ Flickable {
         // ── Overview Settings Section ──
         WsOverview { Layout.fillWidth: true; visible: !root.isOnboarding }
 
-        // ── Clock Style Section ──
-        WsClock { Layout.fillWidth: true; visible: !root.isOnboarding }
-
         // ── Visualizer Section ──
         WsCava { Layout.fillWidth: true; visible: !root.isOnboarding }
 
