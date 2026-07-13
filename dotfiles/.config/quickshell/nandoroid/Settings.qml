@@ -355,6 +355,7 @@ Scope {
         { name: "Audio", component: "panels/Settings/pages/Audio/AudioSettings.qml" },
         { name: "Display", component: "panels/Settings/pages/Display/DisplaySettings.qml" },
         { name: "Wallpaper & Style", component: "panels/Settings/pages/WallpaperStyle/WallpaperStyleSettings.qml" },
+        { name: "Widgets", component: "panels/Settings/pages/Widgets/WidgetsSettings.qml" },
         { name: "System", component: "panels/Settings/pages/System/SystemSettings.qml" },
         { name: "Services", component: "panels/Settings/pages/Services/ServicesSettings.qml" },
         { name: "About", component: "panels/Settings/pages/About/AboutSettings.qml" }
