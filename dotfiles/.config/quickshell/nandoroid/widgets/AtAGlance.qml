@@ -50,18 +50,21 @@ Item {
         return Appearance.colors.colPrimary; // fallback
     }
 
-    // Load Quotes JSON
-    FileView {
-        id: quotesFile
-        path: Directories.shellConfigPath + "/data/quotes.json"
-        
-        onLoaded: {
+    // Load Quotes JSON via Process
+    Process {
+        id: quotesLoader
+        command: ["cat", Directories.shellConfigPath + "/data/quotes.json"]
+        running: true
+        property string rawData: ""
+        stdout: [
+            SplitParser {
+                onRead: data => quotesLoader.rawData += data + "\n"
+            }
+        ]
+        onExited: {
             try {
-                let content = quotesFile.text();
-                if (content) {
-                    root.quotesData = JSON.parse(content);
-                    root.updateText();
-                }
+                root.quotesData = JSON.parse(quotesLoader.rawData);
+                root.updateText();
             } catch(e) {
                 console.error("Failed to parse quotes:", e);
             }
@@ -121,12 +124,14 @@ Item {
             spacing: 8 * Appearance.effectiveScale
             Layout.alignment: cfg.alignment === "center" ? Qt.AlignHCenter : (cfg.alignment === "right" ? Qt.AlignRight : Qt.AlignLeft)
 
-            MaterialSymbol {
+            Image {
                 visible: cfg.showIcon
-                text: "navigation"
-                iconSize: fontSize * 0.9 * Appearance.effectiveScale
-                color: Appearance.colors.colOnLayer1
-                rotation: 45
+                source: "file://" + Directories.assetsPath + "/icons/NAnDoroid.svg"
+                sourceSize.width: fontSize * 1.2 * Appearance.effectiveScale
+                sourceSize.height: fontSize * 1.2 * Appearance.effectiveScale
+                Layout.preferredWidth: fontSize * 1.2 * Appearance.effectiveScale
+                Layout.preferredHeight: fontSize * 1.2 * Appearance.effectiveScale
+                fillMode: Image.PreserveAspectFit
             }
 
             StyledText {
