@@ -245,7 +245,8 @@ Nandoroid uses native Quickshell Global Shortcuts for specialized tool operation
 This project is a personal creation heavily inspired by the following developers and their repositories:
 
 - **[end-4](https://github.com/end-4)** - Architecture and shell logic inspired by [dots-hyprland](https://github.com/end-4/dots-hyprland).
-- **[vaguesyntax (Vynx)](https://github.com/vaguesyntax)** - Quickshell translation references from [ii-vynx](https://github.com/vaguesyntax/ii-vynx).
+- **[pC](https://github.com/pctrade)** - Design and layout references from [end4-pC](https://github.com/pctrade/end4-pC).
+- **[vaguesyntax (Vynx)](https://github.com/vaguesyntax)** - Design and layout references from [ii-vynx](https://github.com/vaguesyntax/ii-vynx).
 - **[AvengeMedia](https://github.com/AvengeMedia)** - System monitoring logic from [DankMaterialShell](https://github.com/AvengeMedia/DankMaterialShell) and [dgop](https://github.com/AvengeMedia/dgop).
 - **[Axenide](https://github.com/Axenide)** - Notch concept and spatial references from [Ambxst](https://github.com/Axenide/Ambxst).
 

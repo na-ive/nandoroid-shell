@@ -48,6 +48,14 @@ ColumnLayout {
         }
 
         ProjectCard {
+            title: "end4-pC"
+            description: "pC's fork of illogical-impulse. Provided valuable references for design layout, widgets, and logic architecture."
+            iconSource: "../../../../assets/icons/illogical-impulse.svg"
+            url: "https://github.com/pctrade/end4-pC"
+            accentColor: "#f9e2af"
+        }
+
+        ProjectCard {
             title: "Dank Material Shell"
             description: "AvengeMedia's DMS. Helped a ton with a lot of the harder parts of the config, and dgop was super useful for system monitoring stuff."
             iconSource: "../../../../assets/icons/danklogo.svg"
