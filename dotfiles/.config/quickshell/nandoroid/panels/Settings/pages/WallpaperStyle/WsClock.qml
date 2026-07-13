@@ -286,6 +286,20 @@ ColumnLayout {
                         }
                         StyledText { text: Math.round(advancedPanel.digitalCfg.dateGap ?? 4).toString() + "px"; color: Appearance.colors.colOnLayer1; Layout.preferredWidth: 40 * Appearance.effectiveScale; horizontalAlignment: Text.AlignRight }
                     }
+                    StyledText { text: "Alignment"; color: Appearance.colors.colOnLayer1 }
+                    Row {
+                        Layout.alignment: Qt.AlignRight
+                        spacing: 2 * Appearance.effectiveScale
+                        Repeater {
+                            model: ["left", "center", "right"]
+                            delegate: SegmentedButton {
+                                required property string modelData
+                                buttonText: modelData.charAt(0).toUpperCase() + modelData.slice(1)
+                                isHighlighted: Config.ready && advancedPanel.digitalCfg.alignment === modelData
+                                onClicked: advancedPanel.digitalCfg.alignment = modelData
+                            }
+                        }
+                    }
                 }
             }
 

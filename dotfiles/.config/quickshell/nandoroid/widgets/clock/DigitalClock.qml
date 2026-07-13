@@ -43,6 +43,18 @@ ColumnLayout {
         return Font.DemiBold
     }
 
+    function mapAlign(a) {
+        if (a === "right") return Qt.AlignRight
+        if (a === "center") return Qt.AlignHCenter
+        return Qt.AlignLeft
+    }
+
+    function mapTextAlign(a) {
+        if (a === "right") return Text.AlignRight
+        if (a === "center") return Text.AlignHCenter
+        return Text.AlignLeft
+    }
+
     // ── Config props ───────────────────────────────────────────
     readonly property real  cfgSize:       Config.ready ? cfg.fontSize     : 84 * Appearance.effectiveScale
     readonly property real  cfgDateSize:   Config.ready ? (cfg.dateFontSize || 24) * Appearance.effectiveScale : 24 * Appearance.effectiveScale
@@ -67,7 +79,7 @@ ColumnLayout {
     readonly property string timeString: {
         let t = DateTime.currentTime
         if (hideAmPm) t = t.replace(/ [AP]M/i, "")
-        return t
+        return t.trim()
     }
 
     // ── Time (top / horizontal) ─────────────────────────────────
@@ -80,7 +92,8 @@ ColumnLayout {
         font.family:    root.cfgFamily
         font.hintingPreference: Font.PreferDefaultHinting
         renderType: Text.NativeRendering
-        Layout.alignment: Qt.AlignHCenter
+        Layout.alignment: root.mapAlign(root.cfg.alignment || "center")
+        horizontalAlignment: root.mapTextAlign(root.cfg.alignment || "center")
     }
 
     // ── Minutes (vertical only) ─────────────────────────────────
@@ -93,21 +106,23 @@ ColumnLayout {
         font.family:    root.cfgFamily
         font.hintingPreference: Font.PreferDefaultHinting
         renderType: Text.NativeRendering
-        Layout.alignment: Qt.AlignHCenter
+        Layout.alignment: root.mapAlign(root.cfg.alignment || "center")
+        horizontalAlignment: root.mapTextAlign(root.cfg.alignment || "center")
         Layout.topMargin: -24 * Appearance.effectiveScale
     }
 
     // ── Date ────────────────────────────────────────────────────
     Text {
         visible: root.showDate
-        text:    DateTime.currentDate
+        text:    DateTime.currentDate.trim()
         color:   root.dateColor
         font.pixelSize: root.cfgDateSize
         font.weight:    root.fontW(root.cfgDateWeight)
         font.family:    root.cfgDateFamily
         font.hintingPreference: Font.PreferDefaultHinting
         renderType: Text.NativeRendering
-        Layout.alignment: Qt.AlignHCenter
+        Layout.alignment: root.mapAlign(root.cfg.alignment || "center")
+        horizontalAlignment: root.mapTextAlign(root.cfg.alignment || "center")
         Layout.topMargin: root.cfgDateGap
     }
 }

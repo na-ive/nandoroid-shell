@@ -172,7 +172,41 @@ Variants {
                 gridSize: 24
                 draggable: Config.ready ? !Config.options.appearance.clock.locked : true
 
-                property real targetX: (Config.ready && Config.options.appearance.clock.desktopX !== -1) ? Config.options.appearance.clock.desktopX : (parent.width - width) / 2
+                property string activeAlign: nandoClockItem.alignment
+
+                onActiveAlignChanged: {
+                    if (!Config.ready) return;
+                    // Unconditionally update the corresponding anchor coordinate to the current physical position
+                    // so that the widget stays exactly in place when the user switches alignments.
+                    if (activeAlign === "right") {
+                        Config.options.appearance.clock.desktopRightX = x + width;
+                    } else if (activeAlign === "center") {
+                        Config.options.appearance.clock.desktopCenterX = x + (width / 2);
+                    } else if (activeAlign === "left") {
+                        Config.options.appearance.clock.desktopX = x;
+                    }
+                }
+
+                property real targetX: {
+                    if (!Config.ready) return (parent.width - width) / 2;
+                    
+                    if (activeAlign === "right") {
+                        if (Config.options.appearance.clock.desktopRightX !== -1) {
+                            return Config.options.appearance.clock.desktopRightX - width;
+                        }
+                    } else if (activeAlign === "center") {
+                        if (Config.options.appearance.clock.desktopCenterX !== -1) {
+                            return Config.options.appearance.clock.desktopCenterX - (width / 2);
+                        }
+                    } else {
+                        if (Config.options.appearance.clock.desktopX !== -1) {
+                            return Config.options.appearance.clock.desktopX;
+                        }
+                    }
+                    
+                    return (parent.width - width) / 2;
+                }
+
                 property real targetY: (Config.ready && Config.options.appearance.clock.desktopY !== -1) ? Config.options.appearance.clock.desktopY : (parent.height - height) / 2
                 
                 x: targetX
@@ -180,8 +214,15 @@ Variants {
 
                 onDragFinished: (newX, newY) => {
                     if (Config.ready) {
-                        Config.options.appearance.clock.desktopX = newX;
                         Config.options.appearance.clock.desktopY = newY;
+                        
+                        if (activeAlign === "right") {
+                            Config.options.appearance.clock.desktopRightX = newX + width;
+                        } else if (activeAlign === "center") {
+                            Config.options.appearance.clock.desktopCenterX = newX + (width / 2);
+                        } else {
+                            Config.options.appearance.clock.desktopX = newX;
+                        }
                     }
                 }
 

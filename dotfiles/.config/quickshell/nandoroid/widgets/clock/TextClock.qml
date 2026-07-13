@@ -12,8 +12,7 @@ ColumnLayout {
     id: root
     spacing: 2 * Appearance.effectiveScale
     
-    // FIXED WIDTH - Essential for position stability when time changes (e.g. from ONE to TWELVE)
-    implicitWidth: 800 * Appearance.effectiveScale
+    // implicitWidth hack removed as DesktopWidgets now handles anchoring dynamically
     
     property bool isLockscreen: false
     

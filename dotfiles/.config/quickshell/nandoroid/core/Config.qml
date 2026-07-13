@@ -131,6 +131,8 @@ Singleton {
                     property int offsetY: -50
                     property real desktopX: -1
                     property real desktopY: -1
+                    property real desktopCenterX: -1
+                    property real desktopRightX: -1
                     property bool locked: false
 
                     property JsonObject digital: JsonObject {
@@ -140,6 +142,7 @@ Singleton {
                         property int dateFontSize: 24
                         property int dateGap: 4
                         property bool hideAmPm: false
+                        property string alignment: "center"
                     }
                     property JsonObject digitalLocked: JsonObject {
                         property bool isVertical: false
@@ -148,6 +151,7 @@ Singleton {
                         property int dateFontSize: 24
                         property int dateGap: 4
                         property bool hideAmPm: false
+                        property string alignment: "center"
                     }
                     property JsonObject analog: JsonObject {
                         property bool constantlyRotate: false
