@@ -23,8 +23,11 @@ Item {
     readonly property int fontSize: cfg.fontSize
     
     // Time & Date bindings
-    readonly property int currentHour: TimeModel.hours
-    readonly property string dateString: Qt.formatDate(TimeModel.date, "dddd, MMMM d")
+    readonly property int currentHour: DateTime.hours
+    readonly property string dateString: {
+        var dummy = DateTime.currentDate;
+        return Qt.formatDate(new Date(), "dddd, MMMM d");
+    }
     
     // State
     property var quotesData: ({})
@@ -48,25 +51,31 @@ Item {
     }
 
     // Load Quotes JSON
-    function loadQuotes() {
-        let path = Directories.shellConfigPath + "/data/quotes.json";
-        // Easiest is to read via XMLHttpRequest in QML
-        var xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState === XMLHttpRequest.DONE) {
-                if (xhr.status === 200 || xhr.status === 0) {
-                    try {
-                        root.quotesData = JSON.parse(xhr.responseText);
-                        root.updateText();
-                    } catch(e) {}
-                }
-            }
+    FileView {
+        id: quotesFile
+        path: Directories.shellConfigPath + "/data/quotes.json"
+        
+        JsonAdapter {
+            id: quotesAdapter
+            property var morning: []
+            property var afternoon: []
+            property var evening: []
+            property var midnight: []
         }
-        xhr.open("GET", "file://" + path);
-        xhr.send();
+        
+        onLoaded: {
+            // Need to convert QJSValue/arrays to proper JS arrays if needed, 
+            // but direct assignment usually works in QML for iteration
+            root.quotesData = {
+                morning: quotesAdapter.morning,
+                afternoon: quotesAdapter.afternoon,
+                evening: quotesAdapter.evening,
+                midnight: quotesAdapter.midnight
+            };
+            root.updateText();
+        }
     }
 
-    Component.onCompleted: loadQuotes()
     onTimePeriodChanged: updateText()
 
     function updateText() {
