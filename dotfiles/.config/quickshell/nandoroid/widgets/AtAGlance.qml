@@ -53,7 +53,7 @@ Item {
     // Load Quotes JSON via Process
     Process {
         id: quotesLoader
-        command: ["cat", Directories.shellConfigPath + "/data/quotes.json"]
+        command: ["cat", Quickshell.shellPath("data/quotes.json")]
         running: true
         stdout: StdioCollector {
             onStreamFinished: {
