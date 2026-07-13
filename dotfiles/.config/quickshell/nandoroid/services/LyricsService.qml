@@ -16,20 +16,24 @@ Singleton {
     property int activeIndex: -1
     property string status: "loading"
 
-    // Instead of string slots, we store objects so the UI can toggle between original/romaji instantly
-    property var slots: [
-        { originalText: "", romajiText: "" },
-        { originalText: "", romajiText: "" },
-        { originalText: "", romajiText: "" },
-        { originalText: "", romajiText: "" },
-        { originalText: "", romajiText: "" },
-        { originalText: "", romajiText: "" },
-        { originalText: "", romajiText: "" }
-    ]
+    property var slots: []
 
-    readonly property int before: 3
-    readonly property int after:  3
-    readonly property int total:  7
+    property int contextLines: (Config.ready && Config.options.appearance.lyrics) ? Config.options.appearance.lyrics.contextLines : 3
+    readonly property int before: contextLines
+    readonly property int after: contextLines
+    readonly property int total: before + after + 1
+
+    function getEmptySlots(centerText) {
+        let arr = []
+        for (let i = 0; i < root.total; i++) {
+            if (i === root.before && centerText) {
+                arr.push({ originalText: centerText, romajiText: centerText })
+            } else {
+                arr.push({ originalText: "", romajiText: "" })
+            }
+        }
+        return arr
+    }
 
     function buildSlots(idx) {
         let result = []
@@ -72,28 +76,12 @@ Singleton {
                 const trimmed = data.trim()
                 if (trimmed === "not_found") { 
                     root.status = "not_found"
-                    root.slots = [
-                        { originalText: "", romajiText: "" },
-                        { originalText: "", romajiText: "" },
-                        { originalText: "", romajiText: "" },
-                        { originalText: "No lyrics found", romajiText: "No lyrics found" },
-                        { originalText: "", romajiText: "" },
-                        { originalText: "", romajiText: "" },
-                        { originalText: "", romajiText: "" }
-                    ]
+                    root.slots = root.getEmptySlots("No lyrics found")
                     return 
                 }
                 if (trimmed === "no_info")   { 
                     root.status = "no_info"
-                    root.slots = [
-                        { originalText: "", romajiText: "" },
-                        { originalText: "", romajiText: "" },
-                        { originalText: "", romajiText: "" },
-                        { originalText: "No track playing", romajiText: "No track playing" },
-                        { originalText: "", romajiText: "" },
-                        { originalText: "", romajiText: "" },
-                        { originalText: "", romajiText: "" }
-                    ]
+                    root.slots = root.getEmptySlots("No track playing")
                     return 
                 }
 
@@ -125,15 +113,7 @@ Singleton {
         root.lyricsLines = []
         root.activeIndex = -1
         root.status = "loading"
-        root.slots = [
-            { originalText: "", romajiText: "" },
-            { originalText: "", romajiText: "" },
-            { originalText: "", romajiText: "" },
-            { originalText: "Preparing lyrics...", romajiText: "Preparing lyrics..." },
-            { originalText: "", romajiText: "" },
-            { originalText: "", romajiText: "" },
-            { originalText: "", romajiText: "" }
-        ]
+        root.slots = root.getEmptySlots("Preparing lyrics...")
         
         if (!Config.options.appearance.lyrics.showFloatingLyrics) {
             root.status = "disabled"
@@ -146,15 +126,7 @@ Singleton {
 
         if (!title || !artist) { 
             root.status = "no_info"
-            root.slots = [
-                { originalText: "", romajiText: "" },
-                { originalText: "", romajiText: "" },
-                { originalText: "", romajiText: "" },
-                { originalText: "No track playing", romajiText: "No track playing" },
-                { originalText: "", romajiText: "" },
-                { originalText: "", romajiText: "" },
-                { originalText: "", romajiText: "" }
-            ]
+            root.slots = root.getEmptySlots("No track playing")
             return 
         }
 
@@ -175,12 +147,25 @@ Singleton {
     }
 
     Connections {
-        target: Config.options.appearance.lyrics
+        target: Config.ready && Config.options.appearance.lyrics ? Config.options.appearance.lyrics : null
         function onShowFloatingLyricsChanged() {
             if (Config.options.appearance.lyrics.showFloatingLyrics) {
                 root.restartLyrics()
             } else {
                 lyricsProc.running = false
+            }
+        }
+        function onContextLinesChanged() {
+            if (root.status === "ok") {
+                root.slots = root.buildSlots(root.activeIndex)
+            } else if (root.status === "loading") {
+                root.slots = root.getEmptySlots("Preparing lyrics...")
+            } else if (root.status === "not_found") {
+                root.slots = root.getEmptySlots("No lyrics found")
+            } else if (root.status === "no_info") {
+                root.slots = root.getEmptySlots("No track playing")
+            } else {
+                root.slots = root.getEmptySlots("")
             }
         }
     }

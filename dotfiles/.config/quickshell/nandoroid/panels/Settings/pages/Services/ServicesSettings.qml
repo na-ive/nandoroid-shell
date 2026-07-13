@@ -62,6 +62,9 @@ Flickable {
         // ── Media Section ──
         ServicesMedia { Layout.fillWidth: true }
 
+        // ── Lyrics Section ──
+        ServicesLyrics { Layout.fillWidth: true }
+
         // ── GitHub Section ──
         ServicesGitHub { Layout.fillWidth: true }
     }

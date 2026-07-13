@@ -256,6 +256,12 @@ Singleton {
                     property bool lyricsUseRomaji: false
                     property real desktopX: -1
                     property real desktopY: -1
+                    property real desktopCenterX: -1
+                    property real desktopCenterY: -1
+                    property string fontFamily: ""
+                    property int fontSize: 36
+                    property int contextLines: 3
+                    property real customWidth: -1
                 }
             }
 
