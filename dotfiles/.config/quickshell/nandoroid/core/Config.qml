@@ -100,6 +100,20 @@ Singleton {
                     property string lockscreenTimeFont: ""
                     property string lockscreenDateFont: ""
                 }
+                property JsonObject atAGlance: JsonObject {
+                    property bool show: false
+                    property bool showGreeting: true
+                    property bool showDate: true
+                    property bool showQuote: true
+                    property bool showIcon: true
+                    property real desktopX: 64
+                    property real desktopY: 64
+                    property string alignment: "left"
+                    property string fontFamily: ""
+                    property int fontSize: 24
+                    property string colorMode: "primary"
+                    property string customColor: "#FFFFFF"
+                }
                 property JsonObject background: JsonObject {
                     property string wallpaperPath: "file://" + Directories.assetsPath + "/wallpapers/default_wallpaper.png"
                     property bool darkmode: true
