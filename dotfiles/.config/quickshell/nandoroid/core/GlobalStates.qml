@@ -104,11 +104,8 @@ Singleton {
     onNotificationCenterOpenChanged: {
         if (notificationCenterOpen) {
             accentPickerOpen = false
-            quickSettingsOpen = false
-            quickActionsOpen = false
             launcherOpen = false
             spotlightOpen = false
-            dashboardOpen = false
             sessionOpen = false
         }
     }
@@ -116,11 +113,8 @@ Singleton {
     onQuickSettingsOpenChanged: {
         if (quickSettingsOpen) {
             accentPickerOpen = false
-            notificationCenterOpen = false
-            quickActionsOpen = false
             launcherOpen = false
             spotlightOpen = false
-            dashboardOpen = false
             sessionOpen = false
         }
     }
@@ -128,11 +122,8 @@ Singleton {
     onQuickActionsOpenChanged: {
         if (quickActionsOpen) {
             accentPickerOpen = false
-            notificationCenterOpen = false
-            quickSettingsOpen = false
             launcherOpen = false
             spotlightOpen = false
-            dashboardOpen = false
             sessionOpen = false
         }
     }
@@ -142,6 +133,7 @@ Singleton {
             accentPickerOpen = false
             notificationCenterOpen = false
             quickSettingsOpen = false
+            quickActionsOpen = false
             spotlightOpen = false
             dashboardOpen = false
             sessionOpen = false
@@ -163,9 +155,6 @@ Singleton {
     onDashboardOpenChanged: {
         if (dashboardOpen) {
             accentPickerOpen = false
-            notificationCenterOpen = false
-            quickSettingsOpen = false
-            quickActionsOpen = false
             launcherOpen = false
             spotlightOpen = false
             sessionOpen = false

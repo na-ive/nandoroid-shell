@@ -7,8 +7,7 @@ import "core"
 import "services"
 import "widgets"
 import "panels/StatusBar"
-import "panels/NotificationCenter"
-import "panels/QuickSettings"
+import "panels/Overlay"
 import "panels/WallpaperSelector"
 import "panels/Background"
 import "panels/NotificationPopup"
@@ -16,7 +15,6 @@ import "panels/OSD"
 import "panels/Lock"
 import "panels/Session"
 import "panels/Launcher"
-import "panels/Dashboard"
 import "panels/SystemMonitor"
 import "panels/Polkit"
 import "panels/RegionSelector"
@@ -25,8 +23,6 @@ import "panels/Overview"
 import "panels/Dock"
 import "panels/Onboarding"
 import "panels/FloatingLyrics"
-
-import "panels/QuickActions"
 
 import QtQuick
 import Quickshell
@@ -70,14 +66,8 @@ ShellRoot {
     // ── Phase 3: Popups ──
     NotificationPopup {}
 
-    // ── Phase 4: Notification Center ──
-    NotificationCenter {}
-
-    // ── Phase 5: Quick Settings ──
-    QuickSettings {}
-
-    // ── Phase 5.6: Quick Actions ──
-    QuickActions {}
+    // ── Phase 4: Overlay (Dashboard, NotificationCenter, QuickSettings, QuickActions) ──
+    Overlay {}
 
     // ── Phase 6: Wallpaper Selector & Screen Decor ──
     WallpaperSelector {}
@@ -116,8 +106,6 @@ ShellRoot {
     // ── Phase 10: Settings ──
     Settings {}
 
-    // ── Phase 11: Dashboard ──
-    Dashboard {}
 
     // ── Phase 12: System Monitor & Onboarding ──
     SystemMonitorPanel {}
