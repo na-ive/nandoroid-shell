@@ -78,7 +78,7 @@ PanelWindow {
             anchors.fill: parent
             color: Appearance.colors.colLayer2
             opacity: (lyricsWrapper.containsMouse && !Config.options.appearance.lyrics.lyricsPinned) ? 0.3 : 0
-            radius: Appearance.rounding.window
+            radius: Appearance.rounding.panel
             Behavior on opacity { NumberAnimation { duration: 200 } }
             z: -1
         }
