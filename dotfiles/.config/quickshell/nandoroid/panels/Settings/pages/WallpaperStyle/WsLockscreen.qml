@@ -135,5 +135,4 @@ ColumnLayout {
                 isDedicatedContext: true
                 dedicatedIsLock: true 
             }
-    }
 }
