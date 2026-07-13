@@ -1,7 +1,7 @@
 import QtQuick
 import "../../core"
 
-MouseArea {
+Item {
     id: root
     property int gridSize: 24
     property bool showGrid: false
