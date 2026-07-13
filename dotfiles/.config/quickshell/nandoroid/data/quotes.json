@@ -1,0 +1,26 @@
+{
+  "morning": [
+    "Good morning! Don't forget to hydrate and eat a healthy breakfast.",
+    "Practice single-tasking to boost your productivity today.",
+    "Start your day with a clear mind. Focus on the most important task first."
+  ],
+  "afternoon": [
+    "Taking a 5-minute break to stretch can significantly improve your focus.",
+    "Fun fact: Drinking water boosts your metabolism. Keep a glass nearby!",
+    "Remember to rest your eyes. Look at something 20 feet away for 20 seconds."
+  ],
+  "evening": [
+    "Great work today! It's time to slowly wind down and relax.",
+    "Fun fact: Laughing increases blood flow and relieves physical tension.",
+    "Reflect on what you achieved today, no matter how small."
+  ],
+  "midnight": [
+    "It's getting really late. Staying up is bad for your health and ruins tomorrow's focus.",
+    "Your brain needs time to process the day. Please go to sleep!",
+    "Lack of sleep weakens your immune system. Close your screen and rest."
+  ],
+  "general": [
+    "Stay curious and keep learning new things.",
+    "Taking care of your mental health is just as important as your physical health."
+  ]
+}
