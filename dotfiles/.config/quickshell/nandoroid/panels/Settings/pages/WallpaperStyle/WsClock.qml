@@ -10,8 +10,12 @@ import Quickshell
 import Quickshell.Io
 
 ColumnLayout {
+    id: rootClock
     Layout.fillWidth: true
     spacing: 0
+    
+    property bool isDedicatedContext: false
+    property bool dedicatedIsLock: false
 
     SearchHandler { 
         searchString: "Clock Style"
@@ -25,7 +29,7 @@ ColumnLayout {
         Layout.topMargin: 12 * Appearance.effectiveScale
         spacing: 16 * Appearance.effectiveScale
         
-        property string activeContext: "desktop"
+        property string activeContext: rootClock.isDedicatedContext ? (rootClock.dedicatedIsLock ? "lock" : "desktop") : "desktop"
         property bool showAdvanced: false
 
         function mapAlign(align) {
@@ -58,7 +62,7 @@ ColumnLayout {
             }
             
             RippleButton {
-                visible: !Config.options.appearance.clock.useSameStyle || clockStyleSection.activeContext === "desktop"
+                visible: !rootClock.isDedicatedContext && (!Config.options.appearance.clock.useSameStyle || clockStyleSection.activeContext === "desktop")
                 Layout.preferredHeight: 32 * Appearance.effectiveScale
                 implicitWidth: 120 * Appearance.effectiveScale
                 buttonText: "Reset Position"
@@ -75,7 +79,7 @@ ColumnLayout {
             Layout.fillWidth: true
             Layout.preferredHeight: 52 * Appearance.effectiveScale
             spacing: 4 * Appearance.effectiveScale
-            visible: Config.ready && !Config.options.appearance.clock.useSameStyle
+            visible: !rootClock.isDedicatedContext && Config.ready && !Config.options.appearance.clock.useSameStyle
             
             SegmentedButton {
                 width: (parent.width - (4 * Appearance.effectiveScale)) / 2
@@ -799,12 +803,13 @@ ColumnLayout {
 
         // Global Toggles
         ColumnLayout {
-            Layout.fillWidth: true; spacing: 4 * Appearance.effectiveScale
-            z: 1 // Lower z-index than fonts
+            Layout.fillWidth: true
+            spacing: 4 * Appearance.effectiveScale
             SegmentedWrapper {
                 Layout.fillWidth: true; implicitHeight: 64 * Appearance.effectiveScale; color: Appearance.m3colors.m3surfaceContainerHigh
                 orientation: Qt.Vertical
                 maxRadius: 20 * Appearance.effectiveScale
+                visible: !rootClock.isDedicatedContext
                 RowLayout {
                     anchors.fill: parent; anchors.margins: 16 * Appearance.effectiveScale
                     spacing: 16 * Appearance.effectiveScale
@@ -824,6 +829,7 @@ ColumnLayout {
                 Layout.fillWidth: true; implicitHeight: 64 * Appearance.effectiveScale; color: Appearance.m3colors.m3surfaceContainerHigh
                 orientation: Qt.Vertical
                 maxRadius: 20 * Appearance.effectiveScale
+                visible: !rootClock.isDedicatedContext || !rootClock.dedicatedIsLock
                 RowLayout {
                     anchors.fill: parent; anchors.margins: 16 * Appearance.effectiveScale
                     spacing: 16 * Appearance.effectiveScale
@@ -836,11 +842,12 @@ ColumnLayout {
                 Layout.fillWidth: true; implicitHeight: 64 * Appearance.effectiveScale; color: Appearance.m3colors.m3surfaceContainerHigh
                 orientation: Qt.Vertical
                 maxRadius: 20 * Appearance.effectiveScale
+                visible: !rootClock.isDedicatedContext || !rootClock.dedicatedIsLock
                 RowLayout {
                     anchors.fill: parent; anchors.margins: 16 * Appearance.effectiveScale
                     spacing: 16 * Appearance.effectiveScale
                     MaterialSymbol { text: "calendar_today"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
-                    StyledText { text: Config.options.appearance.clock.useSameStyle ? "Show date" : "Show date on desktop"; Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
+                    StyledText { text: (!rootClock.isDedicatedContext && Config.options.appearance.clock.useSameStyle) ? "Show date" : "Show date on desktop"; Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
                     AndroidToggle { checked: Config.ready && Config.options.appearance.clock.showDesktopDate; onToggled: if(Config.ready) Config.options.appearance.clock.showDesktopDate = !Config.options.appearance.clock.showDesktopDate }
                 }
             }
@@ -848,7 +855,7 @@ ColumnLayout {
                 Layout.fillWidth: true; implicitHeight: 64 * Appearance.effectiveScale; color: Appearance.m3colors.m3surfaceContainerHigh
                 orientation: Qt.Vertical
                 maxRadius: 20 * Appearance.effectiveScale
-                visible: Config.ready && !Config.options.appearance.clock.useSameStyle
+                visible: rootClock.isDedicatedContext ? rootClock.dedicatedIsLock : (Config.ready && !Config.options.appearance.clock.useSameStyle)
                 RowLayout {
                     anchors.fill: parent; anchors.margins: 16 * Appearance.effectiveScale
                     spacing: 16 * Appearance.effectiveScale
