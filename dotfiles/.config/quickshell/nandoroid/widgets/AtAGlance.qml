@@ -48,24 +48,6 @@ Item {
     }
 
     // Load Quotes JSON
-    Process {
-        id: quotesReader
-        command: ["cat", Directories.shellConfigPath + "/data/quotes.json"]
-        running: true
-        stdout.onLine: (line) => {
-            if (line.trim() !== "") {
-                try {
-                    let parsed = JSON.parse(line);
-                    root.quotesData = parsed;
-                    root.updateText();
-                } catch(e) {
-                    // Collect multiline json manually
-                }
-            }
-        }
-    }
-    
-    // Fallback JSON loader (if Process is not ideal for whole file)
     function loadQuotes() {
         let path = Directories.shellConfigPath + "/data/quotes.json";
         // Easiest is to read via XMLHttpRequest in QML
