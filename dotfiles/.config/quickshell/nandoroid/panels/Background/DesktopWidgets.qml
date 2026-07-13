@@ -174,8 +174,17 @@ Variants {
 
                 property string activeAlign: nandoClockItem.alignment
 
+                property bool _canUpdateAnchor: false
+                
+                Timer {
+                    id: startupAnchorTimer
+                    interval: 500
+                    running: Config.ready
+                    onTriggered: clockWrapper._canUpdateAnchor = true
+                }
+
                 onActiveAlignChanged: {
-                    if (!Config.ready) return;
+                    if (!Config.ready || !_canUpdateAnchor) return;
                     // Unconditionally update the corresponding anchor coordinate to the current physical position
                     // so that the widget stays exactly in place when the user switches alignments.
                     if (activeAlign === "right") {
