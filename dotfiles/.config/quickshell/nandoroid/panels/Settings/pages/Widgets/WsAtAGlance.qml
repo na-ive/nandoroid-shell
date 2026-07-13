@@ -116,19 +116,19 @@ ColumnLayout {
                         spacing: 4 * Appearance.effectiveScale
                         SegmentedButton {
                             width: 64 * Appearance.effectiveScale; height: 32 * Appearance.effectiveScale
-                            iconSource: "format_align_left"
+                            iconName: "format_align_left"
                             isHighlighted: Config.ready && Config.options.atAGlance.alignment === "left"
                             onClicked: if (Config.ready) Config.options.atAGlance.alignment = "left"
                         }
                         SegmentedButton {
                             width: 64 * Appearance.effectiveScale; height: 32 * Appearance.effectiveScale
-                            iconSource: "format_align_center"
+                            iconName: "format_align_center"
                             isHighlighted: Config.ready && Config.options.atAGlance.alignment === "center"
                             onClicked: if (Config.ready) Config.options.atAGlance.alignment = "center"
                         }
                         SegmentedButton {
                             width: 64 * Appearance.effectiveScale; height: 32 * Appearance.effectiveScale
-                            iconSource: "format_align_right"
+                            iconName: "format_align_right"
                             isHighlighted: Config.ready && Config.options.atAGlance.alignment === "right"
                             onClicked: if (Config.ready) Config.options.atAGlance.alignment = "right"
                         }
