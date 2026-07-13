@@ -255,17 +255,17 @@ Variants {
                 height: atAGlanceItem.height
                 gridSize: 24
                 draggable: true
-                visible: Config.ready && Config.options.atAGlance.show && !GlobalStates.screenLocked
+                visible: Config.ready && Config.options.appearance.atAGlance.show && !GlobalStates.screenLocked
                 opacity: visible ? 1 : 0
                 Behavior on opacity { NumberAnimation { duration: 300 } }
 
-                x: Config.ready ? Config.options.atAGlance.desktopX : 64
-                y: Config.ready ? Config.options.atAGlance.desktopY : 64
+                x: Config.ready ? Config.options.appearance.atAGlance.desktopX : 64
+                y: Config.ready ? Config.options.appearance.atAGlance.desktopY : 64
 
                 onDragFinished: (newX, newY) => {
                     if (Config.ready) {
-                        Config.options.atAGlance.desktopX = newX;
-                        Config.options.atAGlance.desktopY = newY;
+                        Config.options.appearance.atAGlance.desktopX = newX;
+                        Config.options.appearance.atAGlance.desktopY = newY;
                     }
                 }
 

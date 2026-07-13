@@ -16,7 +16,7 @@ Item {
     signal requestContextMenu(real x, real y)
 
     // Configuration shortcuts
-    readonly property var cfg: Config.options.atAGlance
+    readonly property var cfg: Config.options.appearance.atAGlance
     readonly property string colorMode: cfg.colorMode
     readonly property string customColor: cfg.customColor
     readonly property string fontFamily: cfg.fontFamily !== "" ? cfg.fontFamily : Appearance.font.family

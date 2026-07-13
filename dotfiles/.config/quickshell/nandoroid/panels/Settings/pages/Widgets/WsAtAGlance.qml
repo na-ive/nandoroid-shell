@@ -36,15 +36,15 @@ ColumnLayout {
                 Layout.fillWidth: true
             }
             AndroidToggle {
-                checked: Config.ready && Config.options.atAGlance.show
-                onToggled: if (Config.ready) Config.options.atAGlance.show = !Config.options.atAGlance.show
+                checked: Config.ready && Config.options.appearance.atAGlance.show
+                onToggled: if (Config.ready) Config.options.appearance.atAGlance.show = !Config.options.appearance.atAGlance.show
             }
         }
 
         ColumnLayout {
             Layout.fillWidth: true
             spacing: 4 * Appearance.effectiveScale
-            visible: Config.ready && Config.options.atAGlance.show
+            visible: Config.ready && Config.options.appearance.atAGlance.show
 
             SegmentedWrapper {
                 Layout.fillWidth: true; implicitHeight: 64 * Appearance.effectiveScale; color: Appearance.m3colors.m3surfaceContainerHigh
@@ -55,7 +55,7 @@ ColumnLayout {
                     spacing: 16 * Appearance.effectiveScale
                     MaterialSymbol { text: "waving_hand"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
                     StyledText { text: "Show Greeting"; Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
-                    AndroidToggle { checked: Config.ready && Config.options.atAGlance.showGreeting; onToggled: if(Config.ready) Config.options.atAGlance.showGreeting = !Config.options.atAGlance.showGreeting }
+                    AndroidToggle { checked: Config.ready && Config.options.appearance.atAGlance.showGreeting; onToggled: if(Config.ready) Config.options.appearance.atAGlance.showGreeting = !Config.options.appearance.atAGlance.showGreeting }
                 }
             }
 
@@ -68,7 +68,7 @@ ColumnLayout {
                     spacing: 16 * Appearance.effectiveScale
                     MaterialSymbol { text: "calendar_month"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
                     StyledText { text: "Show Date"; Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
-                    AndroidToggle { checked: Config.ready && Config.options.atAGlance.showDate; onToggled: if(Config.ready) Config.options.atAGlance.showDate = !Config.options.atAGlance.showDate }
+                    AndroidToggle { checked: Config.ready && Config.options.appearance.atAGlance.showDate; onToggled: if(Config.ready) Config.options.appearance.atAGlance.showDate = !Config.options.appearance.atAGlance.showDate }
                 }
             }
 
@@ -81,7 +81,7 @@ ColumnLayout {
                     spacing: 16 * Appearance.effectiveScale
                     MaterialSymbol { text: "format_quote"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
                     StyledText { text: "Show Quotes"; Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
-                    AndroidToggle { checked: Config.ready && Config.options.atAGlance.showQuote; onToggled: if(Config.ready) Config.options.atAGlance.showQuote = !Config.options.atAGlance.showQuote }
+                    AndroidToggle { checked: Config.ready && Config.options.appearance.atAGlance.showQuote; onToggled: if(Config.ready) Config.options.appearance.atAGlance.showQuote = !Config.options.appearance.atAGlance.showQuote }
                 }
             }
 
@@ -94,7 +94,7 @@ ColumnLayout {
                     spacing: 16 * Appearance.effectiveScale
                     MaterialSymbol { text: "sunny"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
                     StyledText { text: "Show Icon"; Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
-                    AndroidToggle { checked: Config.ready && Config.options.atAGlance.showIcon; onToggled: if(Config.ready) Config.options.atAGlance.showIcon = !Config.options.atAGlance.showIcon }
+                    AndroidToggle { checked: Config.ready && Config.options.appearance.atAGlance.showIcon; onToggled: if(Config.ready) Config.options.appearance.atAGlance.showIcon = !Config.options.appearance.atAGlance.showIcon }
                 }
             }
 
@@ -117,20 +117,20 @@ ColumnLayout {
                         SegmentedButton {
                             width: 64 * Appearance.effectiveScale; height: 32 * Appearance.effectiveScale
                             iconName: "format_align_left"
-                            isHighlighted: Config.ready && Config.options.atAGlance.alignment === "left"
-                            onClicked: if (Config.ready) Config.options.atAGlance.alignment = "left"
+                            isHighlighted: Config.ready && Config.options.appearance.atAGlance.alignment === "left"
+                            onClicked: if (Config.ready) Config.options.appearance.atAGlance.alignment = "left"
                         }
                         SegmentedButton {
                             width: 64 * Appearance.effectiveScale; height: 32 * Appearance.effectiveScale
                             iconName: "format_align_center"
-                            isHighlighted: Config.ready && Config.options.atAGlance.alignment === "center"
-                            onClicked: if (Config.ready) Config.options.atAGlance.alignment = "center"
+                            isHighlighted: Config.ready && Config.options.appearance.atAGlance.alignment === "center"
+                            onClicked: if (Config.ready) Config.options.appearance.atAGlance.alignment = "center"
                         }
                         SegmentedButton {
                             width: 64 * Appearance.effectiveScale; height: 32 * Appearance.effectiveScale
                             iconName: "format_align_right"
-                            isHighlighted: Config.ready && Config.options.atAGlance.alignment === "right"
-                            onClicked: if (Config.ready) Config.options.atAGlance.alignment = "right"
+                            isHighlighted: Config.ready && Config.options.appearance.atAGlance.alignment === "right"
+                            onClicked: if (Config.ready) Config.options.appearance.atAGlance.alignment = "right"
                         }
                     }
                 }
