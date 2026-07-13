@@ -55,18 +55,14 @@ Item {
         id: quotesLoader
         command: ["cat", Directories.shellConfigPath + "/data/quotes.json"]
         running: true
-        property string rawData: ""
-        stdout: [
-            SplitParser {
-                onRead: data => quotesLoader.rawData += data + "\n"
-            }
-        ]
-        onExited: {
-            try {
-                root.quotesData = JSON.parse(quotesLoader.rawData);
-                root.updateText();
-            } catch(e) {
-                console.error("Failed to parse quotes:", e);
+        stdout: StdioCollector {
+            onStreamFinished: {
+                try {
+                    root.quotesData = JSON.parse(this.text);
+                    root.updateText();
+                } catch(e) {
+                    console.error("Failed to parse quotes:", e);
+                }
             }
         }
     }
