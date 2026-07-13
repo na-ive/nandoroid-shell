@@ -296,13 +296,10 @@ Item {
         }
     }
     
-    Connections {
-        target: Window.window
-        ignoreUnknownSignals: true
-        function onActiveChanged() {
-            if (Window.window && !Window.window.active) {
-                root.isOpened = false;
-            }
+    property bool _windowActive: Window.active
+    on_WindowActiveChanged: {
+        if (!_windowActive) {
+            root.isOpened = false;
         }
     }
 
