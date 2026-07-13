@@ -48,6 +48,7 @@ SearchHandler SearchHandler.qml
 UserProfile UserProfile.qml
 WaveVisualizer WaveVisualizer.qml
 MediaCard MediaCard.qml
+AtAGlance AtAGlance.qml
 WeatherCard WeatherCard.qml
 ScreenshotOverlay ScreenshotOverlay.qml
 AccentPicker AccentPicker.qml
