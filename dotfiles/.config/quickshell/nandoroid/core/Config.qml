@@ -105,7 +105,6 @@ Singleton {
                     property bool showGreeting: true
                     property bool showDate: true
                     property bool showQuote: true
-                    property bool showIcon: true
                     property real desktopX: 64
                     property real desktopY: 64
                     property string alignment: "left"

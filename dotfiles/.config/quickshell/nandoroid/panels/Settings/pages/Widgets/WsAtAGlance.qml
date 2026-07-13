@@ -85,18 +85,6 @@ ColumnLayout {
                 }
             }
 
-            SegmentedWrapper {
-                Layout.fillWidth: true; implicitHeight: 64 * Appearance.effectiveScale; color: Appearance.m3colors.m3surfaceContainerHigh
-                orientation: Qt.Vertical
-                maxRadius: 20 * Appearance.effectiveScale
-                RowLayout {
-                    anchors.fill: parent; anchors.margins: 16 * Appearance.effectiveScale
-                    spacing: 16 * Appearance.effectiveScale
-                    MaterialSymbol { text: "sunny"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
-                    StyledText { text: "Show Icon"; Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
-                    AndroidToggle { checked: Config.ready && Config.options.appearance.atAGlance.showIcon; onToggled: if(Config.ready) Config.options.appearance.atAGlance.showIcon = !Config.options.appearance.atAGlance.showIcon }
-                }
-            }
 
             // Alignment
             SegmentedWrapper {

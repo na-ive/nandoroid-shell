@@ -120,16 +120,6 @@ Item {
             spacing: 8 * Appearance.effectiveScale
             Layout.alignment: cfg.alignment === "center" ? Qt.AlignHCenter : (cfg.alignment === "right" ? Qt.AlignRight : Qt.AlignLeft)
 
-            Image {
-                visible: cfg.showIcon
-                source: "file://" + Directories.assetsPath + "/icons/NAnDoroid.svg"
-                sourceSize.width: fontSize * 1.2 * Appearance.effectiveScale
-                sourceSize.height: fontSize * 1.2 * Appearance.effectiveScale
-                Layout.preferredWidth: fontSize * 1.2 * Appearance.effectiveScale
-                Layout.preferredHeight: fontSize * 1.2 * Appearance.effectiveScale
-                fillMode: Image.PreserveAspectFit
-            }
-
             StyledText {
                 text: currentQuote
                 font.pixelSize: (fontSize * 0.8) * Appearance.effectiveScale
