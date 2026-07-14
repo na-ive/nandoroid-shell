@@ -26,10 +26,21 @@ MouseArea {
     readonly property bool dragging: drag.active
 
     signal dragFinished(real newX, real newY)
+    signal requestContextMenu(real reqX, real reqY)
 
     acceptedButtons: Qt.LeftButton | Qt.RightButton
+    hoverEnabled: true
     drag.target: draggable ? dragProxy : undefined
-    cursorShape: (draggable && containsPress) ? Qt.ClosedHandCursor : draggable ? Qt.OpenHandCursor : Qt.ArrowCursor
+    // Use the same cursor logic (SizeAllCursor when hovering over a draggable widget, OpenHand/ClosedHand when dragging)
+    cursorShape: (draggable && containsPress) ? Qt.ClosedHandCursor : draggable ? Qt.SizeAllCursor : Qt.ArrowCursor
+
+    onClicked: (mouse) => {
+        if (mouse.button === Qt.RightButton) {
+            let p = mapToGlobal(mouse.x, mouse.y);
+            requestContextMenu(p.x, p.y);
+            mouse.accepted = true;
+        }
+    }
 
     function center() {
         if (root.parent) {

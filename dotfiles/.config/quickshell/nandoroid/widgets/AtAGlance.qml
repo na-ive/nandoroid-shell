@@ -13,7 +13,6 @@ Item {
 
     // ── Properties ──
     property bool interactive: true
-    signal requestContextMenu(real x, real y)
 
     // Configuration shortcuts
     readonly property var cfg: Config.options.appearance.atAGlance
@@ -132,15 +131,4 @@ Item {
         }
     }
 
-    // Context Menu Area
-    MouseArea {
-        anchors.fill: parent
-        acceptedButtons: Qt.RightButton
-        onClicked: (mouse) => {
-            if (root.interactive && mouse.button === Qt.RightButton) {
-                let p = mapToGlobal(mouse.x, mouse.y);
-                root.requestContextMenu(p.x, p.y);
-            }
-        }
-    }
 }

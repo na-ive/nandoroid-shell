@@ -7,7 +7,6 @@ Item {
 
     property bool isLockscreen: false
     property bool interactive: true
-    signal requestContextMenu(real x, real y, bool isClock)
 
     property string style: {
         if (!Config.ready) return "digital"
@@ -84,28 +83,7 @@ Item {
         }
     }
 
-    // Drag area - highest z, blocks background swipe
-    MouseArea {
-        id: dragArea
-        width: loader.item ? loader.item.implicitWidth : root.implicitWidth
-        height: loader.item ? loader.item.implicitHeight : root.implicitHeight
-        anchors.centerIn: parent
-        enabled: !root.isLockscreen
-        z: 100
-        cursorShape: (root.interactive && Config.ready && !Config.options.appearance.clock.locked) ? Qt.SizeAllCursor : Qt.ArrowCursor
-        hoverEnabled: true
-        preventStealing: true
-        acceptedButtons: Qt.RightButton
 
-        onPressed: (mouse) => {
-            if (mouse.button === Qt.RightButton) {
-                const winPos = dragArea.mapToItem(null, mouse.x, mouse.y);
-                root.requestContextMenu(winPos.x, winPos.y, true);
-                mouse.accepted = true;
-                return;
-            }
-        }
-    }
 
     Behavior on opacity { NumberAnimation { duration: 300 } }
 }

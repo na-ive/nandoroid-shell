@@ -235,6 +235,10 @@ Variants {
                     }
                 }
 
+                onRequestContextMenu: (reqX, reqY) => {
+                    desktopContextMenu.openAt(reqX, reqY, Config.options.appearance.clock, "Clock", "Clock Style");
+                }
+
                 opacity: (!GlobalStates.screenLocked && nandoClockItem.visible) ? 1 : 0
                 Behavior on opacity { NumberAnimation { duration: 300 } }
 
@@ -242,9 +246,6 @@ Variants {
                     id: nandoClockItem
                     isLockscreen: false
                     interactive: true
-                    onRequestContextMenu: (x, y, isClock) => {
-                        desktopContextMenu.openAt(x, y, Config.options.appearance.clock, "Clock", "Clock Style");
-                    }
                 }
             }
 
@@ -269,12 +270,13 @@ Variants {
                     }
                 }
 
+                onRequestContextMenu: (reqX, reqY) => {
+                    desktopContextMenu.openAt(reqX, reqY, Config.options.appearance.atAGlance, "At a Glance", "At a Glance");
+                }
+
                 AtAGlance {
                     id: atAGlanceItem
                     interactive: true
-                    onRequestContextMenu: (reqX, reqY) => {
-                        desktopContextMenu.openAt(reqX, reqY, Config.options.appearance.atAGlance, "At a Glance", "At a Glance");
-                    }
                 }
             }
         }
