@@ -11,7 +11,18 @@ import Quickshell.Hyprland
 
 /**
  * Desktop Widgets Panel.
- * Contains the clock and visualizer on a separate layer above the wallpaper.
+ * Contains the clock, at a glance, and future widgets on a separate layer above the wallpaper.
+ *
+ * HOW TO ADD A NEW WIDGET HERE:
+ * ---------------------------------------------------------
+ * 1. Ensure you have added the config in `core/Config.qml` (see WIDGET CONFIGURATION GUIDE there).
+ * 2. Wrap your visual widget in an `AbstractWidget` below.
+ * 3. Assign the config: `configObject: Config.ready ? Config.options.appearance.yourWidget : null`
+ * 4. Pass the right-click menu: 
+ *      onRequestContextMenu: (reqX, reqY) => {
+ *          desktopContextMenu.openAt(reqX, reqY, Config.options.appearance.yourWidget, "Title", "Search Keyword");
+ *      }
+ * 5. Add your visual component inside the wrapper! (No MouseArea needed inside your component).
  */
 Variants {
     id: root
