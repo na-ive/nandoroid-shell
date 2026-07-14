@@ -50,7 +50,6 @@ Item {
             // Widgets Page components (pageIndex: 5)
             { file: "panels/Settings/pages/Widgets/WidgetsSettings.qml", pageIndex: 5 },
             { file: "panels/Settings/pages/Widgets/WsAtAGlance.qml", pageIndex: 5 },
-            { file: "panels/Settings/pages/WallpaperStyle/WsClock.qml", pageIndex: 5 },
             // System Page components (pageIndex: 6)
             { file: "panels/Settings/pages/System/SystemSettings.qml", pageIndex: 6 },
             { file: "panels/Settings/pages/System/SysDateTime.qml", pageIndex: 6 },
@@ -154,7 +153,7 @@ Item {
     }
 
     function getPageName(index) {
-        const names = ["Network", "Bluetooth", "Audio", "Display", "Wallpaper & Style", "System", "Services", "About"]
+        const names = ["Network", "Bluetooth", "Audio", "Display", "Wallpaper & Style", "Widgets", "System", "Services", "About"]
         return names[index] || "Unknown"
     }
 

@@ -20,8 +20,15 @@ ColumnLayout {
                 spacing: 4 * Appearance.effectiveScale
                 
                 SearchHandler { 
+                    visible: false
                     searchString: "Lockscreen"
                     aliases: ["Lock", "Lock Screen"]
+                }
+                
+                SearchHandler {
+                    visible: false
+                    searchString: "Lockscreen Clock"
+                    aliases: ["Clock", "Time", "Watch", "Clock Style"]
                 }
     
                 // Section Header

@@ -25,6 +25,18 @@ Flickable {
         width: parent.width
         anchors.margins: 4 * Appearance.effectiveScale
         spacing: 32 * Appearance.effectiveScale
+        
+        SearchHandler {
+            visible: false
+            searchString: "Widgets"
+            aliases: ["Widget", "Desktop"]
+        }
+        
+        SearchHandler {
+            visible: false
+            searchString: "Desktop Clock"
+            aliases: ["Clock", "Time", "Watch", "Clock Style"]
+        }
 
         // ── Header Section ──
         ColumnLayout {

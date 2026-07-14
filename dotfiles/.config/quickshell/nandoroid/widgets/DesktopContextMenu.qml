@@ -106,7 +106,7 @@ PanelWindow {
                 menuText: root.activeWidgetName + " Settings"
                 menuIcon: "settings" // Generic settings icon for widgets
                 onClicked: {
-                    GlobalStates.settingsPageIndex = 3 // Assuming Widgets panel is index 3, Wallpaper & Style is index 4. We will use SearchRegistry to navigate precisely anyway.
+                    GlobalStates.settingsPageIndex = 5 // Widgets panel is index 5
                     SearchRegistry.currentSearch = "" 
                     SearchRegistry.currentSearch = root.activeWidgetSearchKeyword
                     GlobalStates.settingsOpen = true

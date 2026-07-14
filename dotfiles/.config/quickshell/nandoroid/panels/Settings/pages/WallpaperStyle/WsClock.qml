@@ -17,11 +17,7 @@ ColumnLayout {
     property bool isDedicatedContext: false
     property bool dedicatedIsLock: false
 
-    SearchHandler { 
-        searchString: "Clock Style"
-        aliases: ["Clock", "Time", "Watch"]
-    }
-
+    // Search handled per-context
     // ── Clock Section ──
     ColumnLayout {
         id: clockStyleSection
