@@ -45,6 +45,13 @@ Item {
         // MD3 Outline Style
         border.width: 1
         border.color: Functions.ColorUtils.applyAlpha(Appearance.m3colors.m3onSurface, 0.12)
+        
+        // Prevent clicks inside the panel from falling through to the Overlay background closer
+        MouseArea {
+            anchors.fill: parent
+            hoverEnabled: true
+            onClicked: GlobalStates.closePopups()
+        }
     }
 
     function close() { root.closed(); }
