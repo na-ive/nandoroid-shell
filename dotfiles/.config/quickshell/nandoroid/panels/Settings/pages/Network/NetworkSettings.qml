@@ -36,6 +36,7 @@ Item {
         ColumnLayout {
             spacing: 4 * Appearance.effectiveScale
             Layout.fillWidth: true
+            Layout.rightMargin: 24 * Appearance.effectiveScale
             
             RowLayout {
                 Layout.fillWidth: true
@@ -168,7 +169,7 @@ Item {
 
             ColumnLayout {
                 id: contentCol
-                width: parent.width
+                width: parent.width - (24 * Appearance.effectiveScale)
                 spacing: 24 * Appearance.effectiveScale
 
                 NetworkMainView {
@@ -194,6 +195,7 @@ Item {
             id: bottomManagementRow
             Layout.fillWidth: true
             Layout.margins: 16 * Appearance.effectiveScale
+            Layout.rightMargin: 40 * Appearance.effectiveScale
             Layout.topMargin: 0
             spacing: 12 * Appearance.effectiveScale
             visible: root.currentView === "main"

@@ -47,7 +47,10 @@ Item {
     
     ColumnLayout {
         id: mainLayout
-        anchors.fill: parent
+        anchors.top: parent.top
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+        width: parent.width - (24 * Appearance.effectiveScale)
         spacing: 24 * Appearance.effectiveScale
         visible: stackLevel === 0
 
@@ -90,9 +93,7 @@ Item {
                         anchors.fill: parent
                         cursorShape: Qt.PointingHandCursor
                         onClicked: {
-                            if (Bluetooth.defaultAdapter) {
-                                Bluetooth.defaultAdapter.enabled = !Bluetooth.defaultAdapter.enabled;
-                            }
+                            BluetoothStatus.toggle();
                         }
                     }
                 }
@@ -404,7 +405,10 @@ Item {
 
     // ── Pair New Device Sub-page ──
     Loader {
-        anchors.fill: parent
+        anchors.top: parent.top
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+        width: parent.width - (24 * Appearance.effectiveScale)
         visible: stackLevel === 1
         sourceComponent: Component { BluetoothPairDialog {} }
         onVisibleChanged: {

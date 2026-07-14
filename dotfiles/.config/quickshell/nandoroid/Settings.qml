@@ -255,7 +255,10 @@ Scope {
                             Loader {
                                 id: pageLoader
                                 anchors.fill: parent
-                                anchors.margins: 24 * Appearance.effectiveScale
+                                anchors.topMargin: 24 * Appearance.effectiveScale
+                                anchors.bottomMargin: 24 * Appearance.effectiveScale
+                                anchors.leftMargin: 24 * Appearance.effectiveScale
+                                anchors.rightMargin: 0
                                 Component.onCompleted: source = pages[root.currentIndex].component
                                 
                                 onStatusChanged: {
