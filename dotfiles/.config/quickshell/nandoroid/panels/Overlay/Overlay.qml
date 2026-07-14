@@ -31,7 +31,13 @@ Variants {
         
         readonly property bool isAnimating: dashboard.panelOpacity > 0 || ncLoader.opacity > 0 || qsLoader.opacity > 0 || qaLoader.opacity > 0
         
-        visible: (anyOpen && isActive) || isAnimating
+        Timer {
+            id: hideDelayTimer
+            interval: 100
+            running: !panelWindow.anyOpen && !panelWindow.isAnimating
+        }
+        
+        visible: (anyOpen && isActive) || isAnimating || hideDelayTimer.running
         
         exclusiveZone: 0
         WlrLayershell.namespace: "nandoroid:overlay"
