@@ -1,5 +1,6 @@
 import "../../../../core"
 import "../../../../widgets"
+import "../../../../services"
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
@@ -106,19 +107,227 @@ ColumnLayout {
                             width: 64 * Appearance.effectiveScale; height: 32 * Appearance.effectiveScale
                             iconName: "format_align_left"
                             isHighlighted: Config.ready && Config.options.appearance.atAGlance.alignment === "left"
+                            colActive: Appearance.m3colors.m3primary
+                            colActiveText: Appearance.m3colors.m3onPrimary
+                            colInactive: Appearance.m3colors.m3surfaceContainerLow
                             onClicked: if (Config.ready) Config.options.appearance.atAGlance.alignment = "left"
                         }
                         SegmentedButton {
                             width: 64 * Appearance.effectiveScale; height: 32 * Appearance.effectiveScale
                             iconName: "format_align_center"
                             isHighlighted: Config.ready && Config.options.appearance.atAGlance.alignment === "center"
+                            colActive: Appearance.m3colors.m3primary
+                            colActiveText: Appearance.m3colors.m3onPrimary
+                            colInactive: Appearance.m3colors.m3surfaceContainerLow
                             onClicked: if (Config.ready) Config.options.appearance.atAGlance.alignment = "center"
                         }
                         SegmentedButton {
                             width: 64 * Appearance.effectiveScale; height: 32 * Appearance.effectiveScale
                             iconName: "format_align_right"
                             isHighlighted: Config.ready && Config.options.appearance.atAGlance.alignment === "right"
+                            colActive: Appearance.m3colors.m3primary
+                            colActiveText: Appearance.m3colors.m3onPrimary
+                            colInactive: Appearance.m3colors.m3surfaceContainerLow
                             onClicked: if (Config.ready) Config.options.appearance.atAGlance.alignment = "right"
+                        }
+                    }
+                }
+            }
+            // Font Family
+            SegmentedWrapper {
+                Layout.fillWidth: true
+                implicitHeight: fontRow.implicitHeight + (32 * Appearance.effectiveScale)
+                orientation: Qt.Vertical
+                maxRadius: 20 * Appearance.effectiveScale
+                color: Appearance.m3colors.m3surfaceContainerHigh
+                RowLayout {
+                    id: fontRow
+                    anchors.fill: parent; anchors.margins: 16 * Appearance.effectiveScale
+                    spacing: 16 * Appearance.effectiveScale
+                    
+                    RowLayout {
+                        spacing: 16 * Appearance.effectiveScale
+                        Layout.preferredWidth: 70 * Appearance.effectiveScale
+                        MaterialSymbol { text: "text_fields"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
+                        StyledText {
+                            text: "Font Family"
+                            color: Appearance.colors.colOnLayer1
+                            Layout.fillWidth: true
+                        }
+                    }
+                    Item { Layout.fillWidth: true }
+                    StyledComboBox {
+                        Layout.preferredWidth: 300 * Appearance.effectiveScale
+                        model: SystemFonts.all
+                        text: {
+                            if (!Config.ready) return "Default";
+                            const val = Config.options.appearance.atAGlance.fontFamily;
+                            return (val === "" || val === undefined) ? "Default" : val;
+                        }
+                        onAccepted: (val) => {
+                            if (!Config.ready) return;
+                            Config.options.appearance.atAGlance.fontFamily = (val === "Default" ? "" : val);
+                        }
+                    }
+                }
+            }
+
+            // Font Size
+            SegmentedWrapper {
+                Layout.fillWidth: true
+                implicitHeight: fontSizeRow.implicitHeight + (32 * Appearance.effectiveScale)
+                orientation: Qt.Vertical
+                maxRadius: 20 * Appearance.effectiveScale
+                color: Appearance.m3colors.m3surfaceContainerHigh
+                RowLayout {
+                    id: fontSizeRow
+                    anchors.fill: parent; anchors.margins: 16 * Appearance.effectiveScale
+                    spacing: 16 * Appearance.effectiveScale
+                    
+                    RowLayout {
+                        spacing: 16 * Appearance.effectiveScale
+                        Layout.preferredWidth: 70 * Appearance.effectiveScale
+                        MaterialSymbol { text: "format_size"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
+                        StyledText {
+                            text: "Font Size"
+                            color: Appearance.colors.colOnLayer1
+                            Layout.fillWidth: true
+                        }
+                    }
+                    StyledSlider {
+                        Layout.fillWidth: true
+                        value: Config.ready ? Config.options.appearance.atAGlance.fontSize : 24
+                        defaultValue: 24
+                        from: 12; to: 72
+                        onMoved: if(Config.ready) Config.options.appearance.atAGlance.fontSize = Math.round(value)
+                    }
+                    StyledText {
+                        text: Math.round(Config.ready ? Config.options.appearance.atAGlance.fontSize : 24).toString()
+                        color: Appearance.colors.colOnLayer1
+                        Layout.preferredWidth: 40 * Appearance.effectiveScale
+                        horizontalAlignment: Text.AlignRight
+                    }
+                }
+            }
+
+            // Greeting Color
+            SegmentedWrapper {
+                Layout.fillWidth: true
+                implicitHeight: greetingColorRow.implicitHeight + (32 * Appearance.effectiveScale)
+                orientation: Qt.Vertical
+                maxRadius: 20 * Appearance.effectiveScale
+                color: Appearance.m3colors.m3surfaceContainerHigh
+                RowLayout {
+                    id: greetingColorRow
+                    anchors.fill: parent; anchors.margins: 16 * Appearance.effectiveScale
+                    spacing: 16 * Appearance.effectiveScale
+                    
+                    RowLayout {
+                        spacing: 16 * Appearance.effectiveScale
+                        Layout.preferredWidth: 70 * Appearance.effectiveScale
+                        MaterialSymbol { text: "palette"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
+                        StyledText {
+                            text: "Greeting Color"
+                            color: Appearance.colors.colOnLayer1
+                            Layout.fillWidth: true
+                        }
+                    }
+                    Item { Layout.fillWidth: true }
+                    Row {
+                        Layout.alignment: Qt.AlignRight; spacing: 2 * Appearance.effectiveScale
+                        Repeater {
+                            model: ["primary", "secondary", "tertiary", "error", "surface", "onSurface"]
+                            delegate: SegmentedButton {
+                                required property string modelData
+                                buttonText: modelData.charAt(0).toUpperCase() + modelData.slice(1)
+                                isHighlighted: Config.ready && Config.options.appearance.atAGlance.greetingColorStyle === modelData
+                                colActive: Appearance.m3colors.m3primary
+                                colActiveText: Appearance.m3colors.m3onPrimary
+                                colInactive: Appearance.m3colors.m3surfaceContainerLow
+                                onClicked: if (Config.ready) Config.options.appearance.atAGlance.greetingColorStyle = modelData
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Date Color
+            SegmentedWrapper {
+                Layout.fillWidth: true
+                implicitHeight: dateColorRow.implicitHeight + (32 * Appearance.effectiveScale)
+                orientation: Qt.Vertical
+                maxRadius: 20 * Appearance.effectiveScale
+                color: Appearance.m3colors.m3surfaceContainerHigh
+                RowLayout {
+                    id: dateColorRow
+                    anchors.fill: parent; anchors.margins: 16 * Appearance.effectiveScale
+                    spacing: 16 * Appearance.effectiveScale
+                    
+                    RowLayout {
+                        spacing: 16 * Appearance.effectiveScale
+                        Layout.preferredWidth: 70 * Appearance.effectiveScale
+                        MaterialSymbol { text: "palette"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
+                        StyledText {
+                            text: "Date Color"
+                            color: Appearance.colors.colOnLayer1
+                            Layout.fillWidth: true
+                        }
+                    }
+                    Item { Layout.fillWidth: true }
+                    Row {
+                        Layout.alignment: Qt.AlignRight; spacing: 2 * Appearance.effectiveScale
+                        Repeater {
+                            model: ["primary", "secondary", "tertiary", "surface", "onSurface", "onLayer1"]
+                            delegate: SegmentedButton {
+                                required property string modelData
+                                buttonText: modelData.charAt(0).toUpperCase() + modelData.slice(1)
+                                isHighlighted: Config.ready && Config.options.appearance.atAGlance.dateColorStyle === modelData
+                                colActive: Appearance.m3colors.m3primary
+                                colActiveText: Appearance.m3colors.m3onPrimary
+                                colInactive: Appearance.m3colors.m3surfaceContainerLow
+                                onClicked: if (Config.ready) Config.options.appearance.atAGlance.dateColorStyle = modelData
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Quote Color
+            SegmentedWrapper {
+                Layout.fillWidth: true
+                implicitHeight: quoteColorRow.implicitHeight + (32 * Appearance.effectiveScale)
+                orientation: Qt.Vertical
+                maxRadius: 20 * Appearance.effectiveScale
+                color: Appearance.m3colors.m3surfaceContainerHigh
+                RowLayout {
+                    id: quoteColorRow
+                    anchors.fill: parent; anchors.margins: 16 * Appearance.effectiveScale
+                    spacing: 16 * Appearance.effectiveScale
+                    
+                    RowLayout {
+                        spacing: 16 * Appearance.effectiveScale
+                        Layout.preferredWidth: 70 * Appearance.effectiveScale
+                        MaterialSymbol { text: "palette"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
+                        StyledText {
+                            text: "Quote Color"
+                            color: Appearance.colors.colOnLayer1
+                            Layout.fillWidth: true
+                        }
+                    }
+                    Item { Layout.fillWidth: true }
+                    Row {
+                        Layout.alignment: Qt.AlignRight; spacing: 2 * Appearance.effectiveScale
+                        Repeater {
+                            model: ["primary", "secondary", "tertiary", "surface", "onSurface", "onLayer1"]
+                            delegate: SegmentedButton {
+                                required property string modelData
+                                buttonText: modelData.charAt(0).toUpperCase() + modelData.slice(1)
+                                isHighlighted: Config.ready && Config.options.appearance.atAGlance.quoteColorStyle === modelData
+                                colActive: Appearance.m3colors.m3primary
+                                colActiveText: Appearance.m3colors.m3onPrimary
+                                colInactive: Appearance.m3colors.m3surfaceContainerLow
+                                onClicked: if (Config.ready) Config.options.appearance.atAGlance.quoteColorStyle = modelData
+                            }
                         }
                     }
                 }

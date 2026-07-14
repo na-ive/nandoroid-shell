@@ -16,8 +16,6 @@ Item {
 
     // Configuration shortcuts
     readonly property var cfg: Config.options.appearance.atAGlance
-    readonly property string colorMode: cfg.colorMode
-    readonly property string customColor: cfg.customColor
     readonly property string fontFamily: cfg.fontFamily !== "" ? cfg.fontFamily : Appearance.font.family
     readonly property int fontSize: cfg.fontSize
     
@@ -42,11 +40,31 @@ Item {
     }
 
     // Colors
-    property color textColor: {
-        if (colorMode === "primary") return Appearance.colors.colPrimary;
-        if (colorMode === "on-layer1") return Appearance.colors.colOnLayer1;
-        if (colorMode === "custom") return customColor;
-        return Appearance.colors.colPrimary; // fallback
+    function getColorForStyle(style) {
+        switch (style) {
+            case "primary": return Appearance.colors.colPrimary;
+            case "secondary": return Appearance.colors.colSecondary;
+            case "tertiary": return Appearance.colors.colTertiary;
+            case "error": return Appearance.colors.colError;
+            case "onSurface": return Appearance.m3colors.m3onSurface;
+            case "surface": return Appearance.m3colors.m3surface;
+            case "onLayer0": return Appearance.colors.colOnLayer0;
+            case "onLayer1": return Appearance.colors.colOnLayer1;
+            case "surfaceContainerHigh": return Appearance.m3colors.m3surfaceContainerHigh;
+            default: return Appearance.colors.colPrimary;
+        }
+    }
+
+    property color greetingColor: getColorForStyle(cfg.greetingColorStyle)
+    property color dateColor: getColorForStyle(cfg.dateColorStyle)
+    property color quoteColor: getColorForStyle(cfg.quoteColorStyle)
+
+    // Timer for quote refresh (10 minutes)
+    Timer {
+        interval: 10 * 60 * 1000 // 10 minutes in ms
+        running: true
+        repeat: true
+        onTriggered: updateQuoteOnly()
     }
 
     // Load Quotes JSON via Process
@@ -68,6 +86,18 @@ Item {
 
     onTimePeriodChanged: updateText()
 
+    function updateQuoteOnly() {
+        if (!quotesData) return;
+        let quotesList = quotesData[timePeriod] || [];
+        if (quotesList.length > 0) {
+            let randomIndex = Math.floor(Math.random() * quotesList.length);
+            currentQuote = quotesList[randomIndex];
+        } else if (quotesData["general"] && quotesData["general"].length > 0) {
+            let randomIndex = Math.floor(Math.random() * quotesData["general"].length);
+            currentQuote = quotesData["general"][randomIndex];
+        }
+    }
+
     function updateText() {
         if (!quotesData) return;
         
@@ -78,14 +108,7 @@ Item {
         else currentGreeting = "Good night";
         
         // Quotes
-        let quotesList = quotesData[timePeriod] || [];
-        if (quotesList.length > 0) {
-            let randomIndex = Math.floor(Math.random() * quotesList.length);
-            currentQuote = quotesList[randomIndex];
-        } else if (quotesData["general"] && quotesData["general"].length > 0) {
-            let randomIndex = Math.floor(Math.random() * quotesData["general"].length);
-            currentQuote = quotesData["general"][randomIndex];
-        }
+        updateQuoteOnly();
     }
 
     // ── Layout ──
@@ -99,7 +122,7 @@ Item {
             font.pixelSize: fontSize * 1.2 * Appearance.effectiveScale
             font.family: fontFamily
             font.weight: Font.DemiBold
-            color: textColor
+            color: greetingColor
             Layout.alignment: cfg.alignment === "center" ? Qt.AlignHCenter : (cfg.alignment === "right" ? Qt.AlignRight : Qt.AlignLeft)
             horizontalAlignment: cfg.alignment === "center" ? Text.AlignHCenter : (cfg.alignment === "right" ? Text.AlignRight : Text.AlignLeft)
         }
@@ -109,7 +132,7 @@ Item {
             text: "It's " + dateString
             font.pixelSize: fontSize * Appearance.effectiveScale
             font.family: fontFamily
-            color: Appearance.colors.colOnLayer1
+            color: dateColor
             Layout.alignment: cfg.alignment === "center" ? Qt.AlignHCenter : (cfg.alignment === "right" ? Qt.AlignRight : Qt.AlignLeft)
             horizontalAlignment: cfg.alignment === "center" ? Text.AlignHCenter : (cfg.alignment === "right" ? Text.AlignRight : Text.AlignLeft)
         }
@@ -123,7 +146,7 @@ Item {
                 text: currentQuote
                 font.pixelSize: (fontSize * 0.8) * Appearance.effectiveScale
                 font.family: fontFamily
-                color: Appearance.colors.colOnLayer1
+                color: quoteColor
                 wrapMode: Text.WordWrap
                 Layout.maximumWidth: 400 * Appearance.effectiveScale
                 horizontalAlignment: cfg.alignment === "center" ? Text.AlignHCenter : (cfg.alignment === "right" ? Text.AlignRight : Text.AlignLeft)

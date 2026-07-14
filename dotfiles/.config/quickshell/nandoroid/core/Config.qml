@@ -123,8 +123,9 @@ Singleton {
                     property string alignment: "left"
                     property string fontFamily: ""
                     property int fontSize: 24
-                    property string colorMode: "primary"
-                    property string customColor: "#FFFFFF"
+                    property string greetingColorStyle: "primary"
+                    property string dateColorStyle: "onLayer1"
+                    property string quoteColorStyle: "onLayer1"
                     property bool locked: false
                 }
                 property JsonObject background: JsonObject {
