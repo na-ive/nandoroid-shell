@@ -11,10 +11,8 @@ Item {
 
     property string style: {
         if (!Config.ready) return "digital"
-        if (isLockscreen && !Config.options.appearance.clock.useSameStyle) {
-            return Config.options.appearance.clock.styleLocked
-        }
-        return Config.options.appearance.clock.style
+        if (Config.options.appearance.clock.useSameStyle) return Config.options.appearance.clock.styleLocked
+        return isLockscreen ? Config.options.appearance.clock.styleLocked : Config.options.appearance.clock.style
     }
 
     property color color: Appearance.m3colors.m3onSurface

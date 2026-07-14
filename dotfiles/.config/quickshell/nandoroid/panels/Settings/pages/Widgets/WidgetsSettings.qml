@@ -22,16 +22,14 @@ Flickable {
 
     ColumnLayout {
         id: mainCol
-        anchors.top: parent.top
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.margins: 24 * Appearance.effectiveScale
+        width: parent.width
+        anchors.margins: 4 * Appearance.effectiveScale
         spacing: 32 * Appearance.effectiveScale
 
         // ── Header Section ──
         ColumnLayout {
             Layout.fillWidth: true
-            spacing: 8 * Appearance.effectiveScale
+            spacing: 4 * Appearance.effectiveScale
             visible: !root.isOnboarding
 
             StyledText {
@@ -42,16 +40,21 @@ Flickable {
             }
 
             StyledText {
-                text: "Manage your desktop widgets"
-                font.pixelSize: Appearance.font.pixelSize.medium
-                color: Appearance.colors.colOnLayer2
+                text: "Manage your desktop widgets."
+                font.pixelSize: Appearance.font.pixelSize.normal
+                color: Appearance.colors.colSubtext
                 Layout.fillWidth: true
                 wrapMode: Text.WordWrap
             }
         }
 
         // ── Desktop Clock Settings ──
-        WsClock { Layout.fillWidth: true; visible: !root.isOnboarding }
+        WsClock { 
+            Layout.fillWidth: true
+            visible: !root.isOnboarding
+            isDedicatedContext: true
+            dedicatedIsLock: false
+        }
 
         // ── At a Glance Settings ──
         WsAtAGlance { Layout.fillWidth: true; visible: !root.isOnboarding }

@@ -367,10 +367,10 @@ Singleton {
             property string expressive: typoFamily.title
             property string monospace: Config.ready ? Config.options.appearance.fonts.monospace : "JetBrains Mono NF"
             
-            property string desktopTimeFont: (Config.ready && Config.options.appearance.clockFonts.desktopTimeFont !== "") ? Config.options.appearance.clockFonts.desktopTimeFont : numbers
-            property string lockscreenTimeFont: (Config.ready && Config.options.appearance.clock.useSameStyle) ? desktopTimeFont : ((Config.ready && Config.options.appearance.clockFonts.lockscreenTimeFont !== "") ? Config.options.appearance.clockFonts.lockscreenTimeFont : numbers)
-            property string desktopDateFont: (Config.ready && Config.options.appearance.clockFonts.desktopDateFont !== "") ? Config.options.appearance.clockFonts.desktopDateFont : main
-            property string lockscreenDateFont: (Config.ready && Config.options.appearance.clock.useSameStyle) ? desktopDateFont : ((Config.ready && Config.options.appearance.clockFonts.lockscreenDateFont !== "") ? Config.options.appearance.clockFonts.lockscreenDateFont : main)
+            property string lockscreenTimeFont: (Config.ready && Config.options.appearance.clockFonts.lockscreenTimeFont !== "") ? Config.options.appearance.clockFonts.lockscreenTimeFont : numbers
+            property string desktopTimeFont: (Config.ready && Config.options.appearance.clock.useSameStyle) ? lockscreenTimeFont : ((Config.ready && Config.options.appearance.clockFonts.desktopTimeFont !== "") ? Config.options.appearance.clockFonts.desktopTimeFont : numbers)
+            property string lockscreenDateFont: (Config.ready && Config.options.appearance.clockFonts.lockscreenDateFont !== "") ? Config.options.appearance.clockFonts.lockscreenDateFont : main
+            property string desktopDateFont: (Config.ready && Config.options.appearance.clock.useSameStyle) ? lockscreenDateFont : ((Config.ready && Config.options.appearance.clockFonts.desktopDateFont !== "") ? Config.options.appearance.clockFonts.desktopDateFont : main)
         }
         property QtObject variableAxes: QtObject {
             id: typoAxes
