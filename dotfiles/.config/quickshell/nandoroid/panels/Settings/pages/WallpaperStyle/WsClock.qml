@@ -303,7 +303,7 @@ ColumnLayout {
                             model: ["left", "center", "right"]
                             delegate: SegmentedButton {
                                 required property string modelData
-                                buttonText: modelData.charAt(0).toUpperCase() + modelData.slice(1)
+                                iconName: "format_align_" + modelData
                                 isHighlighted: Config.ready && advancedPanel.digitalCfg.alignment === modelData
                                 onClicked: advancedPanel.digitalCfg.alignment = modelData
                             }
@@ -565,7 +565,7 @@ ColumnLayout {
                             model: ["left", "center", "right"]
                             delegate: SegmentedButton {
                                 required property string modelData
-                                buttonText: modelData.charAt(0).toUpperCase() + modelData.slice(1)
+                                iconName: "format_align_" + modelData
                                 isHighlighted: Config.ready && advancedPanel.stackedCfg.alignment === modelData
                                 onClicked: advancedPanel.stackedCfg.alignment = modelData
                             }
@@ -640,7 +640,7 @@ ColumnLayout {
                             model: ["left", "center", "right"]
                             delegate: SegmentedButton {
                                 required property string modelData
-                                buttonText: modelData.charAt(0).toUpperCase() + modelData.slice(1)
+                                iconName: "format_align_" + modelData
                                 isHighlighted: Config.ready && advancedPanel.textCfg.alignment === modelData
                                 onClicked: advancedPanel.textCfg.alignment = modelData
                             }
