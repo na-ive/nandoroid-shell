@@ -49,7 +49,7 @@ PanelWindow {
         id: menuContainer
         x: root.targetX
         y: root.targetY
-        implicitWidth: Appearance.sizes.contextMenuWidth
+        implicitWidth: Math.max(Appearance.sizes.contextMenuWidth, menuLayout.implicitWidth + (12 * Appearance.effectiveScale))
         implicitHeight: menuLayout.implicitHeight + (12 * Appearance.effectiveScale)
         
         radius: Appearance.rounding.normal
@@ -216,10 +216,15 @@ PanelWindow {
         buttonRadius: Appearance.rounding.small
         colBackground: "transparent"
         
+        // Define padding for the content
+        leftPadding: 12 * Appearance.effectiveScale
+        rightPadding: 12 * Appearance.effectiveScale
+        
+        // Explicitly calculate implicit width to ensure parent layout sizes correctly
+        implicitWidth: leftPadding + rightPadding + contentRow.implicitWidth
+        
         contentItem: RowLayout {
-            anchors.fill: parent
-            anchors.leftMargin: 12 * Appearance.effectiveScale
-            anchors.rightMargin: 12 * Appearance.effectiveScale
+            id: contentRow
             spacing: 12 * Appearance.effectiveScale
             
             MaterialSymbol {
@@ -268,7 +273,7 @@ PanelWindow {
             if (!root.visible) return;
             const screenWidth = root.screen.width;
             const screenHeight = root.screen.height;
-            const menuWidth = Appearance.sizes.contextMenuWidth;
+            const menuWidth = menuContainer.implicitWidth;
             const menuHeight = menuLayout.implicitHeight + (12 * Appearance.effectiveScale);
             
             // Constrain to screen
