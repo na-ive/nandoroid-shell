@@ -5,6 +5,19 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 
+/* 
+ * WIDGET CONFIGURATION GUIDE
+ * ---------------------------------------------------------
+ * To add a new widget in the future, follow these steps:
+ * 1. In Config.qml, add 'locked', 'desktopX', and 'desktopY' properties
+ *    into your widget's JsonObject.
+ * 2. In DesktopWidgets.qml, when calling AbstractWidget, provide the config reference:
+ *    `configObject: Config.ready ? Config.options.appearance.WIDGET_NAME : null`
+ * 3. Inside your widget, call onRequestContextMenu like this:
+ *    `desktopContextMenu.openAt(x, y, configObject, "Widget Display Name", "Settings Keyword")`
+ * With these 3 steps, Drag & Drop and Context Menu (Lock/Settings) will work automatically!
+ */
+
 Singleton {
     id: root
     property string filePath: Directories.shellConfigPath
@@ -112,6 +125,7 @@ Singleton {
                     property int fontSize: 24
                     property string colorMode: "primary"
                     property string customColor: "#FFFFFF"
+                    property bool locked: false
                 }
                 property JsonObject background: JsonObject {
                     property string wallpaperPath: "file://" + Directories.assetsPath + "/wallpapers/default_wallpaper.png"

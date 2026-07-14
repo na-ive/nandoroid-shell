@@ -4,12 +4,22 @@ import "../../core"
 
 /*
  * Generic Widget Wrapper for Drag and Drop with Snap to Grid
+ * 
+ * HOW TO USE FOR NEW WIDGETS:
+ * ---------------------------
+ * 1. Define your widget inside an AbstractWidget wrapper in DesktopWidgets.qml
+ * 2. Pass its config reference: `configObject: Config.options.appearance.yourWidget`
+ * 3. AbstractWidget will automatically read the `locked` property from that config
+ *    and disable drag-and-drop if it's locked.
+ * 4. Use `onDragFinished` if you need to save the new X/Y coordinates manually 
+ *    (e.g., for custom alignment logic like the clock has).
  */
 MouseArea {
     id: root
     property alias animateXPos: xBehavior.enabled
     property alias animateYPos: yBehavior.enabled
-    property bool draggable: true
+    property var configObject: null
+    property bool draggable: configObject ? !configObject.locked : true
     property int gridSize: 24
     property bool snapEnabled: true
     property int centerSnapMargin: 12

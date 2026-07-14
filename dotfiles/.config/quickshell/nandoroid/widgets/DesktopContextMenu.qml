@@ -29,7 +29,9 @@ PanelWindow {
     WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
     exclusionMode: ExclusionMode.Ignore
     
-    property bool isClockMenu: false
+    property var activeConfigObject: null
+    property string activeWidgetName: ""
+    property string activeWidgetSearchKeyword: ""
     property real targetX: 0
     property real targetY: 0
     property real _mouseX: 0
@@ -86,25 +88,27 @@ PanelWindow {
             anchors.margins: 6 * Appearance.effectiveScale
             spacing: 2 * Appearance.effectiveScale
 
-            // --- Clock Specific Items ---
+            // --- Widget Specific Items ---
             MenuItem {
-                visible: root.isClockMenu
-                menuText: Config.options.appearance.clock.locked ? "Unlock Clock Position" : "Lock Clock Position"
-                menuIcon: Config.options.appearance.clock.locked ? "lock_open" : "lock"
+                visible: root.activeConfigObject !== null && root.activeConfigObject.locked !== undefined
+                menuText: (root.activeConfigObject && root.activeConfigObject.locked) ? "Unlock " + root.activeWidgetName + " Position" : "Lock " + root.activeWidgetName + " Position"
+                menuIcon: (root.activeConfigObject && root.activeConfigObject.locked) ? "lock_open" : "lock"
                 onClicked: {
-                    Config.options.appearance.clock.locked = !Config.options.appearance.clock.locked
+                    if (root.activeConfigObject) {
+                        root.activeConfigObject.locked = !root.activeConfigObject.locked
+                    }
                     root.close()
                 }
             }
 
             MenuItem {
-                visible: root.isClockMenu
-                menuText: "Clock Settings"
-                menuIcon: "schedule"
+                visible: root.activeConfigObject !== null && root.activeWidgetName !== ""
+                menuText: root.activeWidgetName + " Settings"
+                menuIcon: "settings" // Generic settings icon for widgets
                 onClicked: {
-                    GlobalStates.settingsPageIndex = 4 // Wallpaper & Style
+                    GlobalStates.settingsPageIndex = 3 // Assuming Widgets panel is index 3, Wallpaper & Style is index 4. We will use SearchRegistry to navigate precisely anyway.
                     SearchRegistry.currentSearch = "" 
-                    SearchRegistry.currentSearch = "Clock Style"
+                    SearchRegistry.currentSearch = root.activeWidgetSearchKeyword
                     GlobalStates.settingsOpen = true
                     root.close()
                 }
@@ -112,7 +116,7 @@ PanelWindow {
 
             // --- General Desktop Items ---
             MenuItem {
-                visible: !root.isClockMenu
+                visible: root.activeConfigObject === null
                 menuText: "Search (Spotlight)"
                 menuIcon: "search"
                 onClicked: {
@@ -122,7 +126,7 @@ PanelWindow {
             }
 
             MenuItem {
-                visible: !root.isClockMenu
+                visible: root.activeConfigObject === null
                 menuText: "Overview"
                 menuIcon: "grid_view"
                 onClicked: {
@@ -132,7 +136,7 @@ PanelWindow {
             }
 
             MenuItem {
-                visible: !root.isClockMenu
+                visible: root.activeConfigObject === null
                 menuText: "Wallpaper & Styles"
                 menuIcon: "palette"
                 onClicked: {
@@ -143,7 +147,7 @@ PanelWindow {
             }
             
             MenuItem {
-                visible: !root.isClockMenu
+                visible: root.activeConfigObject === null
                 menuText: "Dashboard"
                 menuIcon: "dashboard"
                 onClicked: {
@@ -154,7 +158,7 @@ PanelWindow {
 
             // Separator
             Rectangle {
-                visible: !root.isClockMenu
+                visible: root.activeConfigObject === null
                 Layout.fillWidth: true
                 Layout.preferredHeight: Math.max(1, 1 * Appearance.effectiveScale)
                 Layout.leftMargin: 12 * Appearance.effectiveScale
@@ -164,7 +168,7 @@ PanelWindow {
             }
 
             MenuItem {
-                visible: !root.isClockMenu
+                visible: root.activeConfigObject === null
                 menuText: "System Monitor"
                 menuIcon: "monitoring"
                 onClicked: {
@@ -174,7 +178,7 @@ PanelWindow {
             }
             
             MenuItem {
-                visible: !root.isClockMenu
+                visible: root.activeConfigObject === null
                 menuText: "Terminal"
                 menuIcon: "terminal"
                 onClicked: {
@@ -184,7 +188,7 @@ PanelWindow {
             }
 
             MenuItem {
-                visible: !root.isClockMenu
+                visible: root.activeConfigObject === null
                 menuText: "Lock Screen"
                 menuIcon: "lock"
                 onClicked: {
@@ -242,16 +246,21 @@ PanelWindow {
         onTriggered: {
             root.visible = false;
             root.isClosing = false;
+            root.activeConfigObject = null;
+            root.activeWidgetName = "";
+            root.activeWidgetSearchKeyword = "";
             GlobalStates.desktopContextMenuOpen = false;
         }
     }
 
-    function openAt(mouseX, mouseY, isClock) {
+    function openAt(x, y, configObject = null, widgetName = "", widgetSearchKeyword = "") {
+        root._mouseX = x
+        root._mouseY = y
+        root.activeConfigObject = configObject
+        root.activeWidgetName = widgetName
+        root.activeWidgetSearchKeyword = widgetSearchKeyword
         hideTimer.stop();
         isClosing = false;
-        isClockMenu = isClock;
-        root._mouseX = mouseX;
-        root._mouseY = mouseY;
         root.visible = true;
         GlobalStates.desktopContextMenuOpen = true;
         
@@ -277,8 +286,8 @@ PanelWindow {
     }
 
     function close() {
-        if (!visible || isClosing) return;
-        isClosing = true;
+        if (!root.visible || root.isClosing) return
+        root.isClosing = true
         menuContainer.opacity = 0;
         menuContainer.scale = 0.95;
         hideTimer.start();

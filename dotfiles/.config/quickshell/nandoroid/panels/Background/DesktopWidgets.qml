@@ -104,7 +104,7 @@ Variants {
             
             onPressed: (mouse) => {
                 if (mouse.button === Qt.RightButton && widgetRoot.isDesktopEmpty) {
-                    desktopContextMenu.openAt(mouse.x, mouse.y, false);
+                    desktopContextMenu.openAt(mouse.x, mouse.y, null);
                     mouse.accepted = true;
                     return;
                 }
@@ -170,7 +170,7 @@ Variants {
                 width: nandoClockItem.width
                 height: nandoClockItem.height
                 gridSize: 24
-                draggable: Config.ready ? !Config.options.appearance.clock.locked : true
+                configObject: Config.ready ? Config.options.appearance.clock : null
 
                 property string activeAlign: nandoClockItem.alignment
 
@@ -243,7 +243,7 @@ Variants {
                     isLockscreen: false
                     interactive: true
                     onRequestContextMenu: (x, y, isClock) => {
-                        desktopContextMenu.openAt(x, y, isClock);
+                        desktopContextMenu.openAt(x, y, Config.options.appearance.clock, "Clock", "Clock Style");
                     }
                 }
             }
@@ -254,7 +254,7 @@ Variants {
                 width: atAGlanceItem.width
                 height: atAGlanceItem.height
                 gridSize: 24
-                draggable: true
+                configObject: Config.ready ? Config.options.appearance.atAGlance : null
                 visible: Config.ready && Config.options.appearance.atAGlance.show && !GlobalStates.screenLocked
                 opacity: visible ? 1 : 0
                 Behavior on opacity { NumberAnimation { duration: 300 } }
@@ -273,7 +273,7 @@ Variants {
                     id: atAGlanceItem
                     interactive: true
                     onRequestContextMenu: (reqX, reqY) => {
-                        desktopContextMenu.openAt(reqX, reqY, false);
+                        desktopContextMenu.openAt(reqX, reqY, Config.options.appearance.atAGlance, "At a Glance", "At a Glance");
                     }
                 }
             }
