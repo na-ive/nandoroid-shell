@@ -230,6 +230,15 @@ Item {
                     monitor: root.monitor
                     color: root.contentColor
                     subtextColor: root.subtextColor
+                    visible: Config.ready && Config.options.statusBar ? (Config.options.statusBar.activeWindowPosition ?? "left") === "left" : true
+                }
+
+                // System Monitor (Left)
+                SystemMonitorModule {
+                    Layout.alignment: Qt.AlignVCenter
+                    color: root.contentColor
+                    subtextColor: root.subtextColor
+                    visible: Config.ready && Config.options.statusBar ? (Config.options.statusBar.systemMonitorPosition ?? "hidden") === "left" : false
                 }
             }
         }
@@ -287,6 +296,25 @@ Item {
         RowLayout {
             id: rightClusterContent
             spacing: 6 * Appearance.effectiveScale
+
+            // Active window title (Right)
+            ActiveWindowTitle {
+                Layout.alignment: Qt.AlignVCenter
+                Layout.maximumWidth: root.isCentered ? (root.centeredWidth * 0.2) : Math.min(400 * Appearance.effectiveScale, root.width * 0.25)
+                monitor: root.monitor
+                color: root.contentColor
+                subtextColor: root.subtextColor
+                textAlignment: Text.AlignRight
+                visible: Config.ready && Config.options.statusBar ? (Config.options.statusBar.activeWindowPosition ?? "left") === "right" : false
+            }
+
+            // System Monitor (Right)
+            SystemMonitorModule {
+                Layout.alignment: Qt.AlignVCenter
+                color: root.contentColor
+                subtextColor: root.subtextColor
+                visible: Config.ready && Config.options.statusBar ? (Config.options.statusBar.systemMonitorPosition ?? "hidden") === "right" : false
+            }
 
             // Network Speed Meter
             NetworkSpeedMeter {

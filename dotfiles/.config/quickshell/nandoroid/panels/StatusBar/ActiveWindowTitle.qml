@@ -20,6 +20,8 @@ Item {
     readonly property Toplevel activeWindow: ToplevelManager.activeToplevel
     readonly property bool focusingThisMonitor: HyprlandData.activeWorkspace?.monitor == monitor?.name
 
+    property int textAlignment: Text.AlignLeft
+
     property string appClassText: root.focusingThisMonitor && root.activeWindow?.activated ?
                 (root.activeWindow?.appId ?? "Desktop") : (HyprlandData.activeWindow?.class ?? "Desktop")
 
@@ -51,7 +53,8 @@ Item {
             Layout.maximumWidth: root.maxWidth
             font.pixelSize: Appearance.font.pixelSize.smallest
             color: root.subtextColor
-            elide: Text.ElideRight
+            elide: root.textAlignment === Text.AlignRight ? Text.ElideLeft : Text.ElideRight
+            horizontalAlignment: root.textAlignment
             text: root.appClassText
         }
 
@@ -61,7 +64,8 @@ Item {
             Layout.maximumWidth: root.maxWidth
             font.pixelSize: Appearance.font.pixelSize.smaller
             color: root.color
-            elide: Text.ElideRight
+            elide: root.textAlignment === Text.AlignRight ? Text.ElideLeft : Text.ElideRight
+            horizontalAlignment: root.textAlignment
             text: root.appTitleText
         }
     }

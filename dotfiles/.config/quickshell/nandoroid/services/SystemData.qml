@@ -93,8 +93,11 @@ Singleton {
     // showSpeed determines if the status bar needs network stats
     readonly property bool showSpeed: Config.options.bar ? Config.options.bar.show_network_speed : false
     
+    // showSystemMonitorOnStatusBar determines if the status bar is displaying the system monitor
+    readonly property bool showSystemMonitorOnStatusBar: Config.ready && Config.options.statusBar ? (Config.options.statusBar.systemMonitorPosition !== "hidden") : false
+    
     // We pause polling when no panel consuming the metrics is open
-    readonly property bool isAnyPanelOpen: isMonitorActive || isQuickSettingsOpen || isOverviewOpen || (!isFullscreen && showSpeed)
+    readonly property bool isAnyPanelOpen: isMonitorActive || isQuickSettingsOpen || isOverviewOpen || (!isFullscreen && (showSpeed || showSystemMonitorOnStatusBar))
     readonly property bool shouldPause: !isAnyPanelOpen
     
     // Command and interval selection

@@ -58,8 +58,22 @@ ColumnLayout {
                 ColumnLayout {
                     id: sbSettingsCol
                     Layout.fillWidth: true
-                    spacing: 4 * Appearance.effectiveScale
+                    spacing: 16 * Appearance.effectiveScale
     
+                    // ── Layout & Appearance ─────────────────────────────
+                    StyledText {
+                        text: "Layout & Appearance"
+                        font.pixelSize: Appearance.font.pixelSize.medium
+                        font.weight: Font.DemiBold
+                        color: Appearance.colors.colPrimary
+                        Layout.topMargin: 12 * Appearance.effectiveScale
+                        Layout.bottomMargin: 4 * Appearance.effectiveScale
+                    }
+
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        spacing: 4 * Appearance.effectiveScale
+
                     // ── Auto Hide ──────────────────────────────────────────────
                     SegmentedWrapper {
                         Layout.fillWidth: true
@@ -223,6 +237,22 @@ ColumnLayout {
                         }
                     }
 
+                    } // End Layout & Appearance ColumnLayout
+
+                    // ── Modules Positioning ──────────────────────────────────
+                    StyledText {
+                        text: "Modules Positioning"
+                        font.pixelSize: Appearance.font.pixelSize.medium
+                        font.weight: Font.DemiBold
+                        color: Appearance.colors.colPrimary
+                        Layout.topMargin: 12 * Appearance.effectiveScale
+                        Layout.bottomMargin: 4 * Appearance.effectiveScale
+                    }
+
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        spacing: 4 * Appearance.effectiveScale
+
                     // ── Clock Position (Center / Right) ────────────
                     SegmentedWrapper {
                         Layout.fillWidth: true
@@ -294,6 +324,133 @@ ColumnLayout {
                                         onClicked: if (Config.ready && Config.options.notifications)
                                             Config.options.notifications.position = modelData.id
                                     }
+                                }
+                            }
+                        }
+                    }
+
+                    // ── Active Window Position ────────────
+                    SegmentedWrapper {
+                        Layout.fillWidth: true
+                        implicitHeight: activeWindowPositionRow.implicitHeight + (36 * Appearance.effectiveScale)
+                        orientation: Qt.Vertical
+                        maxRadius: 20 * Appearance.effectiveScale
+                        color: Appearance.m3colors.m3surfaceContainerHigh
+                        RowLayout {
+                            id: activeWindowPositionRow
+                            anchors.fill: parent
+                            anchors.margins: 16 * Appearance.effectiveScale
+                            spacing: 16 * Appearance.effectiveScale
+                            MaterialSymbol { text: "web_asset"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
+                            StyledText { text: "Active Window Name"; Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
+                            RowLayout {
+                                spacing: 2 * Appearance.effectiveScale
+                                Repeater {
+                                    model: [
+                                        { id: "left", label: "Left" },
+                                        { id: "right", label: "Right" },
+                                        { id: "hidden", label: "Hidden" }
+                                    ]
+                                    delegate: SegmentedButton {
+                                        required property var modelData
+                                        buttonText: modelData.label
+                                        isHighlighted: Config.ready && Config.options.statusBar
+                                            ? (Config.options.statusBar.activeWindowPosition ?? "left") === modelData.id
+                                            : modelData.id === "left"
+                                        colActive: Appearance.m3colors.m3primary
+                                        colActiveText: Appearance.m3colors.m3onPrimary
+                                        colInactive: Appearance.m3colors.m3surfaceContainerLow
+                                        onClicked: if (Config.ready && Config.options.statusBar)
+                                            Config.options.statusBar.activeWindowPosition = modelData.id
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // ── System Monitor ────────────
+                    SegmentedWrapper {
+                        Layout.fillWidth: true
+                        implicitHeight: sysMonCol.implicitHeight + (32 * Appearance.effectiveScale)
+                        orientation: Qt.Vertical
+                        maxRadius: 20 * Appearance.effectiveScale
+                        color: Appearance.m3colors.m3surfaceContainerHigh
+                        ColumnLayout {
+                            id: sysMonCol
+                            anchors.fill: parent
+                            anchors.margins: 16 * Appearance.effectiveScale
+                            spacing: 16 * Appearance.effectiveScale
+                            RowLayout {
+                                spacing: 16 * Appearance.effectiveScale
+                                MaterialSymbol { text: "memory"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
+                                StyledText { text: "System Monitor"; Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
+                                RowLayout {
+                                    spacing: 2 * Appearance.effectiveScale
+                                    Repeater {
+                                        model: [
+                                            { id: "left", label: "Left" },
+                                            { id: "right", label: "Right" },
+                                            { id: "hidden", label: "Hidden" }
+                                        ]
+                                        delegate: SegmentedButton {
+                                            required property var modelData
+                                            buttonText: modelData.label
+                                            isHighlighted: Config.ready && Config.options.statusBar
+                                                ? (Config.options.statusBar.systemMonitorPosition ?? "hidden") === modelData.id
+                                                : modelData.id === "hidden"
+                                            colActive: Appearance.m3colors.m3primary
+                                            colActiveText: Appearance.m3colors.m3onPrimary
+                                            colInactive: Appearance.m3colors.m3surfaceContainerLow
+                                            onClicked: if (Config.ready && Config.options.statusBar)
+                                                Config.options.statusBar.systemMonitorPosition = modelData.id
+                                        }
+                                    }
+                                }
+                            }
+                            RowLayout {
+                                Layout.fillWidth: true
+                                visible: Config.ready && Config.options.statusBar && (Config.options.statusBar.systemMonitorPosition ?? "hidden") !== "hidden"
+                                spacing: 12 * Appearance.effectiveScale
+                                Item { Layout.fillWidth: true } // Spacer
+                                RowLayout {
+                                    spacing: 4 * Appearance.effectiveScale
+                                    AndroidToggle {
+                                        checked: Config.ready && Config.options.statusBar ? (Config.options.statusBar.showSystemMonitorCpu ?? true) : true
+                                        onToggled: if (Config.ready && Config.options.statusBar) Config.options.statusBar.showSystemMonitorCpu = !Config.options.statusBar.showSystemMonitorCpu
+                                    }
+                                    StyledText { text: "CPU"; color: Appearance.colors.colOnLayer1; font.pixelSize: Appearance.font.pixelSize.smaller }
+                                }
+                                RowLayout {
+                                    spacing: 4 * Appearance.effectiveScale
+                                    AndroidToggle {
+                                        checked: Config.ready && Config.options.statusBar ? (Config.options.statusBar.showSystemMonitorRam ?? true) : true
+                                        onToggled: if (Config.ready && Config.options.statusBar) Config.options.statusBar.showSystemMonitorRam = !Config.options.statusBar.showSystemMonitorRam
+                                    }
+                                    StyledText { text: "RAM"; color: Appearance.colors.colOnLayer1; font.pixelSize: Appearance.font.pixelSize.smaller }
+                                }
+                                RowLayout {
+                                    spacing: 4 * Appearance.effectiveScale
+                                    AndroidToggle {
+                                        checked: Config.ready && Config.options.statusBar ? (Config.options.statusBar.showSystemMonitorSwap ?? false) : false
+                                        onToggled: if (Config.ready && Config.options.statusBar) Config.options.statusBar.showSystemMonitorSwap = !Config.options.statusBar.showSystemMonitorSwap
+                                    }
+                                    StyledText { text: "Swap"; color: Appearance.colors.colOnLayer1; font.pixelSize: Appearance.font.pixelSize.smaller }
+                                }
+                                RowLayout {
+                                    spacing: 4 * Appearance.effectiveScale
+                                    AndroidToggle {
+                                        checked: Config.ready && Config.options.statusBar ? (Config.options.statusBar.showSystemMonitorTemp ?? true) : true
+                                        onToggled: if (Config.ready && Config.options.statusBar) Config.options.statusBar.showSystemMonitorTemp = !Config.options.statusBar.showSystemMonitorTemp
+                                    }
+                                    StyledText { text: "Temp"; color: Appearance.colors.colOnLayer1; font.pixelSize: Appearance.font.pixelSize.smaller }
+                                }
+                                RowLayout {
+                                    spacing: 4 * Appearance.effectiveScale
+                                    AndroidToggle {
+                                        checked: Config.ready && Config.options.statusBar ? (Config.options.statusBar.showSystemMonitorText ?? false) : false
+                                        onToggled: if (Config.ready && Config.options.statusBar) Config.options.statusBar.showSystemMonitorText = !Config.options.statusBar.showSystemMonitorText
+                                    }
+                                    StyledText { text: "Text"; color: Appearance.colors.colOnLayer1; font.pixelSize: Appearance.font.pixelSize.smaller }
                                 }
                             }
                         }
@@ -380,6 +537,22 @@ ColumnLayout {
                             }
                         }
                     }
+
+                    } // End Modules Positioning ColumnLayout
+
+                    // ── Modules Styling ──────────────────────────────────────
+                    StyledText {
+                        text: "Modules Styling"
+                        font.pixelSize: Appearance.font.pixelSize.medium
+                        font.weight: Font.DemiBold
+                        color: Appearance.colors.colPrimary
+                        Layout.topMargin: 12 * Appearance.effectiveScale
+                        Layout.bottomMargin: 4 * Appearance.effectiveScale
+                    }
+
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        spacing: 4 * Appearance.effectiveScale
 
                     // ── Workspace Style (Shape) ──
                     SegmentedWrapper {
@@ -590,6 +763,8 @@ ColumnLayout {
                             }
                         }
                     }
+
+                    } // End Modules Styling ColumnLayout
                 }
             }
     

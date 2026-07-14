@@ -329,6 +329,13 @@ Singleton {
                 property string layoutStyle: "standard" 
                 property int centeredWidth: 1200
                 property string clockPosition: "center" 
+                property string activeWindowPosition: "left"
+                property string systemMonitorPosition: "hidden"
+                property bool showSystemMonitorCpu: true
+                property bool showSystemMonitorRam: true
+                property bool showSystemMonitorSwap: false
+                property bool showSystemMonitorTemp: true
+                property bool showSystemMonitorText: false
                 property string textColorMode: "adaptive" 
                 property bool useGradient: true
                 property int backgroundStyle: 0
