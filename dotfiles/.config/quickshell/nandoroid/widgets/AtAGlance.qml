@@ -8,8 +8,8 @@ import Quickshell.Wayland
 
 Item {
     id: root
-    width: mainLayout.implicitWidth
-    height: mainLayout.implicitHeight
+    width: mainLayout.width
+    height: mainLayout.height
 
     // ── Properties ──
     property bool interactive: true
@@ -114,6 +114,7 @@ Item {
     // ── Layout ──
     ColumnLayout {
         id: mainLayout
+        width: cfg.customWidth > 0 ? cfg.customWidth : implicitWidth
         spacing: 8 * Appearance.effectiveScale
 
         StyledText {
@@ -123,6 +124,8 @@ Item {
             font.family: fontFamily
             font.weight: Font.DemiBold
             color: greetingColor
+            wrapMode: Text.WordWrap
+            Layout.fillWidth: cfg.customWidth > 0
             Layout.alignment: cfg.alignment === "center" ? Qt.AlignHCenter : (cfg.alignment === "right" ? Qt.AlignRight : Qt.AlignLeft)
             horizontalAlignment: cfg.alignment === "center" ? Text.AlignHCenter : (cfg.alignment === "right" ? Text.AlignRight : Text.AlignLeft)
         }
@@ -133,6 +136,8 @@ Item {
             font.pixelSize: fontSize * Appearance.effectiveScale
             font.family: fontFamily
             color: dateColor
+            wrapMode: Text.WordWrap
+            Layout.fillWidth: cfg.customWidth > 0
             Layout.alignment: cfg.alignment === "center" ? Qt.AlignHCenter : (cfg.alignment === "right" ? Qt.AlignRight : Qt.AlignLeft)
             horizontalAlignment: cfg.alignment === "center" ? Text.AlignHCenter : (cfg.alignment === "right" ? Text.AlignRight : Text.AlignLeft)
         }
@@ -140,6 +145,7 @@ Item {
         RowLayout {
             visible: cfg.showQuote && currentQuote !== ""
             spacing: 8 * Appearance.effectiveScale
+            Layout.fillWidth: cfg.customWidth > 0
             Layout.alignment: cfg.alignment === "center" ? Qt.AlignHCenter : (cfg.alignment === "right" ? Qt.AlignRight : Qt.AlignLeft)
 
             StyledText {
@@ -148,10 +154,59 @@ Item {
                 font.family: fontFamily
                 color: quoteColor
                 wrapMode: Text.WordWrap
-                Layout.maximumWidth: 400 * Appearance.effectiveScale
+                Layout.fillWidth: cfg.customWidth > 0
+                Layout.maximumWidth: cfg.customWidth > 0 ? cfg.customWidth : 400 * Appearance.effectiveScale
                 horizontalAlignment: cfg.alignment === "center" ? Text.AlignHCenter : (cfg.alignment === "right" ? Text.AlignRight : Text.AlignLeft)
             }
         }
     }
 
+    HoverHandler {
+        id: widgetHoverHandler
+    }
+
+    // ── Resize Handle ──
+    Rectangle {
+        id: resizeHandle
+        visible: root.interactive && !cfg.locked && (widgetHoverHandler.hovered || resizeArea.containsMouse)
+        width: 32 * Appearance.effectiveScale
+        height: 32 * Appearance.effectiveScale
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        anchors.margins: 4 * Appearance.effectiveScale
+        color: resizeArea.containsMouse ? Appearance.m3colors.m3surfaceContainerHigh : Appearance.m3colors.m3surfaceContainer
+        radius: 8 * Appearance.effectiveScale
+
+        MaterialSymbol {
+            anchors.centerIn: parent
+            text: "swap_horiz"
+            iconSize: 18 * Appearance.effectiveScale
+            color: Appearance.colors.colOnLayer1
+        }
+
+        MouseArea {
+            id: resizeArea
+            anchors.fill: parent
+            hoverEnabled: true
+            cursorShape: Qt.SizeHorCursor
+            
+            property real startGlobalX
+            property real startWidth
+            
+            onPressed: (mouse) => {
+                let globalPos = mapToItem(null, mouse.x, mouse.y)
+                startGlobalX = globalPos.x
+                startWidth = root.width
+            }
+            
+            onPositionChanged: (mouse) => {
+                if (pressed) {
+                    let globalPos = mapToItem(null, mouse.x, mouse.y)
+                    let deltaX = globalPos.x - startGlobalX
+                    let newWidth = Math.max(100 * Appearance.effectiveScale, startWidth + deltaX)
+                    Config.options.appearance.atAGlance.customWidth = newWidth
+                }
+            }
+        }
+    }
 }

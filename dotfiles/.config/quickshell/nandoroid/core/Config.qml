@@ -120,6 +120,7 @@ Singleton {
                     property bool showQuote: true
                     property real desktopX: 64
                     property real desktopY: 64
+                    property real customWidth: 0
                     property string alignment: "left"
                     property string fontFamily: ""
                     property int fontSize: 24
