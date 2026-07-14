@@ -301,7 +301,7 @@ Item {
                                 StyledText {
                                     visible: !headerSearch.text && !headerSearch.activeFocus
                                     text: mainSelector.wallhavenMode ? "Search Wallhaven..." : (mainSelector.naiveMode ? "Search NA-ive Walls..." : "Search wallpapers...")
-                                    font.pixelSize: headerSearch.font.pixelSize
+                                    font.pixelSize: Math.round(headerSearch.font.pixelSize)
                                     color: Appearance.colors.colSubtext
                                     anchors.verticalCenter: parent.verticalCenter
                                     anchors.verticalCenterOffset: 1 * Appearance.effectiveScale
@@ -936,7 +936,7 @@ Item {
                                             width: resText.implicitWidth + (12 * Appearance.effectiveScale); height: 20 * Appearance.effectiveScale; radius: 10 * Appearance.effectiveScale; color: Qt.rgba(0,0,0, 0.5)
                                             StyledText {
                                                 id: resText; anchors.centerIn: parent; text: model.resolution || ""
-                                                font.pixelSize: 10 * Appearance.effectiveScale; font.weight: Font.DemiBold; color: "white"
+                                                font.pixelSize: Math.round(10 * Appearance.effectiveScale); font.weight: Font.DemiBold; color: "white"
                                             }
                                         }
                                     }
@@ -1282,7 +1282,7 @@ Item {
                             }
                             StyledText { 
                                 text: modelData.name; Layout.fillWidth: true; 
-                                font.pixelSize: 12 * Appearance.effectiveScale
+                                font.pixelSize: Math.round(12 * Appearance.effectiveScale)
                                 font.weight: parent.parent.toggled ? Font.DemiBold : Font.Normal
                                 color: parent.parent.toggled ? Appearance.m3colors.m3onPrimaryContainer : Appearance.colors.colOnLayer0
                             }
@@ -1330,7 +1330,7 @@ Item {
                 
                 StyledText {
                     text: "Global Engine Settings"
-                    font.pixelSize: 14 * Appearance.effectiveScale
+                    font.pixelSize: Math.round(14 * Appearance.effectiveScale)
                     font.weight: Font.DemiBold
                     color: Appearance.colors.colOnLayer1
                 }
@@ -1340,7 +1340,7 @@ Item {
                     Layout.fillWidth: true; spacing: 4 * Appearance.effectiveScale
                     RowLayout {
                         Layout.fillWidth: true
-                        StyledText { text: "Target FPS"; font.pixelSize: 12 * Appearance.effectiveScale; color: Appearance.colors.colOnLayer1; Layout.fillWidth: true }
+                        StyledText { text: "Target FPS"; font.pixelSize: Math.round(12 * Appearance.effectiveScale); color: Appearance.colors.colOnLayer1; Layout.fillWidth: true }
                         StyledText { text: Math.round(fpsSlider.value); font.pixelSize: 12 * Appearance.effectiveScale; color: Appearance.colors.colPrimary; font.weight: Font.Bold }
                     }
                     StyledSlider {
@@ -1357,7 +1357,7 @@ Item {
                     Layout.fillWidth: true; spacing: 4 * Appearance.effectiveScale
                     RowLayout {
                         Layout.fillWidth: true
-                        StyledText { text: "Global Volume"; font.pixelSize: 12 * Appearance.effectiveScale; color: Appearance.colors.colOnLayer1; Layout.fillWidth: true }
+                        StyledText { text: "Global Volume"; font.pixelSize: Math.round(12 * Appearance.effectiveScale); color: Appearance.colors.colOnLayer1; Layout.fillWidth: true }
                         StyledText { text: Math.round(volSlider.value) + "%"; font.pixelSize: 12 * Appearance.effectiveScale; color: Appearance.colors.colPrimary; font.weight: Font.Bold }
                     }
                     StyledSlider {
@@ -1372,7 +1372,7 @@ Item {
                 // Scaling Mode
                 ColumnLayout {
                     Layout.fillWidth: true; spacing: 4 * Appearance.effectiveScale
-                    StyledText { text: "Scaling Mode"; font.pixelSize: 12 * Appearance.effectiveScale; color: Appearance.colors.colOnLayer1 }
+                    StyledText { text: "Scaling Mode"; font.pixelSize: Math.round(12 * Appearance.effectiveScale); color: Appearance.colors.colOnLayer1 }
                     StyledComboBox {
                         id: scalingCombo
                         Layout.fillWidth: true
@@ -1391,7 +1391,7 @@ Item {
                     
                     RowLayout {
                         Layout.fillWidth: true
-                        StyledText { text: "Mute Audio"; font.pixelSize: 12 * Appearance.effectiveScale; color: Appearance.colors.colOnLayer1; Layout.fillWidth: true }
+                        StyledText { text: "Mute Audio"; font.pixelSize: Math.round(12 * Appearance.effectiveScale); color: Appearance.colors.colOnLayer1; Layout.fillWidth: true }
                         AndroidToggle {
                             checked: Config.ready ? Config.options.wallpaperEngine.silent : false
                             onToggled: if (Config.ready) Config.options.wallpaperEngine.silent = !checked
@@ -1400,7 +1400,7 @@ Item {
 
                     RowLayout {
                         Layout.fillWidth: true
-                        StyledText { text: "Disable Audio Processing"; font.pixelSize: 12 * Appearance.effectiveScale; color: Appearance.colors.colOnLayer1; Layout.fillWidth: true }
+                        StyledText { text: "Disable Audio Processing"; font.pixelSize: Math.round(12 * Appearance.effectiveScale); color: Appearance.colors.colOnLayer1; Layout.fillWidth: true }
                         AndroidToggle {
                             checked: Config.ready ? Config.options.wallpaperEngine.disableAudioProcessing : false
                             onToggled: if (Config.ready) Config.options.wallpaperEngine.disableAudioProcessing = !checked
@@ -1409,7 +1409,7 @@ Item {
 
                     RowLayout {
                         Layout.fillWidth: true
-                        StyledText { text: "Auto-Pause (Windows)"; font.pixelSize: 12 * Appearance.effectiveScale; color: Appearance.colors.colOnLayer1; Layout.fillWidth: true }
+                        StyledText { text: "Auto-Pause (Windows)"; font.pixelSize: Math.round(12 * Appearance.effectiveScale); color: Appearance.colors.colOnLayer1; Layout.fillWidth: true }
                         AndroidToggle {
                             checked: Config.ready ? Config.options.wallpaperEngine.autoPause : true
                             onToggled: if (Config.ready) Config.options.wallpaperEngine.autoPause = !checked
@@ -1418,7 +1418,7 @@ Item {
 
                     RowLayout {
                         Layout.fillWidth: true
-                        StyledText { text: "Disable Particles"; font.pixelSize: 12 * Appearance.effectiveScale; color: Appearance.colors.colOnLayer1; Layout.fillWidth: true }
+                        StyledText { text: "Disable Particles"; font.pixelSize: Math.round(12 * Appearance.effectiveScale); color: Appearance.colors.colOnLayer1; Layout.fillWidth: true }
                         AndroidToggle {
                             checked: Config.ready ? Config.options.wallpaperEngine.disableParticles : true
                             onToggled: if (Config.ready) Config.options.wallpaperEngine.disableParticles = !checked
@@ -1427,7 +1427,7 @@ Item {
 
                     RowLayout {
                         Layout.fillWidth: true
-                        StyledText { text: "Disable Parallax"; font.pixelSize: 12 * Appearance.effectiveScale; color: Appearance.colors.colOnLayer1; Layout.fillWidth: true }
+                        StyledText { text: "Disable Parallax"; font.pixelSize: Math.round(12 * Appearance.effectiveScale); color: Appearance.colors.colOnLayer1; Layout.fillWidth: true }
                         AndroidToggle {
                             checked: Config.ready ? Config.options.wallpaperEngine.disableParallax : false
                             onToggled: if (Config.ready) Config.options.wallpaperEngine.disableParallax = !checked
@@ -1436,7 +1436,7 @@ Item {
 
                     RowLayout {
                         Layout.fillWidth: true
-                        StyledText { text: "Disable Mouse Interaction"; font.pixelSize: 12 * Appearance.effectiveScale; color: Appearance.colors.colOnLayer1; Layout.fillWidth: true }
+                        StyledText { text: "Disable Mouse Interaction"; font.pixelSize: Math.round(12 * Appearance.effectiveScale); color: Appearance.colors.colOnLayer1; Layout.fillWidth: true }
                         AndroidToggle {
                             checked: Config.ready ? Config.options.wallpaperEngine.disableMouse : false
                             onToggled: if (Config.ready) Config.options.wallpaperEngine.disableMouse = !checked
@@ -1445,7 +1445,7 @@ Item {
 
                     RowLayout {
                         Layout.fillWidth: true
-                        StyledText { text: "Disable PBO (Texture Fix)"; font.pixelSize: 12 * Appearance.effectiveScale; color: Appearance.colors.colOnLayer1; Layout.fillWidth: true }
+                        StyledText { text: "Disable PBO (Texture Fix)"; font.pixelSize: Math.round(12 * Appearance.effectiveScale); color: Appearance.colors.colOnLayer1; Layout.fillWidth: true }
                         AndroidToggle {
                             checked: Config.ready ? Config.options.wallpaperEngine.noPbo : true
                             onToggled: if (Config.ready) Config.options.wallpaperEngine.noPbo = !checked
@@ -1457,7 +1457,7 @@ Item {
                 
                 StyledText {
                     text: "* Requires Apply to take full effect"
-                    font.pixelSize: 10 * Appearance.effectiveScale
+                    font.pixelSize: Math.round(10 * Appearance.effectiveScale)
                     color: Appearance.colors.colSubtext
                     horizontalAlignment: Text.AlignRight; Layout.fillWidth: true
                 }

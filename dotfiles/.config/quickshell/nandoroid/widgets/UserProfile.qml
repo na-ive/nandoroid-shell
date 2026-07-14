@@ -85,7 +85,7 @@ Rectangle {
             }
             StyledText {
                 text: SystemInfo.distroName || "Linux System"
-                font.pixelSize: 11 * Appearance.effectiveScale
+                font.pixelSize: Math.round(11 * Appearance.effectiveScale)
                 color: Appearance.colors.colSubtext
                 elide: Text.ElideRight
                 Layout.fillWidth: true

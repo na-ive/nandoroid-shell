@@ -163,7 +163,7 @@ RowLayout {
                     StyledText {
                         Layout.alignment: Qt.AlignHCenter
                         text: PomodoroService.timeString
-                        font.pixelSize: 32 * Appearance.effectiveScale
+                        font.pixelSize: Math.round(32 * Appearance.effectiveScale)
                         font.weight: Font.DemiBold
                         color: Appearance.colors.colOnLayer1
                     }

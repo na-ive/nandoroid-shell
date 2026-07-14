@@ -37,7 +37,7 @@ Flickable {
             spacing: 4 * Appearance.effectiveScale
             StyledText {
                 text: "System"
-                font.pixelSize: 24 * Appearance.effectiveScale
+                font.pixelSize: Math.round(24 * Appearance.effectiveScale)
                 font.weight: Font.DemiBold
                 color: Appearance.colors.colOnLayer1
             }

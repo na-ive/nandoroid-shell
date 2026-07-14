@@ -240,7 +240,7 @@ MouseArea { // Notification group area
                             Layout.rightMargin: 10 * Appearance.effectiveScale
                             horizontalAlignment: Text.AlignLeft
                             text: NotificationUtils.getFriendlyNotifTimeString(notificationGroup?.time)
-                            font.pixelSize: topRow.fontSize
+                            font.pixelSize: Math.round(topRow.fontSize)
                             color: root.anyRestartRequired ? 
                                 Appearance.colors.colOnWarningContainer : 
                                 Appearance.colors.colSubtext

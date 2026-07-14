@@ -166,7 +166,7 @@ Rectangle {
                     id: searchInput
                     Layout.fillWidth: true
                     Layout.alignment: Qt.AlignVCenter
-                    font.pixelSize: 16 * Appearance.effectiveScale
+                    font.pixelSize: Math.round(16 * Appearance.effectiveScale)
                     color: Appearance.m3colors.m3onSurface
                     focus: GlobalStates.overviewOpen
 

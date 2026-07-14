@@ -100,7 +100,7 @@ Item {
                 Text {
                     anchors.centerIn: parent
                     text: Math.round(root.value * 100)
-                    font.pixelSize: 13 * Appearance.effectiveScale
+                    font.pixelSize: Math.round(13 * Appearance.effectiveScale)
                     font.family: Appearance.font.family.numbers
                     font.weight: Font.DemiBold
                     color: Appearance.m3colors.m3onSecondaryContainer

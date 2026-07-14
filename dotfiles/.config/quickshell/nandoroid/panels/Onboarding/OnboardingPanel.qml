@@ -101,7 +101,7 @@ Scope {
 
                         StyledText {
                             text: "Welcome to NAnDoroid"
-                            font.pixelSize: 24 * Appearance.effectiveScale
+                            font.pixelSize: Math.round(24 * Appearance.effectiveScale)
                             font.weight: Font.DemiBold
                             color: Appearance.colors.colOnLayer0
                             Layout.alignment: Qt.AlignVCenter
@@ -177,7 +177,7 @@ Scope {
                         StyledText {
                             anchors.centerIn: parent
                             text: "Back"
-                            font.pixelSize: 14 * Appearance.effectiveScale
+                            font.pixelSize: Math.round(14 * Appearance.effectiveScale)
                             color: Appearance.colors.colOnLayer1
                         }
                     }
@@ -197,7 +197,7 @@ Scope {
                             }
                             StyledText {
                                 text: "Use ← / → to navigate, Enter to continue, Esc to close"
-                                font.pixelSize: 12 * Appearance.effectiveScale
+                                font.pixelSize: Math.round(12 * Appearance.effectiveScale)
                                 color: Appearance.colors.colSubtext
                             }
                         }
@@ -220,7 +220,7 @@ Scope {
                         StyledText {
                             anchors.centerIn: parent
                             text: GlobalStates.onboardingStep === 0 ? "Start" : (GlobalStates.onboardingStep >= 6 ? "Finish" : "Next")
-                            font.pixelSize: 14 * Appearance.effectiveScale
+                            font.pixelSize: Math.round(14 * Appearance.effectiveScale)
                             font.weight: Font.DemiBold
                             color: Appearance.colors.colOnPrimary
                         }

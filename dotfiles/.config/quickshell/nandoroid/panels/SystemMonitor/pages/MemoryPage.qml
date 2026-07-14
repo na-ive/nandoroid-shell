@@ -42,7 +42,7 @@ Item {
                     Item { Layout.fillWidth: true }
                     StyledText { 
                         text: Math.round(SystemData.memUsage * 100) + "%"
-                        font.pixelSize: 32 * Appearance.effectiveScale
+                        font.pixelSize: Math.round(32 * Appearance.effectiveScale)
                         font.weight: Font.Black
                         color: "#8AB4F8"
                     }

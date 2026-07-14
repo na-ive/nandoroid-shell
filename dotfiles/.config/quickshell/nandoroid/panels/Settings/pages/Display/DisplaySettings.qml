@@ -342,7 +342,7 @@ Item {
                                     text: index === 0 ? "Main" : "" + (index + 1)
                                     Layout.alignment: Qt.AlignCenter
                                     horizontalAlignment: Text.AlignHCenter
-                                    font.pixelSize: 10 * Appearance.effectiveScale
+                                    font.pixelSize: Math.round(10 * Appearance.effectiveScale)
                                     font.weight: Font.Black
                                     color: root.currentMonitorIndex === index ? Appearance.colors.colOnPrimary : Appearance.colors.colOnSurface
                                     visible: monRect.height > 25 * Appearance.effectiveScale
@@ -621,7 +621,7 @@ Item {
                             id: cancelText
                             anchors.centerIn: parent
                             text: "Cancel"
-                            font.pixelSize: 13 * Appearance.effectiveScale
+                            font.pixelSize: Math.round(13 * Appearance.effectiveScale)
                             font.weight: Font.Medium
                             color: Appearance.colors.colSubtext
                         }
@@ -636,7 +636,7 @@ Item {
                             id: applyText
                             anchors.centerIn: parent
                             text: "Apply"
-                            font.pixelSize: 13 * Appearance.effectiveScale
+                            font.pixelSize: Math.round(13 * Appearance.effectiveScale)
                             font.weight: Font.DemiBold
                             color: Appearance.colors.colPrimary
                         }

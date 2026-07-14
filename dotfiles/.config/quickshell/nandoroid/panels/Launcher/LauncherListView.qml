@@ -59,7 +59,7 @@ RippleButton {
                     text: result.emoji || ""
                     visible: result && result.emoji !== ""
                     anchors.centerIn: parent
-                    font.pixelSize: 20 * Appearance.effectiveScale
+                    font.pixelSize: Math.round(20 * Appearance.effectiveScale)
                 }
                 
                 MaterialSymbol {
@@ -85,7 +85,7 @@ RippleButton {
             
             StyledText {
                 text: (result && result.name) ? result.name : ""
-                font.pixelSize: 15 * Appearance.effectiveScale
+                font.pixelSize: Math.round(15 * Appearance.effectiveScale)
                 font.weight: root.selected ? Font.DemiBold : Font.Medium
                 color: root.selected ? Appearance.m3colors.m3primary : Appearance.m3colors.m3onSurface
                 elide: Text.ElideRight
@@ -94,7 +94,7 @@ RippleButton {
             StyledText {
                 text: (result && result.subtitle) ? result.subtitle : ""
                 visible: text !== ""
-                font.pixelSize: 11 * Appearance.effectiveScale
+                font.pixelSize: Math.round(11 * Appearance.effectiveScale)
                 color: root.selected ? Appearance.m3colors.m3primary : Appearance.m3colors.m3onSurfaceVariant
                 opacity: 0.7
                 elide: Text.ElideRight
@@ -104,7 +104,7 @@ RippleButton {
         StyledText {
             Layout.alignment: Qt.AlignVCenter
             text: (result && result.category) ? result.category : (result && result.isPlugin ? "Command" : "Application")
-            font.pixelSize: 12 * Appearance.effectiveScale
+            font.pixelSize: Math.round(12 * Appearance.effectiveScale)
             color: root.selected ? Appearance.m3colors.m3primary : Appearance.m3colors.m3onSurfaceVariant
             opacity: 0.5
         }

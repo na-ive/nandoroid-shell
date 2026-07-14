@@ -47,7 +47,7 @@ Item {
                     Item { Layout.fillWidth: true }
                     StyledText { 
                         text: Math.round(SystemData.cpuUsage * 100) + "%"
-                        font.pixelSize: 32 * Appearance.effectiveScale
+                        font.pixelSize: Math.round(32 * Appearance.effectiveScale)
                         font.weight: Font.Black
                         color: Appearance.m3colors.m3primary
                     }

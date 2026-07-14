@@ -352,9 +352,9 @@ Item {
                             RowLayout {
                                 spacing: 3 * Appearance.effectiveScale
                                 MaterialSymbol { text: "star"; iconSize: 11 * Appearance.effectiveScale; color: Appearance.colors.colSubtext }
-                                StyledText { text: modelData.stargazers_count; font.pixelSize: 11 * Appearance.effectiveScale; color: Appearance.colors.colSubtext }
+                                StyledText { text: modelData.stargazers_count; font.pixelSize: Math.round(11 * Appearance.effectiveScale); color: Appearance.colors.colSubtext }
                             }
-                            StyledText { visible: !!modelData.language; text: modelData.language || ""; font.pixelSize: 11 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
+                            StyledText { visible: !!modelData.language; text: modelData.language || ""; font.pixelSize: Math.round(11 * Appearance.effectiveScale); color: Appearance.colors.colPrimary }
                         }
                     }
                 }

@@ -85,7 +85,7 @@ ColumnLayout {
 
         StyledText {
             text: "IT'S"
-            font.pixelSize: root.fontSize
+            font.pixelSize: Math.round(root.fontSize)
             font.weight: Font.Light
             font.family: root.timeFontFamily
             color: root.timeColor
@@ -94,7 +94,7 @@ ColumnLayout {
         StyledText {
             readonly property int m: DateTime.minutes
             text: m === 15 ? "QUARTER" : (m === 30 ? "HALF" : root.numberToWords(m))
-            font.pixelSize: root.fontSize
+            font.pixelSize: Math.round(root.fontSize)
             font.weight: Font.DemiBold
             font.family: root.timeFontFamily
             color: root.timeColor
@@ -102,7 +102,7 @@ ColumnLayout {
         }
         StyledText {
             text: "AFTER"
-            font.pixelSize: root.fontSize
+            font.pixelSize: Math.round(root.fontSize)
             font.weight: Font.Light
             font.family: root.timeFontFamily
             color: root.timeColor
@@ -123,14 +123,14 @@ ColumnLayout {
 
         StyledText {
             text: root.numberToWords(DateTime.hours % 12 || 12)
-            font.pixelSize: root.fontSize
+            font.pixelSize: Math.round(root.fontSize)
             font.weight: Font.DemiBold
             font.family: root.timeFontFamily
             color: root.timeColor
         }
         StyledText {
             text: getPeriodWords()
-            font.pixelSize: root.fontSize
+            font.pixelSize: Math.round(root.fontSize)
             font.weight: Font.Light
             font.family: root.timeFontFamily
             color: root.timeColor
@@ -151,11 +151,11 @@ ColumnLayout {
         readonly property var months: ["JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"]
         readonly property var ordinals: ["", "FIRST", "SECOND", "THIRD", "FOURTH", "FIFTH", "SIXTH", "SEVENTH", "EIGHTH", "NINTH", "TENTH", "ELEVENTH", "TWELFTH", "THIRTEENTH", "FOURTEEN", "FIFTEEN", "SIXTEEN", "SEVENTEEN", "EIGHTEEN", "NINETEEN", "TWENTIETH", "TWENTY FIRST", "TWENTY SECOND", "TWENTY THIRD", "TWENTY FOURTH", "TWENTY FIFTH", "TWENTY SIXTH", "TWENTY SEVENTH", "TWENTY EIGHTH", "TWENTY NINTH", "THIRTIETH", "THIRTY FIRST"]
 
-        StyledText { text: "ON"; font.pixelSize: parent.dateSize; font.weight: Font.Light; font.family: root.dateFontFamily; color: root.dateColor; opacity: 0.7 }
-        StyledText { text: parent.days[parent.now.getDay()]; font.pixelSize: parent.dateSize; font.weight: Font.DemiBold; font.family: root.dateFontFamily; color: root.dateColor }
-        StyledText { text: "THE"; font.pixelSize: parent.dateSize; font.weight: Font.Light; font.family: root.dateFontFamily; color: root.dateColor; opacity: 0.7 }
-        StyledText { text: parent.ordinals[parent.now.getDate()]; font.pixelSize: parent.dateSize; font.weight: Font.DemiBold; font.family: root.dateFontFamily; color: root.dateColor }
-        StyledText { text: "OF"; font.pixelSize: parent.dateSize; font.weight: Font.Light; font.family: root.dateFontFamily; color: root.dateColor; opacity: 0.7 }
-        StyledText { text: parent.months[parent.now.getMonth()]; font.pixelSize: parent.dateSize; font.weight: Font.DemiBold; font.family: root.dateFontFamily; color: root.dateColor }
+        StyledText { text: "ON"; font.pixelSize: Math.round(parent.dateSize); font.weight: Font.Light; font.family: root.dateFontFamily; color: root.dateColor; opacity: 0.7 }
+        StyledText { text: parent.days[parent.now.getDay()]; font.pixelSize: Math.round(parent.dateSize); font.weight: Font.DemiBold; font.family: root.dateFontFamily; color: root.dateColor }
+        StyledText { text: "THE"; font.pixelSize: Math.round(parent.dateSize); font.weight: Font.Light; font.family: root.dateFontFamily; color: root.dateColor; opacity: 0.7 }
+        StyledText { text: parent.ordinals[parent.now.getDate()]; font.pixelSize: Math.round(parent.dateSize); font.weight: Font.DemiBold; font.family: root.dateFontFamily; color: root.dateColor }
+        StyledText { text: "OF"; font.pixelSize: Math.round(parent.dateSize); font.weight: Font.Light; font.family: root.dateFontFamily; color: root.dateColor; opacity: 0.7 }
+        StyledText { text: parent.months[parent.now.getMonth()]; font.pixelSize: Math.round(parent.dateSize); font.weight: Font.DemiBold; font.family: root.dateFontFamily; color: root.dateColor }
     }
 }

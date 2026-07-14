@@ -149,7 +149,7 @@ Rectangle {
                 anchors.fill: parent; anchors.leftMargin: 16 * Appearance.effectiveScale; anchors.rightMargin: 16 * Appearance.effectiveScale; spacing: 12 * Appearance.effectiveScale
                 MaterialSymbol { Layout.alignment: Qt.AlignVCenter; text: "search"; iconSize: 20 * Appearance.effectiveScale; color: Appearance.m3colors.m3onSurfaceVariant }
                 TextInput {
-                    id: searchInput; Layout.fillWidth: true; Layout.alignment: Qt.AlignVCenter; font.pixelSize: 16 * Appearance.effectiveScale; color: Appearance.m3colors.m3onSurface; focus: GlobalStates.overviewOpen
+                    id: searchInput; Layout.fillWidth: true; Layout.alignment: Qt.AlignVCenter; font.pixelSize: Math.round(16 * Appearance.effectiveScale); color: Appearance.m3colors.m3onSurface; focus: GlobalStates.overviewOpen
                     Text { text: "Search windows..."; visible: !searchInput.text; color: Appearance.m3colors.m3onSurfaceVariant; opacity: 0.6; font: searchInput.font }
                     onTextChanged: scrollingOverviewRoot.searchQuery = text
                     onAccepted: scrollingOverviewRoot.navigateToSelectedWindow()

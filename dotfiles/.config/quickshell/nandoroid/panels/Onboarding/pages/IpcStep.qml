@@ -66,7 +66,7 @@ ColumnLayout {
                         Layout.fillWidth: true
                         text: 'hl.bind("SUPER + I", hl.dsp.exec_cmd("quickshell -c nandoroid ipc call settings toggle"))'
                         font.family: "monospace"
-                        font.pixelSize: 12 * Appearance.effectiveScale
+                        font.pixelSize: Math.round(12 * Appearance.effectiveScale)
                         color: Appearance.colors.colPrimary
                     }
                 }
@@ -140,7 +140,7 @@ ColumnLayout {
                             text: modelData.category
                             font.weight: Font.DemiBold
                             color: Appearance.colors.colOnLayer1
-                            font.pixelSize: 14 * Appearance.effectiveScale
+                            font.pixelSize: Math.round(14 * Appearance.effectiveScale)
                         }
 
                         GridLayout {
@@ -178,7 +178,7 @@ ColumnLayout {
                                             }
                                             StyledText {
                                                 text: modelData.cmd
-                                                font.pixelSize: 11 * Appearance.effectiveScale
+                                                font.pixelSize: Math.round(11 * Appearance.effectiveScale)
                                                 font.family: "monospace"
                                                 color: Appearance.colors.colSubtext
                                                 elide: Text.ElideRight

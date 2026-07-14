@@ -100,7 +100,7 @@ Flickable {
                 
                 StyledText {
                     text: Math.round(root.displayPercentage * 100) + "%"
-                    font.pixelSize: 64 * Appearance.effectiveScale // Keep this large and scaled
+                    font.pixelSize: Math.round(64 * Appearance.effectiveScale) // Keep this large and scaled
                     font.weight: Font.Black
                     color: Appearance.colors.colOnLayer0
                 }

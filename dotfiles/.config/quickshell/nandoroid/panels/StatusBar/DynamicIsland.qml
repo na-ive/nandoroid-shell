@@ -149,7 +149,7 @@ Item {
                 visible: islandState === "notification"
                 opacity: parent.parent.width > (30 * Appearance.effectiveScale) ? 1 : 0
                 Behavior on opacity { NumberAnimation { duration: 200 } }
-                font.pixelSize: 12 * Appearance.effectiveScale; font.weight: Font.Medium
+                font.pixelSize: Math.round(12 * Appearance.effectiveScale); font.weight: Font.Medium
                 color: Appearance.colors.colNotchText
                 width: Math.min(implicitWidth, root.currentEarMaxWidth - (notifLogo.visible ? 28 * Appearance.effectiveScale : 8 * Appearance.effectiveScale))
                 elide: Text.ElideRight
@@ -210,7 +210,7 @@ Item {
                 id: mediaArtistLabel; text: MprisController.trackArtist || "Unknown Artist"
                 visible: islandState === "media"; opacity: parent.parent.width > (30 * Appearance.effectiveScale) ? 1 : 0
                 Behavior on opacity { NumberAnimation { duration: 200 } }
-                font.pixelSize: 12 * Appearance.effectiveScale; font.weight: Font.Medium; color: Appearance.colors.colNotchText
+                font.pixelSize: Math.round(12 * Appearance.effectiveScale); font.weight: Font.Medium; color: Appearance.colors.colNotchText
                 width: Math.min(implicitWidth, parent.parent.width - (mediaLogo.visible ? 28 * Appearance.effectiveScale : 8 * Appearance.effectiveScale))
                 elide: Text.ElideRight; verticalAlignment: Text.AlignVCenter
             }
@@ -221,7 +221,7 @@ Item {
             id: pomoModeLabel; anchors.centerIn: parent
             text: PomodoroService.modeName
             opacity: parent.width > (20 * Appearance.effectiveScale) ? 1 : 0; Behavior on opacity { NumberAnimation { duration: 200 } }
-            font.pixelSize: 12 * Appearance.effectiveScale; font.weight: Font.DemiBold; color: Appearance.colors.colNotchText
+            font.pixelSize: Math.round(12 * Appearance.effectiveScale); font.weight: Font.DemiBold; color: Appearance.colors.colNotchText
             visible: islandState === "pomodoro"
         }
     }
@@ -267,7 +267,7 @@ Item {
             visible: islandState === "notification"
             opacity: parent.width > (20 * Appearance.effectiveScale) ? 1 : 0
             Behavior on opacity { NumberAnimation { duration: 200 } }
-            font.pixelSize: 12 * Appearance.effectiveScale; font.weight: Font.DemiBold
+            font.pixelSize: Math.round(12 * Appearance.effectiveScale); font.weight: Font.DemiBold
             color: Appearance.colors.colNotchText
             width: Math.min(implicitWidth, root.currentEarMaxWidth - (8 * Appearance.effectiveScale))
             elide: Text.ElideRight
@@ -277,7 +277,7 @@ Item {
             id: recordTimeLabel; anchors.centerIn: parent
             text: Functions.General.formatDuration(ScreenRecord.seconds)
             opacity: parent.width > (10 * Appearance.effectiveScale) ? 1 : 0; Behavior on opacity { NumberAnimation { duration: 200 } }
-            font.pixelSize: 12 * Appearance.effectiveScale; font.weight: Font.DemiBold; color: Appearance.colors.colNotchText
+            font.pixelSize: Math.round(12 * Appearance.effectiveScale); font.weight: Font.DemiBold; color: Appearance.colors.colNotchText
             font.family: Appearance.font.family.numbers; visible: islandState === "recording"
         }
 
@@ -286,7 +286,7 @@ Item {
             text: MprisController.trackTitle || ""
             visible: text !== "" && islandState === "media"; opacity: parent.width > (20 * Appearance.effectiveScale) ? 1 : 0
             Behavior on opacity { NumberAnimation { duration: 200 } }
-            font.pixelSize: 12 * Appearance.effectiveScale; font.weight: Font.DemiBold; color: Appearance.colors.colNotchText
+            font.pixelSize: Math.round(12 * Appearance.effectiveScale); font.weight: Font.DemiBold; color: Appearance.colors.colNotchText
             width: Math.min(implicitWidth, parent.width - (8 * Appearance.effectiveScale))
             elide: Text.ElideRight
         }
@@ -295,7 +295,7 @@ Item {
             id: pomoTimeLabel; anchors.centerIn: parent
             text: PomodoroService.timeString
             opacity: parent.width > (10 * Appearance.effectiveScale) ? 1 : 0; Behavior on opacity { NumberAnimation { duration: 200 } }
-            font.pixelSize: 12 * Appearance.effectiveScale; font.weight: Font.DemiBold; color: Appearance.colors.colNotchText
+            font.pixelSize: Math.round(12 * Appearance.effectiveScale); font.weight: Font.DemiBold; color: Appearance.colors.colNotchText
             font.family: Appearance.font.family.numbers; visible: islandState === "pomodoro"
         }
     }

@@ -120,7 +120,7 @@ Item {
         StyledText {
             visible: cfg.showGreeting
             text: currentGreeting + "."
-            font.pixelSize: fontSize * 1.2 * Appearance.effectiveScale
+            font.pixelSize: Math.round(fontSize * 1.2 * Appearance.effectiveScale)
             font.family: fontFamily
             font.weight: Font.DemiBold
             color: greetingColor
@@ -133,7 +133,7 @@ Item {
         StyledText {
             visible: cfg.showDate
             text: "It's " + dateString
-            font.pixelSize: fontSize * Appearance.effectiveScale
+            font.pixelSize: Math.round(fontSize * Appearance.effectiveScale)
             font.family: fontFamily
             color: dateColor
             wrapMode: Text.WordWrap
@@ -150,7 +150,7 @@ Item {
 
             StyledText {
                 text: currentQuote
-                font.pixelSize: (fontSize * 0.8) * Appearance.effectiveScale
+                font.pixelSize: Math.round((fontSize * 0.8) * Appearance.effectiveScale)
                 font.family: fontFamily
                 color: quoteColor
                 wrapMode: Text.WordWrap

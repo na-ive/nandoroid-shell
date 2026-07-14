@@ -96,17 +96,17 @@ ColumnLayout {
                 RowLayout {
                     spacing: 4 * Appearance.effectiveScale
                     MaterialSymbol { text: "swipe_up"; iconSize: 16 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
-                    StyledText { text: "Scroll: Workspaces"; font.pixelSize: 12 * Appearance.effectiveScale; color: Appearance.colors.colSubtext }
+                    StyledText { text: "Scroll: Workspaces"; font.pixelSize: Math.round(12 * Appearance.effectiveScale); color: Appearance.colors.colSubtext }
                 }
                 RowLayout {
                     spacing: 4 * Appearance.effectiveScale
                     MaterialSymbol { text: "mouse"; iconSize: 16 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
-                    StyledText { text: "Mid Click: Layout"; font.pixelSize: 12 * Appearance.effectiveScale; color: Appearance.colors.colSubtext }
+                    StyledText { text: "Mid Click: Layout"; font.pixelSize: Math.round(12 * Appearance.effectiveScale); color: Appearance.colors.colSubtext }
                 }
                 RowLayout {
                     spacing: 4 * Appearance.effectiveScale
                     MaterialSymbol { text: "ads_click"; iconSize: 16 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
-                    StyledText { text: "Right Click: Overview"; font.pixelSize: 12 * Appearance.effectiveScale; color: Appearance.colors.colSubtext }
+                    StyledText { text: "Right Click: Overview"; font.pixelSize: Math.round(12 * Appearance.effectiveScale); color: Appearance.colors.colSubtext }
                 }
             }
 

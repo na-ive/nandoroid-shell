@@ -87,7 +87,7 @@ ColumnLayout {
                     }
                     StyledText {
                         text: "Opens the Desktop Context Menu to quickly access Spotlight, Terminal, System Monitor, or change Wallpaper & Styles."
-                        font.pixelSize: 12 * Appearance.effectiveScale
+                        font.pixelSize: Math.round(12 * Appearance.effectiveScale)
                         color: Appearance.colors.colSubtext
                         wrapMode: Text.WordWrap
                     }
@@ -118,7 +118,7 @@ ColumnLayout {
                     }
                     StyledText {
                         text: "Opens the Launcher (App Drawer)."
-                        font.pixelSize: 12 * Appearance.effectiveScale
+                        font.pixelSize: Math.round(12 * Appearance.effectiveScale)
                         color: Appearance.colors.colSubtext
                         wrapMode: Text.WordWrap
                     }
@@ -151,7 +151,7 @@ ColumnLayout {
                     }
                     StyledText {
                         text: "Opens the Dock Context Menu to manage apps (Pin, Close, New Window) and perform system power actions."
-                        font.pixelSize: 12 * Appearance.effectiveScale
+                        font.pixelSize: Math.round(12 * Appearance.effectiveScale)
                         color: Appearance.colors.colSubtext
                         wrapMode: Text.WordWrap
                     }

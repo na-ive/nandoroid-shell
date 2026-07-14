@@ -66,7 +66,7 @@ Item {
                     StyledText {
                         anchors.centerIn: parent
                         text: "Skip"
-                        font.pixelSize: 16 * Appearance.effectiveScale
+                        font.pixelSize: Math.round(16 * Appearance.effectiveScale)
                         font.weight: Font.Medium
                         color: Appearance.colors.colOnLayer1
                     }
@@ -87,7 +87,7 @@ Item {
                         
                         StyledText {
                             text: "Start Tour"
-                            font.pixelSize: 16 * Appearance.effectiveScale
+                            font.pixelSize: Math.round(16 * Appearance.effectiveScale)
                             font.weight: Font.DemiBold
                             color: Appearance.colors.colOnPrimary
                         }
@@ -117,7 +117,7 @@ Item {
                 }
                 StyledText {
                     text: "Use ← / → to navigate, Enter to continue, Esc to close"
-                    font.pixelSize: 12 * Appearance.effectiveScale
+                    font.pixelSize: Math.round(12 * Appearance.effectiveScale)
                     color: Appearance.colors.colSubtext
                 }
             }

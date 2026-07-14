@@ -96,7 +96,7 @@ Rectangle {
             
             // Mode Indicator (Prefix-based)
             StyledText {
-                font.pixelSize: 11 * Appearance.effectiveScale
+                font.pixelSize: Math.round(11 * Appearance.effectiveScale)
                 font.weight: Font.DemiBold
                 color: Appearance.colors.colOnLayer1
                 opacity: 0.6
@@ -124,7 +124,7 @@ Rectangle {
                     spacing: 6 * Appearance.effectiveScale
                     StyledText {
                         text: "Navigate"
-                        font.pixelSize: 11 * Appearance.effectiveScale
+                        font.pixelSize: Math.round(11 * Appearance.effectiveScale)
                         color: Appearance.colors.colOnLayer1
                     }
                     RowLayout {
@@ -137,7 +137,7 @@ Rectangle {
                             color: Appearance.m3colors.m3surfaceVariant
                             StyledText { 
                                 anchors.centerIn: parent; text: "↑"
-                                font.pixelSize: 11 * Appearance.effectiveScale 
+                                font.pixelSize: Math.round(11 * Appearance.effectiveScale) 
                             }
                         }
                         Rectangle {
@@ -147,7 +147,7 @@ Rectangle {
                             color: Appearance.m3colors.m3surfaceVariant
                             StyledText { 
                                 anchors.centerIn: parent; text: "↓"
-                                font.pixelSize: 11 * Appearance.effectiveScale 
+                                font.pixelSize: Math.round(11 * Appearance.effectiveScale) 
                             }
                         }
                     }
@@ -159,7 +159,7 @@ Rectangle {
                     spacing: 6 * Appearance.effectiveScale
                     StyledText {
                         text: "Open"
-                        font.pixelSize: 11 * Appearance.effectiveScale
+                        font.pixelSize: Math.round(11 * Appearance.effectiveScale)
                         color: Appearance.colors.colOnLayer1
                     }
                     RowLayout {
@@ -172,7 +172,7 @@ Rectangle {
                             StyledText { 
                                 anchors.centerIn: parent
                                 text: "↵"
-                                font.pixelSize: 11 * Appearance.effectiveScale
+                                font.pixelSize: Math.round(11 * Appearance.effectiveScale)
                             }
                         }
                     }

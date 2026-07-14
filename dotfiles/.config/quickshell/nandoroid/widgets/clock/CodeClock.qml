@@ -76,7 +76,7 @@ ColumnLayout {
             text: root.lang.indent
             color: "transparent"
             font.family: root.fontFamily
-            font.pixelSize: root.cfgSize
+            font.pixelSize: Math.round(root.cfgSize)
             renderType: Text.NativeRendering
         }
         // "time" or "date" keyword
@@ -84,7 +84,7 @@ ColumnLayout {
             text: cl.keyword
             color: root.keywordColor
             font.family: root.fontFamily
-            font.pixelSize: root.cfgSize
+            font.pixelSize: Math.round(root.cfgSize)
             font.weight: Font.DemiBold
             renderType: Text.NativeRendering
         }
@@ -93,7 +93,7 @@ ColumnLayout {
             text: "="
             color: root.keywordColor
             font.family: root.fontFamily
-            font.pixelSize: root.cfgSize
+            font.pixelSize: Math.round(root.cfgSize)
             renderType: Text.NativeRendering
         }
         // quoted value
@@ -115,7 +115,7 @@ ColumnLayout {
             text: modelData
             color: root.blockColor
             font.family: root.fontFamily
-            font.pixelSize: root.cfgSize
+            font.pixelSize: Math.round(root.cfgSize)
             font.weight: Font.DemiBold
             renderType: Text.NativeRendering
         }
@@ -144,7 +144,7 @@ ColumnLayout {
             text: modelData
             color: root.blockColor
             font.family: root.fontFamily
-            font.pixelSize: root.cfgSize
+            font.pixelSize: Math.round(root.cfgSize)
             font.weight: Font.DemiBold
             renderType: Text.NativeRendering
         }

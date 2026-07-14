@@ -829,22 +829,22 @@ Item {
                     // Add/Remove
                     RowLayout {
                         spacing: 8 * Appearance.effectiveScale
-                        StyledText { text: "Add/Remove"; font.pixelSize: 10 * Appearance.effectiveScale; color: Appearance.colors.colOnLayer1 }
+                        StyledText { text: "Add/Remove"; font.pixelSize: Math.round(10 * Appearance.effectiveScale); color: Appearance.colors.colOnLayer1 }
                         Rectangle {
                             width: 44 * Appearance.effectiveScale; height: 18 * Appearance.effectiveScale; radius: 4 * Appearance.effectiveScale
                             color: Appearance.m3colors.m3surfaceVariant
-                            StyledText { anchors.centerIn: parent; text: "LClick"; font.pixelSize: 9 * Appearance.effectiveScale; font.weight: Font.DemiBold }
+                            StyledText { anchors.centerIn: parent; text: "LClick"; font.pixelSize: Math.round(9 * Appearance.effectiveScale); font.weight: Font.DemiBold }
                         }
                     }
 
                     // Resize
                     RowLayout {
                         spacing: 8 * Appearance.effectiveScale
-                        StyledText { text: "Resize"; font.pixelSize: 10 * Appearance.effectiveScale; color: Appearance.colors.colOnLayer1 }
+                        StyledText { text: "Resize"; font.pixelSize: Math.round(10 * Appearance.effectiveScale); color: Appearance.colors.colOnLayer1 }
                         Rectangle {
                             width: 44 * Appearance.effectiveScale; height: 18 * Appearance.effectiveScale; radius: 4 * Appearance.effectiveScale
                             color: Appearance.m3colors.m3surfaceVariant
-                            StyledText { anchors.centerIn: parent; text: "RClick"; font.pixelSize: 9 * Appearance.effectiveScale; font.weight: Font.DemiBold }
+                            StyledText { anchors.centerIn: parent; text: "RClick"; font.pixelSize: Math.round(9 * Appearance.effectiveScale); font.weight: Font.DemiBold }
                         }
                     }
 
@@ -852,11 +852,11 @@ Item {
                     // Move
                     RowLayout {
                         spacing: 8 * Appearance.effectiveScale
-                        StyledText { text: "Move"; font.pixelSize: 10 * Appearance.effectiveScale; color: Appearance.colors.colOnLayer1 }
+                        StyledText { text: "Move"; font.pixelSize: Math.round(10 * Appearance.effectiveScale); color: Appearance.colors.colOnLayer1 }
                         Rectangle {
                             width: 38 * Appearance.effectiveScale; height: 18 * Appearance.effectiveScale; radius: 4 * Appearance.effectiveScale
                             color: Appearance.m3colors.m3surfaceVariant
-                            StyledText { anchors.centerIn: parent; text: "Scroll"; font.pixelSize: 10 * Appearance.effectiveScale; font.weight: Font.DemiBold }
+                            StyledText { anchors.centerIn: parent; text: "Scroll"; font.pixelSize: Math.round(10 * Appearance.effectiveScale); font.weight: Font.DemiBold }
                         }
                     }
                 }

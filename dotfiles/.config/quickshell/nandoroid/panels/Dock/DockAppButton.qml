@@ -104,7 +104,7 @@ DockButton {
                 visible: appToplevel && notifCount > 0
                 z: 10
                 readonly property int notifCount: appToplevel ? Notifications.getCountForApp(appToplevel.appId) : 0
-                StyledText { anchors.centerIn: parent; text: parent.notifCount > 9 ? "!" : parent.notifCount; font.pixelSize: 10 * Appearance.effectiveScale; font.weight: Font.DemiBold; color: "white" }
+                StyledText { anchors.centerIn: parent; text: parent.notifCount > 9 ? "!" : parent.notifCount; font.pixelSize: Math.round(10 * Appearance.effectiveScale); font.weight: Font.DemiBold; color: "white" }
                 scale: visible ? 1 : 0
                 Behavior on scale { NumberAnimation { duration: 200; easing.type: Easing.OutBack } }
             }

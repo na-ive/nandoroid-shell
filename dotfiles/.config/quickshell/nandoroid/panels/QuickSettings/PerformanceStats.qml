@@ -112,14 +112,14 @@ Rectangle {
                             }
                             StyledText {
                                 text: modelData.hasAlias ? `${modelData.label} DISK USAGE` : `"${modelData.label}" DISK USAGE`
-                                font.pixelSize: 10 * Appearance.effectiveScale
+                                font.pixelSize: Math.round(10 * Appearance.effectiveScale)
                                 font.weight: Font.DemiBold
                                 color: Appearance.m3colors.m3outline
                             }
                             Item { Layout.fillWidth: true }
                             StyledText {
                                 text: `${Math.round(modelData.usage * 100)}%`
-                                font.pixelSize: 10 * Appearance.effectiveScale
+                                font.pixelSize: Math.round(10 * Appearance.effectiveScale)
                                 font.weight: Font.DemiBold
                                 color: Appearance.m3colors.m3onSurface
                             }
@@ -177,7 +177,7 @@ Rectangle {
                 }
                 StyledText {
                     text: statItem.label
-                    font.pixelSize: 10 * Appearance.effectiveScale
+                    font.pixelSize: Math.round(10 * Appearance.effectiveScale)
                     font.weight: Font.DemiBold
                     color: Appearance.m3colors.m3outline
                 }
@@ -192,7 +192,7 @@ Rectangle {
                 StyledText {
                     anchors.centerIn: parent
                     text: statItem.isTemperature ? (statItem.value > 0 ? `${Math.round(statItem.value)}°C` : "--") : `${Math.round(statItem.value * 100)}%`
-                    font.pixelSize: 10 * Appearance.effectiveScale
+                    font.pixelSize: Math.round(10 * Appearance.effectiveScale)
                     font.weight: Font.DemiBold
                     color: Appearance.m3colors.m3onSurface
                 }

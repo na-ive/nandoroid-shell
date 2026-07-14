@@ -45,7 +45,7 @@ Item { // Notification item area
 
     TextMetrics {
         id: summaryTextMetrics
-        font.pixelSize: root.fontSize
+        font.pixelSize: Math.round(root.fontSize)
         text: root.notificationObject.summary || ""
     }
 
@@ -163,7 +163,7 @@ Item { // Notification item area
                     id: summaryText
                     Layout.fillWidth: summaryTextMetrics.width >= summaryRow.implicitWidth * root.summaryElideRatio
                     visible: !root.onlyNotification
-                    font.pixelSize: root.fontSize
+                    font.pixelSize: Math.round(root.fontSize)
                     font.weight: notificationObject.isRestartRequired ? Font.Bold : Font.Normal
                     color: notificationObject.isRestartRequired ? Appearance.colors.colOnWarningContainer : Appearance.colors.colOnLayer3
                     elide: Text.ElideRight
@@ -177,7 +177,7 @@ Item { // Notification item area
                     Behavior on opacity {
                         animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(this)
                     }
-                    font.pixelSize: root.fontSize
+                    font.pixelSize: Math.round(root.fontSize)
                     color: notificationObject.isRestartRequired ? Appearance.colors.colOnWarningContainer : Appearance.colors.colSubtext
                     elide: Text.ElideRight
                     maximumLineCount: 1
@@ -200,7 +200,7 @@ Item { // Notification item area
                         animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(this)
                     }
                     Layout.fillWidth: true
-                    font.pixelSize: root.fontSize
+                    font.pixelSize: Math.round(root.fontSize)
                     color: notificationObject.isRestartRequired ? Appearance.colors.colOnWarningContainer : Appearance.colors.colSubtext
                     wrapMode: Text.WrapAnywhere
                     elide: Text.ElideRight
@@ -304,7 +304,7 @@ Item { // Notification item area
                                         }
                                         StyledText {
                                             text: "Restart"
-                                            font.pixelSize: 12 * Appearance.effectiveScale
+                                            font.pixelSize: Math.round(12 * Appearance.effectiveScale)
                                             anchors.verticalCenter: parent.verticalCenter
                                             visible: parent.parent.parent.width > 60 * Appearance.effectiveScale
                                             color: Appearance.colors.colOnWarning
@@ -347,7 +347,7 @@ Item { // Notification item area
                                         }
                                         StyledText {
                                             text: "View"
-                                            font.pixelSize: 12 * Appearance.effectiveScale
+                                            font.pixelSize: Math.round(12 * Appearance.effectiveScale)
                                             anchors.verticalCenter: parent.verticalCenter
                                             visible: parent.parent.parent.width > 60 * Appearance.effectiveScale
                                             color: viewBtn.colText
@@ -387,7 +387,7 @@ Item { // Notification item area
                                         }
                                         StyledText {
                                             text: "Close"
-                                            font.pixelSize: 12 * Appearance.effectiveScale
+                                            font.pixelSize: Math.round(12 * Appearance.effectiveScale)
                                             anchors.verticalCenter: parent.verticalCenter
                                             visible: parent.parent.parent.width > 60 * Appearance.effectiveScale
                                             color: closeBtn.colText
@@ -460,7 +460,7 @@ Item { // Notification item area
                                         }
                                         StyledText {
                                             text: "Copy"
-                                            font.pixelSize: 12 * Appearance.effectiveScale
+                                            font.pixelSize: Math.round(12 * Appearance.effectiveScale)
                                             anchors.verticalCenter: parent.verticalCenter
                                             visible: parent.parent.parent.width > 60 * Appearance.effectiveScale
                                             color: copyBtn.colText

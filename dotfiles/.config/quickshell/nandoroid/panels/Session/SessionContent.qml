@@ -67,7 +67,7 @@ Item {
 
                 StyledText {
                     Layout.alignment: Qt.AlignHCenter
-                    font.pixelSize: 22 * baseScale
+                    font.pixelSize: Math.round(22 * baseScale)
                     font.weight: Font.DemiBold
                     color: Appearance.m3colors.m3onSurface
                     text: "Session"
@@ -75,7 +75,7 @@ Item {
 
                 StyledText {
                     Layout.alignment: Qt.AlignHCenter
-                    font.pixelSize: 13 * baseScale
+                    font.pixelSize: Math.round(13 * baseScale)
                     color: Appearance.m3colors.m3outline
                     text: "What would you like to do?"
                     opacity: 0.8
@@ -185,33 +185,33 @@ Item {
                         // Navigate
                         RowLayout {
                             spacing: 4 * baseScale
-                            StyledText { text: "Navigate"; font.pixelSize: 10 * baseScale; color: Appearance.colors.colOnLayer1 }
+                            StyledText { text: "Navigate"; font.pixelSize: Math.round(10 * baseScale); color: Appearance.colors.colOnLayer1 }
                             Rectangle {
                                 width: 54 * baseScale; height: 18 * baseScale; radius: 4 * baseScale
                                 color: Appearance.m3colors.m3surfaceVariant
-                                StyledText { anchors.centerIn: parent; text: "←↑↓→"; font.pixelSize: 10 * baseScale; font.weight: Font.DemiBold }
+                                StyledText { anchors.centerIn: parent; text: "←↑↓→"; font.pixelSize: Math.round(10 * baseScale); font.weight: Font.DemiBold }
                             }
                         }
 
                         // Select
                         RowLayout {
                             spacing: 4 * baseScale
-                            StyledText { text: "Select"; font.pixelSize: 10 * baseScale; color: Appearance.colors.colOnLayer1 }
+                            StyledText { text: "Select"; font.pixelSize: Math.round(10 * baseScale); color: Appearance.colors.colOnLayer1 }
                             Rectangle {
                                 width: 38 * baseScale; height: 18 * baseScale; radius: 4 * baseScale
                                 color: Appearance.m3colors.m3surfaceVariant
-                                StyledText { anchors.centerIn: parent; text: "Enter"; font.pixelSize: 10 * baseScale; font.weight: Font.DemiBold }
+                                StyledText { anchors.centerIn: parent; text: "Enter"; font.pixelSize: Math.round(10 * baseScale); font.weight: Font.DemiBold }
                             }
                         }
 
                         // Exit
                         RowLayout {
                             spacing: 4 * baseScale
-                            StyledText { text: "Exit"; font.pixelSize: 10 * baseScale; color: Appearance.colors.colOnLayer1 }
+                            StyledText { text: "Exit"; font.pixelSize: Math.round(10 * baseScale); color: Appearance.colors.colOnLayer1 }
                             Rectangle {
                                 width: 28 * baseScale; height: 18 * baseScale; radius: 4 * baseScale
                                 color: Appearance.m3colors.m3surfaceVariant
-                                StyledText { anchors.centerIn: parent; text: "Esc"; font.pixelSize: 10 * baseScale; font.weight: Font.DemiBold }
+                                StyledText { anchors.centerIn: parent; text: "Esc"; font.pixelSize: Math.round(10 * baseScale); font.weight: Font.DemiBold }
                             }
                         }
                     }

@@ -45,7 +45,7 @@ ColumnLayout {
                         id: rotationText
                         anchors.centerIn: parent
                         text: PomodoroService.rotations
-                        font.pixelSize: 10 * Appearance.effectiveScale
+                        font.pixelSize: Math.round(10 * Appearance.effectiveScale)
                         font.weight: Font.DemiBold
                         color: Appearance.m3colors.m3onSecondaryContainer
                     }
@@ -57,7 +57,7 @@ ColumnLayout {
 
         StyledText {
             text: PomodoroService.timeString
-            font.pixelSize: 28 * Appearance.effectiveScale
+            font.pixelSize: Math.round(28 * Appearance.effectiveScale)
             font.weight: Font.DemiBold
             color: Appearance.colors.colOnLayer1
         }
@@ -142,7 +142,7 @@ ColumnLayout {
                 }
                 StyledText {
                     text: PomodoroService.active ? "Pause" : "Start"
-                    font.pixelSize: 14 * Appearance.effectiveScale
+                    font.pixelSize: Math.round(14 * Appearance.effectiveScale)
                     font.weight: Font.DemiBold
                     color: startPill.colText
                 }
@@ -169,7 +169,7 @@ ColumnLayout {
             Layout.fillWidth: true
             StyledText {
                 text: "Auto-continue Sessions"
-                font.pixelSize: 12 * Appearance.effectiveScale
+                font.pixelSize: Math.round(12 * Appearance.effectiveScale)
                 color: Appearance.colors.colOnLayer1
                 opacity: 0.7
                 Layout.fillWidth: true
@@ -205,7 +205,7 @@ ColumnLayout {
             
             StyledText {
                 text: "Next Break"
-                font.pixelSize: 12 * Appearance.effectiveScale
+                font.pixelSize: Math.round(12 * Appearance.effectiveScale)
                 color: Appearance.colors.colOnLayer1
                 opacity: 0.7
                 Layout.fillWidth: true

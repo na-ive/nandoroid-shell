@@ -92,7 +92,7 @@ Rectangle {
             id: labelItem
             anchors.centerIn: parent
             text: parent.labelText
-            font.pixelSize: parent.fontSize
+            font.pixelSize: Math.round(parent.fontSize)
             font.weight: parent.isBold ? Font.DemiBold : Font.Medium
             font.family: root.dateFontFamily
             color: root.dateColor
@@ -112,7 +112,7 @@ Rectangle {
 
             StyledText {
                 text: DateTime.hours.toString().padStart(2, '0')
-                font.pixelSize: (root.cfg.size * 0.5 || 60) * Appearance.effectiveScale
+                font.pixelSize: Math.round((root.cfg.size * 0.5 || 60) * Appearance.effectiveScale)
                 font.weight: Font.DemiBold
                 font.family: root.timeFontFamily
                 color: root.timeColor
@@ -128,7 +128,7 @@ Rectangle {
 
             StyledText {
                 text: DateTime.minutes.toString().padStart(2, '0')
-                font.pixelSize: (root.cfg.size * 0.5 || 60) * Appearance.effectiveScale
+                font.pixelSize: Math.round((root.cfg.size * 0.5 || 60) * Appearance.effectiveScale)
                 font.weight: Font.DemiBold
                 font.family: root.timeFontFamily
                 color: root.timeColor
@@ -144,7 +144,7 @@ Rectangle {
 
             StyledText {
                 text: Qt.formatDate(new Date(), "dddd")
-                font.pixelSize: (root.cfg.size * 0.18 || 22) * Appearance.effectiveScale
+                font.pixelSize: Math.round((root.cfg.size * 0.18 || 22) * Appearance.effectiveScale)
                 font.weight: Font.DemiBold
                 font.family: root.dateFontFamily
                 color: root.timeColor
@@ -152,7 +152,7 @@ Rectangle {
             }
             StyledText {
                 text: Qt.formatDate(new Date(), "d MMMM, yyyy")
-                font.pixelSize: (root.cfg.size * 0.12 || 14) * Appearance.effectiveScale
+                font.pixelSize: Math.round((root.cfg.size * 0.12 || 14) * Appearance.effectiveScale)
                 font.weight: Font.Light
                 font.family: root.dateFontFamily
                 color: root.dateColor
@@ -180,7 +180,7 @@ Rectangle {
 
         StyledText {
             text: DateTime.hours.toString().padStart(2, '0')
-            font.pixelSize: (root.cfg.size * 0.5 || 60) * Appearance.effectiveScale
+            font.pixelSize: Math.round((root.cfg.size * 0.5 || 60) * Appearance.effectiveScale)
             font.weight: Font.DemiBold
             font.family: root.timeFontFamily
             color: root.timeColor
@@ -197,7 +197,7 @@ Rectangle {
 
         StyledText {
             text: DateTime.minutes.toString().padStart(2, '0')
-            font.pixelSize: (root.cfg.size * 0.5 || 60) * Appearance.effectiveScale
+            font.pixelSize: Math.round((root.cfg.size * 0.5 || 60) * Appearance.effectiveScale)
             font.weight: Font.DemiBold
             font.family: root.timeFontFamily
             color: root.timeColor

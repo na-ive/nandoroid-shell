@@ -102,7 +102,7 @@ PanelWindow {
                         horizontalAlignment: Text.AlignHCenter
                         text: Config.options.appearance.lyrics.lyricsUseRomaji ? modelData.romajiText : modelData.originalText
                         font.family: (Config.ready && Config.options.appearance.lyrics.fontFamily !== "") ? Config.options.appearance.lyrics.fontFamily : Config.options.appearance.fonts.main
-                        font.pixelSize: index === LyricsService.before 
+                        font.pixelSize: Math.round(index === LyricsService.before) 
                             ? (Config.ready && Config.options.appearance.lyrics ? Config.options.appearance.lyrics.fontSize : 36) 
                             : Math.max(12, (Config.ready && Config.options.appearance.lyrics ? Config.options.appearance.lyrics.fontSize : 36) * 0.6)
                         font.bold: index === LyricsService.before
@@ -126,7 +126,7 @@ PanelWindow {
                   ? "Double click to change to original | Right click to lock" 
                   : "Double click to change to romaji | Right click to lock"
             font.family: Config.options.appearance.fonts.main
-            font.pixelSize: 12
+            font.pixelSize: Math.round(12 * Appearance.effectiveScale)
             color: "white"
             opacity: 0.6
             style: Text.Outline

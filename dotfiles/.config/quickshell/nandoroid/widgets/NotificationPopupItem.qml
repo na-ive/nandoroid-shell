@@ -161,7 +161,7 @@ Item {
                     }
                     StyledText {
                         text: "Restart Required"
-                        font.pixelSize: 11 * Appearance.effectiveScale
+                        font.pixelSize: Math.round(11 * Appearance.effectiveScale)
                         font.weight: Font.Bold
                         color: Appearance.colors.colOnWarning
                         anchors.verticalCenter: parent.verticalCenter
@@ -185,7 +185,7 @@ Item {
                         return summary !== "" ? summary : body;
                     }
                 }
-                font.pixelSize: 14 * Appearance.effectiveScale
+                font.pixelSize: Math.round(14 * Appearance.effectiveScale)
                 horizontalAlignment: notificationObject && notificationObject.isRestartRequired ? Text.AlignHCenter : Text.AlignLeft
                 
                 wrapMode: root.expanded ? Text.Wrap : Text.NoWrap
@@ -268,7 +268,7 @@ Item {
                                     }
                                     StyledText {
                                         text: "Restart"
-                                        font.pixelSize: 12 * Appearance.effectiveScale
+                                        font.pixelSize: Math.round(12 * Appearance.effectiveScale)
                                         anchors.verticalCenter: parent.verticalCenter
                                         visible: parent.parent.parent.width > 60 * Appearance.effectiveScale
                                         color: Appearance.colors.colOnWarning
@@ -302,7 +302,7 @@ Item {
                                     }
                                     StyledText {
                                         text: "View"
-                                        font.pixelSize: 12 * Appearance.effectiveScale
+                                        font.pixelSize: Math.round(12 * Appearance.effectiveScale)
                                         anchors.verticalCenter: parent.verticalCenter
                                         visible: parent.parent.parent.width > 60 * Appearance.effectiveScale
                                         color: parent.parent.parent.colText
@@ -336,7 +336,7 @@ Item {
                                     }
                                     StyledText {
                                         text: "Close"
-                                        font.pixelSize: 12 * Appearance.effectiveScale
+                                        font.pixelSize: Math.round(12 * Appearance.effectiveScale)
                                         anchors.verticalCenter: parent.verticalCenter
                                         visible: parent.parent.parent.width > 60 * Appearance.effectiveScale
                                         color: parent.parent.parent.colText
@@ -379,7 +379,7 @@ Item {
                                     }
                                     StyledText {
                                         text: "Copy"
-                                        font.pixelSize: 12 * Appearance.effectiveScale
+                                        font.pixelSize: Math.round(12 * Appearance.effectiveScale)
                                         anchors.verticalCenter: parent.verticalCenter
                                         visible: parent.parent.parent.width > 60 * Appearance.effectiveScale
                                         color: parent.parent.parent.colText

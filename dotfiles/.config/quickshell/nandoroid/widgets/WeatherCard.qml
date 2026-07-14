@@ -93,7 +93,7 @@ Rectangle {
 
             StyledText {
                 text: Weather.current.temp + "°"
-                font.pixelSize: 64 * Appearance.effectiveScale
+                font.pixelSize: Math.round(64 * Appearance.effectiveScale)
                 font.weight: Font.Normal
                 color: root.contentColor
                 Layout.alignment: Qt.AlignTop | Qt.AlignRight
@@ -188,7 +188,7 @@ Rectangle {
                 StyledText {
                     id: timestampText
                     anchors.centerIn: parent
-                    font.pixelSize: 9 * Appearance.effectiveScale
+                    font.pixelSize: Math.round(9 * Appearance.effectiveScale)
                     color: root.contentColor; opacity: root.lowOpacity; textFormat: Text.StyledText
                     
                     property string timeString: "just now"

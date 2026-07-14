@@ -87,7 +87,7 @@ ColumnLayout {
         id: timeTextTop
         text:        root.isVertical ? root.displayHours : root.timeString
         color:       root.color
-        font.pixelSize: root.cfgSize
+        font.pixelSize: Math.round(root.cfgSize)
         font.weight:    root.fontW(root.cfgWeight)
         font.family:    root.cfgFamily
         font.hintingPreference: Font.PreferDefaultHinting
@@ -101,7 +101,7 @@ ColumnLayout {
         visible: root.isVertical
         text:    root.displayMinutes
         color:   root.color
-        font.pixelSize: root.cfgSize
+        font.pixelSize: Math.round(root.cfgSize)
         font.weight:    root.fontW(root.cfgWeight)
         font.family:    root.cfgFamily
         font.hintingPreference: Font.PreferDefaultHinting
@@ -116,7 +116,7 @@ ColumnLayout {
         visible: root.showDate
         text:    DateTime.currentDate.trim()
         color:   root.dateColor
-        font.pixelSize: root.cfgDateSize
+        font.pixelSize: Math.round(root.cfgDateSize)
         font.weight:    root.fontW(root.cfgDateWeight)
         font.family:    root.cfgDateFamily
         font.hintingPreference: Font.PreferDefaultHinting

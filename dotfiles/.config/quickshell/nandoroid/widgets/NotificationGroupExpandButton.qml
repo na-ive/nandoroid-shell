@@ -42,7 +42,7 @@ RippleButton { // Expand button
                 Layout.leftMargin: 4 * Appearance.effectiveScale
                 visible: root.count > 1
                 text: root.count
-                font.pixelSize: root.fontSize
+                font.pixelSize: Math.round(root.fontSize)
                 color: isRestart ? Appearance.colors.colOnWarningContainer : Appearance.colors.colOnLayer2
             }
             MaterialSymbol {

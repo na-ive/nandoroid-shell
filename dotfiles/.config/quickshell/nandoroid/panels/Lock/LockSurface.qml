@@ -285,7 +285,7 @@ MouseArea {
                 }
                 StyledText {
                     text: "Locked"
-                    font.pixelSize: 12 * Appearance.effectiveScale
+                    font.pixelSize: Math.round(12 * Appearance.effectiveScale)
                     font.weight: Font.DemiBold
                     color: Appearance.colors.colNotchText
                 }
@@ -305,7 +305,7 @@ MouseArea {
                 spacing: 8 * Appearance.effectiveScale
                 StyledText {
                     text: SystemInfo.username + "  •  " + (Network.wifiEnabled ? (Network.networkName || "Offline") : "WiFi Off")
-                    font.pixelSize: 14 * Appearance.effectiveScale
+                    font.pixelSize: Math.round(14 * Appearance.effectiveScale)
                     font.weight: Font.Medium
                     color: lockStatusBarContainer.contentColor
                 }
@@ -343,7 +343,7 @@ MouseArea {
                             id: badgeText
                             anchors.centerIn: parent
                             text: Notifications.unread > 99 ? "99+" : Notifications.unread.toString()
-                            font.pixelSize: 8 * Appearance.effectiveScale
+                            font.pixelSize: Math.round(8 * Appearance.effectiveScale)
                             font.weight: Font.DemiBold
                             color: Functions.ColorUtils.getContrastingTextColor(lockBellIcon.color)
                         }
@@ -427,7 +427,7 @@ MouseArea {
                 }
                 StyledText {
                     text: Weather.current.temp + "°"
-                    font.pixelSize: 32 * Appearance.effectiveScale
+                    font.pixelSize: Math.round(32 * Appearance.effectiveScale)
                     font.weight: Font.Medium
                     color: Appearance.colors.colLockscreenWeatherText
                     Layout.alignment: Qt.AlignVCenter
@@ -437,7 +437,7 @@ MouseArea {
             StyledText {
                 Layout.alignment: Qt.AlignHCenter
                 text: Weather.current.condition
-                font.pixelSize: 15 * Appearance.effectiveScale
+                font.pixelSize: Math.round(15 * Appearance.effectiveScale)
                 font.weight: Font.Normal
                 color: Appearance.colors.colLockscreenWeatherSubtext
             }

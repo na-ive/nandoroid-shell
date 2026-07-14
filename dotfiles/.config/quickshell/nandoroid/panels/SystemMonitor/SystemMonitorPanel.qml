@@ -95,7 +95,7 @@ Scope {
 
                         StyledText {
                             text: "System Monitor"
-                            font.pixelSize: 24 * Appearance.effectiveScale
+                            font.pixelSize: Math.round(24 * Appearance.effectiveScale)
                             font.weight: Font.DemiBold
                             color: Appearance.colors.colOnLayer0
                             Layout.alignment: Qt.AlignVCenter
@@ -183,7 +183,7 @@ Scope {
                                             
                                             StyledText {
                                                 text: modelData.name
-                                                font.pixelSize: 14 * Appearance.effectiveScale
+                                                font.pixelSize: Math.round(14 * Appearance.effectiveScale)
                                                 font.weight: GlobalStates.systemMonitorIndex === modelData.stackIndex ? Font.Medium : Font.Normal
                                                 color: GlobalStates.systemMonitorIndex === modelData.stackIndex 
                                                     ? Appearance.colors.colPrimary 

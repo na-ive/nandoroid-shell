@@ -105,7 +105,7 @@ ColumnLayout {
     Text {
         visible: root.showDate
         text: root.dayName
-        font.pixelSize: cfg.labelFontSize || 24 * Appearance.effectiveScale
+        font.pixelSize: Math.round(cfg.labelFontSize || 24 * Appearance.effectiveScale)
         font.family: root.dateFontFamily
         font.weight: root.fontW(cfg.labelFontWeight)
         color: root.labelColor
@@ -117,7 +117,7 @@ ColumnLayout {
     Text {
         visible: root.showDate
         text: root.dayNumber
-        font.pixelSize: cfg.fontSize || 64 * Appearance.effectiveScale
+        font.pixelSize: Math.round(cfg.fontSize || 64 * Appearance.effectiveScale)
         font.family: root.dateFontFamily
         font.weight: root.fontW(cfg.labelFontWeight)
         color: root.labelColor
@@ -128,7 +128,7 @@ ColumnLayout {
 
     Text {
         text: root.displayHours + ":" + root.displayMinutes
-        font.pixelSize: cfg.fontSize || 64 * Appearance.effectiveScale
+        font.pixelSize: Math.round(cfg.fontSize || 64 * Appearance.effectiveScale)
         font.family: root.timeFontFamily
         font.weight: root.fontW(cfg.fontWeight)
         color: root.mainColor
@@ -140,7 +140,7 @@ ColumnLayout {
     Text {
         visible: !root.is24H
         text: root.amPm
-        font.pixelSize: (cfg.labelFontSize || 24 * Appearance.effectiveScale) + 6 * Appearance.effectiveScale
+        font.pixelSize: Math.round((cfg.labelFontSize || 24 * Appearance.effectiveScale) + 6 * Appearance.effectiveScale)
         font.family: root.timeFontFamily
         font.weight: root.fontW(cfg.labelFontWeight)
         color: root.labelColor

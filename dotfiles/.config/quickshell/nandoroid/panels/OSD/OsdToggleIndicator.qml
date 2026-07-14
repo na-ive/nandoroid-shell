@@ -75,7 +75,7 @@ Item {
                 Text {
                     anchors.centerIn: parent
                     text: root.statusText !== "" ? root.statusText : root.name
-                    font.pixelSize: 13 * Appearance.effectiveScale
+                    font.pixelSize: Math.round(13 * Appearance.effectiveScale)
                     font.weight: Font.Medium
                     color: Appearance.colors.colOnLayer1
                     elide: Text.ElideRight
@@ -98,7 +98,7 @@ Item {
                 Text {
                     anchors.centerIn: parent
                     text: root.name.substring(0, 2).toUpperCase()
-                    font.pixelSize: 11 * Appearance.effectiveScale
+                    font.pixelSize: Math.round(11 * Appearance.effectiveScale)
                     font.weight: Font.DemiBold
                     color: Appearance.m3colors.m3onSecondaryContainer
                     opacity: 0.8

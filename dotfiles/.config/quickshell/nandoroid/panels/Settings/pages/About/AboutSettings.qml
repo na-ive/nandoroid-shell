@@ -91,7 +91,7 @@ Flickable {
                         if (GlobalStates.settingsAboutView === "credits") return "Special Thanks"
                         return "About"
                     }
-                    font.pixelSize: 24 * Appearance.effectiveScale
+                    font.pixelSize: Math.round(24 * Appearance.effectiveScale)
                     font.weight: Font.DemiBold
                     color: Appearance.colors.colOnLayer1
                     Layout.fillWidth: true

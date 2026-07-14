@@ -32,7 +32,7 @@ Column {
             color: root.color
             font.family: root.timeFontFamily
             font.weight: Font.DemiBold
-            font.pixelSize: baseSize
+            font.pixelSize: Math.round(baseSize)
             font.hintingPreference: Font.PreferDefaultHinting
             renderType: Text.NativeRendering
 

@@ -70,7 +70,7 @@ RippleButton {
                 StyledText {
                     text: (app && app.emoji) ? app.emoji : ""
                     visible: app && app.emoji !== ""
-                    font.pixelSize: 32 * Appearance.effectiveScale
+                    font.pixelSize: Math.round(32 * Appearance.effectiveScale)
                     anchors.centerIn: parent
                 }
             }
@@ -85,7 +85,7 @@ RippleButton {
                 width: parent.width
                 horizontalAlignment: Text.AlignHCenter
                 elide: Text.ElideRight
-                font.pixelSize: 12 * Appearance.effectiveScale
+                font.pixelSize: Math.round(12 * Appearance.effectiveScale)
                 color: root.selected ? Appearance.m3colors.m3primary : Appearance.m3colors.m3onSurface
                 font.weight: root.selected ? Font.DemiBold : Font.Medium
             }
@@ -96,7 +96,7 @@ RippleButton {
                 width: parent.width
                 horizontalAlignment: Text.AlignHCenter
                 elide: Text.ElideRight
-                font.pixelSize: 10 * Appearance.effectiveScale
+                font.pixelSize: Math.round(10 * Appearance.effectiveScale)
                 color: root.selected ? Appearance.m3colors.m3primary : Appearance.m3colors.m3onSurfaceVariant
                 opacity: 0.8
             }

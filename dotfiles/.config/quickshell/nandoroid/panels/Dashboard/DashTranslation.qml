@@ -48,7 +48,7 @@ RowLayout {
             RowLayout {
                 Layout.fillWidth: true
                 MaterialSymbol { text: "translate"; iconSize: 22 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
-                StyledText { text: "Source"; font.pixelSize: 15 * Appearance.effectiveScale; font.weight: Font.DemiBold; color: Appearance.colors.colOnLayer1 }
+                StyledText { text: "Source"; font.pixelSize: Math.round(15 * Appearance.effectiveScale); font.weight: Font.DemiBold; color: Appearance.colors.colOnLayer1 }
                 Item { Layout.fillWidth: true }
                 
                 StyledComboBox {
@@ -72,7 +72,7 @@ RowLayout {
                     placeholderTextColor: Appearance.colors.colSubtext
                     color: Appearance.colors.colOnLayer1
                     font.family: Appearance.font.family.main
-                    font.pixelSize: 16 * Appearance.effectiveScale; wrapMode: Text.Wrap; background: null; selectByMouse: true
+                    font.pixelSize: Math.round(16 * Appearance.effectiveScale); wrapMode: Text.Wrap; background: null; selectByMouse: true
                     onTextChanged: {
                         if (activeFocus || text === "") root.triggerTranslate();
                     }
@@ -115,7 +115,7 @@ RowLayout {
 
             RowLayout {
                 Layout.fillWidth: true
-                StyledText { text: "Translation"; font.pixelSize: 15 * Appearance.effectiveScale; font.weight: Font.DemiBold; color: Appearance.colors.colPrimary }
+                StyledText { text: "Translation"; font.pixelSize: Math.round(15 * Appearance.effectiveScale); font.weight: Font.DemiBold; color: Appearance.colors.colPrimary }
                 Item { Layout.fillWidth: true }
                 
                 StyledComboBox {
@@ -144,7 +144,7 @@ RowLayout {
                     placeholderTextColor: Appearance.colors.colSubtext
                     color: Appearance.colors.colOnLayer2
                     font.family: Appearance.font.family.main
-                    font.pixelSize: 18 * Appearance.effectiveScale; font.weight: Font.Medium; wrapMode: Text.Wrap; background: null; selectByMouse: true
+                    font.pixelSize: Math.round(18 * Appearance.effectiveScale); font.weight: Font.Medium; wrapMode: Text.Wrap; background: null; selectByMouse: true
                     
                     opacity: TranslationService.isTranslating ? 0.6 : 1.0
                     Behavior on opacity { NumberAnimation { duration: 200 } }
@@ -162,7 +162,7 @@ RowLayout {
                         text: "sync"; iconSize: 14 * Appearance.effectiveScale; color: Appearance.colors.colPrimary
                         RotationAnimation on rotation { from: 0; to: 360; duration: 1000; loops: Animation.Infinite; running: parent.visible }
                     }
-                    StyledText { text: "Translating..."; font.pixelSize: 12 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
+                    StyledText { text: "Translating..."; font.pixelSize: Math.round(12 * Appearance.effectiveScale); color: Appearance.colors.colPrimary }
                 }
                 
                 Item { Layout.fillWidth: true }

@@ -234,7 +234,7 @@ Rectangle {
                                         }
                                         StyledText {
                                             text: Math.round(streamItem.modelData.audio.volume * 100) + "%"
-                                            font.pixelSize: 10 * Appearance.effectiveScale
+                                            font.pixelSize: Math.round(10 * Appearance.effectiveScale)
                                             color: Appearance.colors.colSubtext
                                         }
                                     }

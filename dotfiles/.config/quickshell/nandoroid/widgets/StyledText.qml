@@ -8,7 +8,7 @@ Text {
     property real animationDistanceX: 0
     property real animationDistanceY: 6
 
-    renderType: Text.NativeRendering
+    renderType: Text.QtRendering
     verticalAlignment: Text.AlignVCenter
     property bool shouldUseNumberFont: root.text.match(/^\d+$/) !== null
     property var defaultFont: (Appearance.font && shouldUseNumberFont) ? Appearance.font.family.numbers : (Appearance.font ? Appearance.font.family.main : "sans-serif")

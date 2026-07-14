@@ -64,7 +64,7 @@ Item {
                     }
                     StyledText {
                         Layout.alignment: Qt.AlignVCenter
-                        font.pixelSize: 10 * Appearance.effectiveScale
+                        font.pixelSize: Math.round(10 * Appearance.effectiveScale)
                         font.weight: Font.DemiBold
                         text: batteryProgress.text
                         color: (isLow && !isCharging) ? Appearance.m3colors.m3onError : root.color

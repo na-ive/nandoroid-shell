@@ -81,7 +81,7 @@ SegmentedWrapper {
                     visible: root.buttonText !== ""
                     anchors.verticalCenter: parent.verticalCenter
                     text: root.buttonText
-                    font.pixelSize: 12 * Appearance.effectiveScale
+                    font.pixelSize: Math.round(12 * Appearance.effectiveScale)
                     font.weight: Font.Medium
                     color: root.active ? root.colActiveText : root.colInactiveText
                 }

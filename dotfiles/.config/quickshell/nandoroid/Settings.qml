@@ -114,7 +114,7 @@ Scope {
 
                         StyledText {
                             text: "Settings"
-                            font.pixelSize: 24 * Appearance.effectiveScale
+                            font.pixelSize: Math.round(24 * Appearance.effectiveScale)
                             font.weight: Font.DemiBold
                             color: Appearance.colors.colOnLayer0
                             Layout.preferredWidth: 200 * Appearance.effectiveScale
@@ -282,7 +282,7 @@ Scope {
                                     selectByMouse: true
                                     text: "Error loading page: " + pageLoader.source + "\n\n" + (pageLoader.sourceComponent ? pageLoader.sourceComponent.errorString() : "Unknown component error")
                                     color: "#FF5555"
-                                    font.pixelSize: 14 * Appearance.effectiveScale
+                                    font.pixelSize: Math.round(14 * Appearance.effectiveScale)
                                     font.family: "monospace"
                                 }
                                 
