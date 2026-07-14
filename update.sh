@@ -37,7 +37,7 @@ echo "Fetching latest updates..."
 git fetch origin
 
 if [ "$CHANNEL" == "stable" ]; then
-    echo "Switching to stable channel (latest tag)..."
+    echo "Switching to Release channel (latest tag)..."
     LATEST_TAG=$(git describe --tags $(git rev-list --tags --max-count=1))
     if [ -n "$LATEST_TAG" ]; then
         git checkout "$LATEST_TAG"
@@ -47,7 +47,7 @@ if [ "$CHANNEL" == "stable" ]; then
         git pull origin main
     fi
 else
-    echo "Switching to canary channel (latest commit)..."
+    echo "Switching to Latest channel (latest commit)..."
     git checkout main
     git pull origin main
 fi

@@ -327,13 +327,13 @@ fi
 
 # 7. Update Channel
 info "Update channel..."
-choice "1" "stable ${C_DIM}- follows git tags (release versions)${C_RST}"
-choice "2" "canary ${C_DIM}- follows latest commit on main${C_RST}"
-ask "Preferred channel? [stable/canary] (default: stable)"
+choice "1" "latest  ${C_DIM}- (Recommended) rolling updates, fastest bug fixes${C_RST}"
+choice "2" "release ${C_DIM}- milestone updates only, based on git tags${C_RST}"
+ask "Preferred channel? [latest/release] (default: latest)"
 read -r CHANNEL_CHOICE < /dev/tty
-CHANNEL="stable"
-if [[ "$CHANNEL_CHOICE" =~ ^[Cc] ]]; then
-    CHANNEL="canary"
+CHANNEL="canary"
+if [[ "$CHANNEL_CHOICE" =~ ^[Rr] ]]; then
+    CHANNEL="stable"
 fi
 substep "Selected: ${C_ACCENT}${C_BOLD}$CHANNEL${C_RST}"
 

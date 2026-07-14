@@ -48,7 +48,7 @@ ColumnLayout {
                     color: Appearance.colors.colOnLayer1
                 }
                 StyledText {
-                    text: "Choose between Stable (Tags) and Canary (Commits)."
+                    text: "Choose between Release (Tags) and Latest (Commits).\nLatest is highly recommended for the fastest bug fixes."
                     font.pixelSize: Appearance.font.pixelSize.small
                     color: Appearance.colors.colSubtext
                 }
@@ -63,8 +63,8 @@ ColumnLayout {
                 
                 Repeater {
                     model: [
-                        { label: "Stable", value: "stable" },
-                        { label: "Canary", value: "canary" }
+                        { label: "Release", value: "stable" },
+                        { label: "Latest", value: "canary" }
                     ]
                     delegate: SegmentedButton {
                         isHighlighted: installState.channel === modelData.value
@@ -350,7 +350,7 @@ ColumnLayout {
             }
         }
 
-        // Tags Log (Stable)
+        // Tags Log (Release)
         Rectangle {
             Layout.fillWidth: true
             Layout.preferredWidth: 1
@@ -378,7 +378,7 @@ ColumnLayout {
                         color: Appearance.colors.colPrimary
                     }
                     StyledText {
-                        text: "Recent Tags"
+                        text: "Recent Releases"
                         font.pixelSize: Appearance.font.pixelSize.large
                         font.weight: Font.Medium
                         color: Appearance.colors.colOnLayer1
@@ -393,7 +393,7 @@ ColumnLayout {
                     
                     StyledText {
                         id: tagText
-                        text: gitTagCollector.text || "Fetching stable releases..."
+                        text: gitTagCollector.text || "Fetching recent releases..."
                         font.pixelSize: Appearance.font.pixelSize.small
                         color: Appearance.colors.colSubtext
                         wrapMode: Text.WrapAnywhere
