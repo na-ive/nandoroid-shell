@@ -58,5 +58,5 @@ if [[ -d "$VENV_PATH" && -f "$COLOR_FILE" ]]; then
 
     # Immediately kill any previous instance and run in background
     pkill -f "kde-material-you-colors"
-    "$VENV_PATH/bin/kde-material-you-colors" "$MODE_FLAG" --color "$COLOR" -sv "$sv_num" &
+    "$VENV_PATH/bin/kde-material-you-colors" "$MODE_FLAG" --color "$COLOR" -sv "$sv_num" >/dev/null 2>&1 &
 fi

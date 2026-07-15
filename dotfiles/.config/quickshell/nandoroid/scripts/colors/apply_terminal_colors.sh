@@ -15,7 +15,7 @@ def apply_colors():
         # The /dev/pts/ broadcast was causing terminal emulators (like Kitty/Konsole)
         # to trigger "Activity in Background" or "Bell" desktop notifications.
         # Instead, we will gracefully tell Kitty to reload its colors via IPC.
-        os.system("kitty @ set-colors -a -c ~/.config/kitty/current-theme.conf >/dev/null 2>&1 || true")
+        os.system("kitty @ set-colors -a -c ~/.config/kitty/current-theme.conf >/dev/null 2>&1 &")
     except Exception as e:
         print(f"Error applying colors: {e}", file=sys.stderr)
 
