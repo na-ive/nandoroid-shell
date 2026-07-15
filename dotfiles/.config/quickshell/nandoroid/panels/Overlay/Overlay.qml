@@ -88,7 +88,7 @@ Variants {
             anchors {
                 top: parent.top
                 left: parent.left
-                topMargin: isM3 ? 0 : 4 * Appearance.effectiveScale
+                topMargin: 0
                 leftMargin: sidePadding
             }
             
@@ -171,7 +171,7 @@ Variants {
             anchors {
                 top: parent.top
                 right: parent.right
-                topMargin: isM3 ? 0 : 4 * Appearance.effectiveScale
+                topMargin: 0
                 rightMargin: sidePadding
             }
 
