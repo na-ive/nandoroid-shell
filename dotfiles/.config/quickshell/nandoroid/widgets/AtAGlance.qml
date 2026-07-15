@@ -16,7 +16,7 @@ Item {
 
     // Configuration shortcuts
     readonly property var cfg: Config.options.appearance.atAGlance
-    readonly property string fontFamily: cfg.fontFamily !== "" ? cfg.fontFamily : Appearance.font.family
+    readonly property string fontFamily: cfg.fontFamily !== "" ? cfg.fontFamily : Appearance.font.family.main
     readonly property int fontSize: cfg.fontSize
     
     // Time & Date bindings

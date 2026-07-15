@@ -315,7 +315,6 @@ Item { // Notification item area
 
                             NotificationActionButton {
                                 id: viewBtn
-                                Component.onCompleted: console.log("hasDefaultAction: ", actionRowLayout.hasDefaultAction, " length: ", notificationObject.actions.length)
                                 visible: actionRowLayout.hasDefaultAction
                                 Layout.fillWidth: true
                                 buttonText: "View"
