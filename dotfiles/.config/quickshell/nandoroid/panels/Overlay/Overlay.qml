@@ -80,6 +80,7 @@ Variants {
             visible: (opacity > 0 && isActive)
             enabled: GlobalStates.notificationCenterOpen && isActive
             
+            readonly property bool isM3: (Config.ready && Config.options.statusBar) ? Config.options.statusBar.moduleStyle === "m3" : false
             readonly property bool isCentered: (Config.ready && Config.options.statusBar) ? Config.options.statusBar.layoutStyle === "centered" : false
             readonly property real centeredWidth: (Config.ready && Config.options.statusBar) ? Config.options.statusBar.centeredWidth * Appearance.effectiveScale : 1200 * Appearance.effectiveScale
             readonly property real sidePadding: isCentered ? Math.round((panelWindow.width - Math.min(centeredWidth, panelWindow.width - 40 * Appearance.effectiveScale)) / 2) : 0
@@ -87,7 +88,7 @@ Variants {
             anchors {
                 top: parent.top
                 left: parent.left
-                topMargin: 4 * Appearance.effectiveScale
+                topMargin: isM3 ? 0 : 4 * Appearance.effectiveScale
                 leftMargin: sidePadding
             }
             
@@ -162,6 +163,7 @@ Variants {
             visible: (opacity > 0 && isActive)
             enabled: GlobalStates.quickSettingsOpen && isActive
             
+            readonly property bool isM3: (Config.ready && Config.options.statusBar) ? Config.options.statusBar.moduleStyle === "m3" : false
             readonly property bool isCentered: (Config.ready && Config.options.statusBar) ? Config.options.statusBar.layoutStyle === "centered" : false
             readonly property real centeredWidth: (Config.ready && Config.options.statusBar) ? Config.options.statusBar.centeredWidth * Appearance.effectiveScale : 1200 * Appearance.effectiveScale
             readonly property real sidePadding: isCentered ? Math.round((panelWindow.width - Math.min(centeredWidth, panelWindow.width - 40 * Appearance.effectiveScale)) / 2) : 0
@@ -169,7 +171,7 @@ Variants {
             anchors {
                 top: parent.top
                 right: parent.right
-                topMargin: 4 * Appearance.effectiveScale
+                topMargin: isM3 ? 0 : 4 * Appearance.effectiveScale
                 rightMargin: sidePadding
             }
 

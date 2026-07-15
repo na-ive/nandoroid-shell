@@ -76,7 +76,11 @@ Variants {
             // We subtract half width of content and add half width of arrow (8) to center it
             // but align it within screen bounds (20 margin)
             x: Math.max(20 * Appearance.effectiveScale, Math.min(parent.width - width - 20 * Appearance.effectiveScale, GlobalStates.trayPosX - (width / 2) + 8 * Appearance.effectiveScale))
-            y: Config.ready ? (Config.options.statusBar.height * Appearance.effectiveScale) + 2 * Appearance.effectiveScale : 42 * Appearance.effectiveScale
+            
+            readonly property bool isM3: (Config.ready && Config.options.statusBar) ? Config.options.statusBar.moduleStyle === "m3" : false
+            readonly property real actualStatusBarHeight: isM3 ? 48 * Appearance.effectiveScale : (Config.ready ? Config.options.statusBar.height * Appearance.effectiveScale : 40 * Appearance.effectiveScale)
+            
+            y: actualStatusBarHeight + 2 * Appearance.effectiveScale
             
             width: contentLayout.implicitWidth + 24 * Appearance.effectiveScale
             height: contentLayout.implicitHeight + 24 * Appearance.effectiveScale

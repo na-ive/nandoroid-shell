@@ -52,7 +52,9 @@ Scope {
                 }
             }
 
-            exclusiveZone: (autoHide && !mustShow) ? 0 : Appearance.sizes.statusBarHeight
+            readonly property real actualStatusBarHeight: isM3 ? 48 * Appearance.effectiveScale : Appearance.sizes.statusBarHeight
+
+            exclusiveZone: (autoHide && !mustShow) ? 0 : actualStatusBarHeight
             WlrLayershell.namespace: "nandoroid:statusbar"
             WlrLayershell.layer: WlrLayer.Top
 
@@ -63,8 +65,7 @@ Scope {
             }
 
             color: "transparent"
-            implicitHeight: (isM3 ? 48 * Appearance.effectiveScale : Appearance.sizes.statusBarHeight)
-                + (showBackground ? cornerRadius : 0)
+            implicitHeight: actualStatusBarHeight + (showBackground ? cornerRadius : 0)
 
             // Define clickable area mask
             mask: Region {
@@ -127,7 +128,7 @@ Scope {
             Item {
                 id: mainContainer
                 anchors.fill: parent
-                anchors.topMargin: (autoHide && !mustShow) ? -(isM3 ? 48 * Appearance.effectiveScale : Appearance.sizes.statusBarHeight) - (showBackground ? cornerRadius : 5 * Appearance.effectiveScale) : 0
+                anchors.topMargin: (autoHide && !mustShow) ? -actualStatusBarHeight - (showBackground ? cornerRadius : 5 * Appearance.effectiveScale) : 0
                 
                 Behavior on anchors.topMargin {
                     NumberAnimation {
@@ -156,7 +157,7 @@ Scope {
                     Rectangle {
                         id: barBg
                         
-                        readonly property real targetHeight: (isM3 ? 48 * Appearance.effectiveScale : Appearance.sizes.statusBarHeight) + (barWindow.isCentered ? barWindow.cornerRadius : 0)
+                        readonly property real targetHeight: actualStatusBarHeight + (barWindow.isCentered ? barWindow.cornerRadius : 0)
                         readonly property real targetY: barWindow.showBackground 
                             ? (barWindow.isCentered ? -barWindow.cornerRadius : 0)
                             : -targetHeight - (10 * Appearance.effectiveScale)
@@ -222,7 +223,7 @@ Scope {
                         right: parent.right
                         top: parent.top
                     }
-                    height: isM3 ? 48 * Appearance.effectiveScale : Appearance.sizes.statusBarHeight
+                    height: actualStatusBarHeight
                     color: "transparent"
                     // User explicitly requested to disable gradient in M3 style
                     opacity: !barWindow.showBackground && !isM3 && (Config.ready && Config.options.statusBar ? Config.options.statusBar.useGradient : true) ? 1.0 : 0.0
@@ -240,7 +241,8 @@ Scope {
                         right: parent.right
                         top: parent.top
                     }
-                    height: isM3 ? 48 * Appearance.effectiveScale : Appearance.sizes.statusBarHeight
+                    width: parent.width
+                    height: actualStatusBarHeight
                     sourceComponent: isM3 ? m3Content : baseContent
                     
                     Component {
