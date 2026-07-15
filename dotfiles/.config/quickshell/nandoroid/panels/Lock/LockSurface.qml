@@ -135,7 +135,9 @@ MouseArea {
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.top: parent.top
-        height: Appearance.sizes.statusBarHeight
+        readonly property bool isM3: Config.ready && Config.options.statusBar?.moduleStyle === "m3"
+        readonly property bool notifIsLeft: (Config.ready && Config.options.notifications) ? Config.options.notifications.position === "left" : false
+        height: isM3 ? Math.round(48 * Appearance.effectiveScale) : Appearance.sizes.statusBarHeight
         z: 10
 
         readonly property bool isCentered: (Config.ready && Config.options.statusBar) ? Config.options.statusBar.layoutStyle === "centered" : false
@@ -165,6 +167,7 @@ MouseArea {
         // 1. Solid background (follows system config)
         Rectangle {
             id: barBg
+            visible: !lockStatusBarContainer.isM3
             anchors.top: parent.top
             anchors.horizontalCenter: parent.horizontalCenter
             
@@ -225,7 +228,7 @@ MouseArea {
             }
             height: parent.height
             color: "transparent"
-            opacity: !barBg.showBg && (Config.ready && Config.options.statusBar ? (Config.options.statusBar.useGradient ?? true) : true) ? 1.0 : 0.0
+            opacity: !lockStatusBarContainer.isM3 && !barBg.showBg && (Config.ready && Config.options.statusBar ? (Config.options.statusBar.useGradient ?? true) : true) ? 1.0 : 0.0
             Behavior on opacity { NumberAnimation { duration: 300 } }
             
             gradient: Gradient {
@@ -240,6 +243,7 @@ MouseArea {
 
         Rectangle {
             id: lockIndicatorPill
+            visible: !lockStatusBarContainer.isM3
             anchors.horizontalCenter: parent.horizontalCenter
             
             // Idle: y=6, height=28. Waterdrop: y=0, height=34.
@@ -292,23 +296,58 @@ MouseArea {
             }
         }
 
-        // 4. Content
+        // 4. Content (Base Style)
         Item {
             id: lockStatusBarContent
+            visible: !lockStatusBarContainer.isM3
             anchors.fill: parent
             
-            // Left: User + Network
+            // Left: User + Network + (Notifications when position=left)
             RowLayout {
                 anchors.left: parent.left
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.leftMargin: lockStatusBarContainer.sidePadding + (lockStatusBarContainer.isCentered ? 12 * Appearance.effectiveScale : 0)
                 spacing: 8 * Appearance.effectiveScale
+                // Notifications (when position is left)
+                Item {
+                    visible: Notifications.unread > 0 && lockStatusBarContainer.notifIsLeft
+                    width: 20 * Appearance.effectiveScale; height: 20 * Appearance.effectiveScale
+                    MaterialSymbol {
+                        id: lockBellIconLeft
+                        anchors.centerIn: parent
+                        text: "notifications_active"
+                        iconSize: 16 * Appearance.effectiveScale
+                        fill: 1
+                        color: lockStatusBarContainer.contentColor
+                    }
+                    Rectangle {
+                        anchors.top: parent.top
+                        anchors.right: parent.right
+                        anchors.topMargin: -2 * Appearance.effectiveScale
+                        anchors.rightMargin: -2 * Appearance.effectiveScale
+                        width: Math.max(12 * Appearance.effectiveScale, badgeTextLeft.implicitWidth + 4 * Appearance.effectiveScale)
+                        height: 12 * Appearance.effectiveScale
+                        radius: 6 * Appearance.effectiveScale
+                        color: lockBellIconLeft.color
+                        StyledText {
+                            id: badgeTextLeft
+                            anchors.centerIn: parent
+                            text: Notifications.unread > 99 ? "99+" : Notifications.unread.toString()
+                            font.pixelSize: Math.round(8 * Appearance.effectiveScale)
+                            font.weight: Font.DemiBold
+                            color: Functions.ColorUtils.getContrastingTextColor(lockBellIconLeft.color)
+                        }
+                    }
+                }
+
                 StyledText {
                     text: SystemInfo.username + "  •  " + (Network.wifiEnabled ? (Network.networkName || "Offline") : "WiFi Off")
                     font.pixelSize: Math.round(14 * Appearance.effectiveScale)
                     font.weight: Font.Medium
                     color: lockStatusBarContainer.contentColor
                 }
+
+
             }
 
             // Right: System Icons
@@ -318,9 +357,9 @@ MouseArea {
                 anchors.rightMargin: 10 * Appearance.effectiveScale
                 spacing: 8 * Appearance.effectiveScale
 
-                // Notifications
+                // Notifications (when position is NOT left)
                 Item {
-                    visible: Notifications.unread > 0
+                    visible: Notifications.unread > 0 && !lockStatusBarContainer.notifIsLeft
                     width: 20 * Appearance.effectiveScale; height: 20 * Appearance.effectiveScale
                     MaterialSymbol {
                         id: lockBellIcon
@@ -348,6 +387,15 @@ MouseArea {
                             color: Functions.ColorUtils.getContrastingTextColor(lockBellIcon.color)
                         }
                     }
+                }
+
+                // Volume / Speaker (always show, including muted)
+                MaterialSymbol {
+                    visible: Config.ready && Config.options.statusBar ? (Config.options.statusBar.showVolumeIndicator ?? true) : true
+                    text: Audio.muted || Audio.volume === 0 ? "volume_off" : (Audio.volume > 0.3 ? "volume_up" : "volume_down")
+                    iconSize: 16 * Appearance.effectiveScale
+                    fill: 1
+                    color: lockStatusBarContainer.contentColor
                 }
 
                 // WiFi
@@ -390,6 +438,332 @@ MouseArea {
                 anchors.right: parent.right
                 anchors.rightMargin: lockStatusBarContainer.sidePadding + (lockStatusBarContainer.isCentered ? 8 * Appearance.effectiveScale : -2 * Appearance.effectiveScale)
                 anchors.verticalCenter: parent.verticalCenter
+            }
+        }
+
+        // 5. M3 Layout
+        Item {
+            id: lockM3StatusBar
+            visible: lockStatusBarContainer.isM3
+            anchors.fill: parent
+
+            // ── Left Cluster ──
+            Rectangle {
+                id: lockM3LeftCluster
+                anchors.left: parent.left
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.leftMargin: lockStatusBarContainer.sidePadding
+                height: lockM3LeftRow.implicitHeight + (8 * Appearance.effectiveScale)
+                width: lockM3LeftRow.implicitWidth + (8 * Appearance.effectiveScale)
+                radius: height / 2
+                color: Appearance.m3colors.m3surfaceContainer
+
+                RowLayout {
+                    id: lockM3LeftRow
+                    anchors.centerIn: parent
+                    spacing: 4 * Appearance.effectiveScale
+
+                    // Notifications pill (when position is left)
+                    M3StatusWrapper {
+                        id: lockM3NotifLeftWrapper
+                        Layout.alignment: Qt.AlignVCenter
+                        show: Notifications.unread > 0 && lockStatusBarContainer.notifIsLeft
+                        m3Color: Appearance.m3colors.m3tertiaryContainer
+                        m3ContentColor: Appearance.m3colors.m3onTertiaryContainer
+
+                        Item {
+                            Layout.preferredWidth: lockM3BellIconLeft.width
+                            Layout.preferredHeight: lockM3BellIconLeft.height
+                            Layout.alignment: Qt.AlignVCenter
+
+                            MaterialSymbol {
+                                id: lockM3BellIconLeft
+                                anchors.centerIn: parent
+                                text: "notifications_active"
+                                iconSize: 16 * Appearance.effectiveScale
+                                fill: 1
+                                color: lockM3NotifLeftWrapper.contentColor
+                            }
+
+                            Rectangle {
+                                visible: Notifications.unread > 0
+                                anchors.top: parent.top
+                                anchors.right: parent.right
+                                anchors.topMargin: -2 * Appearance.effectiveScale
+                                anchors.rightMargin: -2 * Appearance.effectiveScale
+                                width: Math.max(12 * Appearance.effectiveScale, lockM3BadgeTextLeft.implicitWidth + 4 * Appearance.effectiveScale)
+                                height: 12 * Appearance.effectiveScale
+                                radius: 6 * Appearance.effectiveScale
+                                color: lockM3NotifLeftWrapper.contentColor
+
+                                StyledText {
+                                    id: lockM3BadgeTextLeft
+                                    anchors.centerIn: parent
+                                    text: Notifications.unread > 99 ? "99+" : Notifications.unread.toString()
+                                    font.pixelSize: Math.round(8 * Appearance.effectiveScale)
+                                    font.weight: Font.DemiBold
+                                    color: lockM3NotifLeftWrapper.m3Color
+                                }
+                            }
+                        }
+                    }
+
+                    // Username pill (with circular avatar photo)
+                    M3StatusWrapper {
+                        id: lockM3UserWrapper
+                        Layout.alignment: Qt.AlignVCenter
+                        m3Color: Appearance.m3colors.m3primaryContainer
+                        m3ContentColor: Appearance.m3colors.m3onPrimaryContainer
+
+                        // Avatar photo (circular)
+                        Item {
+                            id: lockM3AvatarContainer
+                            width: 20 * Appearance.effectiveScale
+                            height: 20 * Appearance.effectiveScale
+                            Layout.alignment: Qt.AlignVCenter
+
+                            Image {
+                                id: lockM3AvatarImage
+                                anchors.fill: parent
+                                source: {
+                                    const cfgPath = Config.options.bar?.avatar_path;
+                                    if (cfgPath && cfgPath !== "") return `file://${cfgPath}`;
+                                    const sysPath = SystemInfo.userAvatarPath;
+                                    if (!sysPath || sysPath.includes("/var/lib/AccountsService/icons/")) return "";
+                                    return `file://${sysPath}`;
+                                }
+                                sourceSize: Qt.size(width, height)
+                                fillMode: Image.PreserveAspectCrop
+                                visible: false
+                            }
+                            Rectangle {
+                                id: lockM3AvatarMask
+                                anchors.fill: parent
+                                radius: width / 2
+                                visible: false
+                            }
+                            OpacityMask {
+                                anchors.fill: parent
+                                source: lockM3AvatarImage
+                                maskSource: lockM3AvatarMask
+                                visible: lockM3AvatarImage.status === Image.Ready
+                            }
+                            MaterialSymbol {
+                                anchors.centerIn: parent
+                                visible: lockM3AvatarImage.status !== Image.Ready
+                                text: "person"
+                                iconSize: 16 * Appearance.effectiveScale
+                                fill: 1
+                                color: lockM3UserWrapper.contentColor
+                            }
+                        }
+
+                        StyledText {
+                            text: SystemInfo.username
+                            font.pixelSize: Appearance.font.pixelSize.small
+                            font.weight: Font.Medium
+                            color: lockM3UserWrapper.contentColor
+                        }
+                    }
+
+                    // Network pill
+                    M3StatusWrapper {
+                        id: lockM3NetworkWrapper
+                        Layout.alignment: Qt.AlignVCenter
+                        m3Color: Appearance.m3colors.m3secondaryContainer
+                        m3ContentColor: Appearance.m3colors.m3onSecondaryContainer
+
+                        StyledText {
+                            text: Network.wifiEnabled ? (Network.networkName || "Offline") : "WiFi Off"
+                            font.pixelSize: Appearance.font.pixelSize.small
+                            font.weight: Font.Medium
+                            color: lockM3NetworkWrapper.contentColor
+                        }
+                    }
+
+
+                }
+            }
+
+            // ── Center Cluster ──
+            Rectangle {
+                id: lockM3CenterCluster
+                anchors.centerIn: parent
+
+                readonly property real padding: Math.round(4 * Appearance.effectiveScale)
+
+                height: Math.round(32 * Appearance.effectiveScale) + (padding * 2)
+                width: lockM3LockWrapper.implicitWidth + (padding * 2)
+                radius: height / 2
+                color: Appearance.m3colors.m3surfaceContainer
+
+                M3StatusWrapper {
+                    id: lockM3LockWrapper
+                    anchors.centerIn: parent
+                    m3Color: "black"
+                    m3ContentColor: "white"
+
+                    MaterialSymbol {
+                        text: "lock"
+                        iconSize: 14 * Appearance.effectiveScale
+                        fill: 1
+                        color: lockM3LockWrapper.contentColor
+                    }
+                    StyledText {
+                        text: "Locked"
+                        font.pixelSize: Math.round(12 * Appearance.effectiveScale)
+                        font.weight: Font.DemiBold
+                        color: lockM3LockWrapper.contentColor
+                    }
+                }
+            }
+
+            // ── Right Cluster ──
+            Rectangle {
+                id: lockM3RightCluster
+                anchors.right: parent.right
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.rightMargin: lockStatusBarContainer.sidePadding
+                height: lockM3RightRow.implicitHeight + (8 * Appearance.effectiveScale)
+                width: lockM3RightRow.implicitWidth + (8 * Appearance.effectiveScale)
+                radius: height / 2
+                color: Appearance.m3colors.m3surfaceContainer
+
+                RowLayout {
+                    id: lockM3RightRow
+                    anchors.centerIn: parent
+                    spacing: 4 * Appearance.effectiveScale
+
+
+
+                    // Battery pill (terpisah, m3primaryContainer)
+                    M3StatusWrapper {
+                        id: lockM3BatteryWrapper
+                        Layout.alignment: Qt.AlignVCenter
+                        show: Battery.available
+                        m3Color: Appearance.m3colors.m3primaryContainer
+                        m3ContentColor: Appearance.m3colors.m3onPrimaryContainer
+
+                        BatteryIndicator {
+                            Layout.alignment: Qt.AlignVCenter
+                            color: lockM3BatteryWrapper.contentColor
+                        }
+                    }
+
+                    // System icons pill (Notif + Volume + WiFi + BT + DND)
+                    M3StatusWrapper {
+                        id: lockM3SystemWrapper
+                        Layout.alignment: Qt.AlignVCenter
+                        m3Color: Appearance.m3colors.m3tertiaryContainer
+                        m3ContentColor: Appearance.m3colors.m3onTertiaryContainer
+
+                        Item {
+                            visible: Notifications.unread > 0 && !lockStatusBarContainer.notifIsLeft
+                            Layout.preferredWidth: lockM3BellIcon.width
+                            Layout.preferredHeight: lockM3BellIcon.height
+                            Layout.alignment: Qt.AlignVCenter
+
+                            MaterialSymbol {
+                                id: lockM3BellIcon
+                                anchors.centerIn: parent
+                                text: "notifications_active"
+                                iconSize: 16 * Appearance.effectiveScale
+                                fill: 1
+                                color: lockM3SystemWrapper.contentColor
+                            }
+
+                            Rectangle {
+                                anchors.top: parent.top
+                                anchors.right: parent.right
+                                anchors.topMargin: -2 * Appearance.effectiveScale
+                                anchors.rightMargin: -2 * Appearance.effectiveScale
+                                width: Math.max(12 * Appearance.effectiveScale, lockM3BadgeText.implicitWidth + 4 * Appearance.effectiveScale)
+                                height: 12 * Appearance.effectiveScale
+                                radius: 6 * Appearance.effectiveScale
+                                color: lockM3SystemWrapper.contentColor
+
+                                StyledText {
+                                    id: lockM3BadgeText
+                                    anchors.centerIn: parent
+                                    text: Notifications.unread > 99 ? "99+" : Notifications.unread.toString()
+                                    font.pixelSize: Math.round(8 * Appearance.effectiveScale)
+                                    font.weight: Font.DemiBold
+                                    color: lockM3SystemWrapper.m3Color
+                                }
+                            }
+                        }
+
+                        // Volume (selalu visible sesuai showVolumeIndicator)
+                        MaterialSymbol {
+                            visible: Config.ready && Config.options.statusBar ? (Config.options.statusBar.showVolumeIndicator ?? true) : true
+                            text: Audio.muted || Audio.volume === 0 ? "volume_off" : (Audio.volume > 0.3 ? "volume_up" : "volume_down")
+                            iconSize: 16 * Appearance.effectiveScale
+                            fill: 1
+                            color: lockM3SystemWrapper.contentColor
+                            Layout.alignment: Qt.AlignVCenter
+                        }
+
+                        MaterialSymbol {
+                            text: Network.materialSymbol
+                            iconSize: 16 * Appearance.effectiveScale
+                            fill: 1
+                            color: lockM3SystemWrapper.contentColor
+                            Layout.alignment: Qt.AlignVCenter
+                        }
+
+                        RowLayout {
+                            visible: BluetoothStatus.available
+                            spacing: 2 * Appearance.effectiveScale
+                            Layout.alignment: Qt.AlignVCenter
+                            MaterialSymbol {
+                                text: BluetoothStatus.materialSymbol
+                                iconSize: 16 * Appearance.effectiveScale
+                                fill: BluetoothStatus.connected ? 1 : 0
+                                color: lockM3SystemWrapper.contentColor
+                            }
+                        }
+
+                        MaterialSymbol {
+                            visible: Notifications.silent
+                            text: "notifications_paused"
+                            iconSize: 16 * Appearance.effectiveScale
+                            fill: 1
+                            color: lockM3SystemWrapper.contentColor
+                            Layout.alignment: Qt.AlignVCenter
+                        }
+                    }
+
+                    // Privacy pill (only when active)
+                    M3StatusWrapper {
+                        id: lockM3PrivacyWrapper
+                        Layout.alignment: Qt.AlignVCenter
+                        show: Privacy.anyActive
+                        m3Color: Appearance.m3colors.m3primary
+                        m3ContentColor: Appearance.m3colors.m3onPrimary
+
+                        MaterialSymbol {
+                            visible: Privacy.microphoneActive
+                            text: "mic"
+                            iconSize: 16 * Appearance.effectiveScale
+                            fill: 1
+                            color: lockM3PrivacyWrapper.contentColor
+                        }
+                        MaterialSymbol {
+                            visible: Privacy.cameraActive
+                            text: "videocam"
+                            iconSize: 16 * Appearance.effectiveScale
+                            fill: 1
+                            color: lockM3PrivacyWrapper.contentColor
+                        }
+                        MaterialSymbol {
+                            visible: Privacy.screensharingActive
+                            text: "screen_share"
+                            iconSize: 16 * Appearance.effectiveScale
+                            fill: 1
+                            color: lockM3PrivacyWrapper.contentColor
+                        }
+                    }
+                }
             }
         }
     }

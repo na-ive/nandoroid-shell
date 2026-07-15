@@ -489,7 +489,6 @@ Item {
                 Behavior on Layout.preferredWidth { NumberAnimation { duration: 250; easing.type: Easing.InOutQuad } }
                 Layout.preferredHeight: bellIconRight.height
                 Layout.alignment: Qt.AlignVCenter
-                clip: true
 
                 MaterialSymbol {
                     id: bellIconRight
