@@ -46,38 +46,41 @@ Variants {
         }
 
         property string currentPath: (Config.ready && Config.options.appearance && Config.options.appearance.background && Config.options.appearance.background.wallpaperPath) ? Config.options.appearance.background.wallpaperPath : ""
+        property string previousPath: ""
         
-        property string currentTransitionMode: "fade"
-        readonly property var transitionModes: ["fade", "zoomIn", "zoomOut", "slideUp", "slideDown", "slideLeft", "slideRight"]
+        property var shaderList: ["circlePit", "circleSelect", "magic", "Doom", "Peel", "transition", "pixelate", "stripes"]
+        property string currentShader: "pixelate"
+        property real transitionProgress: 1.0
 
         onCurrentPathChanged: {
             if (currentPath === "" || currentPath === undefined) return;
-            currentTransitionMode = transitionModes[Math.floor(Math.random() * transitionModes.length)];
+            
+            // Avoid transition on first load
+            if (wallpaper.source.toString() === "") {
+                wallpaper.source = currentPath;
+                return;
+            }
+            
+            previousPath = wallpaper.source.toString();
+            wallpaper.source = currentPath;
+            currentShader = shaderList[Math.floor(Math.random() * shaderList.length)];
+            
+            transitionProgress = 0.0;
+            transitionAnim.restart();
+        }
 
-            if (wallpaper1.visible) {
-                wallpaper2.source = currentPath;
-                if (wallpaper2.status === Image.Ready) transAnim2.restart();
-                else {
-                    const conn = (status) => {
-                        if (wallpaper2.status === Image.Ready) {
-                            transAnim2.restart();
-                            wallpaper2.statusChanged.disconnect(conn);
-                        }
-                    }
-                    wallpaper2.statusChanged.connect(conn);
-                }
-            } else {
-                wallpaper1.source = currentPath;
-                if (wallpaper1.status === Image.Ready) transAnim1.restart();
-                else {
-                    const conn = (status) => {
-                        if (wallpaper1.status === Image.Ready) {
-                            transAnim1.restart();
-                            wallpaper1.statusChanged.disconnect(conn);
-                        }
-                    }
-                    wallpaper1.statusChanged.connect(conn);
-                }
+        NumberAnimation {
+            id: transitionAnim
+            target: bgRoot
+            property: "transitionProgress"
+            from: 0.0
+            to: 1.0
+            duration: 1200
+            easing.type: Easing.InOutCubic
+            onFinished: {
+                previousWallpaper.source = "";
+                bgRoot.previousPath = "";
+                bgRoot.transitionProgress = 1.0;
             }
         }
 
@@ -90,86 +93,42 @@ Variants {
             visible: opacity > 0
             
             Image {
-                id: wallpaper1
+                id: previousWallpaper
                 anchors.fill: parent
-                source: bgRoot.currentPath
+                source: bgRoot.previousPath
                 fillMode: Image.PreserveAspectCrop
-                visible: true
-                z: 1
-                opacity: 1
-                scale: 1.0
-                transformOrigin: Item.Center
+                visible: false
+                cache: true
+                smooth: true
+                asynchronous: true
+                layer.enabled: true
             }
 
             Image {
-                id: wallpaper2
+                id: wallpaper
                 anchors.fill: parent
+                source: bgRoot.currentPath
                 fillMode: Image.PreserveAspectCrop
-                visible: false
-                z: 1
-                opacity: 0
-                scale: 1.0
-                transformOrigin: Item.Center
+                cache: true
+                smooth: true
+                asynchronous: true
+                layer.enabled: true
+                visible: bgRoot.transitionProgress >= 1.0
             }
-        }
-
-        // --- Transitions ---
-        SequentialAnimation {
-            id: transAnim1
-            ScriptAction { 
-                script: { 
-                    wallpaper1.visible = true; wallpaper1.z = 2; wallpaper2.z = 1; 
-                    wallpaper1.x = 0; wallpaper1.y = 0;
-                } 
+            
+            ShaderEffect {
+                id: transitionEffect
+                anchors.fill: parent
+                visible: bgRoot.transitionProgress < 1.0
+                property var fromImage: previousWallpaper
+                property var toImage: wallpaper
+                property real progress: bgRoot.transitionProgress
+                property real aspectX: width / height
+                property real aspectY: 1.0
+                property vector2d aspectRatio: Qt.vector2d(aspectX, aspectY)
+                property vector2d origin: Qt.vector2d(0.5, 0.5)
+                fragmentShader: Qt.resolvedUrl(`shaders/${bgRoot.currentShader}.frag.qsb`)
             }
-            ParallelAnimation {
-                NumberAnimation { target: wallpaper1; property: "opacity"; from: 0; to: 1; duration: 500; easing.type: Easing.OutCubic }
-                NumberAnimation { 
-                    target: wallpaper1; property: "scale"
-                    from: currentTransitionMode === "zoomIn" ? 0.9 : (currentTransitionMode === "zoomOut" ? 1.1 : 1.0)
-                    to: 1.0; duration: 700; easing.type: Easing.OutExpo 
-                }
-                NumberAnimation { 
-                    target: wallpaper1; property: "y"
-                    from: currentTransitionMode === "slideUp" ? (bgRoot.height * 0.15) : (currentTransitionMode === "slideDown" ? -(bgRoot.height * 0.15) : 0)
-                    to: 0; duration: 700; easing.type: Easing.OutExpo 
-                }
-                NumberAnimation { 
-                    target: wallpaper1; property: "x"
-                    from: currentTransitionMode === "slideLeft" ? (bgRoot.width * 0.15) : (currentTransitionMode === "slideRight" ? -(bgRoot.width * 0.15) : 0)
-                    to: 0; duration: 700; easing.type: Easing.OutExpo 
-                }
-            }
-            ScriptAction { script: { wallpaper2.visible = false; wallpaper2.opacity = 0; wallpaper2.scale = 1.0; wallpaper2.x = 0; wallpaper2.y = 0; } }
-        }
-
-        SequentialAnimation {
-            id: transAnim2
-            ScriptAction { 
-                script: { 
-                    wallpaper2.visible = true; wallpaper2.z = 2; wallpaper1.z = 1; 
-                    wallpaper2.x = 0; wallpaper2.y = 0;
-                } 
-            }
-            ParallelAnimation {
-                NumberAnimation { target: wallpaper2; property: "opacity"; from: 0; to: 1; duration: 500; easing.type: Easing.OutCubic }
-                NumberAnimation { 
-                    target: wallpaper2; property: "scale"
-                    from: currentTransitionMode === "zoomIn" ? 0.9 : (currentTransitionMode === "zoomOut" ? 1.1 : 1.0)
-                    to: 1.0; duration: 700; easing.type: Easing.OutExpo 
-                }
-                NumberAnimation { 
-                    target: wallpaper2; property: "y"
-                    from: currentTransitionMode === "slideUp" ? (bgRoot.height * 0.15) : (currentTransitionMode === "slideDown" ? -(bgRoot.height * 0.15) : 0)
-                    to: 0; duration: 700; easing.type: Easing.OutExpo 
-                }
-                NumberAnimation { 
-                    target: wallpaper2; property: "x"
-                    from: currentTransitionMode === "slideLeft" ? (bgRoot.width * 0.15) : (currentTransitionMode === "slideRight" ? -(bgRoot.width * 0.15) : 0)
-                    to: 0; duration: 700; easing.type: Easing.OutExpo 
-                }
-            }
-            ScriptAction { script: { wallpaper1.visible = false; wallpaper1.opacity = 0; wallpaper1.scale = 1.0; wallpaper1.x = 0; wallpaper1.y = 0; } }
         }
 
         Rectangle {
