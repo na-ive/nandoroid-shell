@@ -343,7 +343,8 @@ Singleton {
                 property int backgroundCornerRadius: 20
                 property string islandStyle: "pill" 
                 property bool autoHide: false
-                property string trayStyle: "adaptive" 
+                property string trayStyle: "adaptive"
+                property bool showVolumeIndicator: true
             }
 
             // --- Quick Settings ---

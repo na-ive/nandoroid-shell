@@ -18,18 +18,7 @@ Item {
     readonly property bool isCentered: false
     readonly property real centeredWidth: (Config.ready && Config.options.statusBar) ? Config.options.statusBar.centeredWidth * Appearance.effectiveScale : 1200 * Appearance.effectiveScale
     
-    // Dynamic background detection for color switching
-    readonly property int bgStyle: (Config.ready && Config.options.statusBar) ? (Config.options.statusBar.backgroundStyle !== undefined ? Config.options.statusBar.backgroundStyle : 0) : 0
-    readonly property int activeWorkspaceId: monitor && monitor.activeWorkspace ? monitor.activeWorkspace.id : -1
-    readonly property bool hasTiledWindows: {
-        if (bgStyle !== 2 || activeWorkspaceId === -1) return false;
-        return HyprlandData.windowList.some(w => 
-            w.workspace.id === activeWorkspaceId && 
-            !w.floating && 
-            w.monitor === monitorIndex
-        );
-    }
-    readonly property bool showBackground: bgStyle === 1 || (bgStyle === 2 && hasTiledWindows)
+
 
     property color contentColor: Appearance.m3colors.m3onSurface
     property color subtextColor: Appearance.m3colors.m3onSurfaceVariant
@@ -200,7 +189,7 @@ Item {
                         text: Notifications.unread > 99 ? "99+" : Notifications.unread.toString()
                         font.pixelSize: Math.round(8 * Appearance.effectiveScale)
                         font.weight: Font.DemiBold
-                        color: showBackground ? Appearance.m3colors.m3surface : (Appearance.colors.resolvedStatusBarDarkText ? "#F5F5F5" : "#1E1E1E")
+                        color: leftDistroWrapper.m3Color
                     }
                     }
                 }
@@ -382,6 +371,7 @@ Item {
         // Network Speed Meter
         M3StatusWrapper {
             id: rightNetSpeedWrapper
+            show: Config.ready && Config.options.bar ? Config.options.bar.show_network_speed : false
             Layout.alignment: Qt.AlignVCenter
             m3Color: Appearance.m3colors.m3surfaceContainerHigh
             m3ContentColor: Appearance.m3colors.m3onSurfaceVariant
@@ -527,7 +517,7 @@ Item {
                         text: Notifications.unread > 99 ? "99+" : Notifications.unread.toString()
                         font.pixelSize: Math.round(8 * Appearance.effectiveScale)
                         font.weight: Font.DemiBold
-                        color: showBackground ? Appearance.m3colors.m3surface : (Appearance.colors.resolvedStatusBarDarkText ? "#F5F5F5" : "#1E1E1E")
+                        color: rightQuickSettingsWrapper.m3Color
                     }
                 }
             }
