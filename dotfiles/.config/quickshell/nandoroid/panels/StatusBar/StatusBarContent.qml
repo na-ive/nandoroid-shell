@@ -384,6 +384,15 @@ Item {
                 }
             }
 
+            // Audio Volume
+            MaterialSymbol {
+                visible: Config.ready && Config.options.statusBar ? (Config.options.statusBar.showVolumeIndicator ?? true) : true
+                text: Audio.muted || Audio.volume === 0 ? "volume_off" : (Audio.volume > 0.3 ? "volume_up" : "volume_down")
+                iconSize: 16 * Appearance.effectiveScale
+                fill: 1
+                color: root.contentColor
+            }
+
             // WiFi (real data from Network service)
             MaterialSymbol {
                 text: Network.materialSymbol

@@ -739,6 +739,27 @@ ColumnLayout {
                         }
                     }
 
+                    // ── Volume Indicator ──
+                    SegmentedWrapper {
+                        Layout.fillWidth: true
+                        implicitHeight: volumeIndicatorRow.implicitHeight + (32 * Appearance.effectiveScale)
+                        orientation: Qt.Vertical
+                        maxRadius: 20 * Appearance.effectiveScale
+                        color: Appearance.m3colors.m3surfaceContainerHigh
+                        RowLayout {
+                            id: volumeIndicatorRow
+                            anchors.fill: parent; anchors.margins: 16 * Appearance.effectiveScale
+                            spacing: 16 * Appearance.effectiveScale
+                            MaterialSymbol { text: "volume_up"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
+                            StyledText { text: "Volume Indicator"; Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
+                            AndroidToggle {
+                                checked: Config.ready && Config.options.statusBar ? (Config.options.statusBar.showVolumeIndicator ?? true) : true
+                                onToggled: if (Config.ready && Config.options.statusBar)
+                                    Config.options.statusBar.showVolumeIndicator = !Config.options.statusBar.showVolumeIndicator
+                            }
+                        }
+                    }
+
                     // ── Workspace count ──────────────────────────────────────────
                     SegmentedWrapper {
                         Layout.fillWidth: true

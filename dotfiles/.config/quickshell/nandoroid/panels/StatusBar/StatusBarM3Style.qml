@@ -141,42 +141,49 @@ Item {
             readonly property bool isLeftPosition: Config.ready && Config.options.notifications && Config.options.notifications.position === "left"
             readonly property bool showNotif: isLeftPosition && (Config.ready && Config.options.notifications && Config.options.notifications.counterStyle !== "hidden") && Notifications.unread > 0
             readonly property bool showDistro: Config.ready && Config.options.bar ? Config.options.bar.show_distro_icon : true
-            visible: showDistro || showNotif
-
-            CustomIcon {
-                id: distroIcon
-                opacity: leftDistroWrapper.showNotif ? 0 : (leftDistroWrapper.showDistro ? 1 : 0)
-                visible: opacity > 0
-                Behavior on opacity { NumberAnimation { duration: 250; easing.type: Easing.InOutQuad } }
-                source: {
-                    if (!Config.ready || !Config.options.bar) return SystemInfo.distroIcon || "linux-symbolic";
-                    let custom = Config.options.bar.distroIcon;
-                    return (custom && custom !== "") ? custom : (SystemInfo.distroIcon || "linux-symbolic");
-                }
-                colorize: true
-                color: leftDistroWrapper.contentColor
-                width: (rootM3.monitor && rootM3.monitor.width && rootM3.monitor.width > 2000) ? 20 * Appearance.effectiveScale : 18 * Appearance.effectiveScale
-                height: width
-                Layout.alignment: Qt.AlignVCenter
-            }
+            show: showDistro || showNotif
 
             Item {
-                id: notificationCounterLeft
-                visible: leftDistroWrapper.showNotif
-                Layout.preferredWidth: bellIcon.width
-                Layout.preferredHeight: bellIcon.height
+                Layout.preferredWidth: Math.max(distroIcon.width, notificationCounterLeft.width)
+                Layout.preferredHeight: Math.max(distroIcon.height, notificationCounterLeft.height)
                 Layout.alignment: Qt.AlignVCenter
 
-                MaterialSymbol {
-                    id: bellIcon
+                CustomIcon {
+                    id: distroIcon
                     anchors.centerIn: parent
-                    text: "notifications_active"
-                    iconSize: 16 * Appearance.effectiveScale
-                    fill: 1
+                    opacity: leftDistroWrapper.showNotif ? 0 : (leftDistroWrapper.showDistro ? 1 : 0)
+                    visible: opacity > 0
+                    Behavior on opacity { NumberAnimation { duration: 250; easing.type: Easing.InOutQuad } }
+                    source: {
+                        if (!Config.ready || !Config.options.bar) return SystemInfo.distroIcon || "linux-symbolic";
+                        let custom = Config.options.bar.distroIcon;
+                        return (custom && custom !== "") ? custom : (SystemInfo.distroIcon || "linux-symbolic");
+                    }
+                    colorize: true
                     color: leftDistroWrapper.contentColor
+                    width: (rootM3.monitor && rootM3.monitor.width && rootM3.monitor.width > 2000) ? 20 * Appearance.effectiveScale : 18 * Appearance.effectiveScale
+                    height: width
                 }
 
-                Rectangle {
+                Item {
+                    id: notificationCounterLeft
+                    anchors.centerIn: parent
+                    width: bellIcon.width
+                    height: bellIcon.height
+                    opacity: leftDistroWrapper.showNotif ? 1 : 0
+                    visible: opacity > 0
+                    Behavior on opacity { NumberAnimation { duration: 250; easing.type: Easing.InOutQuad } }
+
+                    MaterialSymbol {
+                        id: bellIcon
+                        anchors.centerIn: parent
+                        text: "notifications_active"
+                        iconSize: 16 * Appearance.effectiveScale
+                        fill: 1
+                        color: leftDistroWrapper.contentColor
+                    }
+
+                    Rectangle {
                     visible: (Config.ready && Config.options.notifications) ? Config.options.notifications.counterStyle === "counter" : false
                     anchors.top: parent.top
                     anchors.right: parent.right
@@ -195,6 +202,7 @@ Item {
                         font.weight: Font.DemiBold
                         color: showBackground ? Appearance.m3colors.m3surface : (Appearance.colors.resolvedStatusBarDarkText ? "#F5F5F5" : "#1E1E1E")
                     }
+                    }
                 }
             }
         }
@@ -206,7 +214,7 @@ Item {
             m3Color: Appearance.m3colors.m3secondaryContainer
             m3ContentColor: Appearance.m3colors.m3onSecondaryContainer
             Layout.maximumWidth: rootM3.isCentered ? (rootM3.centeredWidth * (leftSysMonWrapper.visible ? 0.15 : 0.4)) : Math.min((leftSysMonWrapper.visible ? 250 : 800) * Appearance.effectiveScale, rootM3.width * (leftSysMonWrapper.visible ? 0.15 : 0.4))
-            visible: Config.ready && Config.options.statusBar ? (Config.options.statusBar.activeWindowPosition !== undefined ? Config.options.statusBar.activeWindowPosition : "left") === "left" : true
+            show: Config.ready && Config.options.statusBar ? (Config.options.statusBar.activeWindowPosition !== undefined ? Config.options.statusBar.activeWindowPosition : "left") === "left" : true
 
             ActiveWindowTitle {
                 Layout.fillWidth: true
@@ -225,7 +233,7 @@ Item {
             Layout.alignment: Qt.AlignVCenter
             m3Color: Appearance.m3colors.m3tertiaryContainer
             m3ContentColor: Appearance.m3colors.m3onTertiaryContainer
-            visible: Config.ready && Config.options.statusBar ? (Config.options.statusBar.systemMonitorPosition !== undefined ? Config.options.statusBar.systemMonitorPosition : "hidden") === "left" : false
+            show: Config.ready && Config.options.statusBar ? (Config.options.statusBar.systemMonitorPosition !== undefined ? Config.options.statusBar.systemMonitorPosition : "hidden") === "left" : false
 
             SystemMonitorModule {
                 Layout.alignment: Qt.AlignVCenter
@@ -261,7 +269,7 @@ Item {
             anchors.left: parent.left
             anchors.leftMargin: centerClusterCard.padding
             anchors.verticalCenter: parent.verticalCenter
-            visible: (Config.ready && Config.options.statusBar) ? Config.options.statusBar.clockPosition !== "right" : true
+            show: (Config.ready && Config.options.statusBar) ? Config.options.statusBar.clockPosition !== "right" : true
             m3Color: Appearance.m3colors.m3primaryContainer
             m3ContentColor: Appearance.m3colors.m3onPrimaryContainer
 
@@ -304,7 +312,7 @@ Item {
             anchors.right: parent.right
             anchors.rightMargin: centerClusterCard.padding
             anchors.verticalCenter: parent.verticalCenter
-            visible: (Config.ready && Config.options.statusBar) ? Config.options.statusBar.clockPosition !== "right" : true
+            show: (Config.ready && Config.options.statusBar) ? Config.options.statusBar.clockPosition !== "right" : true
             m3Color: Appearance.m3colors.m3primaryContainer
             m3ContentColor: Appearance.m3colors.m3onPrimaryContainer
 
@@ -342,7 +350,7 @@ Item {
             m3Color: Appearance.m3colors.m3secondaryContainer
             m3ContentColor: Appearance.m3colors.m3onSecondaryContainer
             Layout.maximumWidth: rootM3.isCentered ? (rootM3.centeredWidth * (rightSysMonWrapper.visible ? 0.15 : 0.4)) : Math.min((rightSysMonWrapper.visible ? 250 : 800) * Appearance.effectiveScale, rootM3.width * (rightSysMonWrapper.visible ? 0.15 : 0.4))
-            visible: Config.ready && Config.options.statusBar ? (Config.options.statusBar.activeWindowPosition !== undefined ? Config.options.statusBar.activeWindowPosition : "left") === "right" : false
+            show: Config.ready && Config.options.statusBar ? (Config.options.statusBar.activeWindowPosition !== undefined ? Config.options.statusBar.activeWindowPosition : "left") === "right" : false
 
             ActiveWindowTitle {
                 Layout.fillWidth: true
@@ -362,7 +370,7 @@ Item {
             Layout.alignment: Qt.AlignVCenter
             m3Color: Appearance.m3colors.m3tertiaryContainer
             m3ContentColor: Appearance.m3colors.m3onTertiaryContainer
-            visible: Config.ready && Config.options.statusBar ? (Config.options.statusBar.systemMonitorPosition !== undefined ? Config.options.statusBar.systemMonitorPosition : "hidden") === "right" : false
+            show: Config.ready && Config.options.statusBar ? (Config.options.statusBar.systemMonitorPosition !== undefined ? Config.options.statusBar.systemMonitorPosition : "hidden") === "right" : false
 
             SystemMonitorModule {
                 Layout.alignment: Qt.AlignVCenter
@@ -434,7 +442,7 @@ Item {
         // System Tray / VPN / Right Icons
         M3StatusWrapper {
             id: rightTrayWrapper
-            visible: SystemTray.items.values.length > 0 || networkWarpIcon.visible
+            show: SystemTray.items.values.length > 0 || networkWarpIcon.visible
             Layout.alignment: Qt.AlignVCenter
             m3Color: Appearance.m3colors.m3secondaryContainer
             m3ContentColor: Appearance.m3colors.m3onSecondaryContainer
@@ -462,9 +470,9 @@ Item {
             Layout.alignment: Qt.AlignVCenter
             m3Color: Appearance.m3colors.m3primaryContainer
             m3ContentColor: Appearance.m3colors.m3onPrimaryContainer
+            show: Battery.available
 
             BatteryIndicator {
-                visible: Battery.available
                 Layout.alignment: Qt.AlignVCenter
                 color: rightBatteryWrapper.contentColor
             }
@@ -481,11 +489,17 @@ Item {
                 id: notificationCounterRight
                 readonly property string style: (Config.ready && Config.options.notifications) ? Config.options.notifications.counterStyle : "counter"
                 readonly property bool isRightPosition: !Config.ready || !Config.options.notifications || Config.options.notifications.position !== "left"
+                readonly property bool show: isRightPosition && style !== "hidden" && Notifications.unread > 0
                 
-                visible: isRightPosition && style !== "hidden" && Notifications.unread > 0
-                Layout.preferredWidth: bellIconRight.width
+                visible: opacity > 0 || Layout.preferredWidth > 0
+                opacity: show ? 1 : 0
+                Behavior on opacity { NumberAnimation { duration: 250; easing.type: Easing.InOutQuad } }
+
+                Layout.preferredWidth: show ? bellIconRight.width : 0
+                Behavior on Layout.preferredWidth { NumberAnimation { duration: 250; easing.type: Easing.InOutQuad } }
                 Layout.preferredHeight: bellIconRight.height
                 Layout.alignment: Qt.AlignVCenter
+                clip: true
 
                 MaterialSymbol {
                     id: bellIconRight
@@ -516,6 +530,15 @@ Item {
                         color: showBackground ? Appearance.m3colors.m3surface : (Appearance.colors.resolvedStatusBarDarkText ? "#F5F5F5" : "#1E1E1E")
                     }
                 }
+            }
+
+            MaterialSymbol {
+                visible: Config.ready && Config.options.statusBar ? (Config.options.statusBar.showVolumeIndicator ?? true) : true
+                text: Audio.muted || Audio.volume === 0 ? "volume_off" : (Audio.volume > 0.3 ? "volume_up" : "volume_down")
+                iconSize: 16 * Appearance.effectiveScale
+                fill: 1
+                color: rightQuickSettingsWrapper.contentColor
+                Layout.alignment: Qt.AlignVCenter
             }
 
             MaterialSymbol {
@@ -569,7 +592,7 @@ Item {
         // Clock (Right-aligned position)
         M3StatusWrapper {
             id: rightClockWrapper
-            visible: (Config.ready && Config.options.statusBar) ? Config.options.statusBar.clockPosition === "right" : false
+            show: (Config.ready && Config.options.statusBar) ? Config.options.statusBar.clockPosition === "right" : false
             Layout.alignment: Qt.AlignVCenter
             m3Color: Appearance.m3colors.m3primaryContainer
             m3ContentColor: Appearance.m3colors.m3onPrimaryContainer
@@ -602,7 +625,7 @@ Item {
         M3StatusWrapper {
             id: m3PrivacyWrapper
             Layout.alignment: Qt.AlignVCenter
-            visible: Privacy.anyActive
+            show: Privacy.anyActive
             m3Color: Appearance.m3colors.m3primary
             m3ContentColor: Appearance.m3colors.m3onPrimary
 
