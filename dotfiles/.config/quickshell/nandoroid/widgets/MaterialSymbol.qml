@@ -11,7 +11,7 @@ StyledText {
     property real fill: 0
     property real truncatedFill: fill.toFixed(1)
 
-    renderType: Text.QtRendering
+    renderType: Text.NativeRendering
     font {
         hintingPreference: Font.PreferNoHinting
         family: Appearance.font ? Appearance.font.family.iconMaterial : "Material Symbols Rounded"
