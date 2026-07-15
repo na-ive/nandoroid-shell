@@ -129,7 +129,7 @@ Item {
         RowLayout {
             id: leftCluster
             anchors.centerIn: parent
-        spacing: 8 * Appearance.effectiveScale
+            spacing: 4 * Appearance.effectiveScale
 
         // Profile / DistroIcon Card
         M3StatusWrapper {
@@ -250,7 +250,7 @@ Item {
         anchors.centerIn: parent
         
         readonly property real padding: Math.round(4 * Appearance.effectiveScale)
-        readonly property real spacing: Math.round(8 * Appearance.effectiveScale)
+        readonly property real spacing: Math.round(4 * Appearance.effectiveScale)
         
         readonly property real timePillWidth: centerTimeWrapper.visible ? centerTimeWrapper.implicitWidth : 0
         readonly property real datePillWidth: centerDateWrapper.visible ? centerDateWrapper.implicitWidth : 0
@@ -341,7 +341,7 @@ Item {
         RowLayout {
             id: rightCluster
             anchors.centerIn: parent
-        spacing: 8 * Appearance.effectiveScale
+            spacing: 4 * Appearance.effectiveScale
 
         // Active Window Title (Right)
         M3StatusWrapper {

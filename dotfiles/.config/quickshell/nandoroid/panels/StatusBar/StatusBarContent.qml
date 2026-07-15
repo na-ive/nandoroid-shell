@@ -224,14 +224,17 @@ Item {
                 // Active window title
                 ActiveWindowTitle {
                     Layout.alignment: Qt.AlignVCenter
-                    // Dynamically calculate max width: proportional to HUD width in centered mode
-                    // Use root.width for stable calculation instead of parent.width
-                    Layout.maximumWidth: root.isCentered ? (root.centeredWidth * 0.2) : Math.min(400 * Appearance.effectiveScale, root.width * 0.25)
-                    maxWidth: root.isCentered ? (root.centeredWidth * 0.2) : Math.min(400 * Appearance.effectiveScale, root.width * 0.25)
+                    Layout.fillWidth: true
+                    Layout.maximumWidth: Math.min(implicitWidth, Math.min(400 * Appearance.effectiveScale, root.width * 0.25))
+                    maxWidth: Math.min(400 * Appearance.effectiveScale, root.width * 0.25)
                     monitor: root.monitor
                     color: root.contentColor
                     subtextColor: root.subtextColor
-                    visible: Config.ready && Config.options.statusBar ? (Config.options.statusBar.activeWindowPosition ?? "left") === "left" : true
+                    visible: {
+                        let showAw = Config.ready && Config.options.statusBar ? (Config.options.statusBar.activeWindowPosition ?? "left") === "left" : true;
+                        let showSm = Config.ready && Config.options.statusBar ? (Config.options.statusBar.systemMonitorPosition ?? "hidden") === "left" : false;
+                        return showAw && !(root.isCentered && showSm);
+                    }
                 }
 
                 // System Monitor (Left)
@@ -301,13 +304,18 @@ Item {
             // Active window title (Right)
             ActiveWindowTitle {
                 Layout.alignment: Qt.AlignVCenter
-                Layout.maximumWidth: root.isCentered ? (root.centeredWidth * 0.2) : Math.min(400 * Appearance.effectiveScale, root.width * 0.25)
-                maxWidth: root.isCentered ? (root.centeredWidth * 0.2) : Math.min(400 * Appearance.effectiveScale, root.width * 0.25)
+                Layout.fillWidth: true
+                Layout.maximumWidth: Math.min(implicitWidth, Math.min(400 * Appearance.effectiveScale, root.width * 0.25))
+                maxWidth: Math.min(400 * Appearance.effectiveScale, root.width * 0.25)
                 monitor: root.monitor
                 color: root.contentColor
                 subtextColor: root.subtextColor
                 textAlignment: Text.AlignRight
-                visible: Config.ready && Config.options.statusBar ? (Config.options.statusBar.activeWindowPosition ?? "left") === "right" : false
+                visible: {
+                    let showAw = Config.ready && Config.options.statusBar ? (Config.options.statusBar.activeWindowPosition ?? "left") === "right" : false;
+                    let showSm = Config.ready && Config.options.statusBar ? (Config.options.statusBar.systemMonitorPosition ?? "hidden") === "right" : false;
+                    return showAw && !(root.isCentered && showSm);
+                }
             }
 
             // System Monitor (Right)
