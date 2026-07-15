@@ -34,7 +34,6 @@ Item {
 
     // ── Click Areas ──
     FocusedScrollMouseArea {
-        z: 100
         anchors.left: parent.left
         anchors.top: parent.top
         anchors.bottom: parent.bottom
@@ -63,7 +62,6 @@ Item {
     }
 
     FocusedScrollMouseArea {
-        z: 100
         anchors.right: parent.right
         anchors.top: parent.top
         anchors.bottom: parent.bottom
