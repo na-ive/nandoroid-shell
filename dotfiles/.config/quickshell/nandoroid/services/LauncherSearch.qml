@@ -548,9 +548,7 @@ Singleton {
                 if (!aStarts && bStarts) return 1;
 
                 if (Config.options.search.enableUsageTracking) {
-                    const countA = root.usageData[a.id] || 0;
-                    const countB = root.usageData[b.id] || 0;
-                    if (countB !== countA) return countB - countA;
+                    if (b.smartScore !== a.smartScore) return b.smartScore - a.smartScore;
                 }
                 
                 return nameA.localeCompare(nameB);
