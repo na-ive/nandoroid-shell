@@ -28,7 +28,21 @@ Item {
     property string appTitleText: root.focusingThisMonitor && root.activeWindow?.activated ?
                 (root.activeWindow?.title ?? "Overview") : (HyprlandData.activeWindow?.title ?? `Workspace ${monitor?.activeWorkspace?.id ?? 1}`)
 
-    implicitWidth: titleColumn.implicitWidth
+    property real maxWidth: 400 * Appearance.effectiveScale
+
+    TextMetrics {
+        id: classMetrics
+        font.pixelSize: Appearance.font.pixelSize.smallest
+        text: root.appClassText
+    }
+
+    TextMetrics {
+        id: titleMetrics
+        font.pixelSize: Appearance.font.pixelSize.smaller
+        text: root.appTitleText
+    }
+
+    implicitWidth: Math.min(Math.max(classMetrics.boundingRect.width, titleMetrics.boundingRect.width), root.maxWidth)
     implicitHeight: titleColumn.implicitHeight
     clip: true
 
@@ -39,13 +53,11 @@ Item {
         }
     }
 
-    readonly property real maxWidth: root.parent && root.parent.Layout ? root.parent.Layout.maximumWidth : 400 * Appearance.effectiveScale
-
     ColumnLayout {
         id: titleColumn
         anchors.verticalCenter: parent.verticalCenter
         spacing: -2 * Appearance.effectiveScale
-        width: Math.min(implicitWidth, root.maxWidth)
+        width: root.width
 
         StyledText {
             id: classText

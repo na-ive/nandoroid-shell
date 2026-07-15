@@ -25,6 +25,9 @@ ColumnLayout {
                 Layout.topMargin: 12 * Appearance.effectiveScale
                 spacing: 16 * Appearance.effectiveScale
     
+                readonly property bool isM3Style: Config.ready && Config.options.statusBar && (Config.options.statusBar.moduleStyle === "m3")
+
+    
                 // Computed: background is ALWAYS active (style == 1)
                 readonly property bool sbAlwaysSolid: Config.ready && Config.options.statusBar
                     ? (Config.options.statusBar.backgroundStyle ?? 0) === 1
@@ -60,10 +63,32 @@ ColumnLayout {
                     Layout.fillWidth: true
                     spacing: 16 * Appearance.effectiveScale
     
+                    Row {
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: 52 * Appearance.effectiveScale
+                        spacing: 4 * Appearance.effectiveScale
+                        
+                        SegmentedButton {
+                            width: (parent.width - (4 * Appearance.effectiveScale)) / 2
+                            height: parent.height
+                            isHighlighted: Config.ready && Config.options.statusBar && Config.options.statusBar.moduleStyle !== "m3"
+                            buttonText: "Base Style"
+                            onClicked: if (Config.ready && Config.options.statusBar) Config.options.statusBar.moduleStyle = "base"
+                        }
+        
+                        SegmentedButton {
+                            width: (parent.width - (4 * Appearance.effectiveScale)) / 2
+                            height: parent.height
+                            isHighlighted: Config.ready && Config.options.statusBar && Config.options.statusBar.moduleStyle === "m3"
+                            buttonText: "M3 Style"
+                            onClicked: if (Config.ready && Config.options.statusBar) Config.options.statusBar.moduleStyle = "m3"
+                        }
+                    }
+
                     // ── Layout & Appearance ─────────────────────────────
                     StyledText {
                         text: "Layout & Appearance"
-                        font.pixelSize: Appearance.font.pixelSize.medium
+                        font.pixelSize: Appearance.font.pixelSize.normal
                         font.weight: Font.DemiBold
                         color: Appearance.colors.colPrimary
                         Layout.topMargin: 12 * Appearance.effectiveScale
@@ -97,6 +122,7 @@ ColumnLayout {
 
                     // ── Text color mode (disabled when bg is active) ────────────
                     SegmentedWrapper {
+                        visible: !sbSettingsCol.parent.isM3Style
                         Layout.fillWidth: true
                         implicitHeight: statusBarTextRow.implicitHeight + (36 * Appearance.effectiveScale)
                         orientation: Qt.Vertical
@@ -139,6 +165,7 @@ ColumnLayout {
     
                     // ── Use Gradient (disabled ONLY when background is ALWAYS active) ──────────────
                     SegmentedWrapper {
+                        visible: !sbSettingsCol.parent.isM3Style
                         Layout.fillWidth: true
                         implicitHeight: statusBarGradientRow.implicitHeight + (32 * Appearance.effectiveScale)
                         orientation: Qt.Vertical
@@ -162,6 +189,7 @@ ColumnLayout {
     
                     // ── Background Style (None / Always / Adaptive) ────────────
                     SegmentedWrapper {
+                        visible: !sbSettingsCol.parent.isM3Style
                         Layout.fillWidth: true
                         implicitHeight: statusBarBgRow.implicitHeight + (36 * Appearance.effectiveScale)
                         orientation: Qt.Vertical
@@ -201,6 +229,7 @@ ColumnLayout {
 
                     // ── Layout Style (Standard / Centered) ────────────
                     SegmentedWrapper {
+                        visible: !sbSettingsCol.parent.isM3Style
                         Layout.fillWidth: true
                         implicitHeight: layoutStyleRow.implicitHeight + (36 * Appearance.effectiveScale)
                         orientation: Qt.Vertical
@@ -242,7 +271,7 @@ ColumnLayout {
                     // ── Modules Positioning ──────────────────────────────────
                     StyledText {
                         text: "Modules Positioning"
-                        font.pixelSize: Appearance.font.pixelSize.medium
+                        font.pixelSize: Appearance.font.pixelSize.normal
                         font.weight: Font.DemiBold
                         color: Appearance.colors.colPrimary
                         Layout.topMargin: 12 * Appearance.effectiveScale
@@ -543,7 +572,7 @@ ColumnLayout {
                     // ── Modules Styling ──────────────────────────────────────
                     StyledText {
                         text: "Modules Styling"
-                        font.pixelSize: Appearance.font.pixelSize.medium
+                        font.pixelSize: Appearance.font.pixelSize.normal
                         font.weight: Font.DemiBold
                         color: Appearance.colors.colPrimary
                         Layout.topMargin: 12 * Appearance.effectiveScale
@@ -634,6 +663,7 @@ ColumnLayout {
 
                     // ── Island Style ──
                     SegmentedWrapper {
+                        visible: !sbSettingsCol.parent.isM3Style
                         Layout.fillWidth: true
                         implicitHeight: islandStyleRow.implicitHeight + (36 * Appearance.effectiveScale)
                         orientation: Qt.Vertical

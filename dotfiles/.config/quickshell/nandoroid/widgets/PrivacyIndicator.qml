@@ -18,11 +18,14 @@ Item {
     readonly property bool screen: Privacy.screensharingActive
 
     property bool expanded: true
+    property bool alwaysExpanded: false
 
     function triggerExpansion() {
         if (active) {
             root.expanded = true
-            shrinkTimer.restart()
+            if (!alwaysExpanded) {
+                shrinkTimer.restart()
+            }
         } else {
             root.expanded = false
         }
@@ -36,14 +39,18 @@ Item {
     Timer {
         id: shrinkTimer
         interval: 3000
-        onTriggered: root.expanded = false
+        onTriggered: {
+            if (!alwaysExpanded) {
+                root.expanded = false
+            }
+        }
     }
 
     Rectangle {
         id: mainContainer
         anchors.verticalCenter: parent.verticalCenter
-        height: root.expanded ? 20 * Appearance.effectiveScale : 8 * Appearance.effectiveScale
-        width: root.expanded ? contentLayout.implicitWidth + (12 * Appearance.effectiveScale) : 8 * Appearance.effectiveScale
+        height: (root.expanded || alwaysExpanded) ? 20 * Appearance.effectiveScale : 8 * Appearance.effectiveScale
+        width: (root.expanded || alwaysExpanded) ? contentLayout.implicitWidth + (12 * Appearance.effectiveScale) : 8 * Appearance.effectiveScale
         radius: height / 2
         color: Appearance.m3colors.m3primary
         clip: true
@@ -59,7 +66,7 @@ Item {
             id: contentLayout
             anchors.centerIn: parent
             spacing: 4 * Appearance.effectiveScale
-            opacity: root.expanded ? 1 : 0
+            opacity: (root.expanded || alwaysExpanded) ? 1 : 0
             
             Behavior on opacity {
                 NumberAnimation { duration: 200 }

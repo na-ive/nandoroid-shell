@@ -325,6 +325,7 @@ Singleton {
 
             // --- Status Bar ---
             property JsonObject statusBar: JsonObject {
+                property string moduleStyle: "base"
                 property real height: 40
                 property string layoutStyle: "standard" 
                 property int centeredWidth: 1200
@@ -483,7 +484,6 @@ Singleton {
                 property string priority: ""
                 property bool showMediaCard: true
                 property bool enableMediaHover: true
-                property bool balancedEars: true
                 property string notchMediaStyle: "mini" 
             }
 

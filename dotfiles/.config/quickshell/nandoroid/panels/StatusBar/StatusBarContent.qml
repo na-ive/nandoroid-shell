@@ -227,6 +227,7 @@ Item {
                     // Dynamically calculate max width: proportional to HUD width in centered mode
                     // Use root.width for stable calculation instead of parent.width
                     Layout.maximumWidth: root.isCentered ? (root.centeredWidth * 0.2) : Math.min(400 * Appearance.effectiveScale, root.width * 0.25)
+                    maxWidth: root.isCentered ? (root.centeredWidth * 0.2) : Math.min(400 * Appearance.effectiveScale, root.width * 0.25)
                     monitor: root.monitor
                     color: root.contentColor
                     subtextColor: root.subtextColor
@@ -301,6 +302,7 @@ Item {
             ActiveWindowTitle {
                 Layout.alignment: Qt.AlignVCenter
                 Layout.maximumWidth: root.isCentered ? (root.centeredWidth * 0.2) : Math.min(400 * Appearance.effectiveScale, root.width * 0.25)
+                maxWidth: root.isCentered ? (root.centeredWidth * 0.2) : Math.min(400 * Appearance.effectiveScale, root.width * 0.25)
                 monitor: root.monitor
                 color: root.contentColor
                 subtextColor: root.subtextColor

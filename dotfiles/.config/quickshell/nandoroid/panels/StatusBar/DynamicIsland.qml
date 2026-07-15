@@ -24,8 +24,10 @@ Item {
     width: 0 
     height: 40 * Appearance.effectiveScale // Matches status bar height for safe rendering
 
-    readonly property string islandStyle: Config.options.statusBar?.islandStyle ?? "pill"
+    property string forcedStyle: ""
+    readonly property string islandStyle: forcedStyle !== "" ? forcedStyle : (Config.options.statusBar && Config.options.statusBar.islandStyle !== undefined ? Config.options.statusBar.islandStyle : "pill")
     readonly property bool isWaterdrop: islandStyle === "waterdrop"
+    readonly property bool isM3: islandStyle === "m3"
 
     // Expose the background pill for absolute anchoring
     property alias pill: backgroundPill
@@ -75,10 +77,32 @@ Item {
     readonly property real earMaxWidthHud: 100 * Appearance.effectiveScale 
     readonly property real currentEarMaxWidth: (islandState === "idle") ? earMaxWidthNormal : earMaxWidthHud
 
-    // Balanced Width Calculation - Use the LARGER side as reference, clamped by max width
-    readonly property real sharedMediaWidth: {
-        if (islandState !== "media") return 0
-        let maxNatural = Math.max(mediaLeftNaturalWidth, mediaRightNaturalWidth)
+    // Universal Ear Width Calculation for ALL States
+    readonly property real leftNaturalWidth: {
+        if (islandState === "notification") {
+            let w = 0
+            if (notifLogo.visible) w += (20 * Appearance.effectiveScale) + (6 * Appearance.effectiveScale)
+            if (notifAppNameLabel.visible) w += Math.min(notifAppNameLabel.implicitWidth, 80 * Appearance.effectiveScale) + (4 * Appearance.effectiveScale)
+            return w > 0 ? w + (4 * Appearance.effectiveScale) : 0
+        }
+        if (islandState === "recording") return 24 * Appearance.effectiveScale
+        if (islandState === "media") return mediaLeftNaturalWidth
+        if (islandState === "pomodoro") return pomoModeLabel.implicitWidth + (8 * Appearance.effectiveScale)
+        return 0
+    }
+    
+    readonly property real rightNaturalWidth: {
+        if (islandState === "notification") return notifSummaryLabel.visible ? Math.min(notifSummaryLabel.implicitWidth, root.currentEarMaxWidth - (8 * Appearance.effectiveScale)) + (8 * Appearance.effectiveScale) : 0
+        if (islandState === "recording") return recordTimeLabel.implicitWidth + (8 * Appearance.effectiveScale)
+        if (islandState === "media") return mediaRightNaturalWidth
+        if (islandState === "pomodoro") return pomoTimeLabel.implicitWidth + (8 * Appearance.effectiveScale)
+        return 0
+    }
+
+    // Balanced Width Calculation - Forces symmetric expansion
+    readonly property real sharedEarWidth: {
+        if (islandState === "idle") return 0
+        let maxNatural = Math.max(leftNaturalWidth, rightNaturalWidth)
         return Math.min(maxNatural, root.currentEarMaxWidth)
     }
 
@@ -105,23 +129,7 @@ Item {
             }
         }
         
-        width: {
-            if (islandState === "notification") {
-                let w = 0
-                if (notifLogo.visible) w += (20 * Appearance.effectiveScale) + (6 * Appearance.effectiveScale)
-                if (notifAppNameLabel.visible) w += Math.min(notifAppNameLabel.implicitWidth, 80 * Appearance.effectiveScale) + (4 * Appearance.effectiveScale)
-                let finalW = w > 0 ? w + (4 * Appearance.effectiveScale) : 0
-                return Math.min(finalW, root.currentEarMaxWidth)
-            }
-            if (islandState === "recording") return Math.min(24 * Appearance.effectiveScale, root.currentEarMaxWidth)
-            if (islandState === "media") {
-                let w = (Config.ready && Config.options.media && Config.options.media.balancedEars) 
-                    ? root.sharedMediaWidth : root.mediaLeftNaturalWidth
-                return Math.min(w, root.currentEarMaxWidth)
-            }
-            if (islandState === "pomodoro") return Math.min(pomoModeLabel.implicitWidth + (8 * Appearance.effectiveScale), root.currentEarMaxWidth)
-            return 0
-        }
+        width: root.sharedEarWidth
 
         Behavior on width { NumberAnimation { duration: 300; easing.type: Easing.OutQuint } }
         Behavior on anchors.rightMargin { NumberAnimation { duration: 300; easing.type: Easing.OutQuint } }
@@ -246,17 +254,7 @@ Item {
             }
         }
         
-        width: {
-            if (islandState === "notification") return notifSummaryLabel.visible ? Math.min(notifSummaryLabel.implicitWidth, root.currentEarMaxWidth - (8 * Appearance.effectiveScale)) + (8 * Appearance.effectiveScale) : 0
-            if (islandState === "recording") return Math.min(recordTimeLabel.implicitWidth + (8 * Appearance.effectiveScale), root.currentEarMaxWidth)
-            if (islandState === "media") {
-                let w = (Config.ready && Config.options.media && Config.options.media.balancedEars) 
-                    ? root.sharedMediaWidth : root.mediaRightNaturalWidth
-                return Math.min(w, root.currentEarMaxWidth)
-            }
-            if (islandState === "pomodoro") return Math.min(pomoTimeLabel.implicitWidth + (8 * Appearance.effectiveScale), root.currentEarMaxWidth)
-            return 0
-        }
+        width: root.sharedEarWidth
 
         Behavior on width { NumberAnimation { duration: 300; easing.type: Easing.OutQuint } }
         Behavior on anchors.leftMargin { NumberAnimation { duration: 300; easing.type: Easing.OutQuint } }
@@ -305,13 +303,13 @@ Item {
         id: backgroundPill
         color: "black"
         
-        // Idle: y=6, height=28. Waterdrop: y=0, height=34.
-        y: isWaterdrop ? 0 : 6 * Appearance.effectiveScale
-        height: isWaterdrop ? 34 * Appearance.effectiveScale : 28 * Appearance.effectiveScale
+        // Idle: y=6, height=28. Waterdrop: y=0, height=34. M3: y=4, height=32.
+        y: isWaterdrop ? 0 : (isM3 ? 4 * Appearance.effectiveScale : 6 * Appearance.effectiveScale)
+        height: isWaterdrop ? 34 * Appearance.effectiveScale : (isM3 ? 32 * Appearance.effectiveScale : 28 * Appearance.effectiveScale)
         radius: height / 2
         
         z: -1
-        readonly property real margin: (islandState === "idle") ? 10 * Appearance.effectiveScale : 8 * Appearance.effectiveScale
+        readonly property real margin: isM3 ? 12 * Appearance.effectiveScale : ((islandState === "idle") ? 10 * Appearance.effectiveScale : 8 * Appearance.effectiveScale)
         x: leftEar.x - margin
         width: (rightEar.x + rightEar.width) - leftEar.x + (2 * margin)
 
