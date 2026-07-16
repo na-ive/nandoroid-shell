@@ -142,6 +142,7 @@ PanelWindow {
             anchors.fill: parent
             anchors.margins: 10 * Appearance.effectiveScale
             model: root.carouselModel
+            isOpen: root.visible
             onWallpaperSelected: (path) => {
                 Wallpapers.select(path, Appearance.m3colors.darkmode)
                 root.close()

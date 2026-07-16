@@ -22,6 +22,7 @@ Item {
     readonly property int focusedIndex: hoveredIndex >= 0 ? hoveredIndex : listView.currentIndex
 
     property real clipRadius: Appearance.rounding.extraLarge - (10 * Appearance.effectiveScale)
+    property bool isOpen: true
 
     signal wallpaperSelected(string path)
     signal openMoreWallpapers()
@@ -116,6 +117,29 @@ Item {
                 radius: Appearance.rounding.large
                 color: Appearance.colors.colLayer3
                 clip: true
+
+                opacity: root.isOpen ? 1 : 0
+                scale: root.isOpen ? 1 : 0.9
+
+                Behavior on opacity {
+                    SequentialAnimation {
+                        PauseAnimation { duration: Math.min(itemRoot.index, 10) * 50 }
+                        NumberAnimation {
+                            duration: Appearance.animation.elementMoveEnter.duration
+                            easing.bezierCurve: Appearance.animationCurves.expressiveDefaultSpatial
+                        }
+                    }
+                }
+
+                Behavior on scale {
+                    SequentialAnimation {
+                        PauseAnimation { duration: Math.min(itemRoot.index, 10) * 50 }
+                        NumberAnimation {
+                            duration: Appearance.animation.elementMoveEnter.duration
+                            easing.bezierCurve: Appearance.animationCurves.emphasizedDecel
+                        }
+                    }
+                }
 
                 Loader {
                     anchors.fill: parent
