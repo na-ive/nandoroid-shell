@@ -123,20 +123,20 @@ Item {
 
                 Behavior on opacity {
                     SequentialAnimation {
-                        PauseAnimation { duration: Math.min(itemRoot.index, 10) * 50 }
+                        PauseAnimation { duration: root.isOpen ? Math.min(itemRoot.index, 10) * 50 : 0 }
                         NumberAnimation {
-                            duration: Appearance.animation.elementMoveEnter.duration
-                            easing.bezierCurve: Appearance.animationCurves.expressiveDefaultSpatial
+                            duration: root.isOpen ? Appearance.animation.elementMoveEnter.duration : Appearance.animation.elementMoveExit.duration
+                            easing.bezierCurve: root.isOpen ? Appearance.animationCurves.expressiveDefaultSpatial : Appearance.animationCurves.emphasizedAccel
                         }
                     }
                 }
 
                 Behavior on scale {
                     SequentialAnimation {
-                        PauseAnimation { duration: Math.min(itemRoot.index, 10) * 50 }
+                        PauseAnimation { duration: root.isOpen ? Math.min(itemRoot.index, 10) * 50 : 0 }
                         NumberAnimation {
-                            duration: Appearance.animation.elementMoveEnter.duration
-                            easing.bezierCurve: Appearance.animationCurves.emphasizedDecel
+                            duration: root.isOpen ? Appearance.animation.elementMoveEnter.duration : Appearance.animation.elementMoveExit.duration
+                            easing.bezierCurve: root.isOpen ? Appearance.animationCurves.emphasizedDecel : Appearance.animationCurves.emphasizedAccel
                         }
                     }
                 }

@@ -41,6 +41,9 @@ PanelWindow {
     property real _mouseY: 0
     
     signal backgroundRightClicked(real x, real y)
+
+    property int currentAnimDuration: Appearance.animation.elementMoveEnter.duration
+    property var currentAnimEasing: Appearance.animationCurves.expressiveDefaultSpatial
     
     color: "transparent"
 
@@ -114,20 +117,20 @@ PanelWindow {
         border.color: Appearance.colors.colOutlineVariant
         border.width: Math.max(1, 1 * Appearance.effectiveScale)
         
-        opacity: root.visible ? 0.98 : 0
-        scale: root.visible ? 1 : 0.95
+        opacity: (root.visible && !root.isClosing) ? 0.98 : 0
+        scale: (root.visible && !root.isClosing) ? 1 : 0.95
 
         Behavior on opacity {
             NumberAnimation {
-                duration: root.isClosing ? Appearance.animation.elementMoveExit.duration : Appearance.animation.elementMoveEnter.duration
-                easing.bezierCurve: root.isClosing ? Appearance.animationCurves.emphasizedAccel : Appearance.animationCurves.expressiveDefaultSpatial
+                duration: root.currentAnimDuration
+                easing.bezierCurve: root.currentAnimEasing
             }
         }
         
         Behavior on scale {
             NumberAnimation {
-                duration: root.isClosing ? Appearance.animation.elementMoveExit.duration : Appearance.animation.elementMoveEnter.duration
-                easing.bezierCurve: root.isClosing ? Appearance.animationCurves.emphasizedAccel : Appearance.animationCurves.expressiveDefaultSpatial
+                duration: root.currentAnimDuration
+                easing.bezierCurve: root.currentAnimEasing
             }
         }
         
@@ -169,21 +172,21 @@ PanelWindow {
         border.width: Math.max(1, 1 * Appearance.effectiveScale)
         
         // Glassmorphism effect
-        opacity: root.visible ? 0.98 : 0
-        scale: root.visible ? 1 : 0.95
+        opacity: (root.visible && !root.isClosing) ? 0.98 : 0
+        scale: (root.visible && !root.isClosing) ? 1 : 0.95
         visible: opacity > 0
 
         Behavior on opacity {
             NumberAnimation {
-                duration: root.isClosing ? Appearance.animation.elementMoveExit.duration : Appearance.animation.elementMoveEnter.duration
-                easing.bezierCurve: root.isClosing ? Appearance.animationCurves.emphasizedAccel : Appearance.animationCurves.expressiveDefaultSpatial
+                duration: root.currentAnimDuration
+                easing.bezierCurve: root.currentAnimEasing
             }
         }
         
         Behavior on scale {
             NumberAnimation {
-                duration: root.isClosing ? Appearance.animation.elementMoveExit.duration : Appearance.animation.elementMoveEnter.duration
-                easing.bezierCurve: root.isClosing ? Appearance.animationCurves.emphasizedAccel : Appearance.animationCurves.expressiveDefaultSpatial
+                duration: root.currentAnimDuration
+                easing.bezierCurve: root.currentAnimEasing
             }
         }
 
@@ -408,7 +411,7 @@ PanelWindow {
 
     Timer {
         id: hideTimer
-        interval: Appearance.animation.elementMoveExit.duration
+        interval: Appearance.animation.elementMoveExit.duration + 50
         onTriggered: {
             root.visible = false;
             root.isClosing = false;
@@ -427,57 +430,53 @@ PanelWindow {
         root.activeWidgetName = widgetName
         root.activeWidgetSearchKeyword = widgetSearchKeyword
         hideTimer.stop();
-        isClosing = false;
+        
+        // Ensure enter animation parameters
+        root.currentAnimDuration = Appearance.animation.elementMoveEnter.duration;
+        root.currentAnimEasing = Appearance.animationCurves.expressiveDefaultSpatial;
+        
+        // Target calculation
+        const screenWidth = root.screen.width;
+        const screenHeight = root.screen.height;
+        const menuWidth = menuContainer.implicitWidth;
+        const menuHeight = menuLayout.implicitHeight + (12 * Appearance.effectiveScale);
+        
+        // Constrain to screen
+        root.targetX = Math.min(root._mouseX, screenWidth - menuWidth - 10 * Appearance.effectiveScale);
+        if (root._mouseY + menuHeight > screenHeight - 10 * Appearance.effectiveScale) {
+            root.targetY = root._mouseY - menuHeight;
+        } else {
+            root.targetY = root._mouseY;
+        }
+        root.targetY = Math.max(10 * Appearance.effectiveScale, root.targetY);
+        
+        root.isClosing = false;
         root.visible = true;
         GlobalStates.desktopContextMenuOpen = true;
-        
-        Qt.callLater(() => {
-            if (!root.visible) return;
-            const screenWidth = root.screen.width;
-            const screenHeight = root.screen.height;
-            const menuWidth = menuContainer.implicitWidth;
-            const menuHeight = menuLayout.implicitHeight + (12 * Appearance.effectiveScale);
-            
-            // Constrain to screen
-            root.targetX = Math.min(root._mouseX, screenWidth - menuWidth - 10 * Appearance.effectiveScale);
-            if (root._mouseY + menuHeight > screenHeight - 10 * Appearance.effectiveScale) {
-                root.targetY = root._mouseY - menuHeight;
-            } else {
-                root.targetY = root._mouseY;
-            }
-            root.targetY = Math.max(10 * Appearance.effectiveScale, root.targetY);
-            
-            menuContainer.opacity = 0.98;
-            menuContainer.scale = 1;
-            carouselContainer.opacity = 0.98;
-            carouselContainer.scale = 1;
-        });
     }
 
     function close() {
         if (!root.visible || root.isClosing) return
-        root.isClosing = true
-        menuContainer.opacity = 0;
-        menuContainer.scale = 0.95;
-        carouselContainer.opacity = 0;
-        carouselContainer.scale = 0.95;
+        
+        // Ensure exit animation parameters FIRST
+        root.currentAnimDuration = Appearance.animation.elementMoveExit.duration;
+        root.currentAnimEasing = Appearance.animationCurves.emphasizedAccel;
+        
+        // Trigger bindings to evaluate to 0
+        root.isClosing = true;
         hideTimer.start();
     }
 
     signal menuClosed()
     onVisibleChanged: {
         if (!visible) {
-            menuContainer.opacity = 0;
-            menuContainer.scale = 0.95;
-            carouselContainer.opacity = 0;
-            carouselContainer.scale = 0.95;
             menuClosed();
         }
     }
 
     HyprlandFocusGrab {
         id: focusGrab
-        active: root.visible && !root.isClosing
+        active: root.visible
         windows: [root]
         onCleared: root.close()
     }
