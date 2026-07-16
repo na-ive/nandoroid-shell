@@ -44,10 +44,10 @@ Item {
         MaterialShape {
             anchors.fill: parent
             shape: MaterialShape.Shape.Cookie4Sided
-            // Using colTertiaryContainer/colOnTertiaryContainer for a clean M3 aesthetic
+            // Using colTertiaryContainer in dark mode and colSecondaryContainer in light mode for soft pastel visual
             color: viewLyrics 
                 ? Appearance.colors.colPrimary 
-                : Appearance.colors.colOnTertiaryContainer
+                : (Appearance.m3colors.darkmode ? Appearance.colors.colOnTertiaryContainer : Appearance.colors.colSecondaryContainer)
 
             MaterialSymbol {
                 anchors.centerIn: parent
@@ -56,7 +56,7 @@ Item {
                 fill: 0
                 color: viewLyrics 
                     ? Appearance.colors.colOnPrimary 
-                    : Appearance.colors.colTertiaryContainer
+                    : (Appearance.m3colors.darkmode ? Appearance.colors.colTertiaryContainer : Appearance.colors.colOnSecondaryContainer)
             }
 
             MouseArea {
@@ -136,14 +136,14 @@ Item {
                     MaterialShape {
                         anchors.fill: parent
                         shape: MaterialShape.Shape.Cookie12Sided
-                        color: Appearance.colors.colOnTertiaryContainer // Light lavender bg — swapped (terbalik diperbaiki)
+                        color: Appearance.m3colors.darkmode ? Appearance.colors.colOnTertiaryContainer : Appearance.colors.colSecondaryContainer
 
                         MaterialSymbol {
                             anchors.centerIn: parent
                             text: "skip_previous"
                             iconSize: 28 * Appearance.effectiveScale
                             fill: 0
-                            color: Appearance.colors.colTertiaryContainer // Dark tertiary icon on light bg
+                            color: Appearance.m3colors.darkmode ? Appearance.colors.colTertiaryContainer : Appearance.colors.colOnSecondaryContainer
                         }
 
                         MouseArea {
@@ -185,14 +185,14 @@ Item {
                     MaterialShape {
                         anchors.fill: parent
                         shape: MaterialShape.Shape.Cookie12Sided
-                        color: Appearance.colors.colOnTertiaryContainer // Light lavender bg — swapped (terbalik diperbaiki)
+                        color: Appearance.m3colors.darkmode ? Appearance.colors.colOnTertiaryContainer : Appearance.colors.colSecondaryContainer
 
                         MaterialSymbol {
                             anchors.centerIn: parent
                             text: "skip_next"
                             iconSize: 28 * Appearance.effectiveScale
                             fill: 0
-                            color: Appearance.colors.colTertiaryContainer // Dark tertiary icon on light bg
+                            color: Appearance.m3colors.darkmode ? Appearance.colors.colTertiaryContainer : Appearance.colors.colOnSecondaryContainer
                         }
 
                         MouseArea {

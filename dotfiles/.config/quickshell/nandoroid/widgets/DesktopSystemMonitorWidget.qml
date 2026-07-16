@@ -357,7 +357,7 @@ Item {
         width: 24 * Appearance.effectiveScale
         height: 24 * Appearance.effectiveScale
         radius: 8 * Appearance.effectiveScale
-        color: Appearance.colors.colSurfaceVariant
+        color: Appearance.m3colors.darkmode ? Appearance.colors.colOnTertiaryContainer : Appearance.colors.colSecondaryContainer
         
         anchors {
             right: parent.right
@@ -376,7 +376,7 @@ Item {
             anchors.centerIn: parent
             text: "screen_rotation"
             iconSize: 15 * Appearance.effectiveScale
-            color: Appearance.colors.colOnSurfaceVariant
+            color: Appearance.m3colors.darkmode ? Appearance.colors.colTertiaryContainer : Appearance.colors.colOnSecondaryContainer
         }
 
         MouseArea {

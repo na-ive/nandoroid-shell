@@ -174,14 +174,14 @@ Item {
         anchors.right: parent.right
         anchors.bottom: parent.bottom
         anchors.margins: -8 * Appearance.effectiveScale
-        color: Appearance.colors.colSurfaceVariant
+        color: Appearance.m3colors.darkmode ? Appearance.colors.colOnTertiaryContainer : Appearance.colors.colSecondaryContainer
         radius: 8 * Appearance.effectiveScale
 
         MaterialSymbol {
             anchors.centerIn: parent
             text: "swap_horiz"
             iconSize: 15 * Appearance.effectiveScale
-            color: Appearance.colors.colOnSurfaceVariant
+            color: Appearance.m3colors.darkmode ? Appearance.colors.colTertiaryContainer : Appearance.colors.colOnSecondaryContainer
         }
 
         MouseArea {
