@@ -57,18 +57,7 @@ ColumnLayout {
                 Layout.fillWidth: true
             }
             
-            RippleButton {
-                visible: !rootClock.dedicatedIsLock
-                Layout.preferredHeight: 32 * Appearance.effectiveScale
-                implicitWidth: 120 * Appearance.effectiveScale
-                buttonText: "Reset Position"
-                onClicked: {
-                    Config.options.appearance.clock.offsetX = 0
-                    Config.options.appearance.clock.offsetY = -50
-                }
-                colBackground: Appearance.m3colors.m3surfaceContainerHighest
-            }
-            
+
             AndroidToggle {
                 visible: !rootClock.dedicatedIsLock
                 checked: Config.ready && Config.options.appearance.clock.showOnDesktop

@@ -31,6 +31,10 @@ MouseArea {
     acceptedButtons: Qt.LeftButton | Qt.RightButton
     hoverEnabled: true
     drag.target: draggable ? dragProxy : undefined
+    drag.minimumX: 0
+    drag.maximumX: root.parent ? Math.max(0, root.parent.width - root.width) : 0
+    drag.minimumY: 0
+    drag.maximumY: root.parent ? Math.max(0, root.parent.height - root.height) : 0
     // Use the same cursor logic (SizeAllCursor when hovering over a draggable widget, OpenHand/ClosedHand when dragging)
     cursorShape: (draggable && containsPress) ? Qt.ClosedHandCursor : draggable ? Qt.SizeAllCursor : Qt.ArrowCursor
 
