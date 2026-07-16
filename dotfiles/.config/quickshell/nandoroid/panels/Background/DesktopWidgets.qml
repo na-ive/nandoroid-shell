@@ -194,19 +194,6 @@ Variants {
                     onTriggered: clockWrapper._canUpdateAnchor = true
                 }
 
-                onActiveAlignChanged: {
-                    if (!Config.ready || !_canUpdateAnchor) return;
-                    // Unconditionally update the corresponding anchor coordinate to the current physical position
-                    // so that the widget stays exactly in place when the user switches alignments.
-                    if (activeAlign === "right") {
-                        Config.options.appearance.clock.desktopRightX = x + width;
-                    } else if (activeAlign === "center") {
-                        Config.options.appearance.clock.desktopCenterX = x + (width / 2);
-                    } else if (activeAlign === "left") {
-                        Config.options.appearance.clock.desktopX = x;
-                    }
-                }
-
                 property real targetX: {
                     if (!Config.ready) return (parent.width - width) / 2;
                     
@@ -227,7 +214,16 @@ Variants {
                     return (parent.width - width) / 2;
                 }
 
-                property real targetY: (Config.ready && Config.options.appearance.clock.desktopY !== -1) ? Config.options.appearance.clock.desktopY : (parent.height - height) / 2
+                property real targetY: {
+                    if (!Config.ready) return (parent.height - height) / 2;
+                    if (Config.options.appearance.clock.desktopCenterY !== -1) {
+                        return Config.options.appearance.clock.desktopCenterY - (height / 2);
+                    }
+                    if (Config.options.appearance.clock.desktopY !== -1) {
+                        return Config.options.appearance.clock.desktopY;
+                    }
+                    return (parent.height - height) / 2;
+                }
                 
                 x: targetX
                 y: targetY
@@ -235,14 +231,11 @@ Variants {
                 onDragFinished: (newX, newY) => {
                     if (Config.ready) {
                         Config.options.appearance.clock.desktopY = newY;
+                        Config.options.appearance.clock.desktopCenterY = newY + (height / 2);
                         
-                        if (activeAlign === "right") {
-                            Config.options.appearance.clock.desktopRightX = newX + width;
-                        } else if (activeAlign === "center") {
-                            Config.options.appearance.clock.desktopCenterX = newX + (width / 2);
-                        } else {
-                            Config.options.appearance.clock.desktopX = newX;
-                        }
+                        Config.options.appearance.clock.desktopX = newX;
+                        Config.options.appearance.clock.desktopCenterX = newX + (width / 2);
+                        Config.options.appearance.clock.desktopRightX = newX + width;
                     }
                 }
 

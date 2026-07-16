@@ -73,6 +73,7 @@ ColumnLayout {
                         Config.options.appearance.clock.desktopX = -1;
                         Config.options.appearance.clock.desktopY = -1;
                         Config.options.appearance.clock.desktopCenterX = -1;
+                        Config.options.appearance.clock.desktopCenterY = -1;
                         Config.options.appearance.clock.desktopRightX = -1;
                         Config.options.appearance.clock.offsetX = 0;
                         Config.options.appearance.clock.offsetY = -50;

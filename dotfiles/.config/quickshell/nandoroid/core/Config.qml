@@ -161,6 +161,7 @@ Singleton {
                     property real desktopX: -1
                     property real desktopY: -1
                     property real desktopCenterX: -1
+                    property real desktopCenterY: -1
                     property real desktopRightX: -1
                     property bool locked: false
 
