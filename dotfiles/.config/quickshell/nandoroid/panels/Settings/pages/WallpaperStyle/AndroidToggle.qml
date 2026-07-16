@@ -46,7 +46,7 @@ Item {
         radius: Appearance.rounding.full
 
         // Keep nandoroid's original thumb colors
-        color: root.checked ? Appearance.colors.colOnPrimary : Appearance.colors.colSubtext
+        color: root.checked ? Appearance.colors.colOnPrimary : root.activeColor
 
 
 
