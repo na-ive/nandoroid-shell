@@ -188,7 +188,7 @@ Slider {
         implicitWidth: root.handleWidth
         implicitHeight: root.handleHeight
         x: root.handleMargins + (root.visualPosition * root.effectiveDraggingWidth) - (root.handleWidth / 2)
-        anchors.verticalCenter: parent.verticalCenter
+        anchors.verticalCenter: parent ? parent.verticalCenter : undefined
         radius: Appearance.rounding.full
         color: root.handleColor
 
