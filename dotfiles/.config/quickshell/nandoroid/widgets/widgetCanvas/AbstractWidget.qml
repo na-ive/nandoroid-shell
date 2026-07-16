@@ -13,6 +13,26 @@ import "../../core"
  *    and disable drag-and-drop if it's locked.
  * 4. Use `onDragFinished` if you need to save the new X/Y coordinates manually 
  *    (e.g., for custom alignment logic like the clock has).
+ *
+ * ─────────────────────────────────────────────────────────────
+ * nandoroid DESIGN GRID SYSTEM SPECIFICATION (Choice A)
+ * ─────────────────────────────────────────────────────────────
+ * For pixel-perfect vertical stacking and desktop alignment:
+ *   - Base Grid Unit Width (W): 138px
+ *   - Base Grid Unit Height (H): 108px
+ *   - Spacing/Gap between Widgets (G): 12px
+ *   - Snap Grid Size: 12px
+ *
+ * FORMULAS FOR WIDGET DIMENSIONS:
+ *   - Width (for 'C' columns):  (138 * C) + (12 * (C - 1))
+ *   - Height (for 'R' rows):    (108 * R) + (12 * (R - 1))
+ *
+ * STANDARD PRESETS:
+ *   - 1x1 (Small card):       138px x 108px
+ *   - 3x1 (System Monitor):   438px x 108px
+ *   - 3x2 (Media Player):     438px x 228px
+ *   - 3x3 (Full-size card):   438px x 348px
+ * ─────────────────────────────────────────────────────────────
  */
 MouseArea {
     id: root
