@@ -37,8 +37,8 @@ Item {
 
     Rectangle {
         id: indicator
-        readonly property real thumbSize: 26 * root.scaleMultiplier
-        readonly property real pad: 2 * root.scaleMultiplier
+        readonly property real thumbSize: 22 * root.scaleMultiplier
+        readonly property real pad: 4 * root.scaleMultiplier
         readonly property real stretchExtra: 4 * root.scaleMultiplier
 
         width: mouseArea.pressed ? thumbSize + stretchExtra : thumbSize
