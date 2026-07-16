@@ -26,7 +26,7 @@ Variants {
         }
 
         WlrLayershell.namespace: "quickshell:spotlight"
-        WlrLayershell.layer: (GlobalStates.spotlightOpen && isActive) ? WlrLayer.Overlay : WlrLayer.Background
+        WlrLayershell.layer: (GlobalStates.spotlightOpen && isActive) || (content && content.opacity > 0) ? WlrLayer.Overlay : WlrLayer.Background
         WlrLayershell.keyboardFocus: (GlobalStates.spotlightOpen && isActive) ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
 
         HyprlandFocusGrab {
