@@ -69,34 +69,12 @@ ColumnLayout {
                 
                 Item { Layout.fillWidth: true }
                 
-                Rectangle {
-                    implicitWidth: 52 * Appearance.effectiveScale
-                    implicitHeight: 28 * Appearance.effectiveScale
-                    radius: 14 * Appearance.effectiveScale
-                    color: (Config.ready && Config.options.powerProfile && Config.options.powerProfile.enabled)
-                        ? Appearance.colors.colPrimary
-                        : Appearance.m3colors.m3surfaceContainerLowest
-
-                    Rectangle {
-                        width: 20 * Appearance.effectiveScale
-                        height: 20 * Appearance.effectiveScale
-                        radius: 10 * Appearance.effectiveScale
-                        anchors.verticalCenter: parent.verticalCenter
-                        x: (Config.ready && Config.options.powerProfile && Config.options.powerProfile.enabled) ? parent.width - width - 4 * Appearance.effectiveScale : 4 * Appearance.effectiveScale
-                        color: (Config.ready && Config.options.powerProfile && Config.options.powerProfile.enabled)
-                            ? Appearance.colors.colOnPrimary
-                            : Appearance.colors.colSubtext
-                        Behavior on x { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
-                    }
-
-                    MouseArea {
-                        anchors.fill: parent
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: {
+                AndroidToggle {
+                        checked: (Config.ready && Config.options.powerProfile && Config.options.powerProfile.enabled)
+                        onToggled: {
                             if (Config.ready && Config.options.powerProfile) {
                                 Config.options.powerProfile.enabled = !Config.options.powerProfile.enabled;
-                            }
-                        }
+                    }
                     }
                 }
             }

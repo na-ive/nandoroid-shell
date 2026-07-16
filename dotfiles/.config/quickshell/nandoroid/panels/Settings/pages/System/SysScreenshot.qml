@@ -69,34 +69,12 @@ ColumnLayout {
                 
                 Item { Layout.fillWidth: true }
                 
-                Rectangle {
-                    implicitWidth: 52 * Appearance.effectiveScale
-                    implicitHeight: 28 * Appearance.effectiveScale
-                    radius: 14 * Appearance.effectiveScale
-                    color: (Config.ready && Config.options.screenshot && Config.options.screenshot.autoSave)
-                        ? Appearance.colors.colPrimary
-                        : Appearance.m3colors.m3surfaceContainerLowest
-
-                    Rectangle {
-                        width: 20 * Appearance.effectiveScale
-                        height: 20 * Appearance.effectiveScale
-                        radius: 10 * Appearance.effectiveScale
-                        anchors.verticalCenter: parent.verticalCenter
-                        x: (Config.ready && Config.options.screenshot && Config.options.screenshot.autoSave) ? parent.width - width - 4 * Appearance.effectiveScale : 4 * Appearance.effectiveScale
-                        color: (Config.ready && Config.options.screenshot && Config.options.screenshot.autoSave)
-                            ? Appearance.colors.colOnPrimary
-                            : Appearance.colors.colSubtext
-                        Behavior on x { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
-                    }
-
-                    MouseArea {
-                        anchors.fill: parent
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: {
+                AndroidToggle {
+                        checked: (Config.ready && Config.options.screenshot && Config.options.screenshot.autoSave)
+                        onToggled: {
                             if (Config.ready && Config.options.screenshot) {
                                 Config.options.screenshot.autoSave = !Config.options.screenshot.autoSave;
-                            }
-                        }
+                    }
                     }
                 }
             }
@@ -134,34 +112,12 @@ ColumnLayout {
                 
                 Item { Layout.fillWidth: true }
                 
-                Rectangle {
-                    implicitWidth: 52 * Appearance.effectiveScale
-                    implicitHeight: 28 * Appearance.effectiveScale
-                    radius: 14 * Appearance.effectiveScale
-                    color: (Config.ready && Config.options.screenshot && Config.options.screenshot.autoCopy)
-                        ? Appearance.colors.colPrimary
-                        : Appearance.m3colors.m3surfaceContainerLowest
-
-                    Rectangle {
-                        width: 20 * Appearance.effectiveScale
-                        height: 20 * Appearance.effectiveScale
-                        radius: 10 * Appearance.effectiveScale
-                        anchors.verticalCenter: parent.verticalCenter
-                        x: (Config.ready && Config.options.screenshot && Config.options.screenshot.autoCopy) ? parent.width - width - 4 * Appearance.effectiveScale : 4 * Appearance.effectiveScale
-                        color: (Config.ready && Config.options.screenshot && Config.options.screenshot.autoCopy)
-                            ? Appearance.colors.colOnPrimary
-                            : Appearance.colors.colSubtext
-                        Behavior on x { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
-                    }
-
-                    MouseArea {
-                        anchors.fill: parent
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: {
+                AndroidToggle {
+                        checked: (Config.ready && Config.options.screenshot && Config.options.screenshot.autoCopy)
+                        onToggled: {
                             if (Config.ready && Config.options.screenshot) {
                                 Config.options.screenshot.autoCopy = !Config.options.screenshot.autoCopy;
-                            }
-                        }
+                    }
                     }
                 }
             }
@@ -199,34 +155,12 @@ ColumnLayout {
                 
                 Item { Layout.fillWidth: true }
                 
-                Rectangle {
-                    implicitWidth: 52 * Appearance.effectiveScale
-                    implicitHeight: 28 * Appearance.effectiveScale
-                    radius: 14 * Appearance.effectiveScale
-                    color: (Config.ready && Config.options.screenshot && Config.options.screenshot.showPreview)
-                        ? Appearance.colors.colPrimary
-                        : Appearance.m3colors.m3surfaceContainerLowest
-
-                    Rectangle {
-                        width: 20 * Appearance.effectiveScale
-                        height: 20 * Appearance.effectiveScale
-                        radius: 10 * Appearance.effectiveScale
-                        anchors.verticalCenter: parent.verticalCenter
-                        x: (Config.ready && Config.options.screenshot && Config.options.screenshot.showPreview) ? parent.width - width - 4 * Appearance.effectiveScale : 4 * Appearance.effectiveScale
-                        color: (Config.ready && Config.options.screenshot && Config.options.screenshot.showPreview)
-                            ? Appearance.colors.colOnPrimary
-                            : Appearance.colors.colSubtext
-                        Behavior on x { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
-                    }
-
-                    MouseArea {
-                        anchors.fill: parent
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: {
+                AndroidToggle {
+                        checked: (Config.ready && Config.options.screenshot && Config.options.screenshot.showPreview)
+                        onToggled: {
                             if (Config.ready && Config.options.screenshot) {
                                 Config.options.screenshot.showPreview = !Config.options.screenshot.showPreview;
-                            }
-                        }
+                    }
                     }
                 }
             }

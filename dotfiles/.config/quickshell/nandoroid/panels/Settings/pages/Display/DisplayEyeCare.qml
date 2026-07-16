@@ -59,27 +59,9 @@ ColumnLayout {
                     
                     Item { Layout.fillWidth: true }
 
-                    Rectangle {
-                        implicitWidth: 52 * Appearance.effectiveScale
-                        implicitHeight: 28 * Appearance.effectiveScale
-                        radius: 14 * Appearance.effectiveScale
-                        color: Hyprsunset.active ? Appearance.colors.colPrimary : Appearance.m3colors.m3surfaceContainerLowest
-
-                        Rectangle {
-                            width: 20 * Appearance.effectiveScale
-                            height: 20 * Appearance.effectiveScale
-                            radius: 10 * Appearance.effectiveScale
-                            anchors.verticalCenter: parent.verticalCenter
-                            x: Hyprsunset.active ? parent.width - width - (4 * Appearance.effectiveScale) : 4 * Appearance.effectiveScale
-                            color: Hyprsunset.active ? Appearance.colors.colOnPrimary : Appearance.colors.colSubtext
-                            Behavior on x { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
-                        }
-
-                        MouseArea {
-                            anchors.fill: parent
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: Hyprsunset.toggle()
-                        }
+                    AndroidToggle {
+                        checked: Hyprsunset.active
+                        onToggled: Hyprsunset.toggle()
                     }
                 }
             }
