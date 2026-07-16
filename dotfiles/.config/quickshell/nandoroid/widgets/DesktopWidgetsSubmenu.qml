@@ -101,5 +101,13 @@ Item {
             toggleChecked: Config.ready && Config.options.appearance.atAGlance.show
             onCustomToggled: if (Config.ready) Config.options.appearance.atAGlance.show = !Config.options.appearance.atAGlance.show
         }
+
+        SubmenuItem {
+            menuText: "Media Player"
+            widgetLocked: Config.ready ? Config.options.appearance.mediaWidget.locked : false
+            onLockToggled: if (Config.ready) Config.options.appearance.mediaWidget.locked = !Config.options.appearance.mediaWidget.locked
+            toggleChecked: Config.ready && Config.options.appearance.mediaWidget.showOnDesktop
+            onCustomToggled: if (Config.ready) Config.options.appearance.mediaWidget.showOnDesktop = !Config.options.appearance.mediaWidget.showOnDesktop
+        }
     }
 }

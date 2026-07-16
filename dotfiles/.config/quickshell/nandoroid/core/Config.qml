@@ -284,6 +284,18 @@ Singleton {
                         property string pillColorStyle: "surfaceContainerHigh"
                     }
                 }
+                
+                property JsonObject mediaWidget: JsonObject {
+                    property bool showOnDesktop: false
+                    property bool locked: false
+                    property real desktopX: -1
+                    property real desktopY: -1
+                    property real desktopCenterX: -1
+                    property real desktopCenterY: -1
+                    property real desktopRightX: -1
+                    property bool showLyrics: false
+                }
+                
                 property JsonObject lyrics: JsonObject {
                     property bool showFloatingLyrics: false
                     property bool lyricsPinned: false

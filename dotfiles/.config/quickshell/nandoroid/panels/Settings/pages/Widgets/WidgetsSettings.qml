@@ -70,5 +70,8 @@ Flickable {
 
         // ── At a Glance Settings ──
         WsAtAGlance { Layout.fillWidth: true; visible: !root.isOnboarding }
+
+        // ── Desktop Media Player Settings ──
+        WsDesktopMedia { Layout.fillWidth: true; visible: !root.isOnboarding }
     }
 }
