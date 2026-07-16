@@ -292,10 +292,62 @@ Variants {
             }
         }
 
+        Timer {
+            id: reopenTimer
+            interval: 150 // Wait for close animation
+            property real nextX: 0
+            property real nextY: 0
+            property var nextConfig: null
+            property string nextTitle: ""
+            property string nextKeyword: ""
+            onTriggered: {
+                desktopContextMenu.openAt(nextX, nextY, nextConfig, nextTitle, nextKeyword)
+            }
+        }
+
+        function handleMenuRelocation(x, y) {
+            if (!widgetRoot.isDesktopEmpty) {
+                desktopContextMenu.close();
+                return;
+            }
+
+            let widgetConfig = null;
+            let widgetTitle = "";
+            let widgetKeyword = "";
+
+            // Check if clock is clicked
+            if (clockWrapper.visible && 
+                x >= clockWrapper.x && x <= clockWrapper.x + clockWrapper.width &&
+                y >= clockWrapper.y && y <= clockWrapper.y + clockWrapper.height) {
+                widgetConfig = Config.options.appearance.clock;
+                widgetTitle = "Clock";
+                widgetKeyword = "Clock Style";
+            }
+            // Check if at a glance is clicked
+            else if (atAGlanceWrapper && atAGlanceWrapper.visible &&
+                     x >= atAGlanceWrapper.x && x <= atAGlanceWrapper.x + atAGlanceWrapper.width &&
+                     y >= atAGlanceWrapper.y && y <= atAGlanceWrapper.y + atAGlanceWrapper.height) {
+                widgetConfig = Config.options.appearance.atAGlance;
+                widgetTitle = "At a Glance";
+                widgetKeyword = "At a Glance";
+            }
+
+            desktopContextMenu.close();
+            
+            reopenTimer.nextX = x;
+            reopenTimer.nextY = y;
+            reopenTimer.nextConfig = widgetConfig;
+            reopenTimer.nextTitle = widgetTitle;
+            reopenTimer.nextKeyword = widgetKeyword;
+            reopenTimer.restart();
+        }
+
         DesktopContextMenu {
             id: desktopContextMenu
             screen: widgetRoot.modelData
             visible: false
+            
+            onBackgroundRightClicked: (x, y) => handleMenuRelocation(x, y)
         }
 
         Connections {

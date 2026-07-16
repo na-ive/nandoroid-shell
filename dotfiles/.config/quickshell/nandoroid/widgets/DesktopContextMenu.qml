@@ -40,12 +40,21 @@ PanelWindow {
     property real _mouseX: 0
     property real _mouseY: 0
     
+    signal backgroundRightClicked(real x, real y)
+    
     color: "transparent"
 
-    // Click outside to close
+    // Click outside to close or move menu
     MouseArea {
         anchors.fill: parent
-        onPressed: root.close()
+        acceptedButtons: Qt.LeftButton | Qt.RightButton
+        onPressed: (mouse) => {
+            if (mouse.button === Qt.RightButton) {
+                root.backgroundRightClicked(mouse.x, mouse.y)
+            } else {
+                root.close()
+            }
+        }
     }
 
     // Wallpaper folder images
@@ -341,7 +350,16 @@ PanelWindow {
         id: submenuLoader
         active: root.openSubmenuComponent !== null && root.visible
         sourceComponent: root.openSubmenuComponent
-        x: Math.min(menuContainer.x + menuContainer.width + 12 * Appearance.effectiveScale, root.screen.width - width - 12 * Appearance.effectiveScale)
+        x: {
+            let submenuWidth = item ? item.width : (348 * Appearance.effectiveScale);
+            let rightPos = menuContainer.x + menuContainer.width + 12 * Appearance.effectiveScale;
+            if (rightPos + submenuWidth + 12 * Appearance.effectiveScale <= root.screen.width) {
+                return rightPos;
+            } else {
+                let leftPos = menuContainer.x - submenuWidth - 12 * Appearance.effectiveScale;
+                return Math.max(12 * Appearance.effectiveScale, leftPos);
+            }
+        }
         y: Math.min(root.submenuAnchorY, root.screen.height - height - 12 * Appearance.effectiveScale)
         
         HoverHandler {
