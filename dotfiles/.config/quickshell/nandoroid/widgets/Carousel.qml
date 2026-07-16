@@ -50,6 +50,7 @@ Item {
     ListView {
         id: listView
         anchors.fill: parent
+        clip: true
         orientation: ListView.Horizontal
         spacing: root.itemSpacing
         interactive: true
