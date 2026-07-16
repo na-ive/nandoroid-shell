@@ -19,7 +19,7 @@ Item {
     }
     
     // Choice A Grid System Specs
-    readonly property real baseWidth: 138 * Appearance.effectiveScale
+    readonly property real baseWidth: 132 * Appearance.effectiveScale
     readonly property real baseHeight: 108 * Appearance.effectiveScale
     readonly property real gap: 12 * Appearance.effectiveScale
     

@@ -12,10 +12,10 @@ Item {
     // Read orientation from config
     property bool isVertical: Config.ready ? Config.options.appearance.systemMonitor.vertical : false
 
-    // Scale dimensions cleanly based on Choice A (Grid: 138x108, Gap: 12)
-    // Horizontal 3x1: 438 x 108
-    // Vertical 1x3: 138 x 348 (108 * 3 + 12 * 2)
-    property real baseWidth: isVertical ? 138 : 438
+    // Scale dimensions cleanly based on Choice A (Grid: 132x108, Gap: 12)
+    // Horizontal 3x1: 420 x 108
+    // Vertical 1x3: 132 x 348 (108 * 3 + 12 * 2)
+    property real baseWidth: isVertical ? 132 : 420
     property real baseHeight: isVertical ? 348 : 108
     implicitWidth: baseWidth * Appearance.effectiveScale
     implicitHeight: baseHeight * Appearance.effectiveScale
@@ -23,7 +23,7 @@ Item {
     // Spacings and sizes
     property real cardSpacing: 12 * Appearance.effectiveScale
     property real cardHeight: isVertical ? (108 * Appearance.effectiveScale) : (108 * Appearance.effectiveScale)
-    property real cardWidth: isVertical ? (138 * Appearance.effectiveScale) : ((438 * Appearance.effectiveScale - cardSpacing * 2) / 3)
+    property real cardWidth: isVertical ? (132 * Appearance.effectiveScale) : ((420 * Appearance.effectiveScale - cardSpacing * 2) / 3)
 
     // Keep SystemData polling alive while the desktop widget is active
     Timer {

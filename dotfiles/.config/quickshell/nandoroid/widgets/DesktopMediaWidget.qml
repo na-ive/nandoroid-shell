@@ -9,7 +9,7 @@ import "."
 
 Item {
     id: root
-    implicitWidth: 438 * Appearance.effectiveScale
+    implicitWidth: 420 * Appearance.effectiveScale
     implicitHeight: 228 * Appearance.effectiveScale
 
     property bool showLyrics: Config.options.appearance.mediaWidget.showLyrics
