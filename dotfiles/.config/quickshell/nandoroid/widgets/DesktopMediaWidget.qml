@@ -108,7 +108,8 @@ Item {
                 Layout.rightMargin: 48 * Appearance.effectiveScale
                 horizontalAlignment: Text.AlignHCenter
                 text: {
-                    let hasTitle = MprisController.trackTitle && MprisController.trackTitle.trim() !== "";
+                    let rawTitle = (MprisController.trackTitle || "").trim().toLowerCase();
+                    let hasTitle = rawTitle !== "" && rawTitle !== "no media" && rawTitle !== "no music playing";
                     let hasArtist = MprisController.trackArtist && MprisController.trackArtist.trim() !== "";
                     if (hasTitle) {
                         return hasArtist ? MprisController.trackArtist : "Unknown Artist";
