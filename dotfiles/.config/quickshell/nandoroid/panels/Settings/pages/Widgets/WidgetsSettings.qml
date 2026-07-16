@@ -76,5 +76,8 @@ Flickable {
 
         // ── Desktop System Monitor Settings ──
         WsSystemMonitor { Layout.fillWidth: true; visible: !root.isOnboarding }
+
+        // ── Desktop Weather Settings ──
+        WsWeather { Layout.fillWidth: true; visible: !root.isOnboarding }
     }
 }

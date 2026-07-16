@@ -392,8 +392,39 @@ Variants {
                     desktopContextMenu.openAt(reqX, reqY, Config.options.appearance.systemMonitor, "System Monitor", "System Monitor");
                 }
 
-                DesktopSystemMonitorWidget {
+                 DesktopSystemMonitorWidget {
                     id: desktopSystemMonitorWidgetItem
+                }
+            }
+
+            AbstractWidget {
+                id: weatherWidgetWrapper
+                z: 10
+                width: desktopWeatherWidgetItem.width
+                height: desktopWeatherWidgetItem.height
+                gridSize: 12
+                configObject: Config.ready ? Config.options.appearance.weatherWidget : null
+                visible: Config.ready && Config.options.appearance.weatherWidget.showOnDesktop && !GlobalStates.screenLocked
+                opacity: visible ? 1 : 0
+                Behavior on opacity { NumberAnimation { duration: 300 } }
+
+                x: Config.ready && Config.options.appearance.weatherWidget.desktopX !== -1 ? Config.options.appearance.weatherWidget.desktopX : 64
+                y: Config.ready && Config.options.appearance.weatherWidget.desktopY !== -1 ? Config.options.appearance.weatherWidget.desktopY : 420
+
+                onDragFinished: (newX, newY) => {
+                    if (Config.ready) {
+                        Config.options.appearance.weatherWidget.desktopX = newX;
+                        Config.options.appearance.weatherWidget.desktopY = newY;
+                    }
+                }
+
+                onRequestContextMenu: (reqX, reqY) => {
+                    desktopContextMenu.openAt(reqX, reqY, Config.options.appearance.weatherWidget, "Weather", "Weather");
+                }
+
+                DesktopWeatherWidget {
+                    id: desktopWeatherWidgetItem
+                    interactive: !weatherWidgetWrapper.dragging
                 }
             }
         }
@@ -452,6 +483,14 @@ Variants {
                 widgetConfig = Config.options.appearance.systemMonitor;
                 widgetTitle = "System Monitor";
                 widgetKeyword = "System Monitor";
+            }
+            // Check if weather widget is clicked
+            else if (weatherWidgetWrapper && weatherWidgetWrapper.visible &&
+                     x >= weatherWidgetWrapper.x && x <= weatherWidgetWrapper.x + weatherWidgetWrapper.width &&
+                     y >= weatherWidgetWrapper.y && y <= weatherWidgetWrapper.y + weatherWidgetWrapper.height) {
+                widgetConfig = Config.options.appearance.weatherWidget;
+                widgetTitle = "Weather";
+                widgetKeyword = "Weather";
             }
 
             desktopContextMenu.close();

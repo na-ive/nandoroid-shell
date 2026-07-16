@@ -303,6 +303,14 @@ Singleton {
                     property real desktopX: -1
                     property real desktopY: -1
                 }
+
+                property JsonObject weatherWidget: JsonObject {
+                    property bool showOnDesktop: false
+                    property bool locked: false
+                    property string sizeMode: "3x1" // Supports "1x1", "2x1", "3x1"
+                    property real desktopX: -1
+                    property real desktopY: -1
+                }
                 
                 property JsonObject lyrics: JsonObject {
                     property bool showFloatingLyrics: false

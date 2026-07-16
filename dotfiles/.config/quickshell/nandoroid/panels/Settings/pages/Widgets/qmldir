@@ -2,4 +2,5 @@ WidgetsSettings 1.0 WidgetsSettings.qml
 WsAtAGlance 1.0 WsAtAGlance.qml
 WsDesktopMedia 1.0 WsDesktopMedia.qml
 WsSystemMonitor 1.0 WsSystemMonitor.qml
+WsWeather 1.0 WsWeather.qml
 

@@ -117,5 +117,13 @@ Item {
             toggleChecked: Config.ready && Config.options.appearance.systemMonitor.showOnDesktop
             onCustomToggled: if (Config.ready) Config.options.appearance.systemMonitor.showOnDesktop = !Config.options.appearance.systemMonitor.showOnDesktop
         }
+
+        SubmenuItem {
+            menuText: "Weather"
+            widgetLocked: Config.ready ? Config.options.appearance.weatherWidget.locked : false
+            onLockToggled: if (Config.ready) Config.options.appearance.weatherWidget.locked = !Config.options.appearance.weatherWidget.locked
+            toggleChecked: Config.ready && Config.options.appearance.weatherWidget.showOnDesktop
+            onCustomToggled: if (Config.ready) Config.options.appearance.weatherWidget.showOnDesktop = !Config.options.appearance.weatherWidget.showOnDesktop
+        }
     }
 }
