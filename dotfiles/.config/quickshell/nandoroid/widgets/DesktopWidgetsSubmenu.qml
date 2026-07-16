@@ -30,9 +30,10 @@ Item {
         component SubmenuItem : RippleButton {
             id: itemRoot
             property string menuText: ""
-            property string menuIcon: ""
+            property bool widgetLocked: false
             property alias toggleChecked: toggle.checked
             signal customToggled()
+            signal lockToggled()
             
             Layout.fillWidth: true
             Layout.preferredHeight: Appearance.sizes.contextMenuItemHeight
@@ -48,10 +49,23 @@ Item {
             contentItem: RowLayout {
                 spacing: 12 * Appearance.effectiveScale
                 
-                MaterialSymbol {
-                    text: itemRoot.menuIcon
-                    iconSize: Appearance.sizes.iconSize * 0.9
-                    color: Appearance.colors.colOnLayer0
+                Item {
+                    Layout.preferredWidth: 24 * Appearance.effectiveScale
+                    Layout.preferredHeight: 24 * Appearance.effectiveScale
+                    
+                    MaterialSymbol {
+                        anchors.centerIn: parent
+                        text: itemRoot.widgetLocked ? "lock" : "lock_open"
+                        iconSize: Appearance.sizes.iconSize * 0.9
+                        color: Appearance.colors.colOnLayer0
+                    }
+                    
+                    MouseArea {
+                        anchors.fill: parent
+                        anchors.margins: -8 * Appearance.effectiveScale
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: itemRoot.lockToggled()
+                    }
                 }
                 
                 StyledText {
@@ -74,14 +88,16 @@ Item {
 
         SubmenuItem {
             menuText: "Clock"
-            menuIcon: "schedule"
+            widgetLocked: Config.ready ? Config.options.appearance.clock.locked : false
+            onLockToggled: if (Config.ready) Config.options.appearance.clock.locked = !Config.options.appearance.clock.locked
             toggleChecked: Config.ready && Config.options.appearance.clock.showOnDesktop
             onCustomToggled: if (Config.ready) Config.options.appearance.clock.showOnDesktop = !Config.options.appearance.clock.showOnDesktop
         }
 
         SubmenuItem {
             menuText: "At a Glance"
-            menuIcon: "view_day"
+            widgetLocked: Config.ready ? Config.options.appearance.atAGlance.locked : false
+            onLockToggled: if (Config.ready) Config.options.appearance.atAGlance.locked = !Config.options.appearance.atAGlance.locked
             toggleChecked: Config.ready && Config.options.appearance.atAGlance.show
             onCustomToggled: if (Config.ready) Config.options.appearance.atAGlance.show = !Config.options.appearance.atAGlance.show
         }
