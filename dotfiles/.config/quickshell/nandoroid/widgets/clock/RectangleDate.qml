@@ -23,7 +23,7 @@ Rectangle {
             return Qt.formatDate(new Date(), "dd");
         }
         font {
-            family: root.dateFontFamily
+            family: rect.dateFontFamily
             pixelSize: 20 * Appearance.effectiveScale
             weight: Font.Black
             variableAxes: Appearance.font.variableAxes.expressive
