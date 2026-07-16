@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 import "../core"
-import "../panels/Settings/pages/WallpaperStyle" // For AndroidToggle
+
 
 Item {
     id: root
