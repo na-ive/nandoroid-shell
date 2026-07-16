@@ -6,6 +6,8 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Hyprland
+import Quickshell.Io
+import Quickshell.Wayland
 
 /**
  * Android-style workspace dot/pill indicator.
@@ -16,6 +18,8 @@ Item {
     property HyprlandMonitor monitor
     readonly property int workspacesShown: Config.options.workspaces?.max_shown ?? 5
     readonly property int activeWsId: monitor?.activeWorkspace?.id ?? 1
+    property string activeSpecialName: ""
+    property bool isSpecialActive: activeSpecialName !== ""
     
     // Pagination logic
     readonly property int startWsId: Math.floor((activeWsId - 1) / workspacesShown) * workspacesShown + 1
@@ -39,7 +43,7 @@ Item {
         root.updateOccupied()
     }
 
-    implicitWidth: pillRow.implicitWidth
+    implicitWidth: root.isSpecialActive ? specialOverlay.implicitWidth : pillRow.implicitWidth
     implicitHeight: pillRow.implicitHeight
 
     Component.onCompleted: updateOccupied()
@@ -51,6 +55,23 @@ Item {
     Connections {
         target: Hyprland
         function onFocusedWorkspaceChanged() { root.updateOccupied() }
+        function onRawEvent(event) {
+            if (event.name === "activespecial") {
+                let parts = event.data.split(',');
+                let name = parts[0];
+                let monName = parts[1];
+                if (monName === monitor.name) {
+                    root.activeSpecialName = name.replace("special:", "");
+                }
+            } else if (event.name === "activespecialv2") {
+                let parts = event.data.split(',');
+                let name = parts[1];
+                let monName = parts[2];
+                if (monName === monitor.name) {
+                    root.activeSpecialName = name.replace("special:", "");
+                }
+            }
+        }
     }
 
     function updateOccupied() {
@@ -83,6 +104,8 @@ Item {
     Rectangle {
         id: tabHighlight
         visible: root.indicatorStyle === "unified"
+        opacity: root.isSpecialActive ? 0 : 1
+        Behavior on opacity { NumberAnimation { duration: 250; easing.type: Easing.OutExpo } }
         z: 0
 
         property int idx1: (activeWsId - 1) % workspacesShown
@@ -103,7 +126,7 @@ Item {
         property real animX2: targetX2
         
         anchors.verticalCenter: pillRow.verticalCenter
-        x: Math.min(animX1, animX2)
+        x: pillRow.x + Math.min(animX1, animX2)
         width: Math.abs(animX2 - animX1) + activeWidth
         height: dotHeight
         radius: height / 2
@@ -124,7 +147,10 @@ Item {
     Row {
         id: pillRow
         anchors.verticalCenter: parent.verticalCenter
+        anchors.horizontalCenter: parent.horizontalCenter
         spacing: (root.indicatorStyle === "pill" ? 4 : 6) * Appearance.effectiveScale
+        opacity: root.isSpecialActive ? 0 : 1
+        Behavior on opacity { NumberAnimation { duration: 250; easing.type: Easing.OutExpo } }
 
         readonly property var japaneseNumbers: ["一", "二", "三", "四", "五", "六", "七", "八", "九", "十", "十一", "十二", "十三", "十四", "十五", "十六", "十七", "十八", "十九", "二十"]
         readonly property var romanNumbers: ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII", "XIV", "XV", "XVI", "XVII", "XVIII", "XIX", "XX"]
@@ -209,6 +235,61 @@ Item {
                     cursorShape: Qt.PointingHandCursor
                     onClicked: Hyprland.dispatch(HyprlandCompat.dspWorkspace(dot.wsId))
                 }
+            }
+        }
+
+    }
+
+    Rectangle {
+        id: specialOverlay
+        anchors.centerIn: parent
+        width: root.isSpecialActive ? implicitWidth : pillRow.implicitWidth
+        Behavior on width { NumberAnimation { duration: 300; easing.type: Easing.OutQuint } }
+        clip: true
+        implicitWidth: specialText.implicitWidth + 24 * Appearance.effectiveScale
+        implicitHeight: 24 * Appearance.effectiveScale
+        radius: height / 2
+        opacity: root.isSpecialActive ? 1 : 0
+        scale: root.isSpecialActive ? 1 : 0.8
+        color: Appearance.m3colors.darkmode ? Appearance.colors.colNotchPrimary : Appearance.colors.colPrimaryContainer
+        visible: opacity > 0
+
+        Behavior on opacity { NumberAnimation { duration: 250; easing.type: Easing.OutExpo } }
+        Behavior on scale { NumberAnimation { duration: 250; easing.type: Easing.OutBack } }
+
+        StyledText {
+            id: specialText
+            anchors.centerIn: parent
+            text: root.activeSpecialName ? (root.activeSpecialName.charAt(0).toUpperCase() + root.activeSpecialName.slice(1)) : ""
+            font.pixelSize: Math.round(11 * Appearance.effectiveScale)
+            font.weight: Font.DemiBold
+            color: "#1E1E1E"
+        }
+
+        MouseArea {
+            anchors.fill: parent
+            cursorShape: Qt.PointingHandCursor
+            onClicked: Hyprland.dispatch("togglespecialworkspace " + root.activeSpecialName)
+        }
+    }
+
+    Process {
+        command: ["hyprctl", "monitors", "-j"]
+        running: true
+        stdout: StdioCollector {
+            id: initialSpecialCollector
+            onStreamFinished: {
+                try {
+                    let monitors = JSON.parse(initialSpecialCollector.text);
+                    for (let i = 0; i < monitors.length; i++) {
+                        if (monitors[i].name === monitor.name) {
+                            if (monitors[i].specialWorkspace && monitors[i].specialWorkspace.name !== "") {
+                                root.activeSpecialName = monitors[i].specialWorkspace.name.replace("special:", "");
+                            }
+                            break;
+                        }
+                    }
+                } catch (e) {}
             }
         }
     }
