@@ -1,22 +1,84 @@
 import "../../../../core"
 import QtQuick
+import QtQuick.Effects
 
-Rectangle {
+Item {
+    id: root
     property bool checked: false
     signal toggled()
-    implicitWidth: 52 * Appearance.effectiveScale; implicitHeight: 28 * Appearance.effectiveScale; radius: 14 * Appearance.effectiveScale
-    color: checked ? Appearance.colors.colPrimary : Appearance.colors.colLayer2
-    
+
+    // 0.75 scale from end4-pC StyledSwitch
+    property real scaleMultiplier: 0.75 * Appearance.effectiveScale
+    implicitHeight: 30 * scaleMultiplier
+    implicitWidth: 52 * scaleMultiplier
+
+    property alias color: bg.color
+    property color activeColor: Appearance.colors.colPrimary
+    property color inactiveColor: Appearance.colors.colLayer2
+
     Rectangle {
-        width: 20 * Appearance.effectiveScale; height: 20 * Appearance.effectiveScale; radius: 10 * Appearance.effectiveScale; anchors.verticalCenter: parent.verticalCenter
-        x: parent.checked ? parent.width - width - (4 * Appearance.effectiveScale) : 4 * Appearance.effectiveScale
-        color: parent.checked ? Appearance.colors.colOnPrimary : Appearance.colors.colSubtext
-        Behavior on x { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
+        id: bg
+        anchors.fill: parent
+        radius: Appearance.rounding.full
+        color: root.checked ? root.activeColor : root.inactiveColor
+
+        Rectangle {
+            anchors.fill: parent
+            radius: parent.radius
+            color: "transparent"
+            border.width: 1
+            border.color: Qt.rgba(1, 1, 1, 0.06)
+        }
+
+        Behavior on color {
+            ColorAnimation { duration: 200 }
+        }
+    }
+
+    Rectangle {
+        id: indicator
+        readonly property real thumbSize: 26 * root.scaleMultiplier
+        readonly property real pad: 2 * root.scaleMultiplier
+        readonly property real stretchExtra: 4 * root.scaleMultiplier
+
+        width: mouseArea.pressed ? thumbSize + stretchExtra : thumbSize
+        height: thumbSize
+        radius: Appearance.rounding.full
+
+        // Keep nandoroid's original thumb colors
+        color: root.checked ? Appearance.colors.colOnPrimary : Appearance.colors.colSubtext
+
+
+
+        anchors.verticalCenter: parent.verticalCenter
+        x: root.checked
+            ? (mouseArea.pressed
+                ? parent.width - width - pad - stretchExtra
+                : parent.width - width - pad)
+            : pad
+
+        Behavior on x {
+            NumberAnimation {
+                duration: 320
+                easing.type: Easing.BezierSpline
+                easing.bezierCurve: [0.42, 1.5, 0.28, 0.95, 1, 1]
+            }
+        }
+        Behavior on width {
+            NumberAnimation {
+                duration: 160
+                easing.type: Easing.BezierSpline
+                easing.bezierCurve: [0.42, 1.5, 0.28, 0.95, 1, 1]
+            }
+        }
     }
     
-    MouseArea { 
-        anchors.fill: parent; 
-        cursorShape: Qt.PointingHandCursor; 
-        onClicked: parent.toggled() 
+    MouseArea {
+        id: mouseArea
+        anchors.fill: parent
+        cursorShape: Qt.PointingHandCursor
+        onClicked: {
+            root.toggled()
+        }
     }
 }
