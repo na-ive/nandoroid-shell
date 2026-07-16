@@ -101,12 +101,19 @@ Singleton {
     property bool screenUnlockFailed: false
     property bool screenLockContainsCharacters: false
 
+    readonly property bool isCenteredStatusbar: (Config.ready && Config.options.statusBar) ? Config.options.statusBar.layoutStyle === "centered" : false
+
     onNotificationCenterOpenChanged: {
         if (notificationCenterOpen) {
             accentPickerOpen = false
             launcherOpen = false
             spotlightOpen = false
             sessionOpen = false
+            
+            // HUD/Centered statusbar mode: Close dashboard when sidebar opens
+            if (isCenteredStatusbar) {
+                dashboardOpen = false
+            }
         }
     }
 
@@ -116,6 +123,11 @@ Singleton {
             launcherOpen = false
             spotlightOpen = false
             sessionOpen = false
+            
+            // HUD/Centered statusbar mode: Close dashboard when sidebar opens
+            if (isCenteredStatusbar) {
+                dashboardOpen = false
+            }
         }
     }
 
@@ -125,6 +137,11 @@ Singleton {
             launcherOpen = false
             spotlightOpen = false
             sessionOpen = false
+            
+            // HUD/Centered statusbar mode: Close dashboard when sidebar opens
+            if (isCenteredStatusbar) {
+                dashboardOpen = false
+            }
         }
     }
 
@@ -158,6 +175,13 @@ Singleton {
             launcherOpen = false
             spotlightOpen = false
             sessionOpen = false
+            
+            // HUD/Centered statusbar mode: Close all sidebars when dashboard opens
+            if (isCenteredStatusbar) {
+                notificationCenterOpen = false
+                quickSettingsOpen = false
+                quickActionsOpen = false
+            }
         }
     }
 
