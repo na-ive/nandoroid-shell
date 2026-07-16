@@ -485,6 +485,45 @@ ColumnLayout {
                         }
                     }
 
+                    // ── System Monitor Style ────────────
+                    SegmentedWrapper {
+                        Layout.fillWidth: true
+                        implicitHeight: sysMonStyleRow.implicitHeight + (36 * Appearance.effectiveScale)
+                        orientation: Qt.Vertical
+                        maxRadius: 20 * Appearance.effectiveScale
+                        color: Appearance.m3colors.m3surfaceContainerHigh
+                        visible: Config.ready && Config.options.statusBar && (Config.options.statusBar.systemMonitorPosition ?? "hidden") !== "hidden"
+                        RowLayout {
+                            id: sysMonStyleRow
+                            anchors.fill: parent
+                            anchors.margins: 16 * Appearance.effectiveScale
+                            spacing: 16 * Appearance.effectiveScale
+                            MaterialSymbol { text: "style"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
+                            StyledText { text: "System Monitor Style"; Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
+                            RowLayout {
+                                spacing: 2 * Appearance.effectiveScale
+                                Repeater {
+                                    model: [
+                                        { id: "outline", label: "Outline" },
+                                        { id: "filled", label: "Filled" }
+                                    ]
+                                    delegate: SegmentedButton {
+                                        required property var modelData
+                                        buttonText: modelData.label
+                                        isHighlighted: Config.ready && Config.options.statusBar
+                                            ? (Config.options.statusBar.systemMonitorStyle ?? "outline") === modelData.id
+                                            : modelData.id === "outline"
+                                        colActive: Appearance.m3colors.m3primary
+                                        colActiveText: Appearance.m3colors.m3onPrimary
+                                        colInactive: Appearance.m3colors.m3surfaceContainerLow
+                                        onClicked: if (Config.ready && Config.options.statusBar)
+                                            Config.options.statusBar.systemMonitorStyle = modelData.id
+                                    }
+                                }
+                            }
+                        }
+                    }
+
                     // ── Centered Width (only visible when centered is active) ──
                     SegmentedWrapper {
                         Layout.fillWidth: true

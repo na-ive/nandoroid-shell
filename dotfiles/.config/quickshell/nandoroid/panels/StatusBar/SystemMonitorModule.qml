@@ -31,74 +31,94 @@ Item {
             visible: isVisible
             spacing: 4 * Appearance.effectiveScale
 
-            Item {
-                Layout.alignment: Qt.AlignVCenter
-                width: 20 * Appearance.effectiveScale
-                height: 20 * Appearance.effectiveScale
-
-                Canvas {
-                    id: canvas
-                    anchors.fill: parent
-                    onPaint: {
-                        var ctx = getContext("2d");
-                        ctx.reset();
-                        
-                        var centerX = width / 2;
-                        var centerY = height / 2;
-                        var radius = (Math.min(width, height) / 2) - (2 * Appearance.effectiveScale);
-                        
-                        // Background ring
-                        ctx.beginPath();
-                        ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
-                        ctx.lineWidth = 3 * Appearance.effectiveScale;
-                        ctx.strokeStyle = Appearance.m3colors.m3surfaceContainerHigh;
-                        ctx.stroke();
-                        
-                        // Progress arc
-                        if (rootRing.value > 0) {
-                            ctx.beginPath();
-                            ctx.arc(centerX, centerY, radius, -Math.PI / 2, (-Math.PI / 2) + (Math.PI * 2 * rootRing.value));
-                            ctx.lineWidth = 3 * Appearance.effectiveScale;
-                            ctx.strokeStyle = rootRing.highlightColor;
-                            ctx.lineCap = "round";
-                            ctx.stroke();
+            Component {
+                id: outlineStyle
+                ClippedOutlineCircularProgress {
+                    lineWidth: 2 * Appearance.effectiveScale
+                    value: rootRing.value
+                    implicitSize: 20 * Appearance.effectiveScale
+                    enableAnimation: false
+                    Item {
+                        anchors.centerIn: parent
+                        width: 20 * Appearance.effectiveScale
+                        height: 20 * Appearance.effectiveScale
+                        MaterialSymbol {
+                            anchors.centerIn: parent
+                            font.weight: Font.DemiBold
+                            fill: 1
+                            text: rootRing.iconName
+                            iconSize: Appearance.font.pixelSize.normal
+                            color: Appearance.colors.colOnSecondaryContainer
                         }
                     }
                 }
-                
-                MaterialSymbol {
-                    anchors.centerIn: parent
-                    text: rootRing.iconName
-                    iconSize: 11 * Appearance.effectiveScale
-                    color: root.color
+            }
+
+            Component {
+                id: filledStyle
+                ClippedFilledCircularProgress {
+                    lineWidth: 2 * Appearance.effectiveScale
+                    value: rootRing.value
+                    implicitSize: 20 * Appearance.effectiveScale
+                    accountForLightBleeding: true
+                    enableAnimation: false
+                    Item {
+                        anchors.centerIn: parent
+                        width: 20 * Appearance.effectiveScale
+                        height: 20 * Appearance.effectiveScale
+                        MaterialSymbol {
+                            anchors.centerIn: parent
+                            font.weight: Font.DemiBold
+                            fill: 1
+                            text: rootRing.iconName
+                            iconSize: Appearance.font.pixelSize.normal
+                            color: Appearance.colors.colOnSecondaryContainer
+                        }
+                    }
                 }
             }
 
-            onValueChanged: canvas.requestPaint()
-
-            StyledText {
-                visible: rootRing.showText
-                text: rootRing.statText
-                font.pixelSize: Appearance.font.pixelSize.smaller
-                font.weight: Font.Medium
-                color: root.color
-                Layout.preferredWidth: 32 * Appearance.effectiveScale
+            Loader {
                 Layout.alignment: Qt.AlignVCenter
+                sourceComponent: (Config.ready && Config.options.statusBar && Config.options.statusBar.systemMonitorStyle === "filled") ? filledStyle : outlineStyle
+            }
+
+            Item {
+                Layout.alignment: Qt.AlignVCenter
+                visible: rootRing.showText
+                implicitWidth: visible ? fullPercentageTextMetrics.width : 0
+                implicitHeight: percentageText.implicitHeight
+
+                TextMetrics {
+                    id: fullPercentageTextMetrics
+                    text: "100"
+                    font.pixelSize: Appearance.font.pixelSize.small
+                    font.weight: Font.Medium
+                }
+
+                StyledText {
+                    id: percentageText
+                    anchors.centerIn: parent
+                    text: rootRing.statText
+                    font.pixelSize: Appearance.font.pixelSize.small
+                    font.weight: Font.Medium
+                    color: root.color
+                }
             }
         }
 
         StatRing {
-            iconName: "memory"
+            iconName: "monitoring"
             value: SystemData.cpuUsage
-            statText: Math.round(SystemData.cpuUsage * 100) + "%"
+            statText: Math.round(SystemData.cpuUsage * 100).toString()
             highlightColor: root.color
             isVisible: Config.ready && Config.options.statusBar ? (Config.options.statusBar.showSystemMonitorCpu ?? true) : true
         }
 
         StatRing {
-            iconName: "speed"
+            iconName: "memory"
             value: SystemData.memUsage
-            statText: Math.round(SystemData.memUsage * 100) + "%"
+            statText: Math.round(SystemData.memUsage * 100).toString()
             highlightColor: root.color
             isVisible: Config.ready && Config.options.statusBar ? (Config.options.statusBar.showSystemMonitorRam ?? true) : true
         }
@@ -106,7 +126,7 @@ Item {
         StatRing {
             iconName: "swap_horiz"
             value: SystemData.swapUsage
-            statText: Math.round(SystemData.swapUsage * 100) + "%"
+            statText: Math.round(SystemData.swapUsage * 100).toString()
             highlightColor: root.color
             isVisible: Config.ready && Config.options.statusBar ? (Config.options.statusBar.showSystemMonitorSwap ?? false) : false
         }
@@ -114,7 +134,7 @@ Item {
         StatRing {
             iconName: "thermostat"
             value: Math.min(SystemData.cpuTemperature / 100, 1.0)
-            statText: Math.round(SystemData.cpuTemperature) + "°C"
+            statText: SystemData.cpuTemperature > 0 ? Math.round(SystemData.cpuTemperature).toString() : "--"
             highlightColor: root.color
             isVisible: Config.ready && Config.options.statusBar ? (Config.options.statusBar.showSystemMonitorTemp ?? true) : true
         }

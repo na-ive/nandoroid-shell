@@ -53,3 +53,5 @@ WeatherCard WeatherCard.qml
 ScreenshotOverlay ScreenshotOverlay.qml
 AccentPicker AccentPicker.qml
 AccentPickerOverlay AccentPickerOverlay.qml
+ClippedFilledCircularProgress ClippedFilledCircularProgress.qml
+ClippedOutlineCircularProgress ClippedOutlineCircularProgress.qml

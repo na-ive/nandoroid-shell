@@ -337,6 +337,7 @@ Singleton {
                 property bool showSystemMonitorSwap: false
                 property bool showSystemMonitorTemp: true
                 property bool showSystemMonitorText: false
+                property string systemMonitorStyle: "outline"
                 property string textColorMode: "adaptive" 
                 property bool useGradient: true
                 property int backgroundStyle: 0
