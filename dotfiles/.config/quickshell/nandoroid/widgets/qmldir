@@ -60,3 +60,5 @@ StyledImage StyledImage.qml
 DesktopWidgetsSubmenu DesktopWidgetsSubmenu.qml
 ColorPickerButton ColorPickerButton.qml
 DesktopMediaWidget DesktopMediaWidget.qml
+DesktopSystemMonitorWidget DesktopSystemMonitorWidget.qml
+

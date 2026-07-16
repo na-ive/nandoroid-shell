@@ -295,6 +295,14 @@ Singleton {
                     property real desktopRightX: -1
                     property bool showLyrics: false
                 }
+
+                property JsonObject systemMonitor: JsonObject {
+                    property bool showOnDesktop: false
+                    property bool locked: false
+                    property bool vertical: false
+                    property real desktopX: -1
+                    property real desktopY: -1
+                }
                 
                 property JsonObject lyrics: JsonObject {
                     property bool showFloatingLyrics: false

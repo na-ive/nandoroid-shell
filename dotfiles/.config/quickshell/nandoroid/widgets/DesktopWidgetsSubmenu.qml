@@ -109,5 +109,13 @@ Item {
             toggleChecked: Config.ready && Config.options.appearance.mediaWidget.showOnDesktop
             onCustomToggled: if (Config.ready) Config.options.appearance.mediaWidget.showOnDesktop = !Config.options.appearance.mediaWidget.showOnDesktop
         }
+
+        SubmenuItem {
+            menuText: "System Monitor"
+            widgetLocked: Config.ready ? Config.options.appearance.systemMonitor.locked : false
+            onLockToggled: if (Config.ready) Config.options.appearance.systemMonitor.locked = !Config.options.appearance.systemMonitor.locked
+            toggleChecked: Config.ready && Config.options.appearance.systemMonitor.showOnDesktop
+            onCustomToggled: if (Config.ready) Config.options.appearance.systemMonitor.showOnDesktop = !Config.options.appearance.systemMonitor.showOnDesktop
+        }
     }
 }

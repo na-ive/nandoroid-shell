@@ -366,6 +366,36 @@ Variants {
                     id: desktopMediaWidgetItem
                 }
             }
+
+            AbstractWidget {
+                id: systemMonitorWrapper
+                z: 10
+                width: desktopSystemMonitorWidgetItem.width
+                height: desktopSystemMonitorWidgetItem.height
+                gridSize: 12
+                configObject: Config.ready ? Config.options.appearance.systemMonitor : null
+                visible: Config.ready && Config.options.appearance.systemMonitor.showOnDesktop && !GlobalStates.screenLocked
+                opacity: visible ? 1 : 0
+                Behavior on opacity { NumberAnimation { duration: 300 } }
+
+                x: Config.ready && Config.options.appearance.systemMonitor.desktopX !== -1 ? Config.options.appearance.systemMonitor.desktopX : 64
+                y: Config.ready && Config.options.appearance.systemMonitor.desktopY !== -1 ? Config.options.appearance.systemMonitor.desktopY : 300
+
+                onDragFinished: (newX, newY) => {
+                    if (Config.ready) {
+                        Config.options.appearance.systemMonitor.desktopX = newX;
+                        Config.options.appearance.systemMonitor.desktopY = newY;
+                    }
+                }
+
+                onRequestContextMenu: (reqX, reqY) => {
+                    desktopContextMenu.openAt(reqX, reqY, Config.options.appearance.systemMonitor, "System Monitor", "System Monitor");
+                }
+
+                DesktopSystemMonitorWidget {
+                    id: desktopSystemMonitorWidgetItem
+                }
+            }
         }
 
         Timer {
@@ -414,6 +444,14 @@ Variants {
                 widgetConfig = Config.options.appearance.mediaWidget;
                 widgetTitle = "Media Player";
                 widgetKeyword = "Media Player";
+            }
+            // Check if system monitor widget is clicked
+            else if (systemMonitorWrapper && systemMonitorWrapper.visible &&
+                     x >= systemMonitorWrapper.x && x <= systemMonitorWrapper.x + systemMonitorWrapper.width &&
+                     y >= systemMonitorWrapper.y && y <= systemMonitorWrapper.y + systemMonitorWrapper.height) {
+                widgetConfig = Config.options.appearance.systemMonitor;
+                widgetTitle = "System Monitor";
+                widgetKeyword = "System Monitor";
             }
 
             desktopContextMenu.close();
