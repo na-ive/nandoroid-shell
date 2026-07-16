@@ -182,8 +182,12 @@ Variants {
                 height: nandoClockItem.height
                 gridSize: 24
                 configObject: Config.ready ? Config.options.appearance.clock : null
+                
+                animateXPos: false
+                animateYPos: false
 
                 property string activeAlign: nandoClockItem.alignment
+                snapAlign: activeAlign
 
                 property bool _canUpdateAnchor: false
                 
@@ -192,6 +196,21 @@ Variants {
                     interval: 500
                     running: Config.ready
                     onTriggered: clockWrapper._canUpdateAnchor = true
+                }
+
+                Timer {
+                    id: convertResetToAnchorTimer
+                    interval: 100
+                    running: Config.ready && Config.options.appearance.clock.desktopX === -1 && parent.width > 0 && width > 0
+                    onTriggered: {
+                        let cx = parent.width / 2;
+                        let cy = parent.height / 2;
+                        Config.options.appearance.clock.desktopX = cx - (width / 2);
+                        Config.options.appearance.clock.desktopCenterX = cx;
+                        Config.options.appearance.clock.desktopRightX = cx + (width / 2);
+                        Config.options.appearance.clock.desktopY = cy - (height / 2);
+                        Config.options.appearance.clock.desktopCenterY = cy;
+                    }
                 }
 
                 property real targetX: {
@@ -260,6 +279,7 @@ Variants {
                 height: atAGlanceItem.height
                 gridSize: 24
                 configObject: Config.ready ? Config.options.appearance.atAGlance : null
+                snapAlign: Config.ready ? Config.options.appearance.atAGlance.alignment : "left"
                 visible: Config.ready && Config.options.appearance.atAGlance.show && !GlobalStates.screenLocked
                 opacity: visible ? 1 : 0
                 Behavior on opacity { NumberAnimation { duration: 300 } }

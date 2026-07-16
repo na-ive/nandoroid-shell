@@ -16,12 +16,13 @@ import "../../core"
  */
 MouseArea {
     id: root
-    property alias animateXPos: xBehavior.enabled
-    property alias animateYPos: yBehavior.enabled
+    property bool animateXPos: !root.dragging && root.isLoaded
+    property bool animateYPos: !root.dragging && root.isLoaded
     property var configObject: null
     property bool draggable: configObject ? !configObject.locked : true
     property int gridSize: 24
     property bool snapEnabled: true
+    property string snapAlign: "left"
     property int centerSnapMargin: 12
     readonly property bool dragging: drag.active
 
@@ -55,6 +56,17 @@ MouseArea {
         if (Math.abs(value - centerTarget) < centerSnapMargin) {
             return centerTarget;
         }
+
+        if (snapAlign === "right") {
+            let rightEdge = value + root.width;
+            let snappedRight = Math.round(rightEdge / root.gridSize) * root.gridSize;
+            return snappedRight - root.width;
+        } else if (snapAlign === "center") {
+            let centerPoint = value + root.width / 2;
+            let snappedCenter = Math.round(centerPoint / root.gridSize) * root.gridSize;
+            return snappedCenter - root.width / 2;
+        }
+
         return Math.round(value / root.gridSize) * root.gridSize;
     }
 
@@ -138,13 +150,11 @@ MouseArea {
     }
 
     Behavior on x {
-        id: xBehavior
-        enabled: !root.dragging && root.isLoaded
+        enabled: animateXPos
         NumberAnimation { duration: 300; easing.type: Easing.OutExpo }
     }
     Behavior on y {
-        id: yBehavior
-        enabled: !root.dragging && root.isLoaded
+        enabled: animateYPos
         NumberAnimation { duration: 300; easing.type: Easing.OutExpo }
     }
 }
