@@ -58,3 +58,4 @@ ClippedOutlineCircularProgress ClippedOutlineCircularProgress.qml
 Carousel Carousel.qml
 StyledImage StyledImage.qml
 DesktopWidgetsSubmenu DesktopWidgetsSubmenu.qml
+ColorPickerButton ColorPickerButton.qml

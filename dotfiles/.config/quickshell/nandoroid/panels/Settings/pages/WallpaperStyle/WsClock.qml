@@ -50,7 +50,7 @@ ColumnLayout {
                 color: Appearance.colors.colPrimary
             }
             StyledText {
-                text: "Clock Style"
+                text: "Clock"
                 font.pixelSize: Appearance.font.pixelSize.large
                 font.weight: Font.Medium
                 color: Appearance.colors.colOnLayer1
@@ -220,15 +220,15 @@ ColumnLayout {
                     columns: 2
                     Layout.fillWidth: true
                     rowSpacing: 12 * Appearance.effectiveScale
-                    StyledText { text: "Color Style"; color: Appearance.colors.colOnLayer1 }
+                    StyledText { text: "Color"; color: Appearance.colors.colOnLayer1 }
                     Row {
                         Layout.alignment: Qt.AlignRight
                         spacing: 2 * Appearance.effectiveScale
                         Repeater {
                             model: ["primary", "secondary", "onSurface", "surface"]
-                            delegate: SegmentedButton {
+                            delegate: ColorPickerButton {
                                 required property string modelData
-                                buttonText: modelData.charAt(0).toUpperCase() + modelData.slice(1)
+                                colorString: modelData
                                 isHighlighted: Config.ready && advancedPanel.digitalCfg.colorStyle === modelData
                                 onClicked: advancedPanel.digitalCfg.colorStyle = modelData
                             }
@@ -437,9 +437,9 @@ ColumnLayout {
                         spacing: 2 * Appearance.effectiveScale
                         Repeater {
                             model: ["primary", "secondary", "tertiary", "onSurface", "surface"]
-                            delegate: SegmentedButton {
+                            delegate: ColorPickerButton {
                                 required property string modelData
-                                buttonText: modelData.charAt(0).toUpperCase() + modelData.slice(1)
+                                colorString: modelData
                                 isHighlighted: Config.ready && advancedPanel.codeCfg.valueColorStyle === modelData
                                 onClicked: advancedPanel.codeCfg.valueColorStyle = modelData
                             }
@@ -451,9 +451,9 @@ ColumnLayout {
                         spacing: 2 * Appearance.effectiveScale
                         Repeater {
                             model: ["primary", "secondary", "tertiary", "onSurface", "surface"]
-                            delegate: SegmentedButton {
+                            delegate: ColorPickerButton {
                                 required property string modelData
-                                buttonText: modelData.charAt(0).toUpperCase() + modelData.slice(1)
+                                colorString: modelData
                                 isHighlighted: Config.ready && advancedPanel.codeCfg.keywordColorStyle === modelData
                                 onClicked: advancedPanel.codeCfg.keywordColorStyle = modelData
                             }
@@ -465,9 +465,9 @@ ColumnLayout {
                         spacing: 2 * Appearance.effectiveScale
                         Repeater {
                             model: ["primary", "secondary", "tertiary", "onSurface", "surface"]
-                            delegate: SegmentedButton {
+                            delegate: ColorPickerButton {
                                 required property string modelData
-                                buttonText: modelData.charAt(0).toUpperCase() + modelData.slice(1)
+                                colorString: modelData
                                 isHighlighted: Config.ready && advancedPanel.codeCfg.blockColorStyle === modelData
                                 onClicked: advancedPanel.codeCfg.blockColorStyle = modelData
                             }
@@ -520,9 +520,9 @@ ColumnLayout {
                         spacing: 2 * Appearance.effectiveScale
                         Repeater {
                             model: ["primary", "secondary", "tertiary", "error", "onSurface"]
-                            delegate: SegmentedButton {
+                            delegate: ColorPickerButton {
                                 required property string modelData
-                                buttonText: modelData.charAt(0).toUpperCase() + modelData.slice(1)
+                                colorString: modelData
                                 isHighlighted: Config.ready && advancedPanel.stackedCfg.colorStyle === modelData
                                 onClicked: advancedPanel.stackedCfg.colorStyle = modelData
                             }
@@ -534,9 +534,9 @@ ColumnLayout {
                         spacing: 2 * Appearance.effectiveScale
                         Repeater {
                             model: ["primary", "secondary", "tertiary", "onSurface", "surface"]
-                            delegate: SegmentedButton {
+                            delegate: ColorPickerButton {
                                 required property string modelData
-                                buttonText: modelData.charAt(0).toUpperCase() + modelData.slice(1)
+                                colorString: modelData
                                 isHighlighted: Config.ready && advancedPanel.stackedCfg.textColorStyle === modelData
                                 onClicked: advancedPanel.stackedCfg.textColorStyle = modelData
                             }
@@ -595,9 +595,9 @@ ColumnLayout {
                         spacing: 2 * Appearance.effectiveScale
                         Repeater {
                             model: ["primary", "secondary", "onSurface", "surface", "error"]
-                            delegate: SegmentedButton {
+                            delegate: ColorPickerButton {
                                 required property string modelData
-                                buttonText: modelData.charAt(0).toUpperCase() + modelData.slice(1)
+                                colorString: modelData
                                 isHighlighted: Config.ready && advancedPanel.textCfg.timeColorStyle === modelData
                                 onClicked: advancedPanel.textCfg.timeColorStyle = modelData
                             }
@@ -609,9 +609,9 @@ ColumnLayout {
                         spacing: 2 * Appearance.effectiveScale
                         Repeater {
                             model: ["primary", "secondary", "onSurface", "surface", "error"]
-                            delegate: SegmentedButton {
+                            delegate: ColorPickerButton {
                                 required property string modelData
-                                buttonText: modelData.charAt(0).toUpperCase() + modelData.slice(1)
+                                colorString: modelData
                                 isHighlighted: Config.ready && advancedPanel.textCfg.dateColorStyle === modelData
                                 onClicked: advancedPanel.textCfg.dateColorStyle = modelData
                             }
@@ -670,9 +670,9 @@ ColumnLayout {
                         spacing: 2 * Appearance.effectiveScale
                         Repeater {
                             model: ["primary", "secondary", "onSurface", "surface"]
-                            delegate: SegmentedButton {
+                            delegate: ColorPickerButton {
                                 required property string modelData
-                                buttonText: modelData.charAt(0).toUpperCase() + modelData.slice(1)
+                                colorString: modelData
                                 isHighlighted: Config.ready && advancedPanel.pillCfg.timeColorStyle === modelData
                                 onClicked: advancedPanel.pillCfg.timeColorStyle = modelData
                             }
@@ -684,14 +684,9 @@ ColumnLayout {
                         spacing: 2 * Appearance.effectiveScale
                         Repeater {
                             model: ["primaryContainer", "secondaryContainer", "surfaceContainerHigh", "surfaceContainerLowest"]
-                            delegate: SegmentedButton {
+                            delegate: ColorPickerButton {
                                 required property string modelData
-                                buttonText: {
-                                    if (modelData === "surfaceContainerHigh") return "Surface";
-                                    if (modelData === "primaryContainer") return "Primary";
-                                    if (modelData === "secondaryContainer") return "Secondary";
-                                    return "Glass";
-                                }
+                                colorString: modelData
                                 isHighlighted: Config.ready && advancedPanel.pillCfg.pillColorStyle === modelData
                                 onClicked: advancedPanel.pillCfg.pillColorStyle = modelData
                             }

@@ -237,14 +237,11 @@ ColumnLayout {
                         Layout.alignment: Qt.AlignRight; spacing: 2 * Appearance.effectiveScale
                         Repeater {
                             model: ["primary", "secondary", "tertiary", "error", "surface", "onSurface"]
-                            delegate: SegmentedButton {
+                            delegate: ColorPickerButton {
                                 required property string modelData
-                                buttonText: modelData.charAt(0).toUpperCase() + modelData.slice(1)
+                                colorString: modelData
                                 isHighlighted: Config.ready && Config.options.appearance.atAGlance.greetingColorStyle === modelData
-                                colActive: Appearance.m3colors.m3primary
-                                colActiveText: Appearance.m3colors.m3onPrimary
-                                colInactive: Appearance.m3colors.m3surfaceContainerLow
-                                onClicked: if (Config.ready) Config.options.appearance.atAGlance.greetingColorStyle = modelData
+                                onClicked: Config.options.appearance.atAGlance.greetingColorStyle = modelData
                             }
                         }
                     }
@@ -278,14 +275,11 @@ ColumnLayout {
                         Layout.alignment: Qt.AlignRight; spacing: 2 * Appearance.effectiveScale
                         Repeater {
                             model: ["primary", "secondary", "tertiary", "surface", "onSurface", "onLayer1"]
-                            delegate: SegmentedButton {
+                            delegate: ColorPickerButton {
                                 required property string modelData
-                                buttonText: modelData.charAt(0).toUpperCase() + modelData.slice(1)
+                                colorString: modelData
                                 isHighlighted: Config.ready && Config.options.appearance.atAGlance.dateColorStyle === modelData
-                                colActive: Appearance.m3colors.m3primary
-                                colActiveText: Appearance.m3colors.m3onPrimary
-                                colInactive: Appearance.m3colors.m3surfaceContainerLow
-                                onClicked: if (Config.ready) Config.options.appearance.atAGlance.dateColorStyle = modelData
+                                onClicked: Config.options.appearance.atAGlance.dateColorStyle = modelData
                             }
                         }
                     }
@@ -319,14 +313,11 @@ ColumnLayout {
                         Layout.alignment: Qt.AlignRight; spacing: 2 * Appearance.effectiveScale
                         Repeater {
                             model: ["primary", "secondary", "tertiary", "surface", "onSurface", "onLayer1"]
-                            delegate: SegmentedButton {
+                            delegate: ColorPickerButton {
                                 required property string modelData
-                                buttonText: modelData.charAt(0).toUpperCase() + modelData.slice(1)
+                                colorString: modelData
                                 isHighlighted: Config.ready && Config.options.appearance.atAGlance.quoteColorStyle === modelData
-                                colActive: Appearance.m3colors.m3primary
-                                colActiveText: Appearance.m3colors.m3onPrimary
-                                colInactive: Appearance.m3colors.m3surfaceContainerLow
-                                onClicked: if (Config.ready) Config.options.appearance.atAGlance.quoteColorStyle = modelData
+                                onClicked: Config.options.appearance.atAGlance.quoteColorStyle = modelData
                             }
                         }
                     }
