@@ -5,8 +5,11 @@ import Quickshell
 import Quickshell.Io
 import Quickshell.Wayland
 import Quickshell.Hyprland
+import Qt.labs.folderlistmodel
 import "../core"
+import "../core/functions" as Functions
 import "../services"
+import Qt5Compat.GraphicalEffects
 
 /**
  * DesktopContextMenu.qml
@@ -45,11 +48,109 @@ PanelWindow {
         onPressed: root.close()
     }
 
+    // Wallpaper folder images
+    FolderListModel {
+        id: wallpaperFolder
+        folder: {
+            const wallPath = Config.options?.appearance?.background?.wallpaperPath ?? ""
+            if (!wallPath || wallPath.length === 0) return ""
+            const lastSlash = wallPath.lastIndexOf("/")
+            return "file://" + wallPath.substring(0, lastSlash)
+        }
+        showDirs: false
+        nameFilters: ["*.jpg", "*.jpeg", "*.png", "*.webp"]
+    }
+
+    property int carouselExtraCount: 5
+    property var randomWallpapers: {
+        const current = Functions.FileUtils.trimFileProtocol(Config.options?.appearance?.background?.wallpaperPath ?? "")
+        let all = []
+        for (let i = 0; i < wallpaperFolder.count; i++) {
+            const fp = Functions.FileUtils.trimFileProtocol(wallpaperFolder.get(i, "filePath").toString())
+            if (fp !== current) all.push(fp)
+        }
+        for (let i = all.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            let temp = all[i];
+            all[i] = all[j];
+            all[j] = temp;
+        }
+        return all.slice(0, carouselExtraCount)
+    }
+
+    property var carouselModel: {
+        const current = Functions.FileUtils.trimFileProtocol(Config.options?.appearance?.background?.wallpaperPath ?? "")
+        if (!current || current.length === 0) return randomWallpapers
+        return [current, ...randomWallpapers]
+    }
+
+    Rectangle {
+        id: carouselContainer
+        visible: root.activeConfigObject === null && opacity > 0
+        
+        // Dynamically position above or below based on available space
+        property real preferredY: root.targetY - height - 8 * Appearance.effectiveScale
+        y: preferredY < 10 * Appearance.effectiveScale 
+            ? root.targetY + menuContainer.height + 8 * Appearance.effectiveScale
+            : preferredY
+        
+        // Align horizontally with menuContainer, centering if carousel is wider, but keep on screen
+        property real preferredX: root.targetX - (implicitWidth - menuContainer.width) / 2
+        x: Math.max(10 * Appearance.effectiveScale, Math.min(preferredX, root.screen.width - implicitWidth - 10 * Appearance.effectiveScale))
+            
+        implicitWidth: 348 * Appearance.effectiveScale
+        implicitHeight: 160 * Appearance.effectiveScale
+        radius: Appearance.rounding.extraLarge
+        color: Appearance.colors.colLayer0
+        border.color: Appearance.colors.colOutlineVariant
+        border.width: Math.max(1, 1 * Appearance.effectiveScale)
+        
+        opacity: root.visible ? 0.98 : 0
+        scale: root.visible ? 1 : 0.95
+
+        Behavior on opacity {
+            NumberAnimation {
+                duration: root.isClosing ? Appearance.animation.elementMoveExit.duration : Appearance.animation.elementMoveEnter.duration
+                easing.bezierCurve: root.isClosing ? Appearance.animationCurves.emphasizedAccel : Appearance.animationCurves.expressiveDefaultSpatial
+            }
+        }
+        
+        Behavior on scale {
+            NumberAnimation {
+                duration: root.isClosing ? Appearance.animation.elementMoveExit.duration : Appearance.animation.elementMoveEnter.duration
+                easing.bezierCurve: root.isClosing ? Appearance.animationCurves.emphasizedAccel : Appearance.animationCurves.expressiveDefaultSpatial
+            }
+        }
+        
+        // Prevent clicks on the menu from closing it
+        MouseArea {
+            anchors.fill: parent
+            onPressed: (mouse) => mouse.accepted = true
+        }
+
+        Carousel {
+            id: wallpaperCarousel
+            anchors.fill: parent
+            anchors.margins: 10 * Appearance.effectiveScale
+            model: root.carouselModel
+            onWallpaperSelected: (path) => {
+                Wallpapers.select(path, Appearance.m3colors.darkmode)
+                root.close()
+            }
+            onOpenMoreWallpapers: {
+                GlobalStates.wallpaperSelectorOpen = true
+                root.close()
+            }
+        }
+    }
+
     Rectangle {
         id: menuContainer
         x: root.targetX
         y: root.targetY
-        implicitWidth: Math.max(Appearance.sizes.contextMenuWidth, menuLayout.implicitWidth + (12 * Appearance.effectiveScale))
+        implicitWidth: root.activeConfigObject === null 
+            ? (348 * Appearance.effectiveScale) 
+            : Math.max(Appearance.sizes.contextMenuWidth, menuLayout.implicitWidth + (12 * Appearance.effectiveScale))
         implicitHeight: menuLayout.implicitHeight + (12 * Appearance.effectiveScale)
         
         radius: Appearance.rounding.normal
@@ -107,92 +208,77 @@ PanelWindow {
                 menuIcon: "settings" // Generic settings icon for widgets
                 onClicked: {
                     GlobalStates.settingsPageIndex = 5 // Widgets panel is index 5
-                    SearchRegistry.currentSearch = "" 
                     SearchRegistry.currentSearch = root.activeWidgetSearchKeyword
-                    GlobalStates.settingsOpen = true
+                    GlobalStates.activateSettings()
                     root.close()
                 }
             }
 
             // --- General Desktop Items ---
+
+            MenuItem {
+                id: widgetsRow
+                visible: root.activeConfigObject === null
+                menuText: "Widgets"
+                menuIcon: "widgets"
+                rightIcon: "chevron_right"
+                
+                Component {
+                    id: widgetsSubmenu
+                    DesktopWidgetsSubmenu {}
+                }
+                
+                HoverHandler {
+                    onHoveredChanged: {
+                        if (hovered) {
+                            submenuCloseTimer.stop()
+                            root.openSubmenuComponent = widgetsSubmenu
+                            root.submenuAnchorY = menuContainer.y + widgetsRow.mapToItem(menuContainer, 0, 0).y
+                        } else {
+                            submenuCloseTimer.restart()
+                        }
+                    }
+                }
+                
+                onClicked: {
+                    GlobalStates.settingsPageIndex = 5 // Widgets panel
+                    SearchRegistry.currentSearch = ""
+                    GlobalStates.activateSettings()
+                    root.close()
+                }
+            }
+
+            
             MenuItem {
                 visible: root.activeConfigObject === null
-                menuText: "Search (Spotlight)"
-                menuIcon: "search"
+                menuText: "Display settings"
+                menuIcon: "monitor"
+                
+                HoverHandler {
+                    onHoveredChanged: if (hovered) root.openSubmenuComponent = null
+                }
+                
                 onClicked: {
-                    GlobalStates.spotlightOpen = true
+                    GlobalStates.settingsPageIndex = 3 // Display
+                    SearchRegistry.currentSearch = ""
+                    GlobalStates.activateSettings()
                     root.close()
                 }
             }
 
             MenuItem {
                 visible: root.activeConfigObject === null
-                menuText: "Overview"
-                menuIcon: "grid_view"
-                onClicked: {
-                    GlobalStates.overviewOpen = true
-                    root.close()
+                menuText: "Wallpaper & style"
+                menuIcon: "format_paint"
+                
+                HoverHandler {
+                    onHoveredChanged: if (hovered) root.openSubmenuComponent = null
                 }
-            }
-
-            MenuItem {
-                visible: root.activeConfigObject === null
-                menuText: "Wallpaper & Styles"
-                menuIcon: "palette"
+                
                 onClicked: {
                     GlobalStates.settingsPageIndex = 4 // Wallpaper & Style
-                    GlobalStates.settingsOpen = true
-                    root.close()
-                }
-            }
-            
-            MenuItem {
-                visible: root.activeConfigObject === null
-                menuText: "Dashboard"
-                menuIcon: "dashboard"
-                onClicked: {
-                    GlobalStates.dashboardOpen = true
-                    root.close()
-                }
-            }
-
-            // Separator
-            Rectangle {
-                visible: root.activeConfigObject === null
-                Layout.fillWidth: true
-                Layout.preferredHeight: Math.max(1, 1 * Appearance.effectiveScale)
-                Layout.leftMargin: 12 * Appearance.effectiveScale
-                Layout.rightMargin: 12 * Appearance.effectiveScale
-                color: Appearance.colors.colOutlineVariant
-                opacity: 0.3
-            }
-
-            MenuItem {
-                visible: root.activeConfigObject === null
-                menuText: "System Monitor"
-                menuIcon: "monitoring"
-                onClicked: {
-                    GlobalStates.systemMonitorOpen = true
-                    root.close()
-                }
-            }
-            
-            MenuItem {
-                visible: root.activeConfigObject === null
-                menuText: "Terminal"
-                menuIcon: "terminal"
-                onClicked: {
-                    terminalProcess.running = true
-                    root.close()
-                }
-            }
-
-            MenuItem {
-                visible: root.activeConfigObject === null
-                menuText: "Lock Screen"
-                menuIcon: "lock"
-                onClicked: {
-                    GlobalStates.screenLocked = true
+                    SearchRegistry.currentSearch = ""
+                    GlobalStates.activateSettings()
                     root.close()
                 }
             }
@@ -209,6 +295,7 @@ PanelWindow {
         id: itemRoot
         property string menuText: ""
         property string menuIcon: ""
+        property string rightIcon: ""
         
         Layout.fillWidth: true
         Layout.preferredHeight: Appearance.sizes.contextMenuItemHeight
@@ -239,11 +326,66 @@ PanelWindow {
                 color: Appearance.colors.colOnLayer0
                 Layout.fillWidth: true
             }
+            
+            MaterialSymbol {
+                visible: itemRoot.rightIcon !== ""
+                text: itemRoot.rightIcon
+                iconSize: Appearance.sizes.iconSize * 0.9
+                color: Appearance.colors.colOnLayer0
+                Layout.alignment: Qt.AlignRight
+            }
         }
+    }
+
+    Loader {
+        id: submenuLoader
+        active: root.openSubmenuComponent !== null && root.visible
+        sourceComponent: root.openSubmenuComponent
+        x: Math.min(menuContainer.x + menuContainer.width + 12 * Appearance.effectiveScale, root.screen.width - width - 12 * Appearance.effectiveScale)
+        y: Math.min(root.submenuAnchorY, root.screen.height - height - 12 * Appearance.effectiveScale)
+        
+        HoverHandler {
+            onHoveredChanged: {
+                if (hovered) submenuCloseTimer.stop()
+                else submenuCloseTimer.restart()
+            }
+        }
+        
+        onLoaded: {
+            item.opacity = 0
+            item.scale = 0.95
+            opacityAnim.start()
+            scaleAnim.start()
+        }
+        
+        NumberAnimation {
+            id: opacityAnim
+            target: submenuLoader.item
+            property: "opacity"
+            to: 1
+            duration: Appearance.animation.elementMoveEnter.duration
+            easing.bezierCurve: Appearance.animationCurves.expressiveDefaultSpatial
+        }
+        NumberAnimation {
+            id: scaleAnim
+            target: submenuLoader.item
+            property: "scale"
+            to: 1
+            duration: Appearance.animation.elementMoveEnter.duration
+            easing.bezierCurve: Appearance.animationCurves.expressiveDefaultSpatial
+        }
+    }
+
+    Timer {
+        id: submenuCloseTimer
+        interval: 150
+        onTriggered: root.openSubmenuComponent = null
     }
 
     // Animation state
     property bool isClosing: false
+    property var openSubmenuComponent: null
+    property real submenuAnchorY: 0
 
     Timer {
         id: hideTimer
@@ -254,6 +396,7 @@ PanelWindow {
             root.activeConfigObject = null;
             root.activeWidgetName = "";
             root.activeWidgetSearchKeyword = "";
+            root.openSubmenuComponent = null;
             GlobalStates.desktopContextMenuOpen = false;
         }
     }
@@ -287,6 +430,8 @@ PanelWindow {
             
             menuContainer.opacity = 0.98;
             menuContainer.scale = 1;
+            carouselContainer.opacity = 0.98;
+            carouselContainer.scale = 1;
         });
     }
 
@@ -295,6 +440,8 @@ PanelWindow {
         root.isClosing = true
         menuContainer.opacity = 0;
         menuContainer.scale = 0.95;
+        carouselContainer.opacity = 0;
+        carouselContainer.scale = 0.95;
         hideTimer.start();
     }
 
@@ -303,6 +450,8 @@ PanelWindow {
         if (!visible) {
             menuContainer.opacity = 0;
             menuContainer.scale = 0.95;
+            carouselContainer.opacity = 0;
+            carouselContainer.scale = 0.95;
             menuClosed();
         }
     }

@@ -55,3 +55,6 @@ AccentPicker AccentPicker.qml
 AccentPickerOverlay AccentPickerOverlay.qml
 ClippedFilledCircularProgress ClippedFilledCircularProgress.qml
 ClippedOutlineCircularProgress ClippedOutlineCircularProgress.qml
+Carousel Carousel.qml
+StyledImage StyledImage.qml
+DesktopWidgetsSubmenu DesktopWidgetsSubmenu.qml
