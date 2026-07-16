@@ -9,8 +9,8 @@ import "."
 
 Item {
     id: root
-    implicitWidth: 432 * Appearance.effectiveScale
-    implicitHeight: 216 * Appearance.effectiveScale
+    implicitWidth: 438 * Appearance.effectiveScale
+    implicitHeight: 228 * Appearance.effectiveScale
 
     property bool showLyrics: Config.options.appearance.mediaWidget.showLyrics
     property bool viewLyrics: false
@@ -78,18 +78,21 @@ Item {
     StackLayout {
         id: mainStack
         anchors.fill: parent
+        anchors.margins: 17 * Appearance.effectiveScale
+        anchors.bottomMargin: 22 * Appearance.effectiveScale
         currentIndex: viewLyrics ? 1 : 0
 
         // PAGE 0: Media Control & Info View
         ColumnLayout {
-            anchors.fill: parent
-            anchors.margins: 17 * Appearance.effectiveScale
-            anchors.bottomMargin: 22 * Appearance.effectiveScale
+            Layout.fillWidth: true
+            Layout.fillHeight: true
             spacing: 2 * Appearance.effectiveScale // Tighter spacing for title/artist
 
-            // 1. TITLE (Centered)
+            // 1. TITLE (Centered, bounded from lyrics button)
             StyledText {
                 Layout.fillWidth: true
+                Layout.leftMargin: 48 * Appearance.effectiveScale
+                Layout.rightMargin: 48 * Appearance.effectiveScale
                 horizontalAlignment: Text.AlignHCenter
                 text: Functions.StringUtils.cleanMusicTitle(MprisController.trackTitle) || "No Music Playing"
                 font.pixelSize: Appearance.font.pixelSize.normal
@@ -98,11 +101,20 @@ Item {
                 elide: Text.ElideRight
             }
 
-            // 2. ARTIST (Centered)
+            // 2. ARTIST (Centered, bounded from lyrics button)
             StyledText {
                 Layout.fillWidth: true
+                Layout.leftMargin: 48 * Appearance.effectiveScale
+                Layout.rightMargin: 48 * Appearance.effectiveScale
                 horizontalAlignment: Text.AlignHCenter
-                text: MprisController.trackArtist || "Tap to Play"
+                text: {
+                    let hasTitle = MprisController.trackTitle && MprisController.trackTitle.trim() !== "";
+                    let hasArtist = MprisController.trackArtist && MprisController.trackArtist.trim() !== "";
+                    if (hasTitle) {
+                        return hasArtist ? MprisController.trackArtist : "Unknown Artist";
+                    }
+                    return "Play some media";
+                }
                 font.pixelSize: Appearance.font.pixelSize.smaller
                 font.weight: Font.DemiBold
                 color: Functions.ColorUtils.applyAlpha(Appearance.colors.colPrimary, 0.75) // Artist subtitle on dark card
@@ -250,9 +262,9 @@ Item {
 
         // PAGE 1: Lyrics View (Clean 5 Lines Display)
         ColumnLayout {
-            anchors.fill: parent
-            anchors.margins: 17 * Appearance.effectiveScale
-            anchors.bottomMargin: 17 * Appearance.effectiveScale
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            spacing: 0
 
             Item { Layout.fillHeight: true } // Spacer
 
@@ -291,8 +303,8 @@ Item {
                             let alpha = isOuter ? 0.25 : 0.45;
                             return Functions.ColorUtils.applyAlpha(Appearance.colors.colPrimary, alpha);
                         }
-                        elide: Text.ElideRight
-                        maximumLineCount: 1 // Single line to fit 5 lines perfectly without overflow
+                        elide: modelData === LyricsService.before ? Text.ElideNone : Text.ElideRight
+                        maximumLineCount: modelData === LyricsService.before ? 2 : 1 // Active line can wrap up to 2 lines for karaoke
                         
                         Behavior on font.pixelSize { NumberAnimation { duration: 200 } }
                         Behavior on color { ColorAnimation { duration: 200 } }
