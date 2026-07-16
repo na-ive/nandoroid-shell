@@ -69,6 +69,7 @@ Scope {
                 if (!GlobalStates.settingsOpen) {
                     GlobalStates.settingsPageIndex = 0;
                     GlobalStates.settingsBluetoothPairMode = false;
+                    SearchRegistry.currentSearch = ""; // Clear active search to allow re-triggering the same query next time
                     searchInput.text = ""; // Reset search text
                     searchInput.hasNoResults = false;
                 }
