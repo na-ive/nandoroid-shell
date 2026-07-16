@@ -58,6 +58,13 @@ Variants {
             repeat: false
         }
 
+        property bool isWorkspaceChanging: false
+        Timer {
+            id: wsChangeBlockTimer
+            interval: 250
+            onTriggered: widgetRoot.isWorkspaceChanging = false
+        }
+
         function forceTop() {
             forceHideTimer.restart();
         }
@@ -114,7 +121,7 @@ Variants {
             property bool isDragging: false
             
             onPressed: (mouse) => {
-                if (mouse.button === Qt.RightButton && widgetRoot.isDesktopEmpty) {
+                if (mouse.button === Qt.RightButton && widgetRoot.isDesktopEmpty && !widgetRoot.isWorkspaceChanging) {
                     desktopContextMenu.openAt(mouse.x, mouse.y, null);
                     mouse.accepted = true;
                     return;
@@ -366,6 +373,8 @@ Variants {
         Connections {
             target: HyprlandData
             function onActiveWorkspaceChanged() {
+                widgetRoot.isWorkspaceChanging = true;
+                wsChangeBlockTimer.restart();
                 desktopContextMenu.close();
             }
         }
