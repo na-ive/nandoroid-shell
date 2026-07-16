@@ -353,12 +353,11 @@ Item {
     // Toggle Handle to switch layout direction (only visible when hovered and not locked)
     Rectangle {
         id: toggleHandle
-        width: 18 * Appearance.effectiveScale
-        height: 18 * Appearance.effectiveScale
-        radius: 6 * Appearance.effectiveScale
-        color: Appearance.colors.colPrimaryContainer
-        border.color: Appearance.colors.colPrimary
-        border.width: 1
+        z: 10 // Lift button above the passthrough widgetMouseArea
+        width: 24 * Appearance.effectiveScale
+        height: 24 * Appearance.effectiveScale
+        radius: 8 * Appearance.effectiveScale
+        color: Appearance.colors.colSurfaceVariant
         
         anchors {
             right: parent.right
@@ -375,17 +374,9 @@ Item {
 
         MaterialSymbol {
             anchors.centerIn: parent
-            text: "rotate_right"
-            iconSize: 12 * Appearance.effectiveScale
-            color: Appearance.colors.colOnPrimaryContainer
-
-            RotationAnimation on rotation {
-                running: toggleArea.containsMouse
-                from: 0
-                to: 360
-                duration: 1000
-                loops: Animation.Infinite
-            }
+            text: "screen_rotation"
+            iconSize: 15 * Appearance.effectiveScale
+            color: Appearance.colors.colOnSurfaceVariant
         }
 
         MouseArea {

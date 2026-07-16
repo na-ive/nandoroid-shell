@@ -169,19 +169,19 @@ Item {
     Rectangle {
         id: resizeHandle
         visible: root.interactive && !cfg.locked && (widgetHoverHandler.hovered || resizeArea.containsMouse)
-        width: 32 * Appearance.effectiveScale
-        height: 32 * Appearance.effectiveScale
+        width: 24 * Appearance.effectiveScale
+        height: 24 * Appearance.effectiveScale
         anchors.right: parent.right
         anchors.bottom: parent.bottom
-        anchors.margins: 4 * Appearance.effectiveScale
-        color: resizeArea.containsMouse ? Appearance.m3colors.m3surfaceContainerHigh : Appearance.m3colors.m3surfaceContainer
+        anchors.margins: -8 * Appearance.effectiveScale
+        color: Appearance.colors.colSurfaceVariant
         radius: 8 * Appearance.effectiveScale
 
         MaterialSymbol {
             anchors.centerIn: parent
             text: "swap_horiz"
-            iconSize: 18 * Appearance.effectiveScale
-            color: Appearance.colors.colOnLayer1
+            iconSize: 15 * Appearance.effectiveScale
+            color: Appearance.colors.colOnSurfaceVariant
         }
 
         MouseArea {
