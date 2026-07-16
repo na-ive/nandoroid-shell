@@ -57,16 +57,27 @@ ColumnLayout {
                 Layout.fillWidth: true
             }
             
-            RippleButton {
+            StyledText {
                 visible: !rootClock.dedicatedIsLock
-                Layout.preferredHeight: 32 * Appearance.effectiveScale
-                implicitWidth: 120 * Appearance.effectiveScale
-                buttonText: "Reset Position"
-                onClicked: {
-                    Config.options.appearance.clock.offsetX = 0
-                    Config.options.appearance.clock.offsetY = -50
+                text: "Reset Position"
+                font.pixelSize: Appearance.font.pixelSize.small
+                color: maResetClock.containsMouse ? Appearance.colors.colPrimaryHover : Appearance.colors.colPrimary
+
+                MouseArea {
+                    id: maResetClock
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: {
+                        if (!Config.ready) return;
+                        Config.options.appearance.clock.desktopX = -1;
+                        Config.options.appearance.clock.desktopY = -1;
+                        Config.options.appearance.clock.desktopCenterX = -1;
+                        Config.options.appearance.clock.desktopRightX = -1;
+                        Config.options.appearance.clock.offsetX = 0;
+                        Config.options.appearance.clock.offsetY = -50;
+                    }
                 }
-                colBackground: Appearance.m3colors.m3surfaceContainerHighest
             }
             
             AndroidToggle {

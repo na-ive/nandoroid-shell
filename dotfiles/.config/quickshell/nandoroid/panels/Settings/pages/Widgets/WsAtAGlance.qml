@@ -36,6 +36,24 @@ ColumnLayout {
                 color: Appearance.colors.colOnLayer1
                 Layout.fillWidth: true
             }
+            StyledText {
+                text: "Reset Position"
+                font.pixelSize: Appearance.font.pixelSize.small
+                color: maResetAag.containsMouse ? Appearance.colors.colPrimaryHover : Appearance.colors.colPrimary
+
+                MouseArea {
+                    id: maResetAag
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: {
+                        if (!Config.ready) return;
+                        Config.options.appearance.atAGlance.desktopX = 64;
+                        Config.options.appearance.atAGlance.desktopY = 64;
+                    }
+                }
+            }
+
             AndroidToggle {
                 checked: Config.ready && Config.options.appearance.atAGlance.show
                 onToggled: if (Config.ready) Config.options.appearance.atAGlance.show = !Config.options.appearance.atAGlance.show
