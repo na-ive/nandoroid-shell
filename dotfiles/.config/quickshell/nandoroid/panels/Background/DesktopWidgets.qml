@@ -180,14 +180,14 @@ Variants {
             id: widgetCanvas
             anchors.fill: parent
             z: 9
-            gridSize: 24
+            gridSize: 12
 
             AbstractWidget {
                 id: clockWrapper
                 z: 10
                 width: nandoClockItem.width
                 height: nandoClockItem.height
-                gridSize: 24
+                gridSize: 12
                 configObject: Config.ready ? Config.options.appearance.clock : null
                 
                 animateXPos: false
@@ -284,7 +284,7 @@ Variants {
                 z: 10
                 width: atAGlanceItem.width
                 height: atAGlanceItem.height
-                gridSize: 24
+                gridSize: 12
                 configObject: Config.ready ? Config.options.appearance.atAGlance : null
                 snapAlign: Config.ready ? Config.options.appearance.atAGlance.alignment : "left"
                 visible: Config.ready && Config.options.appearance.atAGlance.show && !GlobalStates.screenLocked
@@ -316,7 +316,7 @@ Variants {
                 z: 10
                 width: desktopMediaWidgetItem.width
                 height: desktopMediaWidgetItem.height
-                gridSize: 24
+                gridSize: 12
                 configObject: Config.ready ? Config.options.appearance.mediaWidget : null
                 visible: Config.ready && Config.options.appearance.mediaWidget.showOnDesktop && !GlobalStates.screenLocked
                 opacity: visible ? 1 : 0

@@ -3,7 +3,7 @@ import "../../core"
 
 Item {
     id: root
-    property int gridSize: 24
+    property int gridSize: 12
     property bool showGrid: false
     readonly property bool isWidgetCanvas: true
 

@@ -20,10 +20,10 @@ MouseArea {
     property bool animateYPos: !root.dragging && root.isLoaded
     property var configObject: null
     property bool draggable: configObject ? !configObject.locked : true
-    property int gridSize: 24
+    property int gridSize: 12
     property bool snapEnabled: true
     property string snapAlign: "left"
-    property int centerSnapMargin: 12
+    property int centerSnapMargin: 6
     readonly property bool dragging: drag.active
 
     signal dragFinished(real newX, real newY)
