@@ -16,6 +16,8 @@ Singleton {
     property int activeIndex: -1
     property string status: "loading"
 
+    property bool desktopWidgetLyricsActive: false
+
     property var slots: []
 
     property int contextLines: (Config.ready && Config.options.appearance.lyrics) ? Config.options.appearance.lyrics.contextLines : 3
@@ -115,7 +117,7 @@ Singleton {
         root.status = "loading"
         root.slots = root.getEmptySlots("Preparing lyrics...")
         
-        if (!Config.options.appearance.lyrics.showFloatingLyrics) {
+        if (!Config.options.appearance.lyrics.showFloatingLyrics && !root.desktopWidgetLyricsActive) {
             root.status = "disabled"
             return
         }
@@ -149,7 +151,7 @@ Singleton {
     Connections {
         target: Config.ready && Config.options.appearance.lyrics ? Config.options.appearance.lyrics : null
         function onShowFloatingLyricsChanged() {
-            if (Config.options.appearance.lyrics.showFloatingLyrics) {
+            if (Config.options.appearance.lyrics.showFloatingLyrics || root.desktopWidgetLyricsActive) {
                 root.restartLyrics()
             } else {
                 lyricsProc.running = false
