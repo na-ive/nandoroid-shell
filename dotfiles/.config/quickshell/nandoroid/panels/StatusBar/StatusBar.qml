@@ -54,9 +54,17 @@ Scope {
 
             readonly property real actualStatusBarHeight: isM3 ? 48 * Appearance.effectiveScale : Appearance.sizes.statusBarHeight
 
+            // Track special workspace to raise layer above it
+            readonly property bool specialWorkspaceActive: {
+                var mon = Hyprland.monitorFor(barWindow.modelData);
+                if (!mon) return false;
+                var swState = HyprlandData.monitorSpecialWorkspace;
+                return swState[mon.name] !== undefined && swState[mon.name] !== "";
+            }
+
             exclusiveZone: (autoHide && !mustShow) ? 0 : actualStatusBarHeight
             WlrLayershell.namespace: "nandoroid:statusbar"
-            WlrLayershell.layer: WlrLayer.Top
+            WlrLayershell.layer: specialWorkspaceActive ? WlrLayer.Overlay : WlrLayer.Top
 
             anchors {
                 left: true

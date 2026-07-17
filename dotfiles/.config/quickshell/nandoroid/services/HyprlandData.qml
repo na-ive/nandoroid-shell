@@ -21,6 +21,11 @@ Singleton {
     property var activeWorkspace: null
     property var monitors: []
     property var activeWindow: null
+    property var monitorSpecialWorkspace: ({}) // monitorName → special name or ""
+
+    function isSpecialActiveOn(monitorName) {
+        return root.monitorSpecialWorkspace[monitorName] !== undefined && root.monitorSpecialWorkspace[monitorName] !== "";
+    }
     
     function hyprlandClientsForWorkspace(workspaceId) {
         return root.windowList.filter(win => win.workspace.id === workspaceId);
@@ -137,6 +142,21 @@ Singleton {
     Component.onCompleted: {
         updateAll();
         fetchInitialLayout();
+        // Check initial special workspace state
+        Qt.callLater(function() {
+            getMonitors.running = true;
+        });
+    }
+
+    // Also populate special workspace from monitor data
+    function reloadSpecialWorkspaceState() {
+        var temp = {};
+        var mons = root.monitors;
+        for (var i = 0; i < mons.length; i++) {
+            var sw = mons[i].specialWorkspace;
+            temp[mons[i].name] = sw && sw.name ? sw.name.replace("special:", "").trim() : "";
+        }
+        root.monitorSpecialWorkspace = temp;
     }
     
     Component.onDestruction: {
@@ -167,6 +187,13 @@ Singleton {
             } else if (name === "activelayout") {
                 // Just refresh data without heavy window listing if possible
                 workspaceUpdateTimer.restart();
+            } else if (name === "activespecial" || name === "activespecialv2") {
+                var parts = event.data.split(',');
+                var monName = name === "activespecial" ? parts[1] : parts[2];
+                var specialName = name === "activespecial" ? parts[0] : parts[1];
+                var temp = Object.assign({}, root.monitorSpecialWorkspace);
+                temp[monName] = specialName.replace("special:", "").trim();
+                root.monitorSpecialWorkspace = temp;
             } else {
                 // Fallback for other events
                 refreshTimer.restart();
@@ -226,7 +253,10 @@ Singleton {
                 const results = monitorsCollector.text.trim();
                 Qt.callLater(() => {
                     try {
-                        if (results) root.monitors = JSON.parse(results);
+                        if (results) {
+                            root.monitors = JSON.parse(results);
+                            root.reloadSpecialWorkspaceState();
+                        }
                     } catch(e) { console.error("HyprlandData: JSON Parse error for monitors", e) }
                 });
             }
