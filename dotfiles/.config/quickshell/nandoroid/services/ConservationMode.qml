@@ -11,6 +11,18 @@ Singleton {
     property bool available: false
     readonly property string sysPath: "/sys/bus/platform/drivers/ideapad_acpi/VPC2004:00/conservation_mode"
 
+    FileView {
+        id: sysfsView
+        path: root.sysPath
+        watchChanges: true
+        onFileChanged: sysfsView.reload()
+        onLoaded: {
+            const val = sysfsView.text().trim();
+            if (val === "1") root.active = true;
+            else if (val === "0") root.active = false;
+        }
+    }
+
     Process {
         id: checkAvailabilityProc
         command: ["bash", "-c", "[ -f " + sysPath + " ] && echo 'yes' || echo 'no'"]
@@ -22,35 +34,16 @@ Singleton {
         }
     }
 
-    Process {
-        id: refreshProc
-        command: ["cat", sysPath]
-        running: available
-        stdout: SplitParser {
-            onRead: data => {
-                const val = data.trim();
-                if (val === "1" || val === "0") {
-                    root.active = val === "1";
-                }
-            }
-        }
-    }
+    onAvailableChanged: if (available) sysfsView.reload()
 
     Process {
         id: toggleProc
-        onExited: refreshProc.running = true
+        onExited: sysfsView.reload()
     }
 
     function toggle() {
         if (!available) return;
         const newState = active ? "0" : "1";
         toggleProc.exec(["pkexec", "sh", "-c", 'echo "$1" > "$2"', "sh", newState, sysPath]);
-    }
-
-    Timer {
-        interval: 10000
-        running: available
-        repeat: true
-        onTriggered: refreshProc.running = true
     }
 }
