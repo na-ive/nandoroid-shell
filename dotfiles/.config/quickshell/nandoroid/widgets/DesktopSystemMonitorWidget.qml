@@ -25,18 +25,6 @@ Item {
     property real cardHeight: isVertical ? (108 * Appearance.effectiveScale) : (108 * Appearance.effectiveScale)
     property real cardWidth: isVertical ? (132 * Appearance.effectiveScale) : ((420 * Appearance.effectiveScale - cardSpacing * 2) / 3)
 
-    // Keep SystemData polling alive while the desktop widget is active
-    Timer {
-        id: refreshTimer
-        interval: 2000
-        running: true
-        repeat: true
-        triggeredOnStart: true
-        onTriggered: {
-            SystemData.update();
-        }
-    }
-
     Grid {
         id: gridLayout
         columns: root.isVertical ? 1 : 3
@@ -88,10 +76,6 @@ Item {
                         }
                         height: parent.height * SystemData.cpuUsage
                         color: Appearance.colors.colPrimary
-
-                        Behavior on height {
-                            NumberAnimation { duration: 800; easing.type: Easing.OutCubic }
-                        }
                     }
                 }
 
@@ -106,10 +90,6 @@ Item {
                     text: "planner_review"
                     iconSize: 16 * Appearance.effectiveScale
                     color: SystemData.cpuUsage > 0.55 ? Appearance.colors.colOnPrimary : Appearance.colors.colPrimary
-                    
-                    Behavior on color {
-                        ColorAnimation { duration: 250 }
-                    }
                 }
             }
 
@@ -185,10 +165,6 @@ Item {
                         }
                         height: parent.height * SystemData.memUsage
                         color: Appearance.colors.colSecondary
-
-                        Behavior on height {
-                            NumberAnimation { duration: 800; easing.type: Easing.OutCubic }
-                        }
                     }
                 }
 
@@ -203,10 +179,6 @@ Item {
                     text: "memory"
                     iconSize: 16 * Appearance.effectiveScale
                     color: SystemData.memUsage > 0.55 ? Appearance.colors.colOnSecondary : Appearance.colors.colSecondary
-                    
-                    Behavior on color {
-                        ColorAnimation { duration: 250 }
-                    }
                 }
             }
 
@@ -287,10 +259,6 @@ Item {
                             return 0;
                         }
                         color: Appearance.colors.colTertiary
-
-                        Behavior on height {
-                            NumberAnimation { duration: 800; easing.type: Easing.OutCubic }
-                        }
                     }
                 }
 
@@ -310,10 +278,6 @@ Item {
                             usage = SystemData.diskStats[0].usage;
                         }
                         return usage > 0.55 ? Appearance.colors.colOnTertiary : Appearance.colors.colTertiary;
-                    }
-                    
-                    Behavior on color {
-                        ColorAnimation { duration: 250 }
                     }
                 }
             }

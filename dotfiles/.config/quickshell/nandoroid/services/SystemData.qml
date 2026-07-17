@@ -109,7 +109,7 @@ Singleton {
         return "cpu,memory,diskmounts,network,disk,system";
     }
 
-    readonly property int activeInterval: isMonitorActive ? 1000 : 2000
+    readonly property int activeInterval: isMonitorActive ? 1000 : (Config.ready ? Config.options.appearance.systemMonitor.updateInterval : 2000)
 
     // Internal state for rate calculations
     property var lastNetworkStats: null

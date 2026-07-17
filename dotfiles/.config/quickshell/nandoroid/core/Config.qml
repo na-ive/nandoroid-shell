@@ -304,6 +304,7 @@ property JsonObject background: JsonObject {
                     property bool showOnDesktop: false
                     property bool locked: false
                     property bool vertical: false
+                    property int updateInterval: 3000
                     property real desktopX: -1
                     property real desktopY: -1
                 }
