@@ -25,8 +25,7 @@ Singleton {
 
     function toggleWarp() {
         if (!warpCLIInstalled) return;
-        // Do NOT optimistically set warpConnected here — let warpStatusProc
-        // set the real state after the command exits.
+        // Let the warpMonitor streaming process set the real state.
         if (warpConnected) {
             warpDisconnectProc.running = true;
         } else {
@@ -214,8 +213,9 @@ Singleton {
         onExited: (exitCode, exitStatus) => root.update()
     }
 
+    // One-shot check for initial state & availability
     Process {
-        id: warpStatusProc
+        id: warpInitProc
         command: ["bash", "-c", "command -v warp-cli >/dev/null 2>&1 && warp-cli status || echo 'MISSING'"]
         stdout: SplitParser {
             onRead: data => {
@@ -230,38 +230,49 @@ Singleton {
                 }
             }
         }
+        onExited: {
+            // Start streaming monitor once we know warp-cli is available
+            if (root.warpCLIInstalled) {
+                warpMonitor.running = true;
+            }
+        }
+    }
+
+    // Streaming monitor: blocks and outputs on status changes
+    Process {
+        id: warpMonitor
+        command: ["warp-cli", "--listen", "status"]
+        stdout: SplitParser {
+            onRead: data => {
+                if (data.includes("Connected")) root.warpConnected = true;
+                else if (data.includes("Disconnected")) root.warpConnected = false;
+            }
+        }
+        onExited: (exitCode) => {
+            if (root.warpCLIInstalled && exitCode === 0) {
+                // Normal exit (e.g. warp-svc stopped) — wait before retry
+                restartWarpMonitor.start();
+            }
+        }
+    }
+
+    Timer {
+        id: restartWarpMonitor
+        interval: 5000
+        repeat: false
+        onTriggered: {
+            if (root.warpCLIInstalled) warpMonitor.running = true;
+        }
     }
 
     Process {
         id: warpConnectProc
         command: ["warp-cli", "connect"]
-        onExited: {
-            // Give warp-cli a moment to fully establish the connection,
-            // then read the real status instead of trusting exit code alone.
-            warpPollTimer.restart();
-        }
     }
 
     Process {
         id: warpDisconnectProc
         command: ["warp-cli", "disconnect"]
-        onExited: {
-            warpPollTimer.restart();
-        }
-    }
-
-    // Poll warp-cli status every 1 second so that manual terminal
-    // connections (warp-cli connect / disconnect) are reflected near-instantly.
-    Timer {
-        id: warpPollTimer
-        interval: 1000
-        repeat: true
-        running: root.warpCLIInstalled  // only poll when warp-cli is present
-        triggeredOnStart: true
-        onTriggered: {
-            if (!warpStatusProc.running)
-                warpStatusProc.running = true;
-        }
     }
 
     Process {
@@ -364,8 +375,8 @@ Singleton {
 
     Component.onCompleted: {
         update()
-        // Initial check; warpPollTimer will keep polling afterwards.
-        warpStatusProc.running = true
+        // Initial check; warpMonitor starts automatically after detection.
+        warpInitProc.running = true
     }
 
     Process {
