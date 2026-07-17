@@ -131,8 +131,12 @@ Item {
 
                 // Prev Button
                 Item {
+                    id: prevBtn
                     implicitWidth: 62 * Appearance.effectiveScale
                     implicitHeight: 62 * Appearance.effectiveScale
+
+                    property bool hovered: false
+                    property bool pressed: false
 
                     MaterialShape {
                         anchors.fill: parent
@@ -140,48 +144,82 @@ Item {
                         color: Appearance.m3colors.darkmode ? Appearance.colors.colOnTertiaryContainer : Appearance.colors.colSecondaryContainer
 
                         MaterialSymbol {
+                            id: prevIcon
                             anchors.centerIn: parent
                             text: "skip_previous"
                             iconSize: 28 * Appearance.effectiveScale
                             fill: 0
-                            color: Appearance.m3colors.darkmode ? Appearance.colors.colTertiaryContainer : Appearance.colors.colOnSecondaryContainer
+                            color: prevBtn.hovered
+                                ? (Appearance.m3colors.darkmode ? Appearance.colors.colTertiaryContainer : Appearance.colors.colPrimary)
+                                : (Appearance.m3colors.darkmode ? Appearance.colors.colTertiaryContainer : Appearance.colors.colOnSecondaryContainer)
+                            Behavior on color { ColorAnimation { duration: 150 } }
                         }
 
                         MouseArea {
                             anchors.fill: parent
                             cursorShape: Qt.PointingHandCursor
+                            hoverEnabled: true
+                            onEntered: prevBtn.hovered = true
+                            onExited: prevBtn.hovered = false
+                            onPressed: prevBtn.pressed = true
+                            onReleased: prevBtn.pressed = false
                             onClicked: MprisController.previous()
                         }
                     }
                 }
 
-                // Play Button (Pill Lebar dan Besar)
+                // Play Button (Wide Pill)
                 Rectangle {
+                    id: playBtn
                     implicitWidth: 192 * Appearance.effectiveScale
                     implicitHeight: 66 * Appearance.effectiveScale
                     radius: 33 * Appearance.effectiveScale
-                    color: Appearance.colors.colPrimary // Teal pill on dark colOnPrimary card
+                    color: Appearance.colors.colPrimary
                     Layout.alignment: Qt.AlignVCenter
 
+                    property bool hovered: false
+                    property bool pressed: false
+
                     MaterialSymbol {
+                        id: playIcon
                         anchors.centerIn: parent
                         text: MprisController.isPlaying ? "pause" : "play_arrow"
                         iconSize: 40 * Appearance.effectiveScale
                         fill: 0
+                        color: playBtn.pressed
+                            ? Functions.ColorUtils.applyAlpha(Appearance.colors.colOnPrimary, 0.7)
+                            : Appearance.colors.colOnPrimary
+                        Behavior on color { ColorAnimation { duration: 100 } }
+                    }
+
+                    Rectangle {
+                        anchors.fill: parent
+                        radius: parent.radius
                         color: Appearance.colors.colOnPrimary
+                        opacity: playBtn.pressed ? 0.15 : (playBtn.hovered ? 0.08 : 0)
+                        Behavior on opacity { NumberAnimation { duration: 150 } }
                     }
 
                     MouseArea {
                         anchors.fill: parent
                         cursorShape: Qt.PointingHandCursor
+                        hoverEnabled: true
+                        onEntered: playBtn.hovered = true
+                        onExited: playBtn.hovered = false
+                        onPressed: playBtn.pressed = true
+                        onReleased: playBtn.pressed = false
                         onClicked: MprisController.togglePlaying()
                     }
                 }
 
                 // Next Button
                 Item {
+                    id: nextBtn
                     implicitWidth: 62 * Appearance.effectiveScale
                     implicitHeight: 62 * Appearance.effectiveScale
+
+                    property bool hovered: false
+                    property bool pressed: false
 
                     MaterialShape {
                         anchors.fill: parent
@@ -189,16 +227,25 @@ Item {
                         color: Appearance.m3colors.darkmode ? Appearance.colors.colOnTertiaryContainer : Appearance.colors.colSecondaryContainer
 
                         MaterialSymbol {
+                            id: nextIcon
                             anchors.centerIn: parent
                             text: "skip_next"
                             iconSize: 28 * Appearance.effectiveScale
                             fill: 0
-                            color: Appearance.m3colors.darkmode ? Appearance.colors.colTertiaryContainer : Appearance.colors.colOnSecondaryContainer
+                            color: nextBtn.hovered
+                                ? (Appearance.m3colors.darkmode ? Appearance.colors.colTertiaryContainer : Appearance.colors.colPrimary)
+                                : (Appearance.m3colors.darkmode ? Appearance.colors.colTertiaryContainer : Appearance.colors.colOnSecondaryContainer)
+                            Behavior on color { ColorAnimation { duration: 150 } }
                         }
 
                         MouseArea {
                             anchors.fill: parent
                             cursorShape: Qt.PointingHandCursor
+                            hoverEnabled: true
+                            onEntered: nextBtn.hovered = true
+                            onExited: nextBtn.hovered = false
+                            onPressed: nextBtn.pressed = true
+                            onReleased: nextBtn.pressed = false
                             onClicked: MprisController.next()
                         }
                     }
@@ -234,7 +281,7 @@ Item {
                 highlightColor: Appearance.colors.colPrimary
                 trackColor: Functions.ColorUtils.applyAlpha(Appearance.colors.colPrimary, 0.25)
 
-                // Lingkaran Titik sebagai handle
+                // Circle dot handle
                 handle: Rectangle {
                     x: progressSlider.leftPadding + (progressSlider.visualPosition * (progressSlider.availableWidth - width))
                     y: (progressSlider.height - height) / 2
@@ -324,6 +371,51 @@ Item {
             }
 
             Item { Layout.fillHeight: true } // Spacer
+        }
+    }
+
+    // Romaji/Original switcher (outside layout, anchored - won't affect centering)
+    Item {
+        id: romajiToggleBtn
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+        anchors.bottomMargin: 16 * Appearance.effectiveScale
+        anchors.leftMargin: 16 * Appearance.effectiveScale
+        implicitWidth: 32 * Appearance.effectiveScale
+        implicitHeight: 32 * Appearance.effectiveScale
+        visible: viewLyrics
+        z: 20
+
+        property bool hovered: false
+
+        MaterialShape {
+            anchors.fill: parent
+            shape: MaterialShape.Shape.Pill
+            color: Appearance.m3colors.darkmode ? Appearance.colors.colOnTertiaryContainer : Appearance.colors.colSecondaryContainer
+
+            MaterialSymbol {
+                anchors.centerIn: parent
+                text: Config.options.appearance.lyrics.lyricsUseRomaji ? "text_fields" : "translate"
+                iconSize: 18 * Appearance.effectiveScale
+                fill: 1
+                color: romajiToggleBtn.hovered
+                    ? (Appearance.m3colors.darkmode ? Appearance.colors.colTertiaryContainer : Appearance.colors.colPrimary)
+                    : (Appearance.m3colors.darkmode ? Appearance.colors.colTertiaryContainer : Appearance.colors.colOnSecondaryContainer)
+                Behavior on color { ColorAnimation { duration: 150 } }
+            }
+
+            MouseArea {
+                anchors.fill: parent
+                cursorShape: Qt.PointingHandCursor
+                hoverEnabled: true
+                onEntered: romajiToggleBtn.hovered = true
+                onExited: romajiToggleBtn.hovered = false
+                onClicked: {
+                    if (Config.ready) {
+                        Config.options.appearance.lyrics.lyricsUseRomaji = !Config.options.appearance.lyrics.lyricsUseRomaji;
+                    }
+                }
+            }
         }
     }
 }
