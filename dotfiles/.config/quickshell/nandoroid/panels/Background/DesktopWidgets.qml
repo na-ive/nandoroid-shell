@@ -155,7 +155,7 @@ Variants {
             
             readonly property bool shouldVisualize: {
                 if (!Config.ready || !Config.options.appearance.background.showCava) return false;
-                return widgetRoot.isDesktopEmpty && MprisController.isPlaying;
+                return MprisController.isPlaying;
             }
 
             opacity: shouldVisualize ? 1.0 : 0

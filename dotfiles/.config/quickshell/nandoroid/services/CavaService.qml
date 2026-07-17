@@ -4,12 +4,13 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import "../core"
 
 Singleton {
     id: root
 
     property list<int> values: []
-    property int barCount: 128
+    property int barCount: Config.ready ? Config.options.appearance.background.cavaBars : 32
     property bool _internalRestart: true
     property int refCount: 0
     property bool cavaAvailable: false
@@ -17,6 +18,13 @@ Singleton {
 
     onRefCountChanged: {
         if (refCount < 0) refCount = 0;
+    }
+
+    onBarCountChanged: {
+        if (root.cavaAvailable) root.restart();
+        let arr = [];
+        for (let i = 0; i < root.barCount; i++) arr.push(0);
+        root.values = arr;
     }
 
     function restart() {
