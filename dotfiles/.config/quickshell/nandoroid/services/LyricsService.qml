@@ -143,8 +143,11 @@ Singleton {
         lyricsProc.running = true
     }
 
+    onActivePlayerChanged: _lyricsTarget = root.activePlayer
+    property var _lyricsTarget: root.activePlayer
+    on_LyricsTargetChanged: lyricsConn.target = _lyricsTarget
     Connections {
-        target: root.activePlayer
+        id: lyricsConn
         function onTrackTitleChanged() { root.restartLyrics() }
     }
 

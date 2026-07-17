@@ -484,29 +484,30 @@ Singleton {
                 }
 
                 const wifiNetworksData = Array.from(networkMap.values());
-                const currentNetworks = root.wifiNetworks.slice();
+                const oldNetworks = root.wifiNetworks;
+                const newNetworks = [];
 
-                // Remove networks no longer seen
-                for (let i = currentNetworks.length - 1; i >= 0; i--) {
-                    const rn = currentNetworks[i];
-                    if (!wifiNetworksData.find(n => n.ssid === rn.ssid)) {
-                        let removed = currentNetworks.splice(i, 1);
-                        removed.forEach(n => Qt.callLater(() => { if(n) n.destroy(); }));
-                    }
-                }
-
-                // Add or update networks
+                // Reuse existing objects where SSID matches, destroy orphans
                 for (const network of wifiNetworksData) {
-                    const match = currentNetworks.find(n => n.ssid === network.ssid);
+                    const match = oldNetworks.find(n => n.ssid === network.ssid);
                     if (match) {
                         match.lastIpcObject = network;
+                        newNetworks.push(match);
                     } else {
-                        currentNetworks.push(apComp.createObject(root, {
+                        newNetworks.push(apComp.createObject(root, {
                             lastIpcObject: network
                         }));
                     }
                 }
-                root.wifiNetworks = currentNetworks;
+
+                // Destroy networks no longer seen
+                for (const old of oldNetworks) {
+                    if (!newNetworks.includes(old)) {
+                        Qt.callLater(() => { if (old) old.destroy(); });
+                    }
+                }
+
+                root.wifiNetworks = newNetworks;
             }
         }
     }
