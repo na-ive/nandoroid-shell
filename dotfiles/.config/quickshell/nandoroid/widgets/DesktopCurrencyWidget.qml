@@ -162,7 +162,7 @@ Item {
                     id: currencyIconShape
                     width: 34 * Appearance.effectiveScale
                     height: 34 * Appearance.effectiveScale
-                    shape: MaterialShape.Shape.Gem
+                    shape: MaterialShape.Shape.Bun
                     color: Appearance.colors.colPrimary
                     anchors {
                         top: parent.top
@@ -463,6 +463,7 @@ Item {
                     TextField {
                         id: quote1Input
                         Layout.fillWidth: true
+                        Layout.preferredWidth: 50 * Appearance.effectiveScale
                         Layout.preferredHeight: 24 * Appearance.effectiveScale
                         font.pixelSize: Appearance.font.pixelSize.smallest
                         placeholderText: "Q1: " + CurrencyService.quote1
@@ -481,6 +482,7 @@ Item {
                     TextField {
                         id: quote2Input
                         Layout.fillWidth: true
+                        Layout.preferredWidth: 50 * Appearance.effectiveScale
                         Layout.preferredHeight: 24 * Appearance.effectiveScale
                         font.pixelSize: Appearance.font.pixelSize.smallest
                         placeholderText: "Q2: " + CurrencyService.quote2
@@ -505,6 +507,7 @@ Item {
                     TextField {
                         id: quote3Input
                         Layout.fillWidth: true
+                        Layout.preferredWidth: 50 * Appearance.effectiveScale
                         Layout.preferredHeight: 24 * Appearance.effectiveScale
                         font.pixelSize: Appearance.font.pixelSize.smallest
                         placeholderText: "Q3: " + CurrencyService.quote3
@@ -523,6 +526,7 @@ Item {
                     TextField {
                         id: quote4Input
                         Layout.fillWidth: true
+                        Layout.preferredWidth: 50 * Appearance.effectiveScale
                         Layout.preferredHeight: 24 * Appearance.effectiveScale
                         font.pixelSize: Appearance.font.pixelSize.smallest
                         placeholderText: "Q4: " + CurrencyService.quote4

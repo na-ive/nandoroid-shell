@@ -81,9 +81,22 @@ Singleton {
         }
     }
 
+    // Debounce timer to group multiple rapid property changes (especially during startup)
+    Timer {
+        id: debounceTimer
+        interval: 150
+        running: false
+        repeat: false
+        onTriggered: root.doRefresh()
+    }
+
     function refresh() {
-        if (loading) return;
+        debounceTimer.restart();
+    }
+
+    function doRefresh() {
         loading = true;
+        qalcProc.running = false; // Terminate any running query
 
         let queries = [
             { quote: quote1, base: baseCurrency },
