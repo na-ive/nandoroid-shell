@@ -29,16 +29,7 @@ Singleton {
         }
     }
 
-    // Periodically re-enforce preference to handle system overrides (like waking from sleep)
-    Timer {
-        id: persistenceTimer
-        interval: 5000 // Check every 5 seconds
-        repeat: true
-        running: true
-        triggeredOnStart: true
-        onTriggered: root.enforcePreference()
-    }
-
+    // Enforce preference on startup and when adapter re-initializes (e.g. after sleep)
     Connections {
         target: Config
         function onReadyChanged() { root.enforcePreference(); }
@@ -46,17 +37,9 @@ Singleton {
 
     Connections {
         target: Bluetooth
-        function onDefaultAdapterChanged() { 
-            // Delay slightly to allow the adapter to initialize after sleep/resume
-            enforceTimer.restart();
+        function onDefaultAdapterChanged() {
+            Qt.callLater(() => root.enforcePreference());
         }
-    }
-
-    Timer {
-        id: enforceTimer
-        interval: 1000
-        repeat: false
-        onTriggered: root.enforcePreference()
     }
 
     signal deviceConnected(var device)
