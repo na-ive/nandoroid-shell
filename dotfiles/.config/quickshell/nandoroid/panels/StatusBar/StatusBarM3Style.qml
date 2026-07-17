@@ -438,7 +438,6 @@ Item {
             StatusBarTray {
                 id: statusBarTray
                 Layout.alignment: Qt.AlignVCenter
-                Layout.rightMargin: 4 * Appearance.effectiveScale
             }
 
             MaterialSymbol {
