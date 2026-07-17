@@ -416,8 +416,8 @@ Item {
                     }
 
                     StyledText {
-                        text: "Config Currencies"
-                        font.pixelSize: Appearance.font.pixelSize.small
+                        text: root.sizeMode === "1x1" ? "Config" : "Config Currencies"
+                        font.pixelSize: root.sizeMode === "1x1" ? Appearance.font.pixelSize.smaller : Appearance.font.pixelSize.small
                         font.weight: Font.Bold
                         color: Appearance.colors.colPrimary
                         Layout.fillWidth: true
