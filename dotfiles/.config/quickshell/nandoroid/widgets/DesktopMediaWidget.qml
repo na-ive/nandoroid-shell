@@ -254,15 +254,17 @@ Item {
             
             Item { Layout.fillHeight: true } // Flexible spacer to balance vertical distribution
 
-            // 4. DURASI SAAT INI / DURASI TOTAL (Centered)
+            // 4. DURASI SAAT INI / DURASI TOTAL (Centered with tabular figures)
             StyledText {
                 Layout.fillWidth: true
                 horizontalAlignment: Text.AlignHCenter
                 text: Functions.StringUtils.friendlyTimeForSeconds(MprisController.position) + " / " + Functions.StringUtils.friendlyTimeForSeconds(MprisController.length)
                 font.pixelSize: Appearance.font.pixelSize.smallest
-                font.family: Appearance.font.family.monospace
+                font.family: Appearance.font.family.numbers
+                font.features: { "tnum": 1 }
                 font.weight: Font.DemiBold
-                color: Appearance.colors.colPrimary // Same color as title
+                color: Appearance.colors.colPrimary
+                renderType: Text.QtRendering
             }
 
             // 5. PROGRESS BAR

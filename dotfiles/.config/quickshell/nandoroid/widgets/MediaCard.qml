@@ -241,13 +241,15 @@ Rectangle {
                     id: currentTimeText
                     text: Functions.StringUtils.friendlyTimeForSeconds(MprisController.position)
                     font.pixelSize: Appearance.font.pixelSize.smallest
-                    font.family: Appearance.font.family.monospace
+                    font.family: Appearance.font.family.numbers
+                    font.features: { "tnum": 1 }
                     font.weight: Font.Medium
                     color: MprisController.dynSubtext
                     Layout.alignment: Qt.AlignVCenter
                     verticalAlignment: Text.AlignVCenter
-                    Layout.leftMargin: 0 // Menempel ke arrow
-                    Layout.rightMargin: 10 * Appearance.effectiveScale // Menjauh dari slider
+                    Layout.leftMargin: 0
+                    Layout.rightMargin: 6 * Appearance.effectiveScale
+                    renderType: Text.QtRendering
                 }
 
                 // Slider
@@ -286,13 +288,15 @@ Rectangle {
                     id: totalTimeText
                     text: Functions.StringUtils.friendlyTimeForSeconds(MprisController.length)
                     font.pixelSize: Appearance.font.pixelSize.smallest
-                    font.family: Appearance.font.family.monospace
+                    font.family: Appearance.font.family.numbers
+                    font.features: { "tnum": 1 }
                     font.weight: Font.Medium
                     color: MprisController.dynSubtext
                     Layout.alignment: Qt.AlignVCenter
                     verticalAlignment: Text.AlignVCenter
-                    Layout.leftMargin: 10 * Appearance.effectiveScale // Menjauh dari slider
-                    Layout.rightMargin: 0 // Menempel ke arrow
+                    Layout.leftMargin: 6 * Appearance.effectiveScale
+                    Layout.rightMargin: 0
+                    renderType: Text.QtRendering
                 }
 
                 // Skip Next
