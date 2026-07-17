@@ -106,25 +106,33 @@ Item {
     }
     readonly property real rBottomRight: (isLast || isStandalone || (active && pillOnActive) || forcePill) ? fullRadius : smallRadius
 
+    // Mask Source declared as a sibling to ensure stable rendering and antialiasing
+    Rectangle {
+        id: maskRect
+        visible: false
+        width: root.width
+        height: root.height
+        antialiasing: true
+        topLeftRadius: root.rTopLeft
+        topRightRadius: root.rTopRight
+        bottomLeftRadius: root.rBottomLeft
+        bottomRightRadius: root.rBottomRight
+        
+        Behavior on topLeftRadius { animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(null) }
+        Behavior on topRightRadius { animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(null) }
+        Behavior on bottomLeftRadius { animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(null) }
+        Behavior on bottomRightRadius { animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(null) }
+    }
+
     // ── Main Layout Container (With Clipping) ──
     Item {
         id: container
         anchors.fill: parent
         
-        layer.enabled: true
+        layer.enabled: false
+        layer.smooth: true
         layer.effect: OpacityMask {
-            maskSource: Rectangle {
-                width: container.width; height: container.height
-                topLeftRadius: root.rTopLeft
-                topRightRadius: root.rTopRight
-                bottomLeftRadius: root.rBottomLeft
-                bottomRightRadius: root.rBottomRight
-                
-                Behavior on topLeftRadius { animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(null) }
-                Behavior on topRightRadius { animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(null) }
-                Behavior on bottomLeftRadius { animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(null) }
-                Behavior on bottomRightRadius { animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(null) }
-            }
+            maskSource: maskRect
         }
 
         // ── Background ──
@@ -133,6 +141,7 @@ Item {
             anchors.fill: parent
             color: root.color
             visible: root.color !== "transparent"
+            antialiasing: true
             
             topLeftRadius: root.rTopLeft
             topRightRadius: root.rTopRight
