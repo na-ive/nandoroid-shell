@@ -81,7 +81,12 @@ Singleton {
 
             // Notification 1h before
             const notif1h = new Date(eventStart.getTime() - 3600000);
-            if (notif1h > now) nextMs = Math.min(nextMs, notif1h.getTime() - now.getTime());
+            if (notif1h > now) {
+                nextMs = Math.min(nextMs, notif1h.getTime() - now.getTime());
+            } else if (now < eventStart && !event.lastNotified1hDate) {
+                // 1h window already open but notification not yet sent
+                nextMs = Math.min(nextMs, 1000);
+            }
 
             // Event start (for DND activation)
             if (event.focus && eventStart > now) nextMs = Math.min(nextMs, eventStart.getTime() - now.getTime());
