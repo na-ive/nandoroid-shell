@@ -35,7 +35,7 @@ Variants {
         exclusionMode: ExclusionMode.Ignore
         WlrLayershell.layer: WlrLayer.Bottom
         WlrLayershell.namespace: "quickshell:desktop-widgets"
-        WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
+        WlrLayershell.keyboardFocus: (desktopCurrencyWidgetItem && desktopCurrencyWidgetItem.showingSettings) ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
         
         anchors {
             top: true
