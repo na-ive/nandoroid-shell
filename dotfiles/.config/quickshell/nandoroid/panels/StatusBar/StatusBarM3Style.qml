@@ -200,14 +200,14 @@ Item {
             Layout.alignment: Qt.AlignVCenter
             m3Color: Appearance.m3colors.m3secondaryContainer
             m3ContentColor: Appearance.m3colors.m3onSecondaryContainer
-            Layout.maximumWidth: rootM3.isCentered ? (rootM3.centeredWidth * (leftSysMonWrapper.visible ? 0.15 : 0.4)) : Math.min((leftSysMonWrapper.visible ? 250 : 800) * Appearance.effectiveScale, rootM3.width * (leftSysMonWrapper.visible ? 0.15 : 0.4))
+            Layout.maximumWidth: rootM3.isCentered ? (rootM3.centeredWidth * (leftSysMonWrapper.visible ? 0.15 : 0.25)) : Math.min((leftSysMonWrapper.visible ? 250 : 350) * Appearance.effectiveScale, rootM3.width * (leftSysMonWrapper.visible ? 0.15 : 0.25))
             show: Config.ready && Config.options.statusBar ? (Config.options.statusBar.activeWindowPosition !== undefined ? Config.options.statusBar.activeWindowPosition : "left") === "left" : true
 
             ActiveWindowTitle {
                 Layout.fillWidth: true
                 Layout.alignment: Qt.AlignVCenter
-                Layout.maximumWidth: rootM3.isCentered ? (rootM3.centeredWidth * (leftSysMonWrapper.visible ? 0.15 : 0.4)) : Math.min((leftSysMonWrapper.visible ? 250 : 800) * Appearance.effectiveScale, rootM3.width * (leftSysMonWrapper.visible ? 0.15 : 0.4))
-                maxWidth: rootM3.isCentered ? (rootM3.centeredWidth * (leftSysMonWrapper.visible ? 0.15 : 0.4)) : Math.min((leftSysMonWrapper.visible ? 250 : 800) * Appearance.effectiveScale, rootM3.width * (leftSysMonWrapper.visible ? 0.15 : 0.4))
+                Layout.maximumWidth: rootM3.isCentered ? (rootM3.centeredWidth * (leftSysMonWrapper.visible ? 0.15 : 0.25)) : Math.min((leftSysMonWrapper.visible ? 250 : 350) * Appearance.effectiveScale, rootM3.width * (leftSysMonWrapper.visible ? 0.15 : 0.25))
+                maxWidth: rootM3.isCentered ? (rootM3.centeredWidth * (leftSysMonWrapper.visible ? 0.15 : 0.25)) : Math.min((leftSysMonWrapper.visible ? 250 : 350) * Appearance.effectiveScale, rootM3.width * (leftSysMonWrapper.visible ? 0.15 : 0.25))
                 monitor: rootM3.monitor
                 color: leftTitleWrapper.contentColor
                 subtextColor: leftTitleWrapper.subtextColor
@@ -336,14 +336,14 @@ Item {
             Layout.alignment: Qt.AlignVCenter
             m3Color: Appearance.m3colors.m3secondaryContainer
             m3ContentColor: Appearance.m3colors.m3onSecondaryContainer
-            Layout.maximumWidth: rootM3.isCentered ? (rootM3.centeredWidth * (rightSysMonWrapper.visible ? 0.15 : 0.4)) : Math.min((rightSysMonWrapper.visible ? 250 : 800) * Appearance.effectiveScale, rootM3.width * (rightSysMonWrapper.visible ? 0.15 : 0.4))
+            Layout.maximumWidth: rootM3.isCentered ? (rootM3.centeredWidth * (rightSysMonWrapper.visible ? 0.15 : 0.25)) : Math.min((rightSysMonWrapper.visible ? 250 : 350) * Appearance.effectiveScale, rootM3.width * (rightSysMonWrapper.visible ? 0.15 : 0.25))
             show: Config.ready && Config.options.statusBar ? (Config.options.statusBar.activeWindowPosition !== undefined ? Config.options.statusBar.activeWindowPosition : "left") === "right" : false
 
             ActiveWindowTitle {
                 Layout.fillWidth: true
                 Layout.alignment: Qt.AlignVCenter
-                Layout.maximumWidth: rootM3.isCentered ? (rootM3.centeredWidth * (rightSysMonWrapper.visible ? 0.15 : 0.4)) : Math.min((rightSysMonWrapper.visible ? 250 : 800) * Appearance.effectiveScale, rootM3.width * (rightSysMonWrapper.visible ? 0.15 : 0.4))
-                maxWidth: rootM3.isCentered ? (rootM3.centeredWidth * (rightSysMonWrapper.visible ? 0.15 : 0.4)) : Math.min((rightSysMonWrapper.visible ? 250 : 800) * Appearance.effectiveScale, rootM3.width * (rightSysMonWrapper.visible ? 0.15 : 0.4))
+                Layout.maximumWidth: rootM3.isCentered ? (rootM3.centeredWidth * (rightSysMonWrapper.visible ? 0.15 : 0.25)) : Math.min((rightSysMonWrapper.visible ? 250 : 350) * Appearance.effectiveScale, rootM3.width * (rightSysMonWrapper.visible ? 0.15 : 0.25))
+                maxWidth: rootM3.isCentered ? (rootM3.centeredWidth * (rightSysMonWrapper.visible ? 0.15 : 0.25)) : Math.min((rightSysMonWrapper.visible ? 250 : 350) * Appearance.effectiveScale, rootM3.width * (rightSysMonWrapper.visible ? 0.15 : 0.25))
                 monitor: rootM3.monitor
                 color: rightTitleWrapper.contentColor
                 subtextColor: rightTitleWrapper.subtextColor
