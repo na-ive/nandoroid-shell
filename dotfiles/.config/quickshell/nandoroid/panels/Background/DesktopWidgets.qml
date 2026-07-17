@@ -180,7 +180,8 @@ Variants {
             id: widgetCanvas
             anchors.fill: parent
             z: 9
-            gridSize: 12
+            gridSize: Config.ready ? Config.options.appearance.background.gridSpacing : 12
+            showGrid: Config.ready ? Config.options.appearance.background.showGrid : false
 
             AbstractWidget {
                 id: clockWrapper
@@ -277,6 +278,7 @@ Variants {
                     isLockscreen: false
                     interactive: true
                 }
+                property string childId: "clockWrapper"
             }
 
             AbstractWidget {
@@ -290,6 +292,8 @@ Variants {
                 visible: Config.ready && Config.options.appearance.atAGlance.show && !GlobalStates.screenLocked
                 opacity: visible ? 1 : 0
                 Behavior on opacity { NumberAnimation { duration: 300 } }
+
+                property string childId: "atAGlanceWrapper"
 
                 x: Config.ready ? Config.options.appearance.atAGlance.desktopX : 64
                 y: Config.ready ? Config.options.appearance.atAGlance.desktopY : 64
@@ -321,6 +325,8 @@ Variants {
                 visible: Config.ready && Config.options.appearance.mediaWidget.showOnDesktop && !GlobalStates.screenLocked
                 opacity: visible ? 1 : 0
                 Behavior on opacity { NumberAnimation { duration: 300 } }
+
+                property string childId: "mediaWidgetWrapper"
 
                 property real targetX: {
                     if (!Config.ready) return (parent.width - width) / 2;
@@ -378,6 +384,8 @@ Variants {
                 opacity: visible ? 1 : 0
                 Behavior on opacity { NumberAnimation { duration: 300 } }
 
+                property string childId: "systemMonitorWrapper"
+
                 x: Config.ready && Config.options.appearance.systemMonitor.desktopX !== -1 ? Config.options.appearance.systemMonitor.desktopX : 64
                 y: Config.ready && Config.options.appearance.systemMonitor.desktopY !== -1 ? Config.options.appearance.systemMonitor.desktopY : 300
 
@@ -407,6 +415,8 @@ Variants {
                 visible: Config.ready && Config.options.appearance.weatherWidget.showOnDesktop && !GlobalStates.screenLocked
                 opacity: visible ? 1 : 0
                 Behavior on opacity { NumberAnimation { duration: 300 } }
+
+                property string childId: "weatherWidgetWrapper"
 
                 x: Config.ready && Config.options.appearance.weatherWidget.desktopX !== -1 ? Config.options.appearance.weatherWidget.desktopX : 64
                 y: Config.ready && Config.options.appearance.weatherWidget.desktopY !== -1 ? Config.options.appearance.weatherWidget.desktopY : 420

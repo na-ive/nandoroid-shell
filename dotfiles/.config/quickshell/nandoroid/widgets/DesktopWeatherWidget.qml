@@ -378,7 +378,7 @@ Item {
             margins: -8 * Appearance.effectiveScale
         }
         
-        opacity: root.interactive && (!Config.ready || !cfg.locked) && (widgetHoverHandler.hovered || resizeArea.containsMouse || resizeArea.pressed) ? 0.9 : 0
+        opacity: root.interactive && (cfg && !cfg.locked) && (widgetHoverHandler.hovered || resizeArea.containsMouse || resizeArea.pressed) ? 0.9 : 0
         visible: opacity > 0
 
         Behavior on opacity {

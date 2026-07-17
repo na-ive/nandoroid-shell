@@ -129,22 +129,25 @@ Singleton {
                     property string quoteColorStyle: "onLayer1"
                     property bool locked: false
                 }
-                property JsonObject background: JsonObject {
-                    property string wallpaperPath: "file://" + Directories.assetsPath + "/wallpapers/default_wallpaper.png"
-                    property bool darkmode: true
-                    property bool matugen: true
-                    property string matugenScheme: "scheme-content"
-                    property string matugenCustomColor: "#3F51B5"
-                    property string matugenThemeFile: ""
-                    property string matugenSource: "desktop"
-                    property string liveWallpaperPath: ""
-                    property bool autoCycleEnabled: false
-                    property string autoCycleDirectory: Directories.home + "/Pictures/Wallpapers"
-                    property int autoCycleInterval: 30 
-                    property list<string> customFolders: []
-                    property bool showCava: false
-                    property real cavaOpacity: 0.15
-                }
+property JsonObject background: JsonObject {
+                property string wallpaperPath: "file://" + Directories.assetsPath + "/wallpapers/default_wallpaper.png"
+                property bool darkmode: true
+                property bool matugen: true
+                property string matugenScheme: "scheme-content"
+                property string matugenCustomColor: "#3F51B5"
+                property string matugenThemeFile: ""
+                property string matugenSource: "desktop"
+                property string liveWallpaperPath: ""
+                property bool autoCycleEnabled: false
+                property string autoCycleDirectory: Directories.home + "/Pictures/Wallpapers"
+                property int autoCycleInterval: 30 
+                property list<string> customFolders: []
+                property bool showCava: false
+                property real cavaOpacity: 0.15
+                property bool showGrid: false
+                property int gridSpacing: 12
+                property bool showSnapLines: true
+            }
                 property JsonObject screenCorners: JsonObject {
                     property int mode: 1
                     property int radius: 20
