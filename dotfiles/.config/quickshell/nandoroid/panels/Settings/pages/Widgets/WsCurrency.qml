@@ -6,6 +6,7 @@ import QtQuick.Controls
 
 Rectangle {
     id: rootCurrencySettings
+    visible: Config.ready && Config.options.appearance.currencyWidget && !Config.options.appearance.currencyWidget.locked
     Layout.fillWidth: true
     implicitHeight: 96 * Appearance.effectiveScale
     radius: 24 * Appearance.effectiveScale

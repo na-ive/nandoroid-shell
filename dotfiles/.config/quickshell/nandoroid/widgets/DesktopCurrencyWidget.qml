@@ -92,11 +92,12 @@ Item {
             anchors.fill: parent
             visible: !root.showingSettings
 
-            // Tombol Settings (Hanya muncul ketika Hover)
+            // Settings button (appears on hover, hidden when locked)
             Item {
                 width: 24 * Appearance.effectiveScale
                 height: 24 * Appearance.effectiveScale
                 z: 100
+                visible: cfg ? !cfg.locked : true
                 opacity: widgetHoverHandler.hovered ? 0.9 : 0
                 Behavior on opacity { NumberAnimation { duration: 150 } }
                 
