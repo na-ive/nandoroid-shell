@@ -70,12 +70,12 @@ Item {
 
     function toggleFlip() { flipAnim.start() }
 
-    // Main Card Rectangle
+    // Main Card Rectangle (Colored using colPrimaryContainer)
     Rectangle {
         id: card
         anchors.fill: parent
         radius: 30 * Appearance.effectiveScale
-        color: Appearance.colors.colOnPrimary
+        color: Appearance.colors.colPrimaryContainer
 
         // Mask content inside parent corners
         layer.enabled: true
@@ -127,80 +127,88 @@ Item {
                 }
             }
 
-            // ── [RADICAL M3 DESAIN 1x1: Split Diagonal Card] ──
+            // ── [RADICAL M3 DESAIN 1x1: Original end4-pC Layout (Top-Right Icon, Left Bottom-Aligned Texts)] ──
             Item {
                 visible: sizeMode === "1x1"
                 anchors.fill: parent
 
-                // Background split diagonal membelah kartu asimetris tajam khas Finansial
-                Canvas {
-                    anchors.fill: parent
-                    onPaint: {
-                        var ctx = getContext("2d");
-                        ctx.reset();
-                        ctx.fillStyle = Appearance.colors.colPrimaryContainer;
-                        ctx.beginPath();
-                        // Draw diagonal cut slightly lower to give more top space
-                        ctx.moveTo(0, height * 0.82);
-                        ctx.lineTo(width, height * 0.32);
-                        ctx.lineTo(width, height);
-                        ctx.lineTo(0, height);
-                        ctx.closePath();
-                        ctx.fill();
-                    }
-                }
-
-                // Info Utama (Base Currency di kiri-atas area gelap)
+                // Sisi Atas Kiri: Info teks mata uang dasar (e.g. "to IDR")
                 ColumnLayout {
+                    spacing: 0
                     anchors {
-                        left: parent.left
                         top: parent.top
-                        leftMargin: 16 * Appearance.effectiveScale
-                        topMargin: 12 * Appearance.effectiveScale
+                        left: parent.left
+                        topMargin: 14 * Appearance.effectiveScale
+                        leftMargin: 14 * Appearance.effectiveScale
                     }
-                    spacing: -2 * Appearance.effectiveScale
-
                     StyledText {
                         text: "Rates"
                         font.pixelSize: Appearance.font.pixelSize.smallest
-                        font.weight: Font.Bold
-                        color: Appearance.colors.colPrimary
-                        opacity: 0.8
+                        font.weight: Font.DemiBold
+                        color: Appearance.colors.colOnPrimaryContainer
+                        opacity: 0.6
                     }
-
                     StyledText {
-                        text: CurrencyService.baseCurrency
-                        font.pixelSize: Math.round(32 * Appearance.effectiveScale)
+                        text: "to " + CurrencyService.baseCurrency
+                        font.pixelSize: 10 * Appearance.effectiveScale
                         font.weight: Font.Bold
                         color: Appearance.colors.colPrimary
                     }
                 }
 
-                // Dua Quote dengan nilai presisi (TANPA disingkat) di kanan-bawah area solid pastel
-                ColumnLayout {
+                // Sisi Atas Kanan: Material Shape Wrapped Symbol (Top Right)
+                MaterialShape {
+                    id: currencyIconShape
+                    width: 34 * Appearance.effectiveScale
+                    height: 34 * Appearance.effectiveScale
+                    shape: MaterialShape.Shape.Gem
+                    color: Appearance.colors.colPrimary
                     anchors {
+                        top: parent.top
                         right: parent.right
-                        bottom: parent.bottom
+                        topMargin: 14 * Appearance.effectiveScale
                         rightMargin: 14 * Appearance.effectiveScale
-                        bottomMargin: 10 * Appearance.effectiveScale
                     }
-                    spacing: 2 * Appearance.effectiveScale
-                    Layout.alignment: Qt.AlignRight
 
-                    // Quote 1 Row
+                    MaterialSymbol {
+                        anchors.centerIn: parent
+                        text: "payments"
+                        iconSize: 18 * Appearance.effectiveScale
+                        color: Appearance.colors.colOnPrimary
+                    }
+                }
+
+                // Sisi Bawah Kiri: 2 Stacked Rates (Bottom-Aligned Left)
+                ColumnLayout {
+                    spacing: -2 * Appearance.effectiveScale
+                    anchors {
+                        bottom: parent.bottom
+                        left: parent.left
+                        right: parent.right
+                        bottomMargin: 14 * Appearance.effectiveScale
+                        leftMargin: 14 * Appearance.effectiveScale
+                        rightMargin: 14 * Appearance.effectiveScale
+                    }
+                    
+                    // Quote 1 Row (USD)
                     RowLayout {
-                        spacing: 6 * Appearance.effectiveScale
-                        Layout.alignment: Qt.AlignRight
+                        Layout.fillWidth: true
+                        spacing: 4 * Appearance.effectiveScale
+
                         StyledText {
                             text: CurrencyService.quote1
-                            font.pixelSize: Appearance.font.pixelSize.smallest
-                            font.weight: Font.Bold
+                            font.pixelSize: Appearance.font.pixelSize.small
+                            font.weight: Font.DemiBold
                             color: Appearance.colors.colOnPrimaryContainer
+                            opacity: 0.6
                         }
+                        
+                        Item { Layout.fillWidth: true } // Spacer
+
                         StyledText {
                             text: {
                                 let v = CurrencyService.rates[CurrencyService.quote1] || 0.0;
-                                return v === 0.0 ? "..." : v.toLocaleString(Qt.locale(), 'f', v < 1000 ? 2 : 0);
+                                return v === 0.0 ? "..." : Math.round(v).toLocaleString(Qt.locale(), 'f', 0);
                             }
                             font.pixelSize: Appearance.font.pixelSize.small
                             font.weight: Font.Bold
@@ -208,26 +216,29 @@ Item {
                         }
                     }
 
-                    // Quote 2 Row
+                    // Quote 2 Row (EUR)
                     RowLayout {
-                        spacing: 6 * Appearance.effectiveScale
-                        Layout.alignment: Qt.AlignRight
+                        Layout.fillWidth: true
+                        spacing: 4 * Appearance.effectiveScale
+
                         StyledText {
                             text: CurrencyService.quote2
-                            font.pixelSize: Appearance.font.pixelSize.smallest
-                            font.weight: Font.Bold
+                            font.pixelSize: Appearance.font.pixelSize.small
+                            font.weight: Font.DemiBold
                             color: Appearance.colors.colOnPrimaryContainer
-                            opacity: 0.9
+                            opacity: 0.6
                         }
+                        
+                        Item { Layout.fillWidth: true } // Spacer
+
                         StyledText {
                             text: {
                                 let v = CurrencyService.rates[CurrencyService.quote2] || 0.0;
-                                return v === 0.0 ? "..." : v.toLocaleString(Qt.locale(), 'f', v < 1000 ? 2 : 0);
+                                return v === 0.0 ? "..." : Math.round(v).toLocaleString(Qt.locale(), 'f', 0);
                             }
                             font.pixelSize: Appearance.font.pixelSize.small
                             font.weight: Font.Bold
                             color: Appearance.colors.colOnPrimaryContainer
-                            opacity: 0.9
                         }
                     }
                 }
@@ -249,7 +260,7 @@ Item {
                         ctx.clearRect(0, 0, width, height);
 
                         // Draw a smooth sparkline trend
-                        ctx.strokeStyle = Appearance.colors.colPrimary;
+                        ctx.strokeStyle = Appearance.colors.colOnPrimaryContainer;
                         ctx.lineWidth = 2 * Appearance.effectiveScale;
                         ctx.lineCap = "round";
                         ctx.beginPath();
@@ -283,7 +294,7 @@ Item {
                         text: "Rates"
                         font.pixelSize: Appearance.font.pixelSize.small
                         font.weight: Font.Bold
-                        color: Appearance.colors.colPrimary
+                        color: Appearance.colors.colOnPrimaryContainer
                         opacity: 0.8
                     }
 
@@ -291,7 +302,7 @@ Item {
                         text: CurrencyService.baseCurrency
                         font.pixelSize: Math.round(42 * Appearance.effectiveScale)
                         font.weight: Font.Bold
-                        color: Appearance.colors.colPrimary
+                        color: Appearance.colors.colOnPrimaryContainer
                     }
                 }
 
@@ -300,7 +311,7 @@ Item {
                     id: rightSplitPanel
                     width: 140 * Appearance.effectiveScale
                     radius: 30 * Appearance.effectiveScale
-                    color: Appearance.colors.colPrimaryContainer
+                    color: Appearance.colors.colPrimary
                     
                     anchors {
                         right: parent.right
@@ -337,7 +348,7 @@ Item {
                                     text: quoteCurrency
                                     font.pixelSize: Appearance.font.pixelSize.smallest
                                     font.weight: Font.Bold
-                                    color: Appearance.colors.colOnPrimaryContainer
+                                    color: Appearance.colors.colOnPrimary
                                 }
 
                                 StyledText {
@@ -348,7 +359,7 @@ Item {
                                     }
                                     font.pixelSize: Appearance.font.pixelSize.small
                                     font.weight: Font.Bold
-                                    color: Appearance.colors.colOnPrimaryContainer
+                                    color: Appearance.colors.colOnPrimary
                                 }
                             }
                         }
