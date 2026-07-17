@@ -367,7 +367,8 @@ property JsonObject background: JsonObject {
                 property string distroIcon: "" 
                 property string avatar_path: ""
                 property bool show_network_speed: false
-                property string network_speed_unit: "KB" 
+                property string network_speed_unit: "KB"
+                property int networkSpeedInterval: 1000
             }
 
             // --- Status Bar ---
