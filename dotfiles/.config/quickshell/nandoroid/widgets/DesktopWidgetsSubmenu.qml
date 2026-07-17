@@ -125,5 +125,13 @@ Item {
             toggleChecked: Config.ready && Config.options.appearance.weatherWidget.showOnDesktop
             onCustomToggled: if (Config.ready) Config.options.appearance.weatherWidget.showOnDesktop = !Config.options.appearance.weatherWidget.showOnDesktop
         }
+
+        SubmenuItem {
+            menuText: "Currency"
+            widgetLocked: Config.ready ? Config.options.appearance.currencyWidget.locked : false
+            onLockToggled: if (Config.ready) Config.options.appearance.currencyWidget.locked = !Config.options.appearance.currencyWidget.locked
+            toggleChecked: Config.ready && Config.options.appearance.currencyWidget.showOnDesktop
+            onCustomToggled: if (Config.ready) Config.options.appearance.currencyWidget.showOnDesktop = !Config.options.appearance.currencyWidget.showOnDesktop
+        }
     }
 }

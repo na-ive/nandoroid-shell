@@ -79,5 +79,8 @@ Flickable {
 
         // ── Desktop Weather Settings ──
         WsWeather { Layout.fillWidth: true; visible: !root.isOnboarding }
+
+        // ── Desktop Currency Tracker Settings ──
+        WsCurrency { Layout.fillWidth: true; visible: !root.isOnboarding }
     }
 }

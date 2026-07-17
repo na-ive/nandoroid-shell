@@ -42,3 +42,4 @@ singleton SysCheckService SysCheckService.qml
 singleton I18nService 1.0 I18nService.qml
 singleton SystemFonts 1.0 SystemFonts.qml
 singleton LyricsService 1.0 LyricsService.qml
+singleton CurrencyService 1.0 CurrencyService.qml

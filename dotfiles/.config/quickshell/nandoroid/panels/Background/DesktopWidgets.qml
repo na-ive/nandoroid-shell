@@ -437,6 +437,39 @@ Variants {
                     interactive: !weatherWidgetWrapper.dragging
                 }
             }
+
+            AbstractWidget {
+                id: currencyWidgetWrapper
+                z: 10
+                width: desktopCurrencyWidgetItem.width
+                height: desktopCurrencyWidgetItem.height
+                gridSize: 12
+                configObject: Config.ready ? Config.options.appearance.currencyWidget : null
+                visible: Config.ready && Config.options.appearance.currencyWidget.showOnDesktop && !GlobalStates.screenLocked
+                opacity: visible ? 1 : 0
+                Behavior on opacity { NumberAnimation { duration: 300 } }
+
+                property string childId: "currencyWidgetWrapper"
+
+                x: Config.ready && Config.options.appearance.currencyWidget.desktopX !== -1 ? Config.options.appearance.currencyWidget.desktopX : 64
+                y: Config.ready && Config.options.appearance.currencyWidget.desktopY !== -1 ? Config.options.appearance.currencyWidget.desktopY : 540
+
+                onDragFinished: (newX, newY) => {
+                    if (Config.ready) {
+                        Config.options.appearance.currencyWidget.desktopX = newX;
+                        Config.options.appearance.currencyWidget.desktopY = newY;
+                    }
+                }
+
+                onRequestContextMenu: (reqX, reqY) => {
+                    desktopContextMenu.openAt(reqX, reqY, Config.options.appearance.currencyWidget, "Currency", "Currency");
+                }
+
+                DesktopCurrencyWidget {
+                    id: desktopCurrencyWidgetItem
+                    interactive: !currencyWidgetWrapper.dragging
+                }
+            }
         }
 
         Timer {

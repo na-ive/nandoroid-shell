@@ -50,6 +50,7 @@ Item {
             // Widgets Page components (pageIndex: 5)
             { file: "panels/Settings/pages/Widgets/WidgetsSettings.qml", pageIndex: 5 },
             { file: "panels/Settings/pages/Widgets/WsAtAGlance.qml", pageIndex: 5 },
+            { file: "panels/Settings/pages/Widgets/WsCurrency.qml", pageIndex: 5 },
             // System Page components (pageIndex: 6)
             { file: "panels/Settings/pages/System/SystemSettings.qml", pageIndex: 6 },
             { file: "panels/Settings/pages/System/SysDateTime.qml", pageIndex: 6 },

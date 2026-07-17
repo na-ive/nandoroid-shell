@@ -62,4 +62,5 @@ ColorPickerButton ColorPickerButton.qml
 DesktopMediaWidget DesktopMediaWidget.qml
 DesktopSystemMonitorWidget DesktopSystemMonitorWidget.qml
 DesktopWeatherWidget DesktopWeatherWidget.qml
+DesktopCurrencyWidget DesktopCurrencyWidget.qml
 

@@ -315,6 +315,19 @@ property JsonObject background: JsonObject {
                     property real desktopX: -1
                     property real desktopY: -1
                 }
+
+                property JsonObject currencyWidget: JsonObject {
+                    property bool showOnDesktop: false
+                    property bool locked: false
+                    property string sizeMode: "2x1" // Supports "1x1", "2x1"
+                    property real desktopX: -1
+                    property real desktopY: -1
+                    property string baseCurrency: "IDR"
+                    property string quote1: "USD"
+                    property string quote2: "EUR"
+                    property string quote3: "JPY"
+                    property string quote4: "GBP"
+                }
                 
                 property JsonObject lyrics: JsonObject {
                     property bool showFloatingLyrics: false

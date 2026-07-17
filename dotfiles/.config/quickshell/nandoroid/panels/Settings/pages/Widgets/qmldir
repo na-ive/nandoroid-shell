@@ -3,4 +3,5 @@ WsAtAGlance 1.0 WsAtAGlance.qml
 WsDesktopMedia 1.0 WsDesktopMedia.qml
 WsSystemMonitor 1.0 WsSystemMonitor.qml
 WsWeather 1.0 WsWeather.qml
+WsCurrency 1.0 WsCurrency.qml
 
