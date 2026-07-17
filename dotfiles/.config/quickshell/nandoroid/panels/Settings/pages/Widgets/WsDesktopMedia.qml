@@ -6,6 +6,7 @@ import QtQuick.Controls
 
 Rectangle {
     id: rootMediaWidget
+    visible: Config.ready && Config.options.appearance && Config.options.appearance.mediaWidget
     Layout.fillWidth: true
     implicitHeight: 96 * Appearance.effectiveScale
     radius: 24 * Appearance.effectiveScale
@@ -13,6 +14,7 @@ Rectangle {
 
     SearchHandler { 
         searchString: "Media Player"
+        visible: rootMediaWidget.visible
         aliases: ["Widget", "Media", "Player", "Music", "Spotify"]
     }
 
@@ -37,8 +39,12 @@ Rectangle {
         Item { Layout.fillWidth: true } // Spacer
 
         AndroidToggle {
-            checked: Config.ready && Config.options.appearance.mediaWidget.showOnDesktop
-            onToggled: if (Config.ready) Config.options.appearance.mediaWidget.showOnDesktop = !Config.options.appearance.mediaWidget.showOnDesktop
+            checked: Config.ready && Config.options.appearance && Config.options.appearance.mediaWidget && Config.options.appearance.mediaWidget.showOnDesktop
+            onToggled: {
+                if (Config.ready && Config.options.appearance && Config.options.appearance.mediaWidget) {
+                    Config.options.appearance.mediaWidget.showOnDesktop = !Config.options.appearance.mediaWidget.showOnDesktop
+                }
+            }
         }
     }
 
@@ -65,7 +71,7 @@ Rectangle {
             }
             StyledText {
                 id: statusText
-                text: (Config.ready && Config.options.appearance.mediaWidget.showOnDesktop) ? "Enabled" : "Disabled"
+                text: (Config.ready && Config.options.appearance && Config.options.appearance.mediaWidget && Config.options.appearance.mediaWidget.showOnDesktop) ? "Enabled" : "Disabled"
                 font.pixelSize: Appearance.font.pixelSize.smaller
                 color: Appearance.colors.colSubtext
             }
@@ -87,9 +93,10 @@ Rectangle {
                 hoverEnabled: true
                 cursorShape: Qt.PointingHandCursor
                 onClicked: {
-                    if (!Config.ready) return;
-                    Config.options.appearance.mediaWidget.desktopX = -1;
-                    Config.options.appearance.mediaWidget.desktopY = -1;
+                    if (Config.ready && Config.options.appearance && Config.options.appearance.mediaWidget) {
+                        Config.options.appearance.mediaWidget.desktopX = -1;
+                        Config.options.appearance.mediaWidget.desktopY = -1;
+                    }
                 }
             }
         }

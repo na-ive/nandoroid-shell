@@ -6,6 +6,7 @@ import QtQuick.Controls
 
 Rectangle {
     id: rootWeatherSettings
+    visible: Config.ready && Config.options.appearance && Config.options.appearance.weatherWidget
     Layout.fillWidth: true
     implicitHeight: 96 * Appearance.effectiveScale
     radius: 24 * Appearance.effectiveScale
@@ -13,6 +14,7 @@ Rectangle {
 
     SearchHandler { 
         searchString: "Weather"
+        visible: rootWeatherSettings.visible
         aliases: ["Widget", "Weather", "Cuaca", "Temp", "Temperature"]
     }
 
@@ -37,8 +39,12 @@ Rectangle {
         Item { Layout.fillWidth: true } // Spacer
 
         AndroidToggle {
-            checked: Config.ready && Config.options.appearance.weatherWidget.showOnDesktop
-            onToggled: if (Config.ready) Config.options.appearance.weatherWidget.showOnDesktop = !Config.options.appearance.weatherWidget.showOnDesktop
+            checked: Config.ready && Config.options.appearance && Config.options.appearance.weatherWidget && Config.options.appearance.weatherWidget.showOnDesktop
+            onToggled: {
+                if (Config.ready && Config.options.appearance && Config.options.appearance.weatherWidget) {
+                    Config.options.appearance.weatherWidget.showOnDesktop = !Config.options.appearance.weatherWidget.showOnDesktop
+                }
+            }
         }
     }
 
@@ -65,7 +71,7 @@ Rectangle {
             }
             StyledText {
                 id: statusText
-                text: (Config.ready && Config.options.appearance.weatherWidget.showOnDesktop) ? "Enabled" : "Disabled"
+                text: (Config.ready && Config.options.appearance && Config.options.appearance.weatherWidget && Config.options.appearance.weatherWidget.showOnDesktop) ? "Enabled" : "Disabled"
                 font.pixelSize: Appearance.font.pixelSize.smaller
                 color: Appearance.colors.colSubtext
             }
@@ -86,9 +92,10 @@ Rectangle {
                 hoverEnabled: true
                 cursorShape: Qt.PointingHandCursor
                 onClicked: {
-                    if (!Config.ready) return;
-                    Config.options.appearance.weatherWidget.desktopX = -1;
-                    Config.options.appearance.weatherWidget.desktopY = -1;
+                    if (Config.ready && Config.options.appearance && Config.options.appearance.weatherWidget) {
+                        Config.options.appearance.weatherWidget.desktopX = -1;
+                        Config.options.appearance.weatherWidget.desktopY = -1;
+                    }
                 }
             }
         }

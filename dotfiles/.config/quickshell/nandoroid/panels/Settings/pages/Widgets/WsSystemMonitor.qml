@@ -6,6 +6,7 @@ import QtQuick.Controls
 
 Rectangle {
     id: rootSystemMonitorSettings
+    visible: Config.ready && Config.options.appearance && Config.options.appearance.systemMonitor
     Layout.fillWidth: true
     implicitHeight: 96 * Appearance.effectiveScale
     radius: 24 * Appearance.effectiveScale
@@ -13,6 +14,7 @@ Rectangle {
 
     SearchHandler { 
         searchString: "System Monitor"
+        visible: rootSystemMonitorSettings.visible
         aliases: ["Widget", "System", "Monitor", "CPU", "RAM", "Battery", "Disk"]
     }
 
@@ -37,8 +39,12 @@ Rectangle {
         Item { Layout.fillWidth: true } // Spacer
 
         AndroidToggle {
-            checked: Config.ready && Config.options.appearance.systemMonitor.showOnDesktop
-            onToggled: if (Config.ready) Config.options.appearance.systemMonitor.showOnDesktop = !Config.options.appearance.systemMonitor.showOnDesktop
+            checked: Config.ready && Config.options.appearance && Config.options.appearance.systemMonitor && Config.options.appearance.systemMonitor.showOnDesktop
+            onToggled: {
+                if (Config.ready && Config.options.appearance && Config.options.appearance.systemMonitor) {
+                    Config.options.appearance.systemMonitor.showOnDesktop = !Config.options.appearance.systemMonitor.showOnDesktop
+                }
+            }
         }
     }
 
@@ -65,7 +71,7 @@ Rectangle {
             }
             StyledText {
                 id: statusText
-                text: (Config.ready && Config.options.appearance.systemMonitor.showOnDesktop) ? "Enabled" : "Disabled"
+                text: (Config.ready && Config.options.appearance && Config.options.appearance.systemMonitor && Config.options.appearance.systemMonitor.showOnDesktop) ? "Enabled" : "Disabled"
                 font.pixelSize: Appearance.font.pixelSize.smaller
                 color: Appearance.colors.colSubtext
             }
@@ -86,9 +92,10 @@ Rectangle {
                 hoverEnabled: true
                 cursorShape: Qt.PointingHandCursor
                 onClicked: {
-                    if (!Config.ready) return;
-                    Config.options.appearance.systemMonitor.desktopX = -1;
-                    Config.options.appearance.systemMonitor.desktopY = -1;
+                    if (Config.ready && Config.options.appearance && Config.options.appearance.systemMonitor) {
+                        Config.options.appearance.systemMonitor.desktopX = -1;
+                        Config.options.appearance.systemMonitor.desktopY = -1;
+                    }
                 }
             }
         }

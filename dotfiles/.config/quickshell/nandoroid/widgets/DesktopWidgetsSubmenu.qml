@@ -88,50 +88,56 @@ Item {
 
         SubmenuItem {
             menuText: "Clock"
-            widgetLocked: Config.ready ? Config.options.appearance.clock.locked : false
-            onLockToggled: if (Config.ready) Config.options.appearance.clock.locked = !Config.options.appearance.clock.locked
-            toggleChecked: Config.ready && Config.options.appearance.clock.showOnDesktop
-            onCustomToggled: if (Config.ready) Config.options.appearance.clock.showOnDesktop = !Config.options.appearance.clock.showOnDesktop
+            visible: Config.ready && Config.options.appearance && Config.options.appearance.clock
+            widgetLocked: (Config.ready && Config.options.appearance && Config.options.appearance.clock) ? Config.options.appearance.clock.locked : false
+            onLockToggled: if (Config.ready && Config.options.appearance && Config.options.appearance.clock) Config.options.appearance.clock.locked = !Config.options.appearance.clock.locked
+            toggleChecked: Config.ready && Config.options.appearance && Config.options.appearance.clock && Config.options.appearance.clock.showOnDesktop
+            onCustomToggled: if (Config.ready && Config.options.appearance && Config.options.appearance.clock) Config.options.appearance.clock.showOnDesktop = !Config.options.appearance.clock.showOnDesktop
         }
 
         SubmenuItem {
             menuText: "At a Glance"
-            widgetLocked: Config.ready ? Config.options.appearance.atAGlance.locked : false
-            onLockToggled: if (Config.ready) Config.options.appearance.atAGlance.locked = !Config.options.appearance.atAGlance.locked
-            toggleChecked: Config.ready && Config.options.appearance.atAGlance.show
-            onCustomToggled: if (Config.ready) Config.options.appearance.atAGlance.show = !Config.options.appearance.atAGlance.show
+            visible: Config.ready && Config.options.appearance && Config.options.appearance.atAGlance
+            widgetLocked: (Config.ready && Config.options.appearance && Config.options.appearance.atAGlance) ? Config.options.appearance.atAGlance.locked : false
+            onLockToggled: if (Config.ready && Config.options.appearance && Config.options.appearance.atAGlance) Config.options.appearance.atAGlance.locked = !Config.options.appearance.atAGlance.locked
+            toggleChecked: Config.ready && Config.options.appearance && Config.options.appearance.atAGlance && Config.options.appearance.atAGlance.show
+            onCustomToggled: if (Config.ready && Config.options.appearance && Config.options.appearance.atAGlance) Config.options.appearance.atAGlance.show = !Config.options.appearance.atAGlance.show
         }
 
         SubmenuItem {
             menuText: "Media Player"
-            widgetLocked: Config.ready ? Config.options.appearance.mediaWidget.locked : false
-            onLockToggled: if (Config.ready) Config.options.appearance.mediaWidget.locked = !Config.options.appearance.mediaWidget.locked
-            toggleChecked: Config.ready && Config.options.appearance.mediaWidget.showOnDesktop
-            onCustomToggled: if (Config.ready) Config.options.appearance.mediaWidget.showOnDesktop = !Config.options.appearance.mediaWidget.showOnDesktop
+            visible: Config.ready && Config.options.appearance && Config.options.appearance.mediaWidget
+            widgetLocked: (Config.ready && Config.options.appearance && Config.options.appearance.mediaWidget) ? Config.options.appearance.mediaWidget.locked : false
+            onLockToggled: if (Config.ready && Config.options.appearance && Config.options.appearance.mediaWidget) Config.options.appearance.mediaWidget.locked = !Config.options.appearance.mediaWidget.locked
+            toggleChecked: Config.ready && Config.options.appearance && Config.options.appearance.mediaWidget && Config.options.appearance.mediaWidget.showOnDesktop
+            onCustomToggled: if (Config.ready && Config.options.appearance && Config.options.appearance.mediaWidget) Config.options.appearance.mediaWidget.showOnDesktop = !Config.options.appearance.mediaWidget.showOnDesktop
         }
 
         SubmenuItem {
             menuText: "System Monitor"
-            widgetLocked: Config.ready ? Config.options.appearance.systemMonitor.locked : false
-            onLockToggled: if (Config.ready) Config.options.appearance.systemMonitor.locked = !Config.options.appearance.systemMonitor.locked
-            toggleChecked: Config.ready && Config.options.appearance.systemMonitor.showOnDesktop
-            onCustomToggled: if (Config.ready) Config.options.appearance.systemMonitor.showOnDesktop = !Config.options.appearance.systemMonitor.showOnDesktop
+            visible: Config.ready && Config.options.appearance && Config.options.appearance.systemMonitor
+            widgetLocked: (Config.ready && Config.options.appearance && Config.options.appearance.systemMonitor) ? Config.options.appearance.systemMonitor.locked : false
+            onLockToggled: if (Config.ready && Config.options.appearance && Config.options.appearance.systemMonitor) Config.options.appearance.systemMonitor.locked = !Config.options.appearance.systemMonitor.locked
+            toggleChecked: Config.ready && Config.options.appearance && Config.options.appearance.systemMonitor && Config.options.appearance.systemMonitor.showOnDesktop
+            onCustomToggled: if (Config.ready && Config.options.appearance && Config.options.appearance.systemMonitor) Config.options.appearance.systemMonitor.showOnDesktop = !Config.options.appearance.systemMonitor.showOnDesktop
         }
 
         SubmenuItem {
             menuText: "Weather"
-            widgetLocked: Config.ready ? Config.options.appearance.weatherWidget.locked : false
-            onLockToggled: if (Config.ready) Config.options.appearance.weatherWidget.locked = !Config.options.appearance.weatherWidget.locked
-            toggleChecked: Config.ready && Config.options.appearance.weatherWidget.showOnDesktop
-            onCustomToggled: if (Config.ready) Config.options.appearance.weatherWidget.showOnDesktop = !Config.options.appearance.weatherWidget.showOnDesktop
+            visible: Config.ready && Config.options.appearance && Config.options.appearance.weatherWidget
+            widgetLocked: (Config.ready && Config.options.appearance && Config.options.appearance.weatherWidget) ? Config.options.appearance.weatherWidget.locked : false
+            onLockToggled: if (Config.ready && Config.options.appearance && Config.options.appearance.weatherWidget) Config.options.appearance.weatherWidget.locked = !Config.options.appearance.weatherWidget.locked
+            toggleChecked: Config.ready && Config.options.appearance && Config.options.appearance.weatherWidget && Config.options.appearance.weatherWidget.showOnDesktop
+            onCustomToggled: if (Config.ready && Config.options.appearance && Config.options.appearance.weatherWidget) Config.options.appearance.weatherWidget.showOnDesktop = !Config.options.appearance.weatherWidget.showOnDesktop
         }
 
         SubmenuItem {
             menuText: "Currency"
-            widgetLocked: Config.ready ? Config.options.appearance.currencyWidget.locked : false
-            onLockToggled: if (Config.ready) Config.options.appearance.currencyWidget.locked = !Config.options.appearance.currencyWidget.locked
-            toggleChecked: Config.ready && Config.options.appearance.currencyWidget.showOnDesktop
-            onCustomToggled: if (Config.ready) Config.options.appearance.currencyWidget.showOnDesktop = !Config.options.appearance.currencyWidget.showOnDesktop
+            visible: Config.ready && Config.options.appearance && Config.options.appearance.currencyWidget
+            widgetLocked: (Config.ready && Config.options.appearance && Config.options.appearance.currencyWidget) ? Config.options.appearance.currencyWidget.locked : false
+            onLockToggled: if (Config.ready && Config.options.appearance && Config.options.appearance.currencyWidget) Config.options.appearance.currencyWidget.locked = !Config.options.appearance.currencyWidget.locked
+            toggleChecked: Config.ready && Config.options.appearance && Config.options.appearance.currencyWidget && Config.options.appearance.currencyWidget.showOnDesktop
+            onCustomToggled: if (Config.ready && Config.options.appearance && Config.options.appearance.currencyWidget) Config.options.appearance.currencyWidget.showOnDesktop = !Config.options.appearance.currencyWidget.showOnDesktop
         }
     }
 }
