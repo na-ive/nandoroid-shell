@@ -71,16 +71,18 @@ Flickable {
         // ── At a Glance Settings ──
         WsAtAGlance { Layout.fillWidth: true; visible: !root.isOnboarding }
 
-        // ── Desktop Media Player Settings ──
-        WsDesktopMedia { Layout.fillWidth: true; visible: !root.isOnboarding }
+        // ── Desktop Minimalist Widgets (2-Column Grid) ──
+        GridLayout {
+            columns: 2
+            columnSpacing: 12 * Appearance.effectiveScale
+            rowSpacing: 12 * Appearance.effectiveScale
+            Layout.fillWidth: true
+            visible: !root.isOnboarding
 
-        // ── Desktop System Monitor Settings ──
-        WsSystemMonitor { Layout.fillWidth: true; visible: !root.isOnboarding }
-
-        // ── Desktop Weather Settings ──
-        WsWeather { Layout.fillWidth: true; visible: !root.isOnboarding }
-
-        // ── Desktop Currency Tracker Settings ──
-        WsCurrency { Layout.fillWidth: true; visible: !root.isOnboarding }
+            WsDesktopMedia { Layout.fillWidth: true }
+            WsSystemMonitor { Layout.fillWidth: true }
+            WsWeather { Layout.fillWidth: true }
+            WsCurrency { Layout.fillWidth: true }
+        }
     }
 }
