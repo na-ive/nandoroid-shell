@@ -427,26 +427,16 @@ Item {
             }
         }
 
-        // System Tray / VPN / Right Icons
+        // System Tray
         M3StatusWrapper {
             id: rightTrayWrapper
-            show: SystemTray.items.values.length > 0 || networkWarpIcon.visible
+            show: SystemTray.items.values.length > 0
             Layout.alignment: Qt.AlignVCenter
             m3Color: Appearance.m3colors.m3secondaryContainer
             m3ContentColor: Appearance.m3colors.m3onSecondaryContainer
 
             StatusBarTray {
                 id: statusBarTray
-                Layout.alignment: Qt.AlignVCenter
-            }
-
-            MaterialSymbol {
-                id: networkWarpIcon
-                visible: Network.warpConnected
-                text: "key"
-                iconSize: 16 * Appearance.effectiveScale
-                fill: 1
-                color: rightTrayWrapper.contentColor
                 Layout.alignment: Qt.AlignVCenter
             }
         }
@@ -516,6 +506,15 @@ Item {
                         color: rightQuickSettingsWrapper.m3Color
                     }
                 }
+            }
+
+            MaterialSymbol {
+                visible: Network.warpConnected
+                text: "key"
+                iconSize: 16 * Appearance.effectiveScale
+                fill: 1
+                color: rightQuickSettingsWrapper.contentColor
+                Layout.alignment: Qt.AlignVCenter
             }
 
             MaterialSymbol {
