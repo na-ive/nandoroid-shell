@@ -47,6 +47,7 @@ Item {
             { file: "panels/Settings/pages/WallpaperStyle/WsTypography.qml", pageIndex: 4 },
             { file: "panels/Settings/pages/WallpaperStyle/WsWallpaperCycle.qml", pageIndex: 4 },
             { file: "panels/Settings/pages/WallpaperStyle/WsLauncherIcons.qml", pageIndex: 4 },
+            { file: "panels/Settings/pages/WallpaperStyle/WsCava.qml", pageIndex: 4 },
             // Widgets Page components (pageIndex: 5)
             { file: "panels/Settings/pages/Widgets/WidgetsSettings.qml", pageIndex: 5 },
             { file: "panels/Settings/pages/Widgets/WsAtAGlance.qml", pageIndex: 5 },
