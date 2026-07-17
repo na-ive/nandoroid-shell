@@ -102,11 +102,7 @@ Item {
                 id: percentageText
                 anchors.verticalCenter: parent.verticalCenter
                 renderType: Text.QtRendering
-                font.pixelSize: {
-                    let pct = Math.round(root.percentage * 100);
-                    let base = pct >= 100 ? 8.5 : 11.5;
-                    return Math.round(base * Appearance.effectiveScale);
-                }
+                font.pixelSize: Math.round(11.5 * Appearance.effectiveScale)
                 font.weight: Font.DemiBold
                 text: Math.round(root.percentage * 100)
                 color: root.textColor
