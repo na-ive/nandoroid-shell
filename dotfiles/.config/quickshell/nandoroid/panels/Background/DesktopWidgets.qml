@@ -162,17 +162,20 @@ Variants {
             visible: opacity > 0
             Behavior on opacity { NumberAnimation { duration: 800; easing.type: Easing.InOutQuad } }
 
-            // Manage CavaService reference counting
+            // Manage CavaService reference counting — use flag to prevent double-decrement
+            property bool _cavaActive: false
             onShouldVisualizeChanged: {
-                if (shouldVisualize) {
+                if (shouldVisualize && !_cavaActive) {
                     CavaService.refCount++;
-                } else {
+                    _cavaActive = true;
+                } else if (!shouldVisualize && _cavaActive) {
                     CavaService.refCount--;
+                    _cavaActive = false;
                 }
             }
 
             Component.onDestruction: {
-                if (shouldVisualize) CavaService.refCount--;
+                if (_cavaActive) CavaService.refCount--;
             }
         }
 

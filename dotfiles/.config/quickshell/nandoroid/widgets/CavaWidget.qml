@@ -45,7 +45,7 @@ Canvas {
 
     Timer {
         interval: 16
-        running: true
+        running: root.visible && CavaService.refCount > 0
         repeat: true
         onTriggered: {
             var h = root._heights

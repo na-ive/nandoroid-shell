@@ -11,7 +11,7 @@ Canvas {
     property color color: Appearance.colors.colPrimary
     property real opacityMultiplier: 0.25
 
-    onPointsChanged: root.requestPaint()
+    onPointsChanged: if (root.visible) root.requestPaint()
 
     onPaint: {
         var ctx = getContext("2d")
