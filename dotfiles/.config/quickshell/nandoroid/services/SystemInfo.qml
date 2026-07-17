@@ -25,9 +25,6 @@ Singleton {
     property string memory: "Unknown"
     property string storage: "Unknown"
 
-    // Cache file path
-    readonly property string hwCachePath: "/tmp/nandoroid-hw-cache.json"
-
     Timer {
         triggeredOnStart: true
         interval: 1
@@ -63,25 +60,8 @@ Singleton {
             logo = logoFieldMatch ? logoFieldMatch[1] : distroIcon
 
             hostnameFile.reload()
+            getHardwareInfo.running = true
 
-            // Try dgop first (with cache), fall back to pure proc/sysfs
-            fileHwCache.reload()
-            if (fileHwCache.exists) {
-                try {
-                    const cache = JSON.parse(fileHwCache.text())
-                    root.cpu = cache.cpu || "Unknown"
-                    root.gpu = cache.gpu || "Unknown"
-                    root.memory = cache.memory || "Unknown"
-                    root.storage = cache.storage || "Unknown"
-                    root.manufacturer = cache.manufacturer || "Unknown"
-                    root.product = cache.product || "Unknown"
-                } catch (e) {
-                    getHardwareInfo.running = true
-                }
-            } else {
-                getHardwareInfo.running = true
-            }
-            
             fileKernel.reload()
             const kernelText = fileKernel.text()
             const kernelMatch = kernelText.match(/^Linux version ([^ ]+)/)
@@ -143,17 +123,12 @@ Singleton {
                     root.gpu = hwData.gpu
                     root.memory = hwData.memory
                     root.storage = hwData.storage
-
-                    saveCache.command = ["sh", "-c", `echo '${JSON.stringify(hwData)}' > ${root.hwCachePath}`]
-                    saveCache.running = true
                 } catch (e) {
 
                 }
             }
         }
     }
-
-    Process { id: saveCache }
 
     // ── Pure proc/sysfs fallback (when dgop is unavailable) ──
     Process {
@@ -237,10 +212,5 @@ Singleton {
     FileView {
         id: fileKernel
         path: "/proc/version"
-    }
-
-    FileView {
-        id: fileHwCache
-        path: root.hwCachePath
     }
 }
