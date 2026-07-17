@@ -24,12 +24,12 @@ Item {
     readonly property color trackColor: ColorUtils.applyAlpha(root.color, 0.35)
     readonly property color highlightColor: {
         if (isLow && !isCharging) return Appearance.m3colors.m3error
-        if (isCharging) return Appearance.m3colors.m3success
+        if (isCharging && Math.round(root.percentage * 100) < 100) return Appearance.m3colors.m3success
         return root.color
     }
     readonly property color textColor: {
         if (isLow && !isCharging) return Appearance.m3colors.m3onError
-        if (isCharging) return Appearance.m3colors.m3onSuccess
+        if (isCharging && Math.round(root.percentage * 100) < 100) return Appearance.m3colors.m3onSuccess
         return Appearance.m3colors.m3surface
     }
 
