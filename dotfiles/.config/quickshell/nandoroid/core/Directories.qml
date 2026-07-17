@@ -39,7 +39,7 @@ Singleton {
     property string screenshotTemp: "/tmp/nandoroid/screenshots"
     property string screenshotDir: Functions.FileUtils.trimFileProtocol(`${pictures}/Screenshots`)
 
-    // Ensure config dir exists
+    // Ensure dirs and temp files exist (silences FileView warnings)
     Component.onCompleted: {
         Quickshell.execDetached(["mkdir", "-p", `${shellConfig}`])
         Quickshell.execDetached(["mkdir", "-p", `${screenshotTemp}`])
@@ -49,5 +49,9 @@ Singleton {
         const matugenFile = generatedMaterialThemePath;
         const matugenDir = matugenFile.substring(0, matugenFile.lastIndexOf('/'));
         Quickshell.execDetached(["mkdir", "-p", matugenDir])
+
+        // Pre-create temp files for FileView watchers
+        Quickshell.execDetached(["touch", "/tmp/nandoroid_states.json"])
+        Quickshell.execDetached(["touch", "/tmp/nandoroid_cava.conf"])
     }
 }
