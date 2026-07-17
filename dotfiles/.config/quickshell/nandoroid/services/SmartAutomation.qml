@@ -32,13 +32,75 @@ Singleton {
         }
     }
 
-    // --- Main Automation Timer ---
+    // --- Dynamic One-Shot Automation Timer ---
     Timer {
         id: mainTimer
-        interval: 60000 // Check every minute — sufficient for schedule/DND accuracy
-        running: true
-        repeat: true
-        onTriggered: runAutomationCycle()
+        interval: 60000
+        repeat: false
+        onTriggered: runThenSchedule()
+    }
+
+    property bool _ready: false
+
+    // Watch for schedule changes to recalculate timing
+    property var _eventWatch: ScheduleService.events
+    on_EventWatchChanged: if (_ready) scheduleNext()
+
+    function runThenSchedule() {
+        runAutomationCycle();
+        scheduleNext();
+    }
+
+    function scheduleNext() {
+        const now = new Date();
+        let nextMs = Infinity;
+
+        // Next midnight (for daily update check)
+        const midnight = new Date(now);
+        midnight.setDate(midnight.getDate() + 1);
+        midnight.setHours(0, 0, 0, 0);
+        nextMs = Math.min(nextMs, midnight.getTime() - now.getTime() + 1000);
+
+        ScheduleService.events.forEach(event => {
+            const nowDateStr = Qt.formatDate(now, "yyyy-MM-dd");
+            let isEventDay = (event.date === nowDateStr);
+            if (event.recurrence === "daily") isEventDay = true;
+            else if (event.recurrence === "weekly") {
+                const d = new Date(event.date + "T00:00:00");
+                isEventDay = d.getDay() === now.getDay();
+            } else if (event.recurrence === "monthly") {
+                const d = new Date(event.date + "T00:00:00");
+                isEventDay = d.getDate() === now.getDate();
+            }
+            if (!isEventDay) return;
+
+            const eventStart = new Date(nowDateStr + "T" + event.time);
+            const eventEnd = event.endTime
+                ? new Date(nowDateStr + "T" + event.endTime)
+                : new Date(eventStart.getTime() + 3600000);
+
+            // Notification 1h before
+            const notif1h = new Date(eventStart.getTime() - 3600000);
+            if (notif1h > now) nextMs = Math.min(nextMs, notif1h.getTime() - now.getTime());
+
+            // Event start (for DND activation)
+            if (event.focus && eventStart > now) nextMs = Math.min(nextMs, eventStart.getTime() - now.getTime());
+
+            // Event end (for DND deactivation)
+            if (event.focus && eventEnd > now) nextMs = Math.min(nextMs, eventEnd.getTime() - now.getTime());
+
+            // Expired once event cleanup (30s after end)
+            if (event.recurrence === "once") {
+                const expire = new Date(eventEnd.getTime() + 30000);
+                if (expire > now) nextMs = Math.min(nextMs, expire.getTime() - now.getTime());
+                else nextMs = Math.min(nextMs, 1000);
+            }
+        });
+
+        if (nextMs < Infinity) {
+            mainTimer.interval = Math.max(1000, nextMs);
+            mainTimer.running = true;
+        }
     }
 
     function runAutomationCycle() {
@@ -49,7 +111,6 @@ Singleton {
         if (Config.ready && Config.options.system) {
             const lastCheck = Config.options.system.lastUpdateCheckDate || "";
             if (lastCheck !== nowDateStr) {
-
                 updateCheckProc.running = true;
                 Config.options.system.lastUpdateCheckDate = nowDateStr;
             }
@@ -116,7 +177,6 @@ Singleton {
 
         // Cleanup Expired Events
         expiredEventIds.forEach(id => {
-
             ScheduleService.deleteEvent(id);
         });
     }
@@ -173,6 +233,10 @@ Singleton {
     }
 
     Component.onCompleted: {
-        Qt.callLater(() => runAutomationCycle());
+        Qt.callLater(() => {
+            runAutomationCycle();
+            _ready = true;
+            scheduleNext();
+        });
     }
 }
