@@ -101,7 +101,7 @@ Singleton {
     property bool screenUnlockFailed: false
     property bool screenLockContainsCharacters: false
 
-    readonly property bool isCenteredStatusbar: (Config.ready && Config.options.statusBar) ? Config.options.statusBar.layoutStyle === "centered" : false
+    readonly property bool isCenteredStatusbar: (Config.ready && Config.options.statusBar) ? (Config.options.statusBar.moduleStyle !== "m3" && Config.options.statusBar.layoutStyle === "centered") : false
 
     onNotificationCenterOpenChanged: {
         if (notificationCenterOpen) {

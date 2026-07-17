@@ -173,6 +173,9 @@ Item {
     }
 
     readonly property bool showShoulders: {
+        if (!Config.ready || !Config.options.statusBar) return false;
+        let style = Config.options.statusBar.moduleStyle ?? "";
+        if (style === "m3") return false;
         if (bgStyle === 1) return true;
         if (bgStyle === 2) return hasActiveWindows;
         return false;

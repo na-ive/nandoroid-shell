@@ -76,12 +76,12 @@ Variants {
         // --- Notification Center Content (Top Left) ---
         Loader {
             id: ncLoader
-            active: true 
+            active: true
             visible: (opacity > 0 && isActive)
             enabled: GlobalStates.notificationCenterOpen && isActive
-            
+
             readonly property bool isM3: (Config.ready && Config.options.statusBar) ? Config.options.statusBar.moduleStyle === "m3" : false
-            readonly property bool isCentered: (Config.ready && Config.options.statusBar) ? Config.options.statusBar.layoutStyle === "centered" : false
+            readonly property bool isCentered: ncLoader.isM3 ? false : (Config.ready && Config.options.statusBar ? Config.options.statusBar.layoutStyle === "centered" : false)
             readonly property real centeredWidth: (Config.ready && Config.options.statusBar) ? Config.options.statusBar.centeredWidth * Appearance.effectiveScale : 1200 * Appearance.effectiveScale
             readonly property real sidePadding: isCentered ? Math.round((panelWindow.width - Math.min(centeredWidth, panelWindow.width - 40 * Appearance.effectiveScale)) / 2) : 0
 
@@ -91,7 +91,7 @@ Variants {
                 topMargin: 0
                 leftMargin: sidePadding
             }
-            
+
             transform: Translate {
                 id: ncTransform
             }
@@ -107,7 +107,7 @@ Variants {
                     name: "closed"
                     when: (!GlobalStates.notificationCenterOpen || !isActive)
                     PropertyChanges { target: ncLoader; opacity: 0 }
-                    PropertyChanges { target: ncTransform; 
+                    PropertyChanges { target: ncTransform;
                         x: ncLoader.isCentered ? 0 : -ncLoader.width - 40 * Appearance.effectiveScale;
                         y: ncLoader.isCentered ? -ncLoader.height - 40 * Appearance.effectiveScale : 0;
                     }
@@ -162,9 +162,9 @@ Variants {
             active: true
             visible: (opacity > 0 && isActive)
             enabled: GlobalStates.quickSettingsOpen && isActive
-            
+
             readonly property bool isM3: (Config.ready && Config.options.statusBar) ? Config.options.statusBar.moduleStyle === "m3" : false
-            readonly property bool isCentered: (Config.ready && Config.options.statusBar) ? Config.options.statusBar.layoutStyle === "centered" : false
+            readonly property bool isCentered: qsLoader.isM3 ? false : (Config.ready && Config.options.statusBar ? Config.options.statusBar.layoutStyle === "centered" : false)
             readonly property real centeredWidth: (Config.ready && Config.options.statusBar) ? Config.options.statusBar.centeredWidth * Appearance.effectiveScale : 1200 * Appearance.effectiveScale
             readonly property real sidePadding: isCentered ? Math.round((panelWindow.width - Math.min(centeredWidth, panelWindow.width - 40 * Appearance.effectiveScale)) / 2) : 0
 
@@ -190,7 +190,7 @@ Variants {
                     name: "closed"
                     when: (!GlobalStates.quickSettingsOpen || !isActive)
                     PropertyChanges { target: qsLoader; opacity: 0 }
-                    PropertyChanges { target: qsTransform; 
+                    PropertyChanges { target: qsTransform;
                         x: qsLoader.isCentered ? 0 : qsLoader.width + 40 * Appearance.effectiveScale;
                         y: qsLoader.isCentered ? -qsLoader.height - 40 * Appearance.effectiveScale : 0;
                     }
