@@ -321,21 +321,21 @@ Item {
                                             colText: Appearance.colors.colOnPrimary
                                             onClicked: {
                                                 if (modelData.connected) modelData.disconnect()
-                                                else modelData.connect()
+                                                else BluetoothStatus.pairAndTrust(modelData)
                                                 deviceItem.expanded = false
                                             }
                                         }
 
                                         RippleButton {
                                             visible: !modelData.paired
-                                            buttonText: "Connect"
-                                            implicitWidth: 90 * Appearance.effectiveScale
+                                            buttonText: "Pair & Connect"
+                                            implicitWidth: 110 * Appearance.effectiveScale
                                             implicitHeight: 36 * Appearance.effectiveScale
                                             buttonRadius: 18 * Appearance.effectiveScale
                                             colBackground: Appearance.colors.colPrimary
                                             colText: Appearance.colors.colOnPrimary
                                             onClicked: {
-                                                modelData.pair()
+                                                BluetoothStatus.pairAndTrust(modelData)
                                                 deviceItem.expanded = false
                                             }
                                         }

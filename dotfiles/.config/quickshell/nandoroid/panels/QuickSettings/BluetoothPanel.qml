@@ -191,14 +191,14 @@ Rectangle {
                                 implicitHeight: 32 * Appearance.effectiveScale
                                 buttonRadius: 16 * Appearance.effectiveScale
                                 colBackground: deviceItem.modelData.connected ? Appearance.colors.colLayer2 : Appearance.colors.colPrimary
-                                onClicked: {
-                                    if (deviceItem.modelData.connected) {
-                                        deviceItem.modelData.disconnect();
-                                    } else {
-                                        deviceItem.modelData.connect();
-                                    }
-                                    deviceItem.expanded = false;
+                            onClicked: {
+                                if (deviceItem.modelData.connected) {
+                                    deviceItem.modelData.disconnect();
+                                } else {
+                                    BluetoothStatus.pairAndTrust(deviceItem.modelData);
                                 }
+                                deviceItem.expanded = false;
+                            }
                                 StyledText {
                                     id: connectBtnText
                                     anchors.centerIn: parent
