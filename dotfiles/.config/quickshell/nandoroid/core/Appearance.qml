@@ -50,9 +50,14 @@ Singleton {
         function onReadyChanged() { root.updateScale(); }
     }
     
-    Timer {
-        interval: 5000; running: true; repeat: true
-        onTriggered: root.updateScale()
+    // Watch config file for scale/theme changes instead of polling
+    FileView {
+        path: Config.filePath
+        watchChanges: true
+        onFileChanged: {
+            reload();
+            root.updateScale();
+        }
     }
 
     // --- Material 3 Color Tokens (populated by MaterialThemeLoader) ---

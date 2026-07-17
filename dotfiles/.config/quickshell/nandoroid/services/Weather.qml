@@ -60,6 +60,7 @@ Singleton {
 
     onUpdateIntervalChanged: {
         root.nextUpdateTime = Date.now() + (updateInterval * 60000);
+        root.scheduleNext();
     }
 
     // --- Cache Loading ---
@@ -128,11 +129,12 @@ Singleton {
         }
     }
 
+    // One-shot scheduler — replaces 60s repeating watchdog.
+    // After each fetch completes or on any nextUpdateTime change,
+    // scheduleNext() recalculates the exact interval to the next deadline.
     Timer {
-        id: watchdogTimer
-        interval: 60000
-        running: true
-        repeat: true
+        id: scheduleTimer
+        repeat: false
         onTriggered: {
             if (Config.ready && Config.options.weather && !Config.options.weather.enable) return;
             const now = Date.now();
@@ -141,7 +143,21 @@ Singleton {
             } else {
                 root.nextUpdateTime = now + (root.updateInterval * 60000);
             }
+            root.scheduleNext();
         }
+    }
+
+    function scheduleNext() {
+        if (Config.ready && Config.options.weather && !Config.options.weather.enable) {
+            scheduleTimer.stop();
+            return;
+        }
+        if (root.nextUpdateTime > 0) {
+            scheduleTimer.interval = Math.max(1000, root.nextUpdateTime - Date.now());
+        } else {
+            scheduleTimer.interval = root.updateInterval * 60000;
+        }
+        scheduleTimer.start();
     }
 
     Component.onCompleted: {
@@ -155,6 +171,7 @@ Singleton {
             readCacheProc.running = true;
         }
         startupFetchTimer.start();
+        root.scheduleNext();
     }
 
     Component.onDestruction: {
@@ -335,6 +352,7 @@ Singleton {
 
         root.nextUpdateTime = Date.now() + (root.updateInterval * 60000);
         root.lastUpdateTime = new Date();
+        root.scheduleNext();
 
         if (actualData.current_condition) {
             processWttrInData(actualData);
