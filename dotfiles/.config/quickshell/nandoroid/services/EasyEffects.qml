@@ -47,15 +47,6 @@ Singleton {
         }
     }
 
-    // Polling timer to keep the toggle UI accurate to the system state
-    Timer {
-        id: pollTimer
-        interval: 3000
-        running: true
-        repeat: true
-        onTriggered: root.fetchActiveState()
-    }
-
     // ENFORCEMENT: On startup, make reality match the user's last preference
     Connections {
         target: Config
@@ -87,10 +78,32 @@ Singleton {
 
     Process {
         id: fetchActiveStateProc
-        running: true
         command: ["bash", "-c", "pidof easyeffects || flatpak ps | grep com.github.wwmm.easyeffects > /dev/null 2>&1"]
         onExited: (exitCode, exitStatus) => {
             root.active = exitCode === 0
+        }
+    }
+
+    // Event-driven: watch D-Bus name owner changes, trigger fetch on any change
+    Process {
+        id: dbusMonitor
+        running: root.available
+        command: ["dbus-monitor", "--session", "interface=org.freedesktop.DBus", "member=NameOwnerChanged", "arg0=com.github.wwmm.easyeffects"]
+        stdout: SplitParser {
+            onRead: fetchActiveStateProc.running = true
+        }
+        onExited: {
+            if (root.available) running = true
+        }
+    }
+
+    onAvailableChanged: {
+        if (available) {
+            fetchActiveStateProc.running = true
+            dbusMonitor.running = true
+        } else {
+            dbusMonitor.running = false
+            root.active = false
         }
     }
 }

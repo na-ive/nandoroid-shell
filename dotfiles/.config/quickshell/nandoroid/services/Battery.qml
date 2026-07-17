@@ -34,37 +34,35 @@ Singleton {
     property real timeToEmpty: batteryDevice?.timeToEmpty ?? 0
     property real timeToFull: batteryDevice?.timeToFull ?? 0
     
-    // Hardware Details (Updated via Process for accuracy)
+    // Hardware Details — bind reactive UPower properties directly
+    property string model: batteryDevice?.model ?? "Generic Battery"
+    property real energy: batteryDevice?.energy ?? 0
+    property real energyFull: batteryDevice?.energyCapacity ?? 0
+
+    // Static details not exposed via UPowerDevice — one-shot fetch on startup
     property string vendor: "Unknown"
-    property string model: "Generic Battery"
     property string technology: "Unknown"
     property real voltage: 0
-    property real capacity: 0
-    property real energy: 0
-    property real energyFull: 0
     property real energyFullDesign: 0
     property string serial: "Not Available"
     property int cycles: 0
 
     property real health: {
+        if (batteryDevice?.healthSupported) {
+            const h = batteryDevice.healthPercentage;
+            if (h === 0) return 0.01;
+            if (h < 1) return h * 100;
+            return h;
+        }
         if (energyFullDesign > 0 && energyFull > 0) {
             return Math.min(100, (energyFull / energyFullDesign) * 100);
         }
         return 0;
     }
 
-    // --- Data Fetcher ---
-    Timer {
-        id: detailUpdater
-        interval: 5000 // Update every 5s
-        running: true
-        repeat: true
-        triggeredOnStart: true
-        onTriggered: upowerProc.running = true
-    }
-
+    // One-shot fetch for static details not on UPowerDevice
     Process {
-        id: upowerProc
+        id: detailProc
         command: ["bash", "-c", "upower -i $(upower -e | grep 'battery' | head -n1)"]
         stdout: StdioCollector {
             onStreamFinished: {
@@ -74,20 +72,18 @@ Singleton {
                     if (parts.length < 2) return;
                     const key = parts[0].trim();
                     const val = parts[1].trim();
-
                     if (key === "vendor") root.vendor = val;
-                    if (key === "model") root.model = val;
-                    if (key === "serial") root.serial = val;
                     if (key === "technology") root.technology = val;
                     if (key === "voltage") root.voltage = parseFloat(val);
-                    if (key === "energy") root.energy = parseFloat(val);
-                    if (key === "energy-full") root.energyFull = parseFloat(val);
                     if (key === "energy-full-design") root.energyFullDesign = parseFloat(val);
+                    if (key === "serial") root.serial = val;
                     if (key === "charge-cycles") root.cycles = parseInt(val);
                 });
             }
         }
     }
+
+    onAvailableChanged: if (available) detailProc.running = true
 
     property bool isLow: available && (percentage <= Config.options.battery.low / 100)
     property bool isCritical: available && (percentage <= Config.options.battery.critical / 100)
