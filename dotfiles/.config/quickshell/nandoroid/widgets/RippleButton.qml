@@ -134,6 +134,7 @@ Button {
     // ── STABLE BACKGROUND ──
     background: Rectangle {
         id: bgContainer
+        clip: true
         color: root.baseColor
         topLeftRadius: root.topLeftRadius
         topRightRadius: root.topRightRadius
@@ -144,22 +145,14 @@ Button {
             animation: Appearance.animation.elementMoveFast.colorAnimation.createObject(bgContainer)
         }
 
-        layer.enabled: true
-        layer.effect: OpacityMask {
-            maskSource: Rectangle {
-                width: bgContainer.width; height: bgContainer.height
-                radius: bgContainer.radius
-                topLeftRadius: bgContainer.topLeftRadius
-                topRightRadius: bgContainer.topRightRadius
-                bottomLeftRadius: bgContainer.bottomLeftRadius
-                bottomRightRadius: bgContainer.bottomRightRadius
-                antialiasing: true // Reduce clipping artifacts (shadows)
-            }
-        }
-
         // State Layer (Highlight)
         Rectangle {
             anchors.fill: parent
+            radius: bgContainer.radius
+            topLeftRadius: bgContainer.topLeftRadius
+            topRightRadius: bgContainer.topRightRadius
+            bottomLeftRadius: bgContainer.bottomLeftRadius
+            bottomRightRadius: bgContainer.bottomRightRadius
             color: root.textColor
             opacity: root.down ? 0.12 : (root.hovered ? 0.08 : 0)
             Behavior on opacity { NumberAnimation { duration: 150 } }
