@@ -197,12 +197,15 @@ Singleton {
         if (Config.options.lock && !Config.options.lock.useSeparateWallpaper) {
             Config.options.lock.wallpaperPath = "file://" + cleanPath
         }
-        
+
         if (Config.options.appearance.background.matugen) {
-            // When selecting a static wallpaper, we use the cleanPath directly 
-            // but we can also use getWallpaperPath which will return the new wallpaperPath since WE is not active
             matugenProc.filePath = cleanPath
             matugenProc.running = true
+        } else {
+            // Reset from custom accent to matugen-from-wallpaper
+            Config.options.appearance.background.matugen = true
+            Config.options.appearance.background.matugenCustomColor = ""
+            Config.options.appearance.background.matugenThemeFile = ""
         }
     }
 
