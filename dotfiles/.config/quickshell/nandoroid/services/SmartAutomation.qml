@@ -35,7 +35,7 @@ Singleton {
     // --- Main Automation Timer ---
     Timer {
         id: mainTimer
-        interval: 10000 // Check every 10 seconds for high accuracy
+        interval: 60000 // Check every minute — sufficient for schedule/DND accuracy
         running: true
         repeat: true
         onTriggered: runAutomationCycle()

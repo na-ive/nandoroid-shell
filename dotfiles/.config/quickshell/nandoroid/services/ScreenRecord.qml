@@ -62,7 +62,9 @@ Singleton {
     }
 
     Timer {
-        interval: 1000
+        // Fast poll (1s) when recording to keep the counter accurate,
+        // slow poll (5s) when idle — just enough to detect recording start.
+        interval: root.active ? 1000 : 5000
         running: true
         repeat: true
         onTriggered: stateFileView.reload()
