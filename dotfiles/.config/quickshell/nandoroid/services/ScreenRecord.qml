@@ -27,6 +27,8 @@ Singleton {
     }
 
     function toggle(region, sound, fullscreen) {
+        root.active = true;
+
         let args = [Quickshell.shellPath("scripts/videos/record.sh")];
         if (region) {
             args.push("--region");
@@ -45,6 +47,8 @@ Singleton {
     FileView {
         id: stateFileView
         path: root.stateFile
+        watchChanges: true
+        onFileChanged: stateFileView.reload()
         onLoaded: {
             try {
                 const trimmed = stateFileView.text().trim();
@@ -52,8 +56,8 @@ Singleton {
                 let data = JSON.parse(trimmed);
                 if (data && data.screenRecord) {
                     root.active = data.screenRecord.active === true;
-                    root.seconds = parseInt(data.screenRecord.seconds) || 0;
                     root.geometry = data.screenRecord.geometry || "";
+                    if (!root.active) root.seconds = 0;
                 }
             } catch(e) {
                 console.error("[ScreenRecord] Failed to parse state:", e);
@@ -62,16 +66,13 @@ Singleton {
     }
 
     Timer {
-        // Fast poll (1s) when recording to keep the counter accurate,
-        // slow poll (5s) when idle — just enough to detect recording start.
-        interval: root.active ? 1000 : 5000
-        running: true
+        interval: 1000
+        running: root.active
         repeat: true
-        onTriggered: stateFileView.reload()
+        onTriggered: root.seconds++
     }
 
     Component.onCompleted: {
-        // Create initial state file if not exists
         Quickshell.execDetached(["bash", "-c", `[ -f ${stateFile} ] || echo '{"screenRecord": {"active": false, "seconds": 0}}' > ${stateFile}`]);
         stateFileView.reload();
     }
