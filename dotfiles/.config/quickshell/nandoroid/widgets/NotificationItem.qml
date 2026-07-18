@@ -46,7 +46,7 @@ Item { // Notification item area
     TextMetrics {
         id: summaryTextMetrics
         font.pixelSize: Math.round(root.fontSize)
-        text: root.notificationObject.summary || ""
+        text: root.notificationObject && root.notificationObject.summary || ""
     }
 
     SequentialAnimation { // Drag finish animation
@@ -63,7 +63,7 @@ Item { // Notification item area
             easing.bezierCurve: Appearance.animation.elementMove.bezierCurve
         }
         onFinished: () => {
-            Notifications.discardNotification(notificationObject.notificationId);
+            if (notificationObject) Notifications.discardNotification(notificationObject.notificationId);
         }
     }
 
@@ -101,14 +101,14 @@ Item { // Notification item area
 
     NotificationAppIcon { // App icon
         id: notificationIcon
-        opacity: (!onlyNotification && notificationObject.image != "" && expanded) ? 1 : 0
+        opacity: (!onlyNotification && notificationObject && notificationObject.image != "" && expanded) ? 1 : 0
         visible: opacity > 0
 
         Behavior on opacity {
             animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(this)
         }
 
-        image: notificationObject.image
+        image: notificationObject && notificationObject.image || ""
         anchors.right: background.left
         anchors.top: background.top
         anchors.rightMargin: 10 * Appearance.effectiveScale
@@ -130,10 +130,10 @@ Item { // Notification item area
             }
         }
 
-        color: (notificationObject.isRestartRequired) ?
+        color: (notificationObject && notificationObject.isRestartRequired) ?
             Appearance.colors.colWarningContainer :
             (expanded && !onlyNotification) ? 
-                (notificationObject.urgency == NotificationUrgency.Critical) ? 
+                (notificationObject && notificationObject.urgency == NotificationUrgency.Critical) ? 
                     Functions.ColorUtils.mix(Appearance.m3colors.m3secondaryContainer, Appearance.colors.colLayer2, 0.35) :
                     (Appearance.colors.colLayer3) :
             "transparent"
@@ -164,10 +164,10 @@ Item { // Notification item area
                     Layout.fillWidth: summaryTextMetrics.width >= summaryRow.implicitWidth * root.summaryElideRatio
                     visible: !root.onlyNotification
                     font.pixelSize: Math.round(root.fontSize)
-                    font.weight: notificationObject.isRestartRequired ? Font.Bold : Font.Normal
-                    color: notificationObject.isRestartRequired ? Appearance.colors.colOnWarningContainer : Appearance.colors.colOnLayer3
+                    font.weight: notificationObject && notificationObject.isRestartRequired ? Font.Bold : Font.Normal
+                    color: notificationObject && notificationObject.isRestartRequired ? Appearance.colors.colOnWarningContainer : Appearance.colors.colOnLayer3
                     elide: Text.ElideRight
-                    text: root.notificationObject.summary || ""
+                    text: root.notificationObject && root.notificationObject.summary || ""
                 }
                 StyledText {
                     id: bodyPreviewText
@@ -178,12 +178,12 @@ Item { // Notification item area
                         animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(this)
                     }
                     font.pixelSize: Math.round(root.fontSize)
-                    color: notificationObject.isRestartRequired ? Appearance.colors.colOnWarningContainer : Appearance.colors.colSubtext
+                    color: notificationObject && notificationObject.isRestartRequired ? Appearance.colors.colOnWarningContainer : Appearance.colors.colSubtext
                     elide: Text.ElideRight
                     maximumLineCount: 1
                     textFormat: Text.StyledText
                     text: {
-                        return (NotificationUtils.processNotificationBody(notificationObject.body, notificationObject.appName || notificationObject.summary) || "").replace(/\n/g, " ")
+                        return (NotificationUtils.processNotificationBody(notificationObject && notificationObject.body, notificationObject && notificationObject.appName || notificationObject && notificationObject.summary) || "").replace(/\n/g, " ")
                     }
                 }
             }
@@ -201,13 +201,13 @@ Item { // Notification item area
                     }
                     Layout.fillWidth: true
                     font.pixelSize: Math.round(root.fontSize)
-                    color: notificationObject.isRestartRequired ? Appearance.colors.colOnWarningContainer : Appearance.colors.colSubtext
+                    color: notificationObject && notificationObject.isRestartRequired ? Appearance.colors.colOnWarningContainer : Appearance.colors.colSubtext
                     wrapMode: Text.WrapAnywhere
                     elide: Text.ElideRight
                     textFormat: Text.RichText
                     text: {
                         return `<style>img{max-width:${expandedContentColumn.width}px;}</style>` + 
-                            `${(NotificationUtils.processNotificationBody(notificationObject.body, notificationObject.appName || notificationObject.summary) || "").replace(/\n/g, "<br/>")}`
+                            `${(NotificationUtils.processNotificationBody(notificationObject && notificationObject.body, notificationObject && notificationObject.appName || notificationObject && notificationObject.summary) || "").replace(/\n/g, "<br/>")}`
                     }
 
                     onLinkActivated: (link) => {
@@ -237,7 +237,7 @@ Item { // Notification item area
                         target: actionsFlickable
                         vertical: false
                         fadeSize: 32 * Appearance.effectiveScale
-                        color: notificationObject.isRestartRequired ? 
+                        color: notificationObject && notificationObject.isRestartRequired ? 
                             Appearance.colors.colWarningContainer : 
                             (expanded && !onlyNotification ? Appearance.colors.colLayer3 : "transparent")
                     }
@@ -263,26 +263,26 @@ Item { // Notification item area
                             Layout.alignment: Qt.AlignBottom
                             spacing: 8 * Appearance.effectiveScale
                             
-                            readonly property bool isWarning: notificationObject.isRestartRequired
+                            readonly property bool isWarning: notificationObject && notificationObject.isRestartRequired
                             readonly property bool hasDefaultAction: {
-                                for (var i = 0; i < notificationObject.actions.length; i++) {
-                                    if (notificationObject.actions[i].identifier === "default") return true;
+                                for (var i = 0; i < notificationObject && notificationObject.actions.length; i++) {
+                                    if (notificationObject && notificationObject.actions[i].identifier === "default") return true;
                                 }
                                 return false;
                             }
-                            readonly property color btnBg: isWarning ? "transparent" : (notificationObject.urgency == NotificationUrgency.Critical ? Appearance.m3colors.m3secondaryContainer : Appearance.m3colors.m3surfaceContainerHighest)
-                            readonly property color btnHover: isWarning ? Functions.ColorUtils.applyAlpha("white", 0.05) : (notificationObject.urgency == NotificationUrgency.Critical ? Appearance.m3colors.m3secondaryFixedDim : Appearance.m3colors.m3surfaceBright)
+                            readonly property color btnBg: isWarning ? "transparent" : (notificationObject && notificationObject.urgency == NotificationUrgency.Critical ? Appearance.m3colors.m3secondaryContainer : Appearance.m3colors.m3surfaceContainerHighest)
+                            readonly property color btnHover: isWarning ? Functions.ColorUtils.applyAlpha("white", 0.05) : (notificationObject && notificationObject.urgency == NotificationUrgency.Critical ? Appearance.m3colors.m3secondaryFixedDim : Appearance.m3colors.m3surfaceBright)
 
                             NotificationActionButton {
                                 id: restartBtn
                                 visible: actionRowLayout.isWarning
                                 Layout.fillWidth: true
                                 buttonText: "Restart"
-                                urgency: notificationObject.urgency
+                                urgency: notificationObject && notificationObject.urgency
                                 colBackground: Appearance.colors.colWarning
                                 colBackgroundHover: Functions.ColorUtils.mix(Appearance.colors.colWarning, "white", 0.85)
                                 colText: Appearance.colors.colOnWarning
-                                implicitWidth: (notificationObject.actions.length == 0) ? ((actionsFlickable.width - actionRowLayout.spacing * 3) / 4) : 
+                                implicitWidth: (notificationObject && notificationObject.actions.length == 0) ? ((actionsFlickable.width - actionRowLayout.spacing * 3) / 4) : 
                                     (contentItem.implicitWidth + leftPadding + rightPadding)
 
                                 onClicked: {
@@ -318,16 +318,16 @@ Item { // Notification item area
                                 visible: actionRowLayout.hasDefaultAction
                                 Layout.fillWidth: true
                                 buttonText: "View"
-                                urgency: notificationObject.urgency
+                                urgency: notificationObject && notificationObject.urgency
                                 colBackground: actionRowLayout.btnBg
                                 colBackgroundHover: actionRowLayout.btnHover
                                 colText: actionRowLayout.isWarning ? Appearance.colors.colOnWarningContainer : 
-                                    (notificationObject.urgency == NotificationUrgency.Critical) ? Appearance.m3colors.m3onSurfaceVariant : Appearance.m3colors.m3onSurface
-                                implicitWidth: (notificationObject.actions.length == 0) ? (actionRowLayout.isWarning ? ((actionsFlickable.width - actionRowLayout.spacing * 3) / 4) : ((actionsFlickable.width - actionRowLayout.spacing * 2) / 3)) : 
+                                    (notificationObject && notificationObject.urgency == NotificationUrgency.Critical) ? Appearance.m3colors.m3onSurfaceVariant : Appearance.m3colors.m3onSurface
+                                implicitWidth: (notificationObject && notificationObject.actions.length == 0) ? (actionRowLayout.isWarning ? ((actionsFlickable.width - actionRowLayout.spacing * 3) / 4) : ((actionsFlickable.width - actionRowLayout.spacing * 2) / 3)) : 
                                     (contentItem.implicitWidth + leftPadding + rightPadding)
 
                                 onClicked: {
-                                    Notifications.attemptInvokeAction(notificationObject.notificationId, "default");
+                                    if (notificationObject) Notifications.attemptInvokeAction(notificationObject.notificationId, "default");
                                     root.destroyWithAnimation()
                                 }
 
@@ -359,12 +359,12 @@ Item { // Notification item area
                                 id: closeBtn
                                 Layout.fillWidth: true
                                 buttonText: "Close"
-                                urgency: notificationObject.urgency
+                                urgency: notificationObject && notificationObject.urgency
                                 colBackground: actionRowLayout.btnBg
                                 colBackgroundHover: actionRowLayout.btnHover
                                 colText: actionRowLayout.isWarning ? Appearance.colors.colOnWarningContainer : 
-                                    (notificationObject.urgency == NotificationUrgency.Critical) ? Appearance.m3colors.m3onSurfaceVariant : Appearance.m3colors.m3onSurface
-                                implicitWidth: (notificationObject.actions.length == 0) ? (actionRowLayout.isWarning ? ((actionsFlickable.width - actionRowLayout.spacing * 3) / 4) : ((actionsFlickable.width - actionRowLayout.spacing * 2) / 3)) : 
+                                    (notificationObject && notificationObject.urgency == NotificationUrgency.Critical) ? Appearance.m3colors.m3onSurfaceVariant : Appearance.m3colors.m3onSurface
+                                implicitWidth: (notificationObject && notificationObject.actions.length == 0) ? (actionRowLayout.isWarning ? ((actionsFlickable.width - actionRowLayout.spacing * 3) / 4) : ((actionsFlickable.width - actionRowLayout.spacing * 2) / 3)) : 
                                     (contentItem.implicitWidth + leftPadding + rightPadding)
 
                                 onClicked: {
@@ -397,20 +397,20 @@ Item { // Notification item area
 
                             Repeater {
                                 id: actionRepeater
-                                model: notificationObject.actions
+                                model: notificationObject && notificationObject.actions || []
                                 NotificationActionButton {
                                     id: notifAction
                                     visible: modelData.identifier !== "default"
                                     required property var modelData
                                     Layout.fillWidth: true
                                     buttonText: modelData.text
-                                    urgency: notificationObject.urgency
+                                    urgency: notificationObject && notificationObject.urgency
                                     colBackground: actionRowLayout.btnBg
                                     colBackgroundHover: actionRowLayout.btnHover
                                     colText: actionRowLayout.isWarning ? Appearance.colors.colOnWarningContainer : 
                                         (urgency == NotificationUrgency.Critical) ? Appearance.m3colors.m3onSurfaceVariant : Appearance.m3colors.m3onSurface
                                     onClicked: {
-                                        Notifications.attemptInvokeAction(notificationObject.notificationId, modelData.identifier);
+                                        if (notificationObject) Notifications.attemptInvokeAction(notificationObject.notificationId, modelData.identifier);
                                         root.destroyWithAnimation()
                                     }
                                 }
@@ -420,16 +420,16 @@ Item { // Notification item area
                                 id: copyBtn
                                 Layout.fillWidth: true
                                 buttonText: "Copy"
-                                urgency: notificationObject.urgency
+                                urgency: notificationObject && notificationObject.urgency
                                 colBackground: actionRowLayout.btnBg
                                 colBackgroundHover: actionRowLayout.btnHover
                                 colText: actionRowLayout.isWarning ? Appearance.colors.colOnWarningContainer : 
-                                    (notificationObject.urgency == NotificationUrgency.Critical) ? Appearance.m3colors.m3onSurfaceVariant : Appearance.m3colors.m3onSurface
-                                implicitWidth: (notificationObject.actions.length == 0) ? (actionRowLayout.isWarning ? ((actionsFlickable.width - actionRowLayout.spacing * 3) / 4) : ((actionsFlickable.width - actionRowLayout.spacing * 2) / 3)) : 
+                                    (notificationObject && notificationObject.urgency == NotificationUrgency.Critical) ? Appearance.m3colors.m3onSurfaceVariant : Appearance.m3colors.m3onSurface
+                                implicitWidth: (notificationObject && notificationObject.actions.length == 0) ? (actionRowLayout.isWarning ? ((actionsFlickable.width - actionRowLayout.spacing * 3) / 4) : ((actionsFlickable.width - actionRowLayout.spacing * 2) / 3)) : 
                                     (contentItem.implicitWidth + leftPadding + rightPadding)
 
                                 onClicked: {
-                                    Quickshell.clipboardText = notificationObject.body
+                                    if (notificationObject) Quickshell.clipboardText = notificationObject.body
                                     copyIcon.text = "inventory"
                                     copyIconTimer.restart()
                                 }

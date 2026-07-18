@@ -281,22 +281,15 @@ Singleton {
         root.list.splice(index, 1);
         root.list = [...root.list]; // Direct trigger
         notifFileView.setText(stringifyList(root.list));
-        Qt.callLater(() => { if (notif) notif.destroy(); });
     }
 
     function discardAllNotifications() {
         root.activePopup = null;
-        const oldList = root.list;
+        root.list.forEach(n => { if (n.timer) n.timer.stop(); });
         root.list = [];
         notifFileView.setText(stringifyList(root.list));
         notifServer.trackedNotifications.values.forEach(n => n.dismiss());
         root.unread = 0;
-        Qt.callLater(() => {
-            oldList.forEach(n => {
-                if (n.timer) { n.timer.stop(); n.timer.destroy(); }
-                n.destroy();
-            });
-        });
     }
 
     function timeoutNotification(id) {
@@ -434,7 +427,6 @@ Singleton {
             try {
                 const fileContents = notifFileView.text();
                 const parsed = JSON.parse(fileContents);
-                const oldList = root.list;
                 root.list = parsed.map(n => notifComponent.createObject(root, {
                     "notificationId": n.notificationId,
                     "appIcon": n.appIcon ?? "",
@@ -450,12 +442,6 @@ Singleton {
                 let maxId = 0;
                 root.list.forEach(n => { maxId = Math.max(maxId, n.notificationId); });
                 root.idOffset = maxId;
-                Qt.callLater(() => {
-                    oldList.forEach(n => {
-                        if (n.timer) { n.timer.stop(); n.timer.destroy(); }
-                        n.destroy();
-                    });
-                });
             } catch (e) {
 
                 root.list = [];
