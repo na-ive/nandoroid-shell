@@ -29,8 +29,10 @@ Item {
     // State
     property var quotesData: ({})
     property string currentGreeting: "Good day"
-    property string currentQuote: ""
-    
+    property string _displayedQuote: ""
+    property string _pendingQuote: ""
+    property real _quoteContentOpacity: 1
+
     // Determine time period
     property string timePeriod: {
         if (currentHour >= 5 && currentHour < 12) return "morning";
@@ -38,6 +40,107 @@ Item {
         if (currentHour >= 17 && currentHour < 22) return "evening";
         return "midnight";
     }
+
+    // ── Schedule Integration ──
+    property var scheduleEvents: ScheduleService.events
+    property int _minuteTrigger: DateTime.minutes
+    property var todayEvents: []
+    property var nextEvent: null
+    property int _scheduleVersion: 0
+    property string _displayedScheduleTitle: ""
+    property string _displayedScheduleDesc: ""
+    property string _pendingScheduleTitle: ""
+    property string _pendingScheduleDesc: ""
+    property real _scheduleContentOpacity: 1
+
+    onScheduleEventsChanged: updateScheduleInfo()
+    on_MinuteTriggerChanged: updateScheduleInfo()
+
+    Timer { id: scheduleFadeTimer; interval: 200; onTriggered: { _displayedScheduleTitle = _pendingScheduleTitle; _displayedScheduleDesc = _pendingScheduleDesc; _scheduleContentOpacity = 1; } }
+    Timer { id: quoteFadeTimer; interval: 200; onTriggered: { _displayedQuote = _pendingQuote; _quoteContentOpacity = 1; } }
+
+    function updateScheduleInfo() {
+        const now = new Date();
+        const nowDateStr = Qt.formatDate(now, "yyyy-MM-dd");
+        const todayDay = now.getDay();
+        const todayDate = now.getDate();
+
+        let events = ScheduleService.events.filter(event => {
+            if (!event.date) return false;
+            if (event.date === nowDateStr) return true;
+            if (event.recurrence === "daily") return true;
+            if (event.recurrence === "weekly") {
+                const d = new Date(event.date + "T00:00:00");
+                return d && d.getDay() === todayDay;
+            }
+            if (event.recurrence === "monthly") {
+                const d = new Date(event.date + "T00:00:00");
+                return d && d.getDate() === todayDate;
+            }
+            return false;
+        }).sort((a, b) => a.time.localeCompare(b.time));
+
+        todayEvents = events;
+
+        const UPCOMING_WINDOW = 120; // minutes — show upcoming events only within this window
+        const nowMs = now.getHours() * 60 + now.getMinutes();
+        let next = null;
+        for (const ev of events) {
+            const [h, m] = ev.time.split(":").map(Number);
+            const startMs = h * 60 + m;
+            let endMs;
+            if (ev.endTime) {
+                const [eh, em] = ev.endTime.split(":").map(Number);
+                endMs = eh * 60 + em;
+            } else {
+                endMs = startMs + 60;
+            }
+            const isOngoing = nowMs >= startMs && nowMs < endMs;
+            const isUpcomingInWindow = nowMs < startMs && (startMs - nowMs) <= UPCOMING_WINDOW;
+            if (isOngoing || isUpcomingInWindow) {
+                next = ev;
+                break;
+            }
+        }
+
+        const wasVisible = nextEvent !== null;
+        const newNext = next ? {
+            title: next.title,
+            time: next.time,
+            endTime: next.endTime,
+            description: next.description
+        } : null;
+
+        let label = "";
+        let desc = "";
+        if (newNext) {
+            const [h, m] = newNext.time.split(":").map(Number);
+            const startMs = h * 60 + m;
+            const isOngoing = nowMs >= startMs;
+            const prefix = isOngoing ? "Now" : "Up next";
+            let timeStr = newNext.time;
+            if (newNext.endTime) timeStr += "\u2013" + newNext.endTime;
+            label = prefix + ": " + newNext.title + " \u00b7 " + timeStr;
+            desc = newNext.description || "";
+        }
+
+        if (wasVisible && newNext) {
+            _pendingScheduleTitle = label;
+            _pendingScheduleDesc = desc;
+            _scheduleContentOpacity = 0;
+            nextEvent = newNext;
+            _scheduleVersion++;
+            scheduleFadeTimer.restart();
+        } else {
+            _displayedScheduleTitle = label;
+            _displayedScheduleDesc = desc;
+            _scheduleContentOpacity = newNext ? 1 : 0;
+            nextEvent = newNext;
+            _scheduleVersion++;
+        }
+    }
+
+    Component.onCompleted: updateScheduleInfo()
 
     // Colors
     function getColorForStyle(style) {
@@ -89,12 +192,20 @@ Item {
     function updateQuoteOnly() {
         if (!quotesData) return;
         let quotesList = quotesData[timePeriod] || [];
+        let newQuote = "";
         if (quotesList.length > 0) {
-            let randomIndex = Math.floor(Math.random() * quotesList.length);
-            currentQuote = quotesList[randomIndex];
+            newQuote = quotesList[Math.floor(Math.random() * quotesList.length)];
         } else if (quotesData["general"] && quotesData["general"].length > 0) {
-            let randomIndex = Math.floor(Math.random() * quotesData["general"].length);
-            currentQuote = quotesData["general"][randomIndex];
+            newQuote = quotesData["general"][Math.floor(Math.random() * quotesData["general"].length)];
+        }
+        if (!newQuote) return;
+        if (nextEvent === null && _displayedQuote !== "") {
+            _pendingQuote = newQuote;
+            _quoteContentOpacity = 0;
+            quoteFadeTimer.restart();
+        } else {
+            _displayedQuote = newQuote;
+            _quoteContentOpacity = 1;
         }
     }
 
@@ -142,14 +253,18 @@ Item {
             horizontalAlignment: cfg.alignment === "center" ? Text.AlignHCenter : (cfg.alignment === "right" ? Text.AlignRight : Text.AlignLeft)
         }
 
-        RowLayout {
-            visible: cfg.showQuote && currentQuote !== ""
-            spacing: 8 * Appearance.effectiveScale
+        // ── Next Schedule (when events exist) ──
+        ColumnLayout {
+            spacing: 2 * Appearance.effectiveScale
             Layout.fillWidth: cfg.customWidth > 0
             Layout.alignment: cfg.alignment === "center" ? Qt.AlignHCenter : (cfg.alignment === "right" ? Qt.AlignRight : Qt.AlignLeft)
+            opacity: cfg.showQuote && nextEvent !== null ? 1 : 0
+            visible: opacity > 0
+            Behavior on opacity { NumberAnimation { duration: 200 } }
 
             StyledText {
-                text: currentQuote
+                text: _displayedScheduleTitle
+                opacity: _scheduleContentOpacity
                 font.pixelSize: Math.round((fontSize * 0.8) * Appearance.effectiveScale)
                 font.family: fontFamily
                 color: quoteColor
@@ -157,6 +272,44 @@ Item {
                 Layout.fillWidth: cfg.customWidth > 0
                 Layout.maximumWidth: cfg.customWidth > 0 ? cfg.customWidth : 400 * Appearance.effectiveScale
                 horizontalAlignment: cfg.alignment === "center" ? Text.AlignHCenter : (cfg.alignment === "right" ? Text.AlignRight : Text.AlignLeft)
+                Behavior on opacity { NumberAnimation { duration: 200 } }
+            }
+
+            StyledText {
+                text: _displayedScheduleDesc
+                opacity: _scheduleContentOpacity * 0.7
+                font.pixelSize: Math.round((fontSize * 0.65) * Appearance.effectiveScale)
+                font.family: fontFamily
+                font.italic: true
+                color: dateColor
+                wrapMode: Text.WordWrap
+                Layout.fillWidth: cfg.customWidth > 0
+                Layout.maximumWidth: cfg.customWidth > 0 ? cfg.customWidth : 400 * Appearance.effectiveScale
+                horizontalAlignment: cfg.alignment === "center" ? Text.AlignHCenter : (cfg.alignment === "right" ? Text.AlignRight : Text.AlignLeft)
+                Behavior on opacity { NumberAnimation { duration: 200 } }
+            }
+        }
+
+        // ── Quote (idle state) ──
+        RowLayout {
+            spacing: 8 * Appearance.effectiveScale
+            Layout.fillWidth: cfg.customWidth > 0
+            Layout.alignment: cfg.alignment === "center" ? Qt.AlignHCenter : (cfg.alignment === "right" ? Qt.AlignRight : Qt.AlignLeft)
+            opacity: cfg.showQuote && nextEvent === null && _displayedQuote !== "" ? 1 : 0
+            visible: opacity > 0
+            Behavior on opacity { NumberAnimation { duration: 200 } }
+
+            StyledText {
+                text: _displayedQuote
+                opacity: _quoteContentOpacity
+                font.pixelSize: Math.round((fontSize * 0.8) * Appearance.effectiveScale)
+                font.family: fontFamily
+                color: quoteColor
+                wrapMode: Text.WordWrap
+                Layout.fillWidth: cfg.customWidth > 0
+                Layout.maximumWidth: cfg.customWidth > 0 ? cfg.customWidth : 400 * Appearance.effectiveScale
+                horizontalAlignment: cfg.alignment === "center" ? Text.AlignHCenter : (cfg.alignment === "right" ? Text.AlignRight : Text.AlignLeft)
+                Behavior on opacity { NumberAnimation { duration: 200 } }
             }
         }
     }
