@@ -18,15 +18,49 @@ Item {
     property string selectedId: ""
     property string formTitle: ""
     property string formDate: Qt.formatDate(new Date(), "yyyy-MM-dd")
-    property string formTime: "09:00"
-    property string formEndTime: "10:00"
+    property string formTime: "00:00"
+    property string formEndTime: "01:00"
     property string formRecurrence: "once" // once | daily | weekly | monthly
+    property string formEndDate: ""
     property string formDescription: ""
     property bool formFocus: false
 
+    property int _multiDayDiff: {
+        if (!formEndDate.trim() || formEndDate === formDate) return 0;
+        const s = new Date(formDate + "T00:00:00");
+        const e = new Date(formEndDate + "T00:00:00");
+        return Math.round((e - s) / 86400000);
+    }
+
+    onFormEndDateChanged: {
+        if (_multiDayDiff > 0 && formRecurrence !== "once")
+            formRecurrence = "once";
+    }
+
+    property bool formDatesValid: {
+        if (!root.formEndDate.trim()) return true;
+        if (root.formEndDate < root.formDate) return false;
+        if (root.formEndDate > root.formDate) return true;
+        return root.formEndTime > root.formTime;
+    }
+    property string _datePickerTarget: ""
+
     function clearForm() {
-        formTitle = ""; formDate = Qt.formatDate(new Date(), "yyyy-MM-dd")
-        formTime = "09:00"; formEndTime = "10:00"; formRecurrence = "once"; formDescription = ""; formFocus = false
+        const now = new Date();
+        let nextH = (now.getHours() + 1) % 24;
+        let date = new Date(now);
+        if (nextH <= now.getHours()) date.setDate(date.getDate() + 1);
+        const dateStr = Qt.formatDate(date, "yyyy-MM-dd");
+
+        const nextHStr = String(nextH).padStart(2, '0') + ":00";
+        const endH = (nextH + 1) % 24;
+        const endHStr = String(endH).padStart(2, '0') + ":00";
+
+        formTitle = "";
+        formDate = dateStr;
+        formTime = nextHStr; formEndTime = endHStr; formRecurrence = "once";
+        formEndDate = dateStr;
+        formDescription = ""; formFocus = false
     }
 
     function deleteEvent(id) {
@@ -42,11 +76,13 @@ Item {
         onTriggered: {
             if (!root.selectedId || !root.formTitle.trim()) return
             const descVal = root.formDescription.trim() ? root.formDescription.trim() : undefined
+            const endDateVal = root.formEndDate.trim() && root.formEndDate !== root.formDate ? root.formEndDate.trim() : undefined
             ScheduleService.updateEvent(root.selectedId, {
                 title: root.formTitle, 
                 date: root.formDate, 
                 time: root.formTime, 
                 endTime: root.formEndTime,
+                endDate: endDateVal,
                 recurrence: root.formRecurrence, 
                 description: descVal,
                 focus: root.formFocus
@@ -57,12 +93,14 @@ Item {
     function saveEvent() {
         if (!formTitle.trim()) return
         const descVal = formDescription.trim() ? formDescription.trim() : undefined
+        const endDateVal = formEndDate.trim() && formEndDate !== formDate ? formEndDate.trim() : undefined
         if (selectedId) {
             ScheduleService.updateEvent(selectedId, { 
                 title: formTitle, 
                 date: formDate, 
                 time: formTime, 
                 endTime: formEndTime,
+                endDate: endDateVal,
                 recurrence: formRecurrence, 
                 description: descVal,
                 focus: formFocus
@@ -74,6 +112,7 @@ Item {
                 date: formDate, 
                 time: formTime, 
                 endTime: formEndTime,
+                endDate: endDateVal,
                 recurrence: formRecurrence, 
                 description: descVal, 
                 focus: formFocus,
@@ -95,10 +134,11 @@ Item {
         ColumnLayout {
             id: schedSidebar
             Layout.preferredWidth: 200 * Appearance.effectiveScale
+            Layout.minimumWidth: Layout.preferredWidth
+            Layout.maximumWidth: Layout.preferredWidth
             Layout.fillHeight: true
             spacing: 8 * Appearance.effectiveScale
 
-            // New event button
             RippleButton {
                 Layout.fillWidth: true
                 implicitHeight: 40 * Appearance.effectiveScale
@@ -127,89 +167,117 @@ Item {
                     model: ScheduleService.events.slice().sort((a, b) =>
                             (a.date + a.time).localeCompare(b.date + b.time))
 
-                    delegate: Rectangle {
+                    delegate: Item {
                         required property var modelData
                         width: eventList.width
-                        height: (itemCol.implicitHeight + (16 * Appearance.effectiveScale))
-                        radius: Appearance.rounding.small
+                        height: 48 * Appearance.effectiveScale
 
-                        color: root.selectedId === modelData.id
+                        readonly property bool isSelected: root.selectedId === modelData.id
+                        readonly property bool isHovered: delegateMouse.containsMouse
+                        readonly property bool inDeleteZone: delegateMouse.containsMouse && delegateMouse._mx > width - 36 * Appearance.effectiveScale
+
+                        Rectangle {
+                            anchors.fill: parent
+                            radius: Appearance.rounding.small
+                            color: isSelected
                                 ? Appearance.colors.colPrimaryContainer
-                                : (evMouse.containsMouse ? Appearance.colors.colLayer2 : "transparent")
-
-                        Behavior on color { ColorAnimation { duration: 150 } }
-
-                        // Normal event content
-                        ColumnLayout {
-                            id: itemCol
-                            anchors.left: parent.left
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            anchors.leftMargin: 12 * Appearance.effectiveScale
-                            anchors.rightMargin: 36 * Appearance.effectiveScale
-                            spacing: 2 * Appearance.effectiveScale
+                                : (isHovered ? Appearance.m3colors.m3surfaceContainerHigh : "transparent")
 
                             RowLayout {
-                                Layout.fillWidth: true
-                                spacing: 4 * Appearance.effectiveScale
-                                StyledText {
-                                    text: modelData.title
-                                    font.pixelSize: Appearance.font.pixelSize.normal
-                                    font.weight: Font.Medium
-                                    color: root.selectedId === modelData.id
-                                        ? Appearance.colors.colOnPrimaryContainer
-                                        : Appearance.colors.colOnLayer1
-                                    elide: Text.ElideRight
+                                anchors.left: parent.left
+                                anchors.right: parent.right
+                                anchors.verticalCenter: parent.verticalCenter
+                                anchors.leftMargin: 12 * Appearance.effectiveScale
+                                anchors.rightMargin: 8 * Appearance.effectiveScale
+
+                                ColumnLayout {
                                     Layout.fillWidth: true
+                                    spacing: 2 * Appearance.effectiveScale
+
+                                    RowLayout {
+                                        Layout.fillWidth: true
+                                        spacing: 4 * Appearance.effectiveScale
+                                        StyledText {
+                                            text: modelData.title
+                                            elide: Text.ElideRight
+                                            font.pixelSize: Appearance.font.pixelSize.normal
+                                            font.weight: Font.Medium
+                                            color: isSelected
+                                                ? Appearance.colors.colOnPrimaryContainer
+                                                : Appearance.colors.colOnLayer1
+                                            Layout.fillWidth: true
+                                        }
+                                        MaterialSymbol {
+                                            visible: modelData.focus || false
+                                            text: "do_not_disturb_on"
+                                            iconSize: 14 * Appearance.effectiveScale
+                                            color: isSelected
+                                                ? Appearance.colors.colOnPrimaryContainer
+                                                : Appearance.colors.colPrimary
+                                        }
+                                    }
+
+                                    StyledText {
+                                        text: {
+                                            const r = modelData.recurrence
+                                            const ed = modelData.endDate && modelData.endDate !== modelData.date ? " · End " + modelData.endDate : ""
+                                            if (r === "daily") return "Daily" + ed
+                                            if (r === "weekly") {
+                                                const d = new Date(modelData.date + "T00:00:00")
+                                                const days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]
+                                                return "Every " + days[d.getDay()] + ed
+                                            }
+                                            if (r === "monthly") {
+                                                const d = new Date(modelData.date + "T00:00:00")
+                                                const day = d.getDate()
+                                                const suffix = day % 10 === 1 && day !== 11 ? "st" : day % 10 === 2 && day !== 12 ? "nd" : day % 10 === 3 && day !== 13 ? "rd" : "th"
+                                                return "Every " + day + suffix + ed
+                                            }
+                                            let t = modelData.date + " " + modelData.time
+                                            if (modelData.endTime) t += " - " + modelData.endTime
+                                            return t + ed
+                                        }
+                                        elide: Text.ElideRight
+                                        font.pixelSize: Appearance.font.pixelSize.smaller
+                                        color: Appearance.colors.colSubtext
+                                        Layout.fillWidth: true
+                                    }
                                 }
-                                MaterialSymbol {
-                                    visible: modelData.focus || false
-                                    text: "do_not_disturb_on"
-                                    iconSize: 14 * Appearance.effectiveScale
-                                    color: root.selectedId === modelData.id
-                                        ? Appearance.colors.colOnPrimaryContainer
-                                        : Appearance.colors.colPrimary
+
+                                Rectangle {
+                                    implicitWidth: 24 * Appearance.effectiveScale
+                                    implicitHeight: 24 * Appearance.effectiveScale
+                                    radius: 12 * Appearance.effectiveScale
+                                    color: inDeleteZone ? Appearance.m3colors.m3surfaceContainerHigh : "transparent"
+                                    MaterialSymbol {
+                                        anchors.centerIn: parent
+                                        text: "delete"
+                                        iconSize: 16 * Appearance.effectiveScale
+                                        color: inDeleteZone ? Appearance.colors.colError : Appearance.colors.colSubtext
+                                    }
                                 }
-                            }
-                            StyledText {
-                                text: {
-                                    let d = modelData.date + " " + modelData.time
-                                    if (modelData.endTime) d += " - " + modelData.endTime
-                                    if (modelData.recurrence !== "once") d += " · " + modelData.recurrence
-                                    return d
-                                }
-                                font.pixelSize: Appearance.font.pixelSize.smaller
-                                color: Appearance.colors.colSubtext
-                                Layout.fillWidth: true
                             }
                         }
 
-                        // Delete button
-                        RippleButton {
-                            anchors.right: parent.right
-                            anchors.rightMargin: 6 * Appearance.effectiveScale
-                            anchors.verticalCenter: parent.verticalCenter
-                            implicitWidth: 28 * Appearance.effectiveScale; implicitHeight: 28 * Appearance.effectiveScale; buttonRadius: 14 * Appearance.effectiveScale
-                            colBackground: "transparent"
-                            onClicked: root.deleteEvent(modelData.id)
-                            MaterialSymbol { anchors.centerIn: parent; text: "delete"; iconSize: 16 * Appearance.effectiveScale; color: Appearance.colors.colSubtext }
-                        }
-
-                        // Event mouse
                         MouseArea {
-                            id: evMouse
+                            id: delegateMouse
+                            property real _mx: 0
                             anchors.fill: parent
-                            anchors.rightMargin: 36 * Appearance.effectiveScale
                             hoverEnabled: true
                             cursorShape: Qt.PointingHandCursor
-                            onClicked: {
-                                // Temporarily disable autosave triggers while populating fields
-                                let oldSelectedId = root.selectedId
+                            onPositionChanged: (mouse) => { _mx = mouse.x }
+                            onClicked: (mouse) => {
+                                if (mouse.x > parent.width - 36 * Appearance.effectiveScale) {
+                                    root.deleteEvent(modelData.id)
+                                    return
+                                }
+
                                 root.selectedId = ""
                                 root.formTitle = modelData.title
                                 root.formDate = modelData.date
                                 root.formTime = modelData.time
                                 root.formEndTime = modelData.endTime || ""
+                                root.formEndDate = modelData.endDate || ""
                                 root.formRecurrence = modelData.recurrence
                                 root.formDescription = modelData.description || ""
                                 root.formFocus = modelData.focus || false
@@ -296,18 +364,25 @@ Item {
                 }
             }
 
-            // Date + Time row
+            // Start row: Start label + Start Date + Start Time
             RowLayout {
                 Layout.fillWidth: true
                 spacing: 8 * Appearance.effectiveScale
 
-                // Date
+                StyledText {
+                    text: "Start"
+                    font.pixelSize: Appearance.font.pixelSize.small
+                    color: Appearance.colors.colSubtext
+                    Layout.alignment: Qt.AlignVCenter
+                    Layout.preferredWidth: 36 * Appearance.effectiveScale
+                }
+
                 Rectangle {
                     id: dateFieldRect
                     Layout.fillWidth: true; implicitHeight: 44 * Appearance.effectiveScale
                     radius: Appearance.rounding.small
                     color: Appearance.m3colors.m3surfaceContainer
-                    border.color: dateField.activeFocus || GlobalStates.datePickerOpen ? Appearance.colors.colPrimary : "transparent"
+                    border.color: dateField.activeFocus || root._datePickerTarget === "start" ? Appearance.colors.colPrimary : "transparent"
                     border.width: 2 * Appearance.effectiveScale
                     RowLayout {
                         anchors.fill: parent; anchors.margins: 10 * Appearance.effectiveScale; spacing: 6 * Appearance.effectiveScale
@@ -338,7 +413,6 @@ Item {
                     }
                 }
 
-                // Start Time
                 Rectangle {
                     Layout.fillWidth: true; implicitHeight: 44 * Appearance.effectiveScale
                     radius: Appearance.rounding.small
@@ -360,8 +434,65 @@ Item {
                         }
                     }
                 }
+            }
 
-                // End Time
+            // End row: End label + End Date + End Time
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: 8 * Appearance.effectiveScale
+
+                StyledText {
+                    text: "End"
+                    font.pixelSize: Appearance.font.pixelSize.small
+                    color: Appearance.colors.colSubtext
+                    Layout.alignment: Qt.AlignVCenter
+                    Layout.preferredWidth: 36 * Appearance.effectiveScale
+                }
+
+                Rectangle {
+                    id: endDateFieldRect
+                    Layout.fillWidth: true; implicitHeight: 44 * Appearance.effectiveScale
+                    radius: Appearance.rounding.small
+                    color: Appearance.m3colors.m3surfaceContainer
+                    border.color: endDateField.activeFocus || root._datePickerTarget === "end" ? Appearance.colors.colPrimary : "transparent"
+                    border.width: 2 * Appearance.effectiveScale
+                    RowLayout {
+                        anchors.fill: parent; anchors.margins: 10 * Appearance.effectiveScale; spacing: 6 * Appearance.effectiveScale
+                        MaterialSymbol { text: "calendar_month"; iconSize: 16 * Appearance.effectiveScale; color: Appearance.colors.colSubtext }
+                        TextInput {
+                            id: endDateField
+                            Layout.fillWidth: true
+                            text: root.formEndDate
+                            font.family: Appearance.font.family.main
+                            font.pixelSize: Appearance.font.pixelSize.small
+                            color: Appearance.colors.colOnLayer1
+                            onTextChanged: { root.formEndDate = text; if(root.selectedId && endDateField.activeFocus) autoSaveTimer.restart() }
+
+                            StyledText {
+                                anchors.fill: parent
+                                text: "yyyy-mm-dd"
+                                color: Appearance.colors.colSubtext
+                                visible: !parent.text && !parent.activeFocus
+                                font.pixelSize: Appearance.font.pixelSize.small
+                                verticalAlignment: Text.AlignVCenter
+                            }
+                        }
+                        RippleButton {
+                            implicitWidth: 28 * Appearance.effectiveScale
+                            implicitHeight: 28 * Appearance.effectiveScale
+                            buttonRadius: 14 * Appearance.effectiveScale
+                            colBackground: "transparent"
+                            onClicked: root.openEndDatePicker()
+                            MaterialSymbol {
+                                anchors.centerIn: parent
+                                text: "date_range"
+                                iconSize: 16 * Appearance.effectiveScale
+                                color: Appearance.colors.colSubtext
+                            }
+                        }
+                    }
+                }
+
                 Rectangle {
                     Layout.fillWidth: true; implicitHeight: 44 * Appearance.effectiveScale
                     radius: Appearance.rounding.small
@@ -383,6 +514,13 @@ Item {
                         }
                     }
                 }
+            }
+
+            StyledText {
+                visible: root.formEndDate.trim() && !root.formDatesValid
+                text: "End must be later than start"
+                font.pixelSize: Appearance.font.pixelSize.smaller
+                color: Appearance.colors.colError
             }
 
             // Description field — fills all remaining vertical space
@@ -443,13 +581,17 @@ Item {
                 spacing: 4 * Appearance.effectiveScale
                 StyledText { text: "Repeat"; font.pixelSize: Appearance.font.pixelSize.small; color: Appearance.colors.colSubtext }
                 RowLayout {
+                    Layout.fillWidth: true
                     spacing: 6 * Appearance.effectiveScale
                     Repeater {
                         model: ["once", "daily", "weekly", "monthly"]
                         delegate: RippleButton {
                             required property string modelData
+                            readonly property bool _hidden: root._multiDayDiff > 0 && modelData !== "once"
+                            Layout.fillWidth: true
+                            opacity: _hidden ? 0 : 1
+                            enabled: !_hidden
                             implicitHeight: 32 * Appearance.effectiveScale
-                            implicitWidth: 80 * Appearance.effectiveScale
                             buttonRadius: 16 * Appearance.effectiveScale
                             colBackground: root.formRecurrence === modelData
                                 ? Appearance.colors.colPrimary
@@ -480,7 +622,7 @@ Item {
                 implicitHeight: 44 * Appearance.effectiveScale
                 buttonRadius: 22 * Appearance.effectiveScale
                 colBackground: Appearance.colors.colPrimary
-                enabled: root.formTitle.trim().length > 0
+                enabled: root.formTitle.trim().length > 0 && root.formDatesValid
                 opacity: enabled ? 1 : 0.5
                 onClicked: root.saveEvent()
                 RowLayout {
@@ -494,12 +636,28 @@ Item {
 
     // ── Date picker ──
     function openDatePicker() {
+        root._datePickerTarget = "start"
         GlobalStates.datePickerCurrentDate = root.formDate
         GlobalStates.datePickerOnSelected = function(dateStr) {
+            root._datePickerTarget = ""
             root.formDate = dateStr
             if (root.selectedId) autoSaveTimer.restart()
         }
-        GlobalStates.datePickerOnCancelled = null
+        GlobalStates.datePickerOnCancelled = function() { root._datePickerTarget = "" }
         GlobalStates.datePickerOpen = true
     }
+
+    function openEndDatePicker() {
+        root._datePickerTarget = "end"
+        GlobalStates.datePickerCurrentDate = root.formEndDate || root.formDate
+        GlobalStates.datePickerOnSelected = function(dateStr) {
+            root._datePickerTarget = ""
+            root.formEndDate = dateStr
+            if (root.selectedId) autoSaveTimer.restart()
+        }
+        GlobalStates.datePickerOnCancelled = function() { root._datePickerTarget = "" }
+        GlobalStates.datePickerOpen = true
+    }
+
+    Component.onCompleted: clearForm()
 }

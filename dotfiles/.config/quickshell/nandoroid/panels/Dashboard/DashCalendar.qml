@@ -33,29 +33,46 @@ RowLayout {
 
     Component.onCompleted: scheduleFile.reload()
 
+    function _fmtDate(d) {
+        return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, '0') + "-" + String(d.getDate()).padStart(2, '0')
+    }
+
     // Build a flat list of all dates this event applies to (expand recurring)
     readonly property var eventDates: {
         let dates = []
         for (let ev of root.scheduledEvents) {
             if (!ev.date) continue
+
+            // Once multi-day: every day from date to endDate
+            if (ev.recurrence === "once" && ev.endDate) {
+                let d = new Date(ev.date + "T00:00:00")
+                const end = new Date(ev.endDate + "T00:00:00")
+                for (; d <= end; d.setDate(d.getDate() + 1))
+                    dates.push(root._fmtDate(d))
+                continue
+            }
+
             dates.push(ev.date)
+            const limit = ev.endDate ? new Date(ev.endDate + "T00:00:00") : null
+
             if (ev.recurrence === "daily") {
                 let d = new Date(ev.date); d.setDate(d.getDate() + 1)
                 for (let i = 0; i < 60; i++) {
-                    const s = d.toISOString().slice(0, 10)
-                    dates.push(s); d.setDate(d.getDate() + 1)
+                    if (limit && d > limit) break
+                    dates.push(root._fmtDate(d)); d.setDate(d.getDate() + 1)
                 }
             } else if (ev.recurrence === "weekly") {
                 let d = new Date(ev.date); d.setDate(d.getDate() + 7)
                 for (let i = 0; i < 8; i++) {
-                    const s = d.toISOString().slice(0, 10)
-                    dates.push(s); d.setDate(d.getDate() + 7)
+                    if (limit && d > limit) break
+                    dates.push(root._fmtDate(d)); d.setDate(d.getDate() + 7)
                 }
             } else if (ev.recurrence === "monthly") {
                 let d = new Date(ev.date)
                 for (let i = 0; i < 12; i++) {
                     d.setMonth(d.getMonth() + 1)
-                    dates.push(d.toISOString().slice(0, 10))
+                    if (limit && d > limit) break
+                    dates.push(root._fmtDate(d))
                 }
             }
         }

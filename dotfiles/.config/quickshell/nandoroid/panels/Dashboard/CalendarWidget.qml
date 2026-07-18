@@ -33,20 +33,24 @@ Item {
     function getEventsForDate(dateStr) {
         return root.scheduledEvents.filter(ev => {
             if (!ev.date) return false
-            if (ev.date === dateStr) return true
-            // Check recurring
+
+            if (ev.endDate && dateStr > ev.endDate) return false
+
+            if (ev.recurrence === "once") {
+                if (ev.endDate) return dateStr >= ev.date
+                return ev.date === dateStr
+            }
+
             if (ev.recurrence === "daily") return true
             if (ev.recurrence === "weekly") {
-                const evDay = new Date(ev.date).getDay()
-                const chkDay = new Date(dateStr).getDay()
-                const evDate = new Date(ev.date)
-                const chkDate = new Date(dateStr)
-                return evDay === chkDay && chkDate >= evDate
+                const evD = new Date(ev.date)
+                const chkD = new Date(dateStr)
+                return evD.getDay() === chkD.getDay() && chkD >= evD
             }
             if (ev.recurrence === "monthly") {
                 const evD = new Date(ev.date)
                 const chkD = new Date(dateStr)
-                return evD.getDate() === chkD.getDate() && chkDate >= evDate
+                return evD.getDate() === chkD.getDate() && chkD >= evD
             }
             return false
         })
@@ -105,7 +109,7 @@ Item {
         id: eventPopup
         visible: false
         z: 10
-        width: 200 * Appearance.effectiveScale
+        width: Math.min(popupCol.implicitWidth + 20 * Appearance.effectiveScale, root.width * 0.7)
         height: popupCol.implicitHeight + 20 * Appearance.effectiveScale
         radius: Appearance.rounding.normal
         color: Appearance.m3colors.m3surfaceContainerHigh
@@ -138,43 +142,52 @@ Item {
 
             Repeater {
                 model: eventPopup.events
-                delegate: RowLayout {
+                delegate: ColumnLayout {
                     required property var modelData
                     Layout.fillWidth: true
-                    spacing: 6 * Appearance.effectiveScale
-                    Rectangle {
-                        width: 6 * Appearance.effectiveScale; height: 6 * Appearance.effectiveScale; radius: 3 * Appearance.effectiveScale
-                        color: Appearance.colors.colPrimary
-                        Layout.alignment: Qt.AlignVCenter
-                    }
-                    ColumnLayout {
-                        spacing: 0
+                    spacing: 2 * Appearance.effectiveScale
+
+                    RowLayout {
+                        Layout.fillWidth: true
+                        spacing: 6 * Appearance.effectiveScale
+                        Rectangle {
+                            width: 6 * Appearance.effectiveScale; height: 6 * Appearance.effectiveScale; radius: 3 * Appearance.effectiveScale
+                            color: Appearance.colors.colPrimary
+                            Layout.alignment: Qt.AlignTop
+                            Layout.topMargin: 6 * Appearance.effectiveScale
+                        }
                         StyledText {
+                            Layout.fillWidth: true
                             text: modelData.title
                             font.pixelSize: Appearance.font.pixelSize.small
                             font.weight: Font.Medium
                             color: Appearance.colors.colOnLayer1
-                            elide: Text.ElideRight
-                            Layout.fillWidth: true
-                        }
-                        StyledText {
-                            text: modelData.description || ""
-                            visible: Boolean(modelData.description) && String(modelData.description).trim().length > 0
-                            font.pixelSize: Appearance.font.pixelSize.smaller
-                            color: Appearance.colors.colSubtext
                             wrapMode: Text.WordWrap
-                            Layout.fillWidth: true
+                            maximumLineCount: 2
+                            elide: Text.ElideRight
                         }
-                        StyledText {
-                            text: {
-                                let t = modelData.time
-                                if (modelData.endTime) t += " - " + modelData.endTime
-                                if (modelData.recurrence !== "once") t += " · " + modelData.recurrence
-                                return t
-                            }
-                            font.pixelSize: Appearance.font.pixelSize.smaller
-                            color: Appearance.colors.colSubtext
+                    }
+
+                    StyledText {
+                        Layout.leftMargin: 12 * Appearance.effectiveScale
+                        text: modelData.description || ""
+                        visible: Boolean(modelData.description) && String(modelData.description).trim().length > 0
+                        font.pixelSize: Appearance.font.pixelSize.smaller
+                        color: Appearance.colors.colSubtext
+                        wrapMode: Text.WordWrap
+                        Layout.fillWidth: true
+                    }
+                    StyledText {
+                        Layout.leftMargin: 12 * Appearance.effectiveScale
+                        text: {
+                            let t = modelData.time
+                            if (modelData.endTime) t += " - " + modelData.endTime
+                            if (modelData.endDate && modelData.endDate !== modelData.date) t += " · End " + modelData.endDate
+                            if (modelData.recurrence !== "once") t += " · " + modelData.recurrence
+                            return t
                         }
+                        font.pixelSize: Appearance.font.pixelSize.smaller
+                        color: Appearance.colors.colSubtext
                     }
                 }
             }
