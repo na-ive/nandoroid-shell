@@ -48,6 +48,10 @@ Singleton {
     property bool systemMonitorOpen: false
     property bool regionSelectorOpen: false
     property bool overviewOpen: false
+    property bool datePickerOpen: false
+    property string datePickerCurrentDate: ""
+    property var datePickerOnSelected: null
+    property var datePickerOnCancelled: null
     property bool dockMenuOpen: false
     property bool desktopContextMenuOpen: false
     property bool mediaNotchOpen: false

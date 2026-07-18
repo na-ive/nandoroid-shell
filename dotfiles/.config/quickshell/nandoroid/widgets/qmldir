@@ -63,4 +63,5 @@ DesktopMediaWidget DesktopMediaWidget.qml
 DesktopSystemMonitorWidget DesktopSystemMonitorWidget.qml
 DesktopWeatherWidget DesktopWeatherWidget.qml
 DesktopCurrencyWidget DesktopCurrencyWidget.qml
+DatePicker DatePicker.qml
 

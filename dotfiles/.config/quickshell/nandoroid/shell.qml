@@ -23,6 +23,7 @@ import "panels/Overview"
 import "panels/Dock"
 import "panels/Onboarding"
 import "panels/FloatingLyrics"
+import "panels/DatePicker"
 
 import QtQuick
 import Quickshell
@@ -111,8 +112,9 @@ ShellRoot {
     SystemMonitorPanel {}
     OnboardingPanel {}
 
-    // ── Phase 13: Polkit Agent ──
+    // ── Phase 13: Polkit Agent & Date Picker ──
     PolkitPanel {}
+    DatePickerPanel {}
 
     IpcHandler {
         target: "launcher"
