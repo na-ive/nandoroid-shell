@@ -53,11 +53,44 @@ Item {
     property string _pendingScheduleDesc: ""
     property real _scheduleContentOpacity: 1
 
+    // ── Bluetooth Integration ──
+    property var btDevices: BluetoothStatus.connectedDevices
+    property string _displayedBluetoothText: ""
+    property string _pendingBluetoothText: ""
+    property real _bluetoothContentOpacity: 1
+
     onScheduleEventsChanged: updateScheduleInfo()
-    on_MinuteTriggerChanged: updateScheduleInfo()
+    on_MinuteTriggerChanged: { updateScheduleInfo(); updateBluetoothInfo(); }
+    onBtDevicesChanged: updateBluetoothInfo()
 
     Timer { id: scheduleFadeTimer; interval: 200; onTriggered: { _displayedScheduleTitle = _pendingScheduleTitle; _displayedScheduleDesc = _pendingScheduleDesc; _scheduleContentOpacity = 1; } }
     Timer { id: quoteFadeTimer; interval: 200; onTriggered: { _displayedQuote = _pendingQuote; _quoteContentOpacity = 1; } }
+    Timer { id: bluetoothFadeTimer; interval: 200; onTriggered: { _displayedBluetoothText = _pendingBluetoothText; _bluetoothContentOpacity = 1; } }
+
+    function updateBluetoothInfo() {
+        const devices = BluetoothStatus.connectedDevices.filter(d => d.batteryAvailable);
+        let text = "";
+        if (devices.length === 1) {
+            text = devices[0].name + " \u00b7 " + Math.round(devices[0].battery * 100) + "%";
+        } else if (devices.length > 1) {
+            let parts = [];
+            for (let i = 0; i < devices.length; i++)
+                parts.push(Math.round(devices[i].battery * 100) + "%");
+            text = devices.length + " devices \u00b7 " + parts.join(", ");
+        }
+
+        const wasVisible = _displayedBluetoothText !== "";
+        const isVisible = text !== "";
+
+        if (wasVisible && isVisible && text !== _displayedBluetoothText) {
+            _pendingBluetoothText = text;
+            _bluetoothContentOpacity = 0;
+            bluetoothFadeTimer.restart();
+        } else {
+            _displayedBluetoothText = text;
+            _bluetoothContentOpacity = isVisible ? 1 : 0;
+        }
+    }
 
     function updateScheduleInfo() {
         const now = new Date();
@@ -147,7 +180,7 @@ Item {
         }
     }
 
-    Component.onCompleted: updateScheduleInfo()
+    Component.onCompleted: { updateScheduleInfo(); updateBluetoothInfo(); }
 
     // Colors
     function getColorForStyle(style) {
@@ -260,12 +293,12 @@ Item {
             horizontalAlignment: cfg.alignment === "center" ? Text.AlignHCenter : (cfg.alignment === "right" ? Text.AlignRight : Text.AlignLeft)
         }
 
-        // ── Content stack: schedule & quote di posisi yang sama ──
+        // ── Content stack: schedule, bluetooth, quote — di posisi yang sama ──
         Item {
             Layout.fillWidth: cfg.customWidth > 0
-            implicitHeight: Math.max(scheduleContent._currentHeight, quoteContent._currentHeight)
+            implicitHeight: Math.max(scheduleContent._currentHeight, btContent._currentHeight, quoteContent._currentHeight)
 
-            // Schedule
+            // Schedule (priority 1)
             ColumnLayout {
                 id: scheduleContent
                 anchors { top: parent.top; left: parent.left; right: parent.right }
@@ -304,12 +337,37 @@ Item {
                 }
             }
 
-            // Quote (idle, stacked di posisi yang sama)
+            // Bluetooth (priority 2 — when no schedule)
+            RowLayout {
+                id: btContent
+                anchors { top: parent.top; left: parent.left; right: parent.right }
+                spacing: 8 * Appearance.effectiveScale
+                opacity: cfg.showQuote && nextEvent === null && _displayedBluetoothText !== "" ? 1 : 0
+                visible: opacity > 0
+                Behavior on opacity { NumberAnimation { duration: 200 } }
+
+                readonly property real _currentHeight: visible ? implicitHeight : 0
+
+                StyledText {
+                    text: _displayedBluetoothText
+                    opacity: _bluetoothContentOpacity
+                    font.pixelSize: Math.round((fontSize * 0.8) * Appearance.effectiveScale)
+                    font.family: fontFamily
+                    color: quoteColor
+                    wrapMode: Text.WordWrap
+                    Layout.fillWidth: true
+                    Layout.maximumWidth: cfg.customWidth > 0 ? cfg.customWidth : 400 * Appearance.effectiveScale
+                    horizontalAlignment: cfg.alignment === "center" ? Text.AlignHCenter : (cfg.alignment === "right" ? Text.AlignRight : Text.AlignLeft)
+                    Behavior on opacity { NumberAnimation { duration: 200 } }
+                }
+            }
+
+            // Quote (idle, priority 3 — when no schedule and no bt)
             RowLayout {
                 id: quoteContent
                 anchors { top: parent.top; left: parent.left; right: parent.right }
                 spacing: 8 * Appearance.effectiveScale
-                opacity: cfg.showQuote && nextEvent === null && _displayedQuote !== "" ? 1 : 0
+                opacity: cfg.showQuote && nextEvent === null && _displayedBluetoothText === "" && _displayedQuote !== "" ? 1 : 0
                 visible: opacity > 0
                 Behavior on opacity { NumberAnimation { duration: 200 } }
 
