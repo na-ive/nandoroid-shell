@@ -63,28 +63,46 @@ Singleton {
 
         ScheduleService.events.forEach(event => {
             const nowDateStr = Qt.formatDate(now, "yyyy-MM-dd");
-            let isEventDay = (event.date === nowDateStr);
-            if (event.recurrence === "daily") isEventDay = true;
-            else if (event.recurrence === "weekly") {
-                const d = new Date(event.date + "T00:00:00");
-                isEventDay = d.getDay() === now.getDay();
-            } else if (event.recurrence === "monthly") {
-                const d = new Date(event.date + "T00:00:00");
-                isEventDay = d.getDate() === now.getDate();
+
+            if (event.endDate && nowDateStr > event.endDate) return;
+
+            let isEventDay = false;
+            if (event.recurrence === "once") {
+                if (event.endDate) {
+                    isEventDay = nowDateStr >= event.date && nowDateStr <= event.endDate;
+                } else {
+                    isEventDay = event.date === nowDateStr;
+                }
+            } else {
+                if (event.date === nowDateStr) isEventDay = true;
+                else if (event.recurrence === "daily") isEventDay = true;
+                else if (event.recurrence === "weekly") {
+                    const d = new Date(event.date + "T00:00:00");
+                    isEventDay = d.getDay() === now.getDay();
+                } else if (event.recurrence === "monthly") {
+                    const d = new Date(event.date + "T00:00:00");
+                    isEventDay = d.getDate() === now.getDate();
+                }
+                if (isEventDay && event.date) isEventDay = nowDateStr >= event.date;
             }
             if (!isEventDay) return;
 
             const eventStart = new Date(nowDateStr + "T" + event.time);
-            const eventEnd = event.endTime
+            let eventEnd = event.endTime
                 ? new Date(nowDateStr + "T" + event.endTime)
                 : new Date(eventStart.getTime() + 3600000);
+
+            if (event.endTime) {
+                const [sh, sm] = event.time.split(":").map(Number);
+                const [eh, em] = event.endTime.split(":").map(Number);
+                if (eh < sh || (eh === sh && em <= sm)) eventEnd.setDate(eventEnd.getDate() + 1);
+            }
 
             // Notification 1h before
             const notif1h = new Date(eventStart.getTime() - 3600000);
             if (notif1h > now) {
                 nextMs = Math.min(nextMs, notif1h.getTime() - now.getTime());
             } else if (now < eventStart && !event.lastNotified1hDate) {
-                // 1h window already open but notification not yet sent
                 nextMs = Math.min(nextMs, 1000);
             }
 
@@ -94,11 +112,21 @@ Singleton {
             // Event end (for DND deactivation)
             if (event.focus && eventEnd > now) nextMs = Math.min(nextMs, eventEnd.getTime() - now.getTime());
 
-            // Expired once event cleanup (30s after end)
+            // Expired once event cleanup (30s after end of last day)
             if (event.recurrence === "once") {
-                const expire = new Date(eventEnd.getTime() + 30000);
-                if (expire > now) nextMs = Math.min(nextMs, expire.getTime() - now.getTime());
-                else nextMs = Math.min(nextMs, 1000);
+                const expiryDate = event.endDate || event.date;
+                const expiryTime = event.endTime || "23:59";
+                if (nowDateStr === expiryDate) {
+                    let expire = new Date(expiryDate + "T" + expiryTime);
+                    if (event.endTime) {
+                        const [sh, sm] = (event.time || "00:00").split(":").map(Number);
+                        const [eh, em] = event.endTime.split(":").map(Number);
+                        if (eh < sh || (eh === sh && em <= sm)) expire.setDate(expire.getDate() + 1);
+                    }
+                    expire.setTime(expire.getTime() + 30000);
+                    if (expire > now) nextMs = Math.min(nextMs, expire.getTime() - now.getTime());
+                    else nextMs = Math.min(nextMs, 1000);
+                }
             }
         });
 
@@ -126,23 +154,41 @@ Singleton {
 
         ScheduleService.events.forEach(event => {
             // 2. Recurrence / Day Check
-            let isEventDay = (event.date === nowDateStr);
-            if (event.recurrence === "daily") isEventDay = true;
-            else if (event.recurrence === "weekly") {
-                const eventDate = new Date(event.date + "T00:00:00");
-                isEventDay = (eventDate.getDay() === now.getDay());
-            } else if (event.recurrence === "monthly") {
-                const eventDate = new Date(event.date + "T00:00:00");
-                isEventDay = (eventDate.getDate() === now.getDate());
+            if (event.endDate && nowDateStr > event.endDate) return;
+
+            let isEventDay = false;
+            if (event.recurrence === "once") {
+                if (event.endDate) {
+                    isEventDay = nowDateStr >= event.date && nowDateStr <= event.endDate;
+                } else {
+                    isEventDay = event.date === nowDateStr;
+                }
+            } else {
+                if (event.date === nowDateStr) isEventDay = true;
+                else if (event.recurrence === "daily") isEventDay = true;
+                else if (event.recurrence === "weekly") {
+                    const eventDate = new Date(event.date + "T00:00:00");
+                    isEventDay = (eventDate.getDay() === now.getDay());
+                } else if (event.recurrence === "monthly") {
+                    const eventDate = new Date(event.date + "T00:00:00");
+                    isEventDay = (eventDate.getDate() === now.getDate());
+                }
+                if (isEventDay && event.date) isEventDay = nowDateStr >= event.date;
             }
 
             if (!isEventDay) return;
 
             // 3. Time Check
             const eventStart = new Date(nowDateStr + "T" + event.time);
-            const eventEnd = event.endTime 
+            let eventEnd = event.endTime 
                 ? new Date(nowDateStr + "T" + event.endTime) 
                 : new Date(eventStart.getTime() + 3600000);
+
+            if (event.endTime) {
+                const [sh, sm] = event.time.split(":").map(Number);
+                const [eh, em] = event.endTime.split(":").map(Number);
+                if (eh < sh || (eh === sh && em <= sm)) eventEnd.setDate(eventEnd.getDate() + 1);
+            }
             
             // 4. DND Active Check
             if (event.focus && now >= eventStart && now < eventEnd) {
@@ -153,24 +199,39 @@ Singleton {
             const diffMs = eventStart.getTime() - now.getTime();
             const diffHours = diffMs / 3600000;
 
-            // 00:00 (Today) Notif
+            // 00:00 (Today) Notif — only on first day for multi-day once events
             const lastNotified00 = event.lastNotified00Date || "";
             if (lastNotified00 !== nowDateStr) {
-                sendNotification("Today's Schedule", `Upcoming event: ${event.title} at ${event.time}`);
-                ScheduleService.updateEvent(event.id, { lastNotified00Date: nowDateStr });
+                if (!event.endDate || event.recurrence !== "once" || nowDateStr === event.date) {
+                    sendNotification("Today's Schedule", `Upcoming event: ${event.title} at ${event.time}`);
+                    ScheduleService.updateEvent(event.id, { lastNotified00Date: nowDateStr });
+                }
             }
 
-            // 1h Before Notif
+            // 1h Before Notif (only on first day for multi-day events)
             const lastNotified1h = event.lastNotified1hDate || "";
             if (diffHours > 0 && diffHours <= 1.0 && lastNotified1h !== nowDateStr) {
-                sendNotification("Starting Soon", `${event.title} starts in 1 hour (${event.time})`);
-                ScheduleService.updateEvent(event.id, { lastNotified1hDate: nowDateStr });
+                if (!event.endDate || nowDateStr === event.date) {
+                    sendNotification("Starting Soon", `${event.title} starts in 1 hour (${event.time})`);
+                    ScheduleService.updateEvent(event.id, { lastNotified1hDate: nowDateStr });
+                }
             }
 
             // 6. Expiry Check (Auto-delete "once" events)
             if (event.recurrence === "once") {
-                if (now.getTime() > (eventEnd.getTime() + 30000)) {
-                    expiredEventIds.push(event.id);
+                const expiryDate = event.endDate || event.date;
+                const expiryTime = event.endTime || "23:59";
+                if (nowDateStr === expiryDate) {
+                    let expiryEnd = new Date(expiryDate + "T" + expiryTime);
+                    if (event.endTime) {
+                        const [sh, sm] = (event.time || "00:00").split(":").map(Number);
+                        const [eh, em] = event.endTime.split(":").map(Number);
+                        if (eh < sh || (eh === sh && em <= sm)) expiryEnd.setDate(expiryEnd.getDate() + 1);
+                    }
+                    expiryEnd.setTime(expiryEnd.getTime() + 30000);
+                    if (now.getTime() > expiryEnd.getTime()) {
+                        expiredEventIds.push(event.id);
+                    }
                 }
             }
         });
