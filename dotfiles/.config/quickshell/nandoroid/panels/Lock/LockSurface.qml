@@ -70,31 +70,6 @@ MouseArea {
         islandYOffset = 0
     }
 
-    // ── Background ──
-    Image {
-        id: wallpaper
-        anchors.fill: parent
-        z: -2
-        
-        readonly property bool usingLiveWallpaper: !Config.options.lock.useSeparateWallpaper && WallpaperEngineService.active
-        visible: !usingLiveWallpaper
-        
-        source: {
-            if (!Config.ready) return ""
-            if (Config.options.lock.useSeparateWallpaper && Config.options.lock.wallpaperPath !== "") {
-                return Config.options.lock.wallpaperPath
-            }
-            return Config.options.appearance?.background?.wallpaperPath ?? ""
-        }
-        fillMode: Image.PreserveAspectCrop
-        
-        Rectangle {
-            anchors.fill: parent
-            color: Appearance.colors.colLayer0
-            visible: wallpaper.status !== Image.Ready
-        }
-    }
-    
     // ── Background Cava (v1.2 Wave Visualizer) ──
     property bool _cavaActive: false
     readonly property bool shouldVisualize: root.visible && MprisController.isPlaying && (Config.ready && Config.options.lock.showCava)

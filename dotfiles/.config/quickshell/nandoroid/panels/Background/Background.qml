@@ -12,6 +12,7 @@ import Quickshell.Hyprland
 /**
  * Background panel.
  * Draws the wallpaper on the bottommost layer (WlrLayer.Background).
+ * Moves to Overlay during session lock to serve as backdrop for transparent LockSurface.
  */
 Variants {
     id: root
@@ -24,7 +25,7 @@ Variants {
         // Basic positioning
         screen: modelData
         exclusionMode: ExclusionMode.Ignore
-        WlrLayershell.layer: WlrLayer.Background
+        WlrLayershell.layer: GlobalStates.screenLocked ? WlrLayer.Overlay : WlrLayer.Background
         WlrLayershell.namespace: "quickshell:background"
         anchors {
             top: true
@@ -45,8 +46,9 @@ Variants {
             visible: !WallpaperEngineService.active
         }
 
-        property string currentPath: (Config.ready && Config.options.appearance && Config.options.appearance.background && Config.options.appearance.background.wallpaperPath) ? Config.options.appearance.background.wallpaperPath : ""
-        property string previousPath: ""
+        readonly property string desktopPath: (Config.ready && Config.options.appearance && Config.options.appearance.background && Config.options.appearance.background.wallpaperPath) ? Config.options.appearance.background.wallpaperPath : ""
+        readonly property string lockPath: Config.options.lock.useSeparateWallpaper && Config.options.lock.wallpaperPath ? Config.options.lock.wallpaperPath : ""
+        property string currentPath: GlobalStates.screenLocked && lockPath ? lockPath : desktopPath
         
         property var shaderList: ["circlePit", "circleSelect", "magic", "Doom", "Peel", "transition", "pixelate", "stripes"]
         property string currentShader: "pixelate"
@@ -58,13 +60,20 @@ Variants {
             // Avoid transition on first load
             if (wallpaper.source.toString() === "") {
                 wallpaper.source = currentPath;
+                previousWallpaper.source = "";
                 return;
             }
-            
-            previousPath = wallpaper.source.toString();
+
+            // Don't transition if paths are the same
+            var effectivePrev = wallpaper.source.toString().replace("file://", "");
+            if (effectivePrev === currentPath.replace("file://", "")) return;
+
+            // Assign previous source DIRECTLY (not via binding) so the image
+            // is available when the shader starts rendering on next frame
+            previousWallpaper.source = wallpaper.source;
             wallpaper.source = currentPath;
             currentShader = shaderList[Math.floor(Math.random() * shaderList.length)];
-            
+
             transitionProgress = 0.0;
             transitionAnim.restart();
         }
@@ -79,7 +88,6 @@ Variants {
             easing.type: Easing.InOutCubic
             onFinished: {
                 previousWallpaper.source = "";
-                bgRoot.previousPath = "";
                 bgRoot.transitionProgress = 1.0;
             }
         }
@@ -95,12 +103,11 @@ Variants {
             Image {
                 id: previousWallpaper
                 anchors.fill: parent
-                source: bgRoot.previousPath
                 fillMode: Image.PreserveAspectCrop
                 visible: false
                 cache: true
                 smooth: true
-                asynchronous: true
+                asynchronous: false
                 layer.enabled: true
             }
 
