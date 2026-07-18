@@ -303,10 +303,11 @@ Item {
 
                 // Date
                 Rectangle {
+                    id: dateFieldRect
                     Layout.fillWidth: true; implicitHeight: 44 * Appearance.effectiveScale
                     radius: Appearance.rounding.small
                     color: Appearance.m3colors.m3surfaceContainer
-                    border.color: dateField.activeFocus ? Appearance.colors.colPrimary : "transparent"
+                    border.color: dateField.activeFocus || datePicker.visible ? Appearance.colors.colPrimary : "transparent"
                     border.width: 2 * Appearance.effectiveScale
                     RowLayout {
                         anchors.fill: parent; anchors.margins: 10 * Appearance.effectiveScale; spacing: 6 * Appearance.effectiveScale
@@ -320,6 +321,29 @@ Item {
                             color: Appearance.colors.colOnLayer1
                             inputMask: "9999-99-99"
                             onTextChanged: { root.formDate = text; if(root.selectedId && dateField.activeFocus) autoSaveTimer.restart() }
+                        }
+                        RippleButton {
+                            implicitWidth: 28 * Appearance.effectiveScale
+                            implicitHeight: 28 * Appearance.effectiveScale
+                            buttonRadius: 14 * Appearance.effectiveScale
+                            colBackground: "transparent"
+                            onClicked: {
+                                if (datePicker.visible) {
+                                    datePicker.visible = false
+                                    return
+                                }
+                                datePicker.currentDateStr = root.formDate
+                                var pos = dateFieldRect.mapToItem(root, 0, dateFieldRect.height + 4)
+                                datePicker.x = Math.max(0, Math.min(pos.x, root.width - datePicker.implicitWidth))
+                                datePicker.y = Math.max(0, Math.min(pos.y, root.height - datePicker.implicitHeight - 10))
+                                datePicker.visible = true
+                            }
+                            MaterialSymbol {
+                                anchors.centerIn: parent
+                                text: "date_range"
+                                iconSize: 16 * Appearance.effectiveScale
+                                color: Appearance.colors.colSubtext
+                            }
                         }
                     }
                 }
@@ -475,6 +499,25 @@ Item {
                     StyledText { text: root.selectedId ? "Update Event" : "Add Event"; font.weight: Font.Medium; color: Appearance.colors.colOnPrimary }
                 }
             }
+        }
+    }
+
+    // ── Date picker popup ──
+    // Overlay (declared before DatePicker so it sits below)
+    MouseArea {
+        anchors.fill: parent
+        visible: datePicker.visible
+        propagateComposedEvents: false
+        onClicked: datePicker.visible = false
+    }
+
+    DatePicker {
+        id: datePicker
+        visible: false
+        onDateSelected: function(dateStr) {
+            root.formDate = dateStr
+            root.datePicker.visible = false
+            if (root.selectedId) autoSaveTimer.restart()
         }
     }
 }
