@@ -92,6 +92,12 @@ Item {
         }
     }
 
+    function isInDateRange(event, dateStr) {
+        if (!event.date) return false;
+        if (!event.endDate) return event.date === dateStr;
+        return dateStr >= event.date && dateStr <= event.endDate;
+    }
+
     function updateScheduleInfo() {
         const now = new Date();
         const nowDateStr = Qt.formatDate(now, "yyyy-MM-dd");
@@ -100,37 +106,38 @@ Item {
 
         let events = ScheduleService.events.filter(event => {
             if (!event.date) return false;
-            if (event.date === nowDateStr) return true;
-            if (event.recurrence === "daily") return true;
-            if (event.recurrence === "weekly") {
-                const d = new Date(event.date + "T00:00:00");
-                return d && d.getDay() === todayDay;
+
+            if (event.recurrence === "once") {
+                return isInDateRange(event, nowDateStr);
             }
-            if (event.recurrence === "monthly") {
+
+            if (event.endDate && nowDateStr > event.endDate) return false;
+
+            let matchesRecurrence = false;
+            if (event.recurrence === "daily") matchesRecurrence = true;
+            else if (event.recurrence === "weekly") {
                 const d = new Date(event.date + "T00:00:00");
-                return d && d.getDate() === todayDate;
+                matchesRecurrence = d && d.getDay() === todayDay;
+            } else if (event.recurrence === "monthly") {
+                const d = new Date(event.date + "T00:00:00");
+                matchesRecurrence = d && d.getDate() === todayDate;
             }
-            return false;
+            return matchesRecurrence && nowDateStr >= event.date;
         }).sort((a, b) => a.time.localeCompare(b.time));
 
         todayEvents = events;
 
-        const UPCOMING_WINDOW = 120; // minutes — show upcoming events only within this window
+        const UPCOMING_WINDOW = 120;
         const nowMs = now.getHours() * 60 + now.getMinutes();
         let next = null;
         for (const ev of events) {
+            // For multi-day once events, only show "Up next" on the first day
+            if (ev.recurrence === "once" && ev.endDate && nowDateStr !== ev.date) continue;
+
             const [h, m] = ev.time.split(":").map(Number);
             const startMs = h * 60 + m;
-            let endMs;
-            if (ev.endTime) {
-                const [eh, em] = ev.endTime.split(":").map(Number);
-                endMs = eh * 60 + em;
-            } else {
-                endMs = startMs + 60;
-            }
-            const isOngoing = nowMs >= startMs && nowMs < endMs;
             const isUpcomingInWindow = nowMs < startMs && (startMs - nowMs) <= UPCOMING_WINDOW;
-            if (isOngoing || isUpcomingInWindow) {
+            if (isUpcomingInWindow) {
                 next = ev;
                 break;
             }
@@ -141,19 +148,28 @@ Item {
             title: next.title,
             time: next.time,
             endTime: next.endTime,
-            description: next.description
+            description: next.description,
+            date: next.date,
+            endDate: next.endDate
         } : null;
 
         let label = "";
         let desc = "";
         if (newNext) {
-            const [h, m] = newNext.time.split(":").map(Number);
-            const startMs = h * 60 + m;
-            const isOngoing = nowMs >= startMs;
-            const prefix = isOngoing ? "Now" : "Up next";
+            let dayInfo = "";
+            if (newNext.endDate && newNext.date) {
+                const start = new Date(newNext.date + "T00:00:00");
+                const end = new Date(newNext.endDate + "T00:00:00");
+                const dayDiff = Math.round((end - start) / 86400000) + 1;
+                if (dayDiff > 1) {
+                    const todayDiff = Math.round((new Date(nowDateStr + "T00:00:00") - start) / 86400000) + 1;
+                    dayInfo = " \u00b7 Day " + todayDiff + "/" + dayDiff;
+                }
+            }
+
             let timeStr = newNext.time;
             if (newNext.endTime) timeStr += "\u2013" + newNext.endTime;
-            label = prefix + ": " + newNext.title + " \u00b7 " + timeStr;
+            label = "Up next: " + newNext.title + dayInfo + " \u00b7 " + timeStr;
             desc = newNext.description || "";
         }
 
