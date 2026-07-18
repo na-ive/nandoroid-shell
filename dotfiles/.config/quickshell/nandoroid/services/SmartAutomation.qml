@@ -110,7 +110,18 @@ Singleton {
             if (event.focus && eventStart > now) nextMs = Math.min(nextMs, eventStart.getTime() - now.getTime());
 
             // Event end (for DND deactivation)
-            if (event.focus && eventEnd > now) nextMs = Math.min(nextMs, eventEnd.getTime() - now.getTime());
+            if (event.focus) {
+                let dndEnd = eventEnd;
+                if (event.endTime) {
+                    const [sh, sm] = event.time.split(":").map(Number);
+                    const [eh, em] = event.endTime.split(":").map(Number);
+                    if (eh < sh || (eh === sh && em <= sm)) {
+                        const tailEnd = new Date(nowDateStr + "T" + event.endTime);
+                        if (now < tailEnd) dndEnd = tailEnd;
+                    }
+                }
+                if (dndEnd > now) nextMs = Math.min(nextMs, dndEnd.getTime() - now.getTime());
+            }
 
             // Expired once event cleanup (30s after end of last day)
             if (event.recurrence === "once") {
@@ -191,8 +202,17 @@ Singleton {
             }
             
             // 4. DND Active Check
-            if (event.focus && now >= eventStart && now < eventEnd) {
-                anyEventActive = true;
+            if (event.focus) {
+                let isActive = now >= eventStart && now < eventEnd;
+                if (!isActive && event.endTime) {
+                    const [sh, sm] = event.time.split(":").map(Number);
+                    const [eh, em] = event.endTime.split(":").map(Number);
+                    if (eh < sh || (eh === sh && em <= sm)) {
+                        const tailEnd = new Date(nowDateStr + "T" + event.endTime);
+                        if (now < tailEnd) isActive = true;
+                    }
+                }
+                if (isActive) anyEventActive = true;
             }
 
             // 5. Notification Logic
