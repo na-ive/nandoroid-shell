@@ -124,13 +124,20 @@ Item {
             desc = newNext.description || "";
         }
 
-        if (wasVisible && newNext) {
+        const textChanged = wasVisible && newNext && (label !== _displayedScheduleTitle || desc !== _displayedScheduleDesc);
+
+        if (textChanged) {
             _pendingScheduleTitle = label;
             _pendingScheduleDesc = desc;
             _scheduleContentOpacity = 0;
             nextEvent = newNext;
             _scheduleVersion++;
             scheduleFadeTimer.restart();
+        } else if (wasVisible && newNext && !textChanged) {
+            _displayedScheduleTitle = label;
+            _displayedScheduleDesc = desc;
+            nextEvent = newNext;
+            _scheduleVersion++;
         } else {
             _displayedScheduleTitle = label;
             _displayedScheduleDesc = desc;
@@ -253,63 +260,73 @@ Item {
             horizontalAlignment: cfg.alignment === "center" ? Text.AlignHCenter : (cfg.alignment === "right" ? Text.AlignRight : Text.AlignLeft)
         }
 
-        // ── Next Schedule (when events exist) ──
-        ColumnLayout {
-            spacing: 2 * Appearance.effectiveScale
+        // ── Content stack: schedule & quote di posisi yang sama ──
+        Item {
             Layout.fillWidth: cfg.customWidth > 0
-            Layout.alignment: cfg.alignment === "center" ? Qt.AlignHCenter : (cfg.alignment === "right" ? Qt.AlignRight : Qt.AlignLeft)
-            opacity: cfg.showQuote && nextEvent !== null ? 1 : 0
-            visible: opacity > 0
-            Behavior on opacity { NumberAnimation { duration: 200 } }
+            implicitHeight: Math.max(scheduleContent._currentHeight, quoteContent._currentHeight)
 
-            StyledText {
-                text: _displayedScheduleTitle
-                opacity: _scheduleContentOpacity
-                font.pixelSize: Math.round((fontSize * 0.8) * Appearance.effectiveScale)
-                font.family: fontFamily
-                color: quoteColor
-                wrapMode: Text.WordWrap
-                Layout.fillWidth: cfg.customWidth > 0
-                Layout.maximumWidth: cfg.customWidth > 0 ? cfg.customWidth : 400 * Appearance.effectiveScale
-                horizontalAlignment: cfg.alignment === "center" ? Text.AlignHCenter : (cfg.alignment === "right" ? Text.AlignRight : Text.AlignLeft)
+            // Schedule
+            ColumnLayout {
+                id: scheduleContent
+                anchors { top: parent.top; left: parent.left; right: parent.right }
+                spacing: 2 * Appearance.effectiveScale
+                opacity: cfg.showQuote && nextEvent !== null ? 1 : 0
+                visible: opacity > 0
                 Behavior on opacity { NumberAnimation { duration: 200 } }
+
+                readonly property real _currentHeight: visible ? implicitHeight : 0
+
+                StyledText {
+                    text: _displayedScheduleTitle
+                    opacity: _scheduleContentOpacity
+                    font.pixelSize: Math.round((fontSize * 0.8) * Appearance.effectiveScale)
+                    font.family: fontFamily
+                    color: quoteColor
+                    wrapMode: Text.WordWrap
+                    Layout.fillWidth: true
+                    Layout.maximumWidth: cfg.customWidth > 0 ? cfg.customWidth : 400 * Appearance.effectiveScale
+                    horizontalAlignment: cfg.alignment === "center" ? Text.AlignHCenter : (cfg.alignment === "right" ? Text.AlignRight : Text.AlignLeft)
+                    Behavior on opacity { NumberAnimation { duration: 200 } }
+                }
+
+                StyledText {
+                    text: _displayedScheduleDesc
+                    opacity: _scheduleContentOpacity * 0.7
+                    font.pixelSize: Math.round((fontSize * 0.65) * Appearance.effectiveScale)
+                    font.family: fontFamily
+                    font.italic: true
+                    color: dateColor
+                    wrapMode: Text.WordWrap
+                    Layout.fillWidth: true
+                    Layout.maximumWidth: cfg.customWidth > 0 ? cfg.customWidth : 400 * Appearance.effectiveScale
+                    horizontalAlignment: cfg.alignment === "center" ? Text.AlignHCenter : (cfg.alignment === "right" ? Text.AlignRight : Text.AlignLeft)
+                    Behavior on opacity { NumberAnimation { duration: 200 } }
+                }
             }
 
-            StyledText {
-                text: _displayedScheduleDesc
-                opacity: _scheduleContentOpacity * 0.7
-                font.pixelSize: Math.round((fontSize * 0.65) * Appearance.effectiveScale)
-                font.family: fontFamily
-                font.italic: true
-                color: dateColor
-                wrapMode: Text.WordWrap
-                Layout.fillWidth: cfg.customWidth > 0
-                Layout.maximumWidth: cfg.customWidth > 0 ? cfg.customWidth : 400 * Appearance.effectiveScale
-                horizontalAlignment: cfg.alignment === "center" ? Text.AlignHCenter : (cfg.alignment === "right" ? Text.AlignRight : Text.AlignLeft)
+            // Quote (idle, stacked di posisi yang sama)
+            RowLayout {
+                id: quoteContent
+                anchors { top: parent.top; left: parent.left; right: parent.right }
+                spacing: 8 * Appearance.effectiveScale
+                opacity: cfg.showQuote && nextEvent === null && _displayedQuote !== "" ? 1 : 0
+                visible: opacity > 0
                 Behavior on opacity { NumberAnimation { duration: 200 } }
-            }
-        }
 
-        // ── Quote (idle state) ──
-        RowLayout {
-            spacing: 8 * Appearance.effectiveScale
-            Layout.fillWidth: cfg.customWidth > 0
-            Layout.alignment: cfg.alignment === "center" ? Qt.AlignHCenter : (cfg.alignment === "right" ? Qt.AlignRight : Qt.AlignLeft)
-            opacity: cfg.showQuote && nextEvent === null && _displayedQuote !== "" ? 1 : 0
-            visible: opacity > 0
-            Behavior on opacity { NumberAnimation { duration: 200 } }
+                readonly property real _currentHeight: visible ? implicitHeight : 0
 
-            StyledText {
-                text: _displayedQuote
-                opacity: _quoteContentOpacity
-                font.pixelSize: Math.round((fontSize * 0.8) * Appearance.effectiveScale)
-                font.family: fontFamily
-                color: quoteColor
-                wrapMode: Text.WordWrap
-                Layout.fillWidth: cfg.customWidth > 0
-                Layout.maximumWidth: cfg.customWidth > 0 ? cfg.customWidth : 400 * Appearance.effectiveScale
-                horizontalAlignment: cfg.alignment === "center" ? Text.AlignHCenter : (cfg.alignment === "right" ? Text.AlignRight : Text.AlignLeft)
-                Behavior on opacity { NumberAnimation { duration: 200 } }
+                StyledText {
+                    text: _displayedQuote
+                    opacity: _quoteContentOpacity
+                    font.pixelSize: Math.round((fontSize * 0.8) * Appearance.effectiveScale)
+                    font.family: fontFamily
+                    color: quoteColor
+                    wrapMode: Text.WordWrap
+                    Layout.fillWidth: true
+                    Layout.maximumWidth: cfg.customWidth > 0 ? cfg.customWidth : 400 * Appearance.effectiveScale
+                    horizontalAlignment: cfg.alignment === "center" ? Text.AlignHCenter : (cfg.alignment === "right" ? Text.AlignRight : Text.AlignLeft)
+                    Behavior on opacity { NumberAnimation { duration: 200 } }
+                }
             }
         }
     }
