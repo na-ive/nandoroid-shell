@@ -220,6 +220,7 @@ Item {
                     TextInput {
                         id: titleInput
                         anchors.fill: parent; anchors.margins: 10 * Appearance.effectiveScale
+                        clip: true
                         font.family: Appearance.font.family.main
                         font.pixelSize: Appearance.font.pixelSize.large
                         font.weight: Font.DemiBold

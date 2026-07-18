@@ -277,6 +277,7 @@ Item {
                     id: titleField
                     anchors.fill: parent
                     anchors.margins: 12 * Appearance.effectiveScale
+                    clip: true
                     text: root.formTitle
                     font.family: Appearance.font.family.main
                     font.pixelSize: Appearance.font.pixelSize.normal
@@ -380,25 +381,45 @@ Item {
                 border.width: 2 * Appearance.effectiveScale
                 clip: true
 
-                TextEdit {
-                    id: descArea
+                Flickable {
+                    id: descFlickable
                     anchors.fill: parent
                     anchors.margins: 12 * Appearance.effectiveScale
-                    text: root.formDescription
-                    font.family: Appearance.font.family.main
-                    font.pixelSize: Appearance.font.pixelSize.small
-                    color: Appearance.colors.colOnLayer1
-                    wrapMode: TextEdit.Wrap
-                    onTextChanged: { root.formDescription = text; if(root.selectedId && descArea.activeFocus) autoSaveTimer.restart() }
+                    contentHeight: descArea.height
+                    clip: true
 
-                    StyledText {
-                        anchors.fill: parent
-                        text: "Description (optional)..."
-                        color: Appearance.colors.colSubtext
-                        visible: !descArea.text && !descArea.activeFocus
+                    TextEdit {
+                        id: descArea
+                        width: descFlickable.width
+                        height: Math.max(implicitHeight, descFlickable.height)
+                        text: root.formDescription
+                        font.family: Appearance.font.family.main
                         font.pixelSize: Appearance.font.pixelSize.small
-                        verticalAlignment: Text.AlignTop
+                        color: Appearance.colors.colOnLayer1
+                        wrapMode: TextEdit.Wrap
+                        onTextChanged: { root.formDescription = text; if(root.selectedId && descArea.activeFocus) autoSaveTimer.restart() }
+
+                        onCursorRectangleChanged: {
+                            const margin = 20 * Appearance.effectiveScale;
+                            if (cursorRectangle.y < descFlickable.contentY)
+                                descFlickable.contentY = cursorRectangle.y;
+                            else if (cursorRectangle.y + cursorRectangle.height + margin > descFlickable.contentY + descFlickable.height)
+                                descFlickable.contentY = cursorRectangle.y + cursorRectangle.height - descFlickable.height + margin;
+                        }
+
+                        StyledText {
+                            anchors.top: parent.top
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            text: "Description (optional)..."
+                            color: Appearance.colors.colSubtext
+                            visible: !descArea.text && !descArea.activeFocus
+                            font.pixelSize: Appearance.font.pixelSize.small
+                            wrapMode: Text.Wrap
+                        }
                     }
+
+                    ScrollBar.vertical: StyledScrollBar {}
                 }
             }
 
