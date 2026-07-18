@@ -21,6 +21,9 @@ Item {
     property int hoveredIndex: -1
     readonly property int focusedIndex: hoveredIndex >= 0 ? hoveredIndex : listView.currentIndex
 
+    property bool wheelEnabled: true
+    property bool dragEnabled: true
+
     property real clipRadius: Appearance.rounding.extraLarge - (10 * Appearance.effectiveScale)
     property bool isOpen: true
 
@@ -54,7 +57,7 @@ Item {
         clip: true
         orientation: ListView.Horizontal
         spacing: root.itemSpacing
-        interactive: true
+        interactive: root.dragEnabled
         snapMode: ListView.SnapOneItem
         highlightRangeMode: ListView.StrictlyEnforceRange
         preferredHighlightBegin: 0
@@ -78,6 +81,7 @@ Item {
         WheelHandler {
             id: wheelHandler
             target: listView
+            enabled: root.wheelEnabled
             acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
             property bool coolingDown: false
             onWheel: (event) => {
