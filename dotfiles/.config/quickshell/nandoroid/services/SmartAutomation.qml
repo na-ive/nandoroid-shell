@@ -192,6 +192,7 @@ Singleton {
             "notify-send",
             "-a", "NAnDoroid",
             "-i", iconPath,
+            "-t", "8000",
             title,
             body
         ];
