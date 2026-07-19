@@ -152,13 +152,20 @@ Rectangle {
                                         Layout.fillWidth: true
                                     }
                                     StyledText {
+                                        readonly property var _d: deviceItem.modelData
                                         text: {
-                                            let s = deviceItem.modelData.connected ? "Connected" : (deviceItem.modelData.paired ? "Paired" : "Ready to pair")
-                                            if (deviceItem.modelData.batteryPercentage > 0) s += ` • ${deviceItem.modelData.batteryPercentage}%`
-                                            return s
+                                            if (_d.connected) {
+                                                var s = "Connected"
+                                                if (_d.batteryPercentage > 0) s += " • " + _d.batteryPercentage + "%"
+                                                return s
+                                            }
+                                            if (_d.state === BluetoothDeviceState.Connecting || BluetoothStatus.pairingAddress === _d.address) return "Connecting..."
+                                            if (_d.pairing) return "Pairing..."
+                                            if (_d.paired) return "Paired"
+                                            return "Ready to pair"
                                         }
                                         font.pixelSize: Appearance.font.pixelSize.smaller
-                                        color: Appearance.colors.colSubtext
+                                        color: _d.connected || _d.state === BluetoothDeviceState.Connecting || BluetoothStatus.pairingAddress === _d.address ? Appearance.colors.colPrimary : Appearance.colors.colSubtext
                                         elide: Text.ElideRight
                                         Layout.fillWidth: true
                                     }
@@ -185,7 +192,27 @@ Rectangle {
 
                             Item { Layout.fillWidth: true }
 
-                            // Connect/Disconnect
+                            // Forget (Unpair) — cancel/destructive on left
+                            RippleButton {
+                                visible: deviceItem.modelData.paired
+                                implicitWidth: forgetBtnText.implicitWidth + (24 * Appearance.effectiveScale)
+                                implicitHeight: 32 * Appearance.effectiveScale
+                                buttonRadius: 16 * Appearance.effectiveScale
+                                colBackground: Appearance.m3colors.m3error
+                                onClicked: {
+                                    deviceItem.modelData.unpair();
+                                    deviceItem.expanded = false;
+                                }
+                                StyledText {
+                                    id: forgetBtnText
+                                    anchors.centerIn: parent
+                                    text: "Forget"
+                                    font.pixelSize: Appearance.font.pixelSize.smaller
+                                    color: Appearance.m3colors.m3onError
+                                }
+                            }
+
+                            // Connect/Disconnect — primary action on right
                             RippleButton {
                                 implicitWidth: connectBtnText.implicitWidth + (24 * Appearance.effectiveScale)
                                 implicitHeight: 32 * Appearance.effectiveScale
@@ -205,26 +232,6 @@ Rectangle {
                                     text: deviceItem.modelData.connected ? "Disconnect" : "Connect"
                                     font.pixelSize: Appearance.font.pixelSize.smaller
                                     color: deviceItem.modelData.connected ? Appearance.colors.colOnLayer1 : Appearance.colors.colOnPrimary
-                                }
-                            }
-
-                            // Forget (Unpair)
-                            RippleButton {
-                                visible: deviceItem.modelData.paired
-                                implicitWidth: forgetBtnText.implicitWidth + (24 * Appearance.effectiveScale)
-                                implicitHeight: 32 * Appearance.effectiveScale
-                                buttonRadius: 16 * Appearance.effectiveScale
-                                colBackground: Appearance.m3colors.m3error
-                                onClicked: {
-                                    deviceItem.modelData.unpair();
-                                    deviceItem.expanded = false;
-                                }
-                                StyledText {
-                                    id: forgetBtnText
-                                    anchors.centerIn: parent
-                                    text: "Forget"
-                                    font.pixelSize: Appearance.font.pixelSize.smaller
-                                    color: Appearance.m3colors.m3onError
                                 }
                             }
                         }

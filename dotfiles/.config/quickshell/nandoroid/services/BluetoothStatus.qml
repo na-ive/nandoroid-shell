@@ -256,8 +256,8 @@ Singleton {
         return a.name.localeCompare(b.name);
     }
 
-    readonly property var connectedDevices: Bluetooth.devices.values.filter(d => d.connected && d.address !== pairingAddress).sort(sortFunction)
-    readonly property var pairedButNotConnectedDevices: Bluetooth.devices.values.filter(d => (d.paired || d.trusted) && !d.connected && d.address !== pairingAddress).sort(sortFunction)
+    readonly property var connectedDevices: Bluetooth.devices.values.filter(d => d.connected).sort(sortFunction)
+    readonly property var pairedButNotConnectedDevices: Bluetooth.devices.values.filter(d => (d.paired || d.trusted) && !d.connected).sort(sortFunction)
     readonly property var unpairedDevices: {
         let list = Bluetooth.devices.values.filter(d => (!d.paired && !d.trusted && !d.connected) || d.address === pairingAddress);
         if (pairingAddress !== "" && !list.some(d => d.address === pairingAddress) && lastPairingDevice) {
