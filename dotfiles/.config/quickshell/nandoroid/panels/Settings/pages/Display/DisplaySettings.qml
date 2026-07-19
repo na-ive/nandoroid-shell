@@ -210,7 +210,7 @@ Item {
             // ── Monitor Layout Visualization (Selector) ──
             SegmentedWrapper {
                 Layout.fillWidth: true
-                implicitHeight: 320 * Appearance.effectiveScale
+                implicitHeight: 360 * Appearance.effectiveScale
                 orientation: Qt.Vertical
                 color: Appearance.m3colors.m3surfaceContainerHigh
                 smallRadius: 8 * Appearance.effectiveScale
@@ -246,11 +246,11 @@ Item {
                 Item {
                     id: monitorContainer
                     anchors.fill: parent
-                    anchors.margins: 40 * Appearance.effectiveScale
+                    anchors.margins: 24 * Appearance.effectiveScale
                     
                     readonly property real vizScale: {
                         const m = root.monitorList;
-                        if (m.length === 0) return 10;
+                        if (m.length === 0) return 0.1;
                         let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
                         for (let i = 0; i < m.length; i++) {
                             let mx = m[i].x;
@@ -265,12 +265,15 @@ Item {
                             maxX = Math.max(maxX, mx + m[i].width);
                             maxY = Math.max(maxY, my + m[i].height);
                         }
-                        return Math.max(10, Math.max(maxX - minX, maxY - minY) / (240 * Appearance.effectiveScale));
+                        const bw = maxX - minX;
+                        const bh = maxY - minY;
+                        if (bw === 0 || bh === 0) return 0.1;
+                        return (280 * Appearance.effectiveScale) / Math.max(bw, bh);
                     }
                     
                     readonly property var bounds: {
                         const m = root.monitorList;
-                        if (m.length === 0) return { centerX: 1920, centerY: 1080 };
+                        if (m.length === 0) return { minX: 0, minY: 0, width: 1920, height: 1080 };
                         let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
                         for (let i = 0; i < m.length; i++) {
                             let mx = m[i].x;
@@ -285,28 +288,32 @@ Item {
                             maxX = Math.max(maxX, mx + m[i].width);
                             maxY = Math.max(maxY, my + m[i].height);
                         }
-                        return { centerX: minX + (maxX - minX)/2, centerY: minY + (maxY - minY)/2 };
+                        return { minX, minY, width: maxX - minX, height: maxY - minY };
                     }
+                    
+                    readonly property point offset: Qt.point(
+                        (monitorContainer.width  - bounds.width  * vizScale) / 2 - bounds.minX * vizScale,
+                        (monitorContainer.height - bounds.height * vizScale) / 2 - bounds.minY * vizScale
+                    )
 
                     Repeater {
                         model: root.monitorList
                         delegate: Rectangle {
                             id: monRect
-                            width: modelData.width / monitorContainer.vizScale
-                            height: modelData.height / monitorContainer.vizScale
+                            width: modelData.width * monitorContainer.vizScale
+                            height: modelData.height * monitorContainer.vizScale
                             
-                            // Target position (dynamic binding with staged changes support)
                             x: {
                                 let targetX = modelData.x;
                                 const sj = root.stagedChanges[modelData.name];
                                 if (sj && sj.x !== undefined) targetX = sj.x;
-                                return (monitorContainer.width / 2) + ((targetX - monitorContainer.bounds.centerX) / monitorContainer.vizScale);
+                                return targetX * monitorContainer.vizScale + monitorContainer.offset.x;
                             }
                             y: {
                                 let targetY = modelData.y;
                                 const sj = root.stagedChanges[modelData.name];
                                 if (sj && sj.y !== undefined) targetY = sj.y;
-                                return (monitorContainer.height / 2) + ((targetY - monitorContainer.bounds.centerY) / monitorContainer.vizScale);
+                                return targetY * monitorContainer.vizScale + monitorContainer.offset.y;
                             }
                             
                             radius: 16 * Appearance.effectiveScale
@@ -314,11 +321,7 @@ Item {
                             border.color: root.currentMonitorIndex === index ? Appearance.colors.colPrimary : Appearance.m3colors.m3outline
                             border.width: 1.5 * Appearance.effectiveScale
                             
-                            Behavior on x { NumberAnimation { duration: 500; easing.type: Easing.OutQuint } }
-                            Behavior on y { NumberAnimation { duration: 500; easing.type: Easing.OutQuint } }
                             Behavior on color { ColorAnimation { duration: 250 } }
-                            Behavior on width { NumberAnimation { duration: 400; easing.type: Easing.OutQuint } }
-                            Behavior on height { NumberAnimation { duration: 400; easing.type: Easing.OutQuint } }
 
                             Rectangle {
                                 anchors.fill: parent
