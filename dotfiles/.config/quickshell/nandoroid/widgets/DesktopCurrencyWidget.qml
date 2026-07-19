@@ -209,7 +209,8 @@ Item {
                         StyledText {
                             text: {
                                 let v = CurrencyService.rates[CurrencyService.quote1] || 0.0;
-                                return v === 0.0 ? "..." : Math.round(v).toLocaleString(Qt.locale(), 'f', 0);
+                                if (v > 0.0) return Math.round(v).toLocaleString(Qt.locale(), 'f', 0);
+                                return CurrencyService.errorMessage || "...";
                             }
                             font.pixelSize: Appearance.font.pixelSize.small
                             font.weight: Font.Bold
@@ -235,7 +236,8 @@ Item {
                         StyledText {
                             text: {
                                 let v = CurrencyService.rates[CurrencyService.quote2] || 0.0;
-                                return v === 0.0 ? "..." : Math.round(v).toLocaleString(Qt.locale(), 'f', 0);
+                                if (v > 0.0) return Math.round(v).toLocaleString(Qt.locale(), 'f', 0);
+                                return CurrencyService.errorMessage || "...";
                             }
                             font.pixelSize: Appearance.font.pixelSize.small
                             font.weight: Font.Bold
@@ -355,7 +357,7 @@ Item {
                                 StyledText {
                                     text: {
                                         if (CurrencyService.loading) return "...";
-                                        if (rateVal === 0.0) return "...";
+                                        if (rateVal === 0.0) return CurrencyService.errorMessage || "...";
                                         return rateVal.toLocaleString(Qt.locale(), 'f', rateVal < 1000 ? 2 : 0);
                                     }
                                     font.pixelSize: Appearance.font.pixelSize.small
