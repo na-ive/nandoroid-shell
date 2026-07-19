@@ -115,10 +115,15 @@ Rectangle {
                         spacing: 0
 
                         RippleButton {
+                            id: cardHeader
                             Layout.fillWidth: true
-                            implicitHeight: 56 * Appearance.effectiveScale
+                            implicitHeight: 64 * Appearance.effectiveScale
                             buttonRadius: 16 * Appearance.effectiveScale
-                            colBackground: deviceItem.modelData.connected ? Functions.ColorUtils.mix(Appearance.colors.colLayer0, Appearance.colors.colPrimary, 0.92) : "transparent"
+                            colBackground: {
+                                if (deviceItem.modelData.connected) return Functions.ColorUtils.mix(Appearance.colors.colLayer0, Appearance.colors.colPrimary, 0.92)
+                                if (deviceItem.expanded) return Appearance.colors.colLayer0Hover
+                                return "transparent"
+                            }
                             colBackgroundHover: deviceItem.modelData.connected ? colBackground : Appearance.colors.colLayer0Hover
                             onClicked: deviceItem.expanded = !deviceItem.expanded
 
@@ -130,11 +135,10 @@ Rectangle {
 
                                 MaterialSymbol {
                                     text: {
-                                        const devClass = deviceItem.modelData.deviceClass;
-                                        if (devClass === BluetoothDevice.AudioVideo) return "headphones"
-                                        if (devClass === BluetoothDevice.Peripheral) return "keyboard"
-                                        if (devClass === BluetoothDevice.Computer) return "laptop"
-                                        if (devClass === BluetoothDevice.Phone) return "smartphone"
+                                        const type = deviceItem.modelData.deviceType;
+                                        if (type === "phone") return "smartphone"
+                                        if (type === "computer") return "computer"
+                                        if (type === "audio-card") return "headset"
                                         return "bluetooth"
                                     }
                                     iconSize: 22 * Appearance.effectiveScale
@@ -147,6 +151,7 @@ Rectangle {
                                     StyledText {
                                         text: deviceItem.modelData.name || deviceItem.modelData.address
                                         font.pixelSize: Appearance.font.pixelSize.small
+                                        font.weight: deviceItem.modelData.connected ? Font.DemiBold : Font.Normal
                                         color: Appearance.colors.colOnLayer1
                                         elide: Text.ElideRight
                                         Layout.fillWidth: true
@@ -154,84 +159,131 @@ Rectangle {
                                     StyledText {
                                         readonly property var _d: deviceItem.modelData
                                         text: {
-                                            if (_d.connected) {
-                                                var s = "Connected"
-                                                if (_d.batteryPercentage > 0) s += " • " + _d.batteryPercentage + "%"
-                                                return s
-                                            }
+                                            if (_d.connected) return "Connected" + (_d.batteryAvailable ? " · " + Math.round(_d.battery * 100) + "%" : "")
                                             if (_d.state === BluetoothDeviceState.Connecting || BluetoothStatus.pairingAddress === _d.address) return "Connecting..."
                                             if (_d.pairing) return "Pairing..."
-                                            if (_d.paired) return "Paired"
-                                            return "Ready to pair"
+                                            if (_d.paired || _d.trusted) return "Paired"
+                                            return "Available"
                                         }
                                         font.pixelSize: Appearance.font.pixelSize.smaller
-                                        color: _d.connected || _d.state === BluetoothDeviceState.Connecting || BluetoothStatus.pairingAddress === _d.address ? Appearance.colors.colPrimary : Appearance.colors.colSubtext
+                                        color: _d.state === BluetoothDeviceState.Connecting || _d.pairing ? Appearance.colors.colPrimary : Appearance.colors.colSubtext
                                         elide: Text.ElideRight
                                         Layout.fillWidth: true
                                     }
                                 }
 
-                                MaterialSymbol {
-                                    text: "keyboard_arrow_down"
-                                    iconSize: 20 * Appearance.effectiveScale
-                                    color: Appearance.colors.colSubtext
-                                    rotation: deviceItem.expanded ? 180 : 0
-                                    Behavior on rotation { NumberAnimation { duration: 200 } }
+                                RippleButton {
+                                    implicitWidth: 32 * Appearance.effectiveScale
+                                    implicitHeight: 32 * Appearance.effectiveScale
+                                    buttonRadius: 16 * Appearance.effectiveScale
+                                    colBackground: "transparent"
+                                    onClicked: deviceItem.expanded = !deviceItem.expanded
+                                    contentItem: MaterialSymbol {
+                                        anchors.centerIn: parent
+                                        text: deviceItem.expanded ? "expand_less" : "expand_more"
+                                        iconSize: 20 * Appearance.effectiveScale
+                                        color: Appearance.colors.colSubtext
+                                    }
+                                }
+                            }
+
+                            // Header rounding overlay for expansion joint
+                            Rectangle {
+                                anchors.fill: parent
+                                visible: deviceItem.expanded
+                                color: cardHeader.colBackground
+                                z: -1
+                                radius: 16 * Appearance.effectiveScale
+                                Rectangle {
+                                    anchors.bottom: parent.bottom
+                                    width: parent.width
+                                    height: 16 * Appearance.effectiveScale
+                                    color: parent.color
                                 }
                             }
                         }
 
-                        // Expanded actions
-                        RowLayout {
+                        // ── Expanded Actions ──
+                        Rectangle {
+                            id: cardExpansion
                             Layout.fillWidth: true
-                            Layout.leftMargin: 48 * Appearance.effectiveScale
-                            Layout.rightMargin: 12 * Appearance.effectiveScale
-                            Layout.bottomMargin: 8 * Appearance.effectiveScale
-                            visible: deviceItem.expanded
-                            spacing: 8 * Appearance.effectiveScale
+                            Layout.preferredHeight: deviceItem.expanded ? expansionColumn.implicitHeight + (32 * Appearance.effectiveScale) : 0
+                            clip: true
+                            color: Appearance.colors.colLayer2
+                            radius: 16 * Appearance.effectiveScale
+                            opacity: deviceItem.expanded ? 1 : 0
+                            visible: Layout.preferredHeight > 0
+                            Behavior on Layout.preferredHeight { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
+                            Behavior on opacity { NumberAnimation { duration: 200 } }
 
-                            Item { Layout.fillWidth: true }
-
-                            // Forget (Unpair) — cancel/destructive on left
-                            RippleButton {
-                                visible: deviceItem.modelData.paired
-                                implicitWidth: forgetBtnText.implicitWidth + (24 * Appearance.effectiveScale)
-                                implicitHeight: 32 * Appearance.effectiveScale
-                                buttonRadius: 16 * Appearance.effectiveScale
-                                colBackground: Appearance.m3colors.m3error
-                                onClicked: {
-                                    deviceItem.modelData.unpair();
-                                    deviceItem.expanded = false;
-                                }
-                                StyledText {
-                                    id: forgetBtnText
-                                    anchors.centerIn: parent
-                                    text: "Forget"
-                                    font.pixelSize: Appearance.font.pixelSize.smaller
-                                    color: Appearance.m3colors.m3onError
-                                }
+                            Rectangle {
+                                width: parent.width
+                                height: 16 * Appearance.effectiveScale
+                                color: parent.color
+                                visible: deviceItem.expanded
+                                anchors.top: parent.top
                             }
 
-                            // Connect/Disconnect — primary action on right
-                            RippleButton {
-                                implicitWidth: connectBtnText.implicitWidth + (24 * Appearance.effectiveScale)
-                                implicitHeight: 32 * Appearance.effectiveScale
-                                buttonRadius: 16 * Appearance.effectiveScale
-                                colBackground: deviceItem.modelData.connected ? Appearance.colors.colLayer2 : Appearance.colors.colPrimary
-                            onClicked: {
-                                if (deviceItem.modelData.connected) {
-                                    deviceItem.modelData.disconnect();
-                                } else {
-                                    BluetoothStatus.pairAndTrust(deviceItem.modelData);
-                                }
-                                deviceItem.expanded = false;
-                            }
-                                StyledText {
-                                    id: connectBtnText
-                                    anchors.centerIn: parent
-                                    text: deviceItem.modelData.connected ? "Disconnect" : "Connect"
-                                    font.pixelSize: Appearance.font.pixelSize.smaller
-                                    color: deviceItem.modelData.connected ? Appearance.colors.colOnLayer1 : Appearance.colors.colOnPrimary
+                            ColumnLayout {
+                                id: expansionColumn
+                                anchors.left: parent.left
+                                anchors.right: parent.right
+                                anchors.leftMargin: 16 * Appearance.effectiveScale
+                                anchors.rightMargin: 16 * Appearance.effectiveScale
+                                anchors.top: parent.top
+                                anchors.topMargin: 16 * Appearance.effectiveScale
+                                spacing: 12 * Appearance.effectiveScale
+
+                                RowLayout {
+                                    Layout.fillWidth: true
+                                    spacing: 12 * Appearance.effectiveScale
+
+                                    Item { Layout.fillWidth: true }
+
+                                    RippleButton {
+                                        visible: (deviceItem.modelData.paired || deviceItem.modelData.trusted) && !deviceItem.modelData.connected
+                                        buttonText: "Forget"
+                                        implicitWidth: 90 * Appearance.effectiveScale
+                                        implicitHeight: 36 * Appearance.effectiveScale
+                                        buttonRadius: 18 * Appearance.effectiveScale
+                                        colBackground: Appearance.m3colors.m3error
+                                        colText: Appearance.m3colors.m3onError
+                                        onClicked: {
+                                            if (deviceItem.modelData.forget) deviceItem.modelData.forget()
+                                            else if (deviceItem.modelData.unpair) deviceItem.modelData.unpair()
+                                            deviceItem.modelData.trusted = false
+                                            deviceItem.expanded = false
+                                        }
+                                    }
+
+                                    RippleButton {
+                                        visible: deviceItem.modelData.paired
+                                        buttonText: deviceItem.modelData.connected ? "Disconnect" : "Connect"
+                                        implicitWidth: 110 * Appearance.effectiveScale
+                                        implicitHeight: 36 * Appearance.effectiveScale
+                                        buttonRadius: 18 * Appearance.effectiveScale
+                                        colBackground: Appearance.colors.colPrimary
+                                        colText: Appearance.colors.colOnPrimary
+                                        onClicked: {
+                                            if (deviceItem.modelData.connected) deviceItem.modelData.disconnect()
+                                            else BluetoothStatus.pairAndTrust(deviceItem.modelData)
+                                            deviceItem.expanded = false
+                                        }
+                                    }
+
+                                    RippleButton {
+                                        visible: !deviceItem.modelData.paired
+                                        buttonText: "Pair & Connect"
+                                        implicitWidth: 110 * Appearance.effectiveScale
+                                        implicitHeight: 36 * Appearance.effectiveScale
+                                        buttonRadius: 18 * Appearance.effectiveScale
+                                        colBackground: Appearance.colors.colPrimary
+                                        colText: Appearance.colors.colOnPrimary
+                                        onClicked: {
+                                            BluetoothStatus.pairAndTrust(deviceItem.modelData)
+                                            deviceItem.expanded = false
+                                        }
+                                    }
                                 }
                             }
                         }
