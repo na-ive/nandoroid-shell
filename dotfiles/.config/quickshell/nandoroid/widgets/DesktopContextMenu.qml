@@ -147,7 +147,7 @@ PanelWindow {
             model: root.carouselModel
             isOpen: root.visible
             onWallpaperSelected: (path) => {
-                Wallpapers.select(path, Appearance.m3colors.darkmode)
+                root._pendingWallpaper = path
                 root.close()
             }
             onOpenMoreWallpapers: {
@@ -409,10 +409,16 @@ PanelWindow {
     property var openSubmenuComponent: null
     property real submenuAnchorY: 0
 
+    property string _pendingWallpaper: ""
+
     Timer {
         id: hideTimer
         interval: Appearance.animation.elementMoveExit.duration + 50
         onTriggered: {
+            if (root._pendingWallpaper) {
+                Wallpapers.select(root._pendingWallpaper, Appearance.m3colors.darkmode)
+                root._pendingWallpaper = ""
+            }
             root.visible = false;
             root.isClosing = false;
             root.activeConfigObject = null;

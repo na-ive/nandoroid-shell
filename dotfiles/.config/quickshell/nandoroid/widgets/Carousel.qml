@@ -201,6 +201,7 @@ Item {
 
         footer: Item {
             id: footerRoot
+            visible: root.showFooter
             
             property int offsetFromCurrent: listView.count - root.focusedIndex
             width: root.footerWidthForOffset(offsetFromCurrent)
