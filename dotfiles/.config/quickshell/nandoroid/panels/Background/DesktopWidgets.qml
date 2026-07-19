@@ -273,8 +273,21 @@ Variants {
                     desktopContextMenu.openAt(reqX, reqY, Config.options.appearance.clock, "Clock", "Clock Style");
                 }
 
-                opacity: (!GlobalStates.screenLocked && nandoClockItem.visible) ? 1 : 0
+                // Read config directly — avoid circular dep (nandoClockItem.visible depends on clockWrapper.visible)
+                readonly property bool shouldShow: !GlobalStates.screenLocked && (!Config.ready || Config.options.appearance.clock.showOnDesktop)
+                visible: shouldShow || fadeOutTimer.running
+                opacity: shouldShow ? 1 : 0
                 Behavior on opacity { NumberAnimation { duration: 300 } }
+
+                // Keep visible=true until fade-out animation completes
+                Timer {
+                    id: fadeOutTimer
+                    interval: 300
+                    running: false
+                }
+                onShouldShowChanged: {
+                    if (!shouldShow) fadeOutTimer.restart();
+                }
 
                 NandoClock {
                     id: nandoClockItem
