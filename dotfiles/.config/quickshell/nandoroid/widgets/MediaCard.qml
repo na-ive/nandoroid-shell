@@ -328,6 +328,7 @@ Rectangle {
                     colBackgroundHover: "transparent"
                     colText: "transparent"
                     rippleEnabled: false
+                    visible: !GlobalStates.screenLocked
                     onClicked: {
                         Config.options.appearance.lyrics.showFloatingLyrics = !Config.options.appearance.lyrics.showFloatingLyrics
                     }
