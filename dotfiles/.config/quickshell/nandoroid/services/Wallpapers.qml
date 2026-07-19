@@ -529,10 +529,23 @@ Singleton {
                 autoCycleStartTimer.restart();
             }
         }
+        function ciGlob(text) {
+            var out = ""
+            for (var i = 0; i < text.length; i++) {
+                var ch = text[i]
+                var lo = ch.toLowerCase()
+                var up = ch.toUpperCase()
+                if (lo !== up)
+                    out += "[" + lo + up + "]"
+                else
+                    out += ch
+            }
+            return out
+        }
         nameFilters: {
             if (root.searchQuery === "") return root.imagePatterns;
-            // Create restrictive filters like ["*query*.jpg", "*query*.png", ...]
-            return root.imagePatterns.map(p => `*${root.searchQuery}*${p.substring(1)}`);
+            var ci = ciGlob(root.searchQuery)
+            return root.imagePatterns.map(p => `*${ci}*${p.substring(1)}`);
         }
         showDirs: false
         showDotAndDotDot: false
