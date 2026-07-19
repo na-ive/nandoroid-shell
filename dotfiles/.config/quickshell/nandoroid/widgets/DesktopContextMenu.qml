@@ -146,6 +146,7 @@ PanelWindow {
             anchors.margins: 10 * Appearance.effectiveScale
             model: root.carouselModel
             isOpen: root.visible
+            showFooter: true
             onWallpaperSelected: (path) => {
                 root._pendingWallpaper = path
                 root.close()

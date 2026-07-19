@@ -25,6 +25,7 @@ Item {
     property bool dragEnabled: true
 
     property real clipRadius: Appearance.rounding.extraLarge - (10 * Appearance.effectiveScale)
+    property bool showFooter: false
     property bool isOpen: true
 
     signal wallpaperSelected(string path)
