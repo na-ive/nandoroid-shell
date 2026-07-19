@@ -9,7 +9,6 @@ import QtQuick.Controls
 import Qt5Compat.GraphicalEffects
 import Quickshell
 import Quickshell.Widgets
-import Quickshell.Io
 
 Flickable {
     id: root
@@ -40,18 +39,10 @@ Flickable {
         }
     }
 
+    property string _version: VersionService.version
+
     Component.onCompleted: {
         dependencyPage.scanDependencies();
-    }
-
-    FileView {
-        id: versionView
-        path: Directories.home.replace("file://", "") + "/.config/nandoroid/version.json"
-        watchChanges: true
-        JsonAdapter {
-            id: versionData
-            property string version: "1.4.0"
-        }
     }
 
     ColumnLayout {
@@ -115,7 +106,7 @@ Flickable {
         AboutMainView {
             visible: GlobalStates.settingsAboutView === "main"
             Layout.fillWidth: true
-            version: versionData.version
+            version: root._version
             onPushView: (view) => GlobalStates.settingsAboutView = view
         }
 

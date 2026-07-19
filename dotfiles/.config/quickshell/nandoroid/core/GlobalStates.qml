@@ -163,11 +163,10 @@ Singleton {
 
     onSettingsOpenChanged: {
         if (settingsOpen) {
+            settingsAboutView = "main"
             notificationCenterOpen = false
             quickSettingsOpen = false
             quickActionsOpen = false
-            launcherOpen = false
-            spotlightOpen = false
             dashboardOpen = false
             sessionOpen = false
         }

@@ -251,10 +251,9 @@ for item in dotfiles/.config/*; do
     cp -r "$item" "$HOME/.config/"
 done
 
-# Ensure shell versioning is correctly initialized from project root
-substep "Setting up version metadata..."
+# Ensure shell config directory exists
+substep "Setting up config directory..."
 mkdir -p "$HOME/.config/nandoroid"
-cp version.json "$HOME/.config/nandoroid/version.json"
 
 success "Configuration files copied."
 

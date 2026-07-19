@@ -95,10 +95,8 @@ else
     exit 1
 fi
 
-# Ensure version.json and dependencies.json are always copied as real files from project root
-echo "Updating shell metadata (version & dependencies)..."
-mkdir -p "$HOME/.config/nandoroid"
-cp "$PROJECT_ROOT/version.json" "$HOME/.config/nandoroid/version.json"
+# Ensure dependencies.json is always copied as real file from project root
+echo "Updating shell metadata (dependencies)..."
 mkdir -p "$HOME/.config/quickshell/nandoroid/data"
 cp "$PROJECT_ROOT/data/dependencies.json" "$HOME/.config/quickshell/nandoroid/data/dependencies.json"
 
