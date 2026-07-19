@@ -526,6 +526,7 @@ property JsonObject background: JsonObject {
                 property bool easyeffectsEnabled: false
                 property bool bluetoothEnabled: true
                 property bool onboardingCompleted: false
+                property bool dndActive: false
                 property list<var> monitoredDisks: [ { "path": "/", "alias": "System" } ]
             }
 

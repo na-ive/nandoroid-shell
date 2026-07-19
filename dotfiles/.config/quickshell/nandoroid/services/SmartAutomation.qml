@@ -16,11 +16,31 @@ Singleton {
     property bool pomodoroDndActive: PomodoroService.active && PomodoroService.mode === 0
     property string lastUpdateCheckDate: "" // Track daily update check
 
-    // Apply DND state to Notifications service
+    // Focus mode writes to Config (persistent source of truth) on event start/end
+    // _ready guard prevents startup from overriding user's saved preference
     readonly property bool shouldBeDnd: scheduleDndActive || pomodoroDndActive
     onShouldBeDndChanged: {
-        Notifications.silent = shouldBeDnd;
-        root.dndActive = shouldBeDnd;
+        if (!_ready && shouldBeDnd) return;
+        _setDnd(shouldBeDnd);
+    }
+
+    function _setDnd(value) {
+        Notifications.silent = value;
+        root.dndActive = value;
+        if (Config.ready && Config.options.system) {
+            Config.options.system.dndActive = value;
+        }
+    }
+
+    // Sync user's manual toggle back to Config
+    Connections {
+        target: Notifications
+        function onSilentChanged() {
+            root.dndActive = Notifications.silent;
+            if (Config.ready && Config.options.system) {
+                Config.options.system.dndActive = Notifications.silent;
+            }
+        }
     }
 
     // --- Notifications only for Schedule DND ---
@@ -44,7 +64,10 @@ Singleton {
 
     // Watch for schedule changes to recalculate timing
     property var _eventWatch: ScheduleService.events
-    on_EventWatchChanged: if (_ready) scheduleNext()
+    on_EventWatchChanged: if (_ready) {
+        scheduleNext();
+        runAutomationCycle();
+    }
 
     function runThenSchedule() {
         runAutomationCycle();
@@ -321,6 +344,9 @@ Singleton {
 
     Component.onCompleted: {
         Qt.callLater(() => {
+            if (Config.ready && Config.options.system) {
+                Notifications.silent = Config.options.system.dndActive;
+            }
             runAutomationCycle();
             _ready = true;
             scheduleNext();
