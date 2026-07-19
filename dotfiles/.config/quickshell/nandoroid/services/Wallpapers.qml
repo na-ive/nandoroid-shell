@@ -486,9 +486,17 @@ Singleton {
         Config.options.lock.wallpaperPath = "file://" + cleanPath
 
         if (Config.options.appearance.background.matugen) {
-            matugenLockscreenProc.running = false;
-            matugenLockscreenProc.filePath = cleanPath
-            Qt.callLater(() => { matugenLockscreenProc.running = true; });
+            if (cleanPath === matugenProc.filePath) {
+                // Same wallpaper as desktop — reuse desktop colors, skip duplicate matugen run
+                Quickshell.execDetached([
+                    "sh", "-c", 'cp "$1" "$2"',
+                    "sh", Directories.generatedMaterialThemePath, Directories.generatedLockColorsPath
+                ]);
+            } else {
+                matugenLockscreenProc.running = false;
+                matugenLockscreenProc.filePath = cleanPath
+                Qt.callLater(() => { matugenLockscreenProc.running = true; });
+            }
         }
     }
 

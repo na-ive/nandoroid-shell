@@ -40,6 +40,11 @@ Singleton {
             }
         }
         Appearance.m3colors.darkmode = Functions.ColorUtils.isDark(Appearance.m3colors.m3background)
+
+        // Mirror to lockscreen palette when not using a separate lockscreen wallpaper
+        if (Config.ready && !Config.options.lock.useSeparateWallpaper) {
+            applyLockColors(fileContent)
+        }
     }
 
     function applyLockColors(fileContent) {
