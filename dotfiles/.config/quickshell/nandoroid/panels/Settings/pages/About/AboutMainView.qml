@@ -13,32 +13,7 @@ ColumnLayout {
     property string version: ""
     signal pushView(string viewName)
 
-    property bool updateAvailable: false
-
-    Process {
-        id: checkProc
-        command: ["bash", "-c", `
-            f="$HOME/.config/nandoroid/install_state.json"
-            [ ! -f "$f" ] && { echo "none"; exit; }
-            d=$(python3 -c "import json; print(json.load(open('$f')).get('install_dir',''))" 2>/dev/null)
-            c=$(python3 -c "import json; print(json.load(open('$f')).get('channel','stable'))" 2>/dev/null)
-            [ -z "$d" ] && { echo "none"; exit; }
-            cd "$d" || { echo "none"; exit; }
-            if [ "$c" = "stable" ]; then
-                git fetch --tags 2>/dev/null
-                LATEST=$(git describe --tags $(git rev-list --tags --max-count=1 2>/dev/null) 2>/dev/null)
-                [ -z "$LATEST" ] && { echo "up-to-date"; exit; }
-                [ "$(git rev-parse HEAD)" != "$(git rev-list -n 1 "$LATEST" 2>/dev/null)" ] && echo "available" || echo "up-to-date"
-            else
-                git fetch origin main 2>/dev/null
-                [ "$(git rev-parse HEAD)" != "$(git rev-parse origin/main 2>/dev/null)" ] && echo "available" || echo "up-to-date"
-            fi
-        `]
-        stdout: StdioCollector { id: checkOut }
-        running: true
-        onExited: root.updateAvailable = checkOut.text.trim() === "available"
-    }
-
+    property bool updateAvailable: VersionService.updateAvailable
 
 
             spacing: 32 * Appearance.effectiveScale
@@ -106,7 +81,7 @@ ColumnLayout {
                             text: "Update available"
                             color: Appearance.colors.colError
                             font.pixelSize: Appearance.font.pixelSize.small
-                            visible: root.updateAvailable
+                            visible: updateAvailable
                         }
                         MaterialSymbol {
                             text: "chevron_right"
