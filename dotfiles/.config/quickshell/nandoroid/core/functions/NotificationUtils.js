@@ -21,6 +21,34 @@ function mapAppName(appName) {
     return appName;
 }
 
+function findSuitableIconForApp(appName) {
+    if (!appName) return "";
+    var lower = appName.toLowerCase();
+    var appIcons = {
+        'nandoroid': 'smart_toy',
+        'firefox': 'language',
+        'discord': 'chat',
+        'vesktop': 'chat',
+        'telegram': 'telegram',
+        'whatsapp': 'chat',
+        'spotify': 'queue_music',
+        'steam': 'sports_esports',
+        'code': 'code',
+        'visual studio code': 'code',
+        'chromium': 'language',
+        'google-chrome': 'language',
+        'slack': 'chat',
+        'thunderbird': 'mail',
+        'system': 'computer',
+        'update': 'system_update',
+        'packagekit': 'package',
+    };
+    for (var name in appIcons) {
+        if (lower.includes(name)) return appIcons[name];
+    }
+    return "";
+}
+
 function findSuitableMaterialSymbol(summary) {
     var defaultType = 'chat';
     if (!summary || summary.length === 0) return defaultType;

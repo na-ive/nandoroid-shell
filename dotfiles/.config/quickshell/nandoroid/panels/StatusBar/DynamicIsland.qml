@@ -146,6 +146,7 @@ Item {
                 opacity: parent.parent.width > (24 * Appearance.effectiveScale) ? 1 : 0
                 Behavior on opacity { NumberAnimation { duration: 200 } }
                 appIcon: Notifications.activePopup?.appIcon || (islandStateOverride !== "" ? "chat" : "")
+                appName: Notifications.activePopup?.appName || ""
                 image: Notifications.activePopup?.image || ""
                 summary: Notifications.activePopup?.summary || (islandStateOverride !== "" ? "New Message" : "")
                 urgency: Notifications.activePopup?.urgency || "normal"

@@ -14,6 +14,7 @@ import Quickshell.Services.Notifications
 MaterialShape { // App icon
     id: root
     property var appIcon: ""
+    property var appName: ""
     property var summary: ""
     property var urgency: NotificationUrgency.Normal
     property bool isUrgent: urgency === NotificationUrgency.Critical
@@ -38,12 +39,14 @@ MaterialShape { // App icon
     
     Loader {
         id: materialSymbolLoader
-        active: root.appIcon == "" || root.isRestart
+        active: (root.appIcon == "" || root.isRestart) && root.image == ""
         anchors.fill: parent
         z: 10
         sourceComponent: MaterialSymbol {
             text: {
                 if (root.isRestart) return "restart_alt";
+                const nameIcon = NotificationUtils.findSuitableIconForApp(root.appName);
+                if (nameIcon) return nameIcon;
                 const defaultIcon = NotificationUtils.findSuitableMaterialSymbol("")
                 const guessedIcon = NotificationUtils.findSuitableMaterialSymbol(root.summary)
                 return (root.urgency == NotificationUrgency.Critical && guessedIcon === defaultIcon) ?
