@@ -33,8 +33,9 @@ import Quickshell.Hyprland
 ShellRoot {
     id: root
 
-    // Reference singleton to ensure it is instantiated
+    // Reference singletons to ensure they are instantiated at startup
     readonly property var _caffeine: Caffeine
+    readonly property var _versionService: VersionService
 
     Component.onCompleted: {
         MaterialThemeLoader.reapplyTheme()
