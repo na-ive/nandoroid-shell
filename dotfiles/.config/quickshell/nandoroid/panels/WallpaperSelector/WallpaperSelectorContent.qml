@@ -341,6 +341,59 @@ Item {
                         }
                     }
 
+                    // Random Wallpaper Button
+                    Item {
+                        id: randBtnContainer
+                        Layout.preferredWidth: 44 * Appearance.effectiveScale
+                        Layout.preferredHeight: 44 * Appearance.effectiveScale
+                        Layout.alignment: Qt.AlignVCenter
+                        Layout.leftMargin: -12 * Appearance.effectiveScale
+                        visible: !mainSelector.wallhavenMode && !mainSelector.naiveMode && !mainSelector.liveMode
+
+                        RippleButton {
+                            id: randBtn
+                            anchors.fill: parent
+                            buttonRadius: 8 * Appearance.effectiveScale
+                            colBackground: "transparent"
+                            onClicked: {
+                                if (mainSelector.favMode) {
+                                    if (Wallpapers.selectRandomFavorite())
+                                        mainSelector.close();
+                                } else if (Wallpapers.directory) {
+                                    var d = Wallpapers.directory.toString();
+                                    if (d.startsWith("file://")) d = d.substring(7);
+                                    randProc.command = ["bash", "-c", `find "${d}" -maxdepth 1 -type f \\( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.webp" -o -iname "*.avif" \\) | shuf -n 1`];
+                                    randProc.running = true;
+                                }
+                            }
+
+                            Process {
+                                id: randProc
+                                command: ["true"]
+                                running: false
+                                stdout: StdioCollector { id: randOut }
+                                onExited: {
+                                    var result = randOut.text.trim();
+                                    if (result) {
+                                        Wallpapers.select(result);
+                                        mainSelector.close();
+                                    }
+                                }
+                            }
+
+                            MaterialShapeWrappedMaterialSymbol {
+                                anchors.centerIn: parent
+                                implicitSize: 42 * Appearance.effectiveScale
+                                shapeString: "Pentagon"
+                                color: Appearance.colors.colTertiary
+                                colSymbol: Appearance.colors.colOnTertiary
+                                text: "shuffle"
+                                iconSize: 20 * Appearance.effectiveScale
+                            }
+                            StyledToolTip { text: "Random Wallpaper" }
+                        }
+                    }
+
                     // Global Wallpaper Engine Settings Button
                     Item {
                         id: weSettingsBtnContainer
