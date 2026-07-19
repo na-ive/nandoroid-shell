@@ -94,7 +94,7 @@ MouseArea {
         height: parent.height * 0.6
         z: -1 // Behind Jam and Password input
         
-        color: Appearance.m3colors.m3primary
+        color: Appearance.lockM3colors.m3primary
         opacityMultiplier: (Config.ready && Config.options.lock) ? Config.options.lock.cavaOpacity : 0.15
         opacity: root.shouldVisualize ? root.islandOpacity : 0
         visible: opacity > 0
@@ -133,8 +133,20 @@ MouseArea {
         }
 
         // Selection of the final color based on actual visibility
-        property color contentColor: barBg.showBg ? Appearance.m3colors.m3onSurface : Appearance.colors.colStatusBarText
-        property color subtextColor: barBg.showBg ? Appearance.m3colors.m3onSurfaceVariant : Appearance.colors.colStatusBarSubtext
+        property color contentColor: {
+            if (barBg.showBg) return Appearance.lockM3colors.m3onSurface;
+            const mode = Config.ready && Config.options.statusBar ? (Config.options.statusBar.textColorMode ?? "adaptive") : "adaptive";
+            if (mode === "dark") return "#1E1E1E";
+            if (mode === "light") return "#F5F5F5";
+            return Appearance.lockM3colors.m3onSurface; // adaptive
+        }
+        property color subtextColor: {
+            if (barBg.showBg) return Appearance.lockM3colors.m3onSurfaceVariant;
+            const mode = Config.ready && Config.options.statusBar ? (Config.options.statusBar.textColorMode ?? "adaptive") : "adaptive";
+            if (mode === "dark") return "#1E1E1E";
+            if (mode === "light") return "#F5F5F5";
+            return Appearance.lockM3colors.m3onSurfaceVariant; // adaptive
+        }
 
         Behavior on contentColor { ColorAnimation { duration: 300 } }
         Behavior on subtextColor { ColorAnimation { duration: 300 } }
@@ -152,7 +164,7 @@ MouseArea {
             height: parent.height + (lockStatusBarContainer.isCentered && showBg ? lockStatusBarContainer.cornerRadius : 0)
             anchors.topMargin: (lockStatusBarContainer.isCentered && showBg) ? -lockStatusBarContainer.cornerRadius : 0
             
-            color: showBg ? Appearance.colors.colStatusBarSolid : "transparent"
+            color: showBg ? Appearance.lockM3colors.m3surfaceContainerLow : "transparent"
             radius: (lockStatusBarContainer.isCentered && showBg) ? lockStatusBarContainer.cornerRadius : 0
 
             Behavior on width { NumberAnimation { duration: 400; easing.type: Easing.OutQuint } }
@@ -431,7 +443,7 @@ MouseArea {
                 height: lockM3LeftRow.implicitHeight + (8 * Appearance.effectiveScale)
                 width: lockM3LeftRow.implicitWidth + (8 * Appearance.effectiveScale)
                 radius: height / 2
-                color: Appearance.m3colors.m3surfaceContainer
+                color: Appearance.lockM3colors.m3surfaceContainer
 
                 RowLayout {
                     id: lockM3LeftRow
@@ -443,8 +455,8 @@ MouseArea {
                         id: lockM3NotifLeftWrapper
                         Layout.alignment: Qt.AlignVCenter
                         show: Notifications.unread > 0 && lockStatusBarContainer.notifIsLeft
-                        m3Color: Appearance.m3colors.m3tertiaryContainer
-                        m3ContentColor: Appearance.m3colors.m3onTertiaryContainer
+                        m3Color: Appearance.lockM3colors.m3tertiaryContainer
+                        m3ContentColor: Appearance.lockM3colors.m3onTertiaryContainer
 
                         Item {
                             Layout.preferredWidth: lockM3BellIconLeft.width
@@ -487,8 +499,8 @@ MouseArea {
                     M3StatusWrapper {
                         id: lockM3UserWrapper
                         Layout.alignment: Qt.AlignVCenter
-                        m3Color: Appearance.m3colors.m3primaryContainer
-                        m3ContentColor: Appearance.m3colors.m3onPrimaryContainer
+                        m3Color: Appearance.lockM3colors.m3primaryContainer
+                        m3ContentColor: Appearance.lockM3colors.m3onPrimaryContainer
 
                         // Avatar photo (circular)
                         Item {
@@ -545,8 +557,8 @@ MouseArea {
                     M3StatusWrapper {
                         id: lockM3NetworkWrapper
                         Layout.alignment: Qt.AlignVCenter
-                        m3Color: Appearance.m3colors.m3secondaryContainer
-                        m3ContentColor: Appearance.m3colors.m3onSecondaryContainer
+                        m3Color: Appearance.lockM3colors.m3secondaryContainer
+                        m3ContentColor: Appearance.lockM3colors.m3onSecondaryContainer
 
                         StyledText {
                             text: Network.wifiEnabled ? (Network.networkName || "Offline") : "WiFi Off"
@@ -570,7 +582,7 @@ MouseArea {
                 height: Math.round(32 * Appearance.effectiveScale) + (padding * 2)
                 width: lockM3LockWrapper.implicitWidth + (padding * 2)
                 radius: height / 2
-                color: Appearance.m3colors.m3surfaceContainer
+                color: Appearance.lockM3colors.m3surfaceContainer
 
                 M3StatusWrapper {
                     id: lockM3LockWrapper
@@ -602,7 +614,7 @@ MouseArea {
                 height: lockM3RightRow.implicitHeight + (8 * Appearance.effectiveScale)
                 width: lockM3RightRow.implicitWidth + (8 * Appearance.effectiveScale)
                 radius: height / 2
-                color: Appearance.m3colors.m3surfaceContainer
+                color: Appearance.lockM3colors.m3surfaceContainer
 
                 RowLayout {
                     id: lockM3RightRow
@@ -616,8 +628,8 @@ MouseArea {
                         id: lockM3BatteryWrapper
                         Layout.alignment: Qt.AlignVCenter
                         show: Battery.available
-                        m3Color: Appearance.m3colors.m3primaryContainer
-                        m3ContentColor: Appearance.m3colors.m3onPrimaryContainer
+                        m3Color: Appearance.lockM3colors.m3primaryContainer
+                        m3ContentColor: Appearance.lockM3colors.m3onPrimaryContainer
 
                         BatteryIndicator {
                             Layout.alignment: Qt.AlignVCenter
@@ -629,8 +641,8 @@ MouseArea {
                     M3StatusWrapper {
                         id: lockM3SystemWrapper
                         Layout.alignment: Qt.AlignVCenter
-                        m3Color: Appearance.m3colors.m3tertiaryContainer
-                        m3ContentColor: Appearance.m3colors.m3onTertiaryContainer
+                        m3Color: Appearance.lockM3colors.m3tertiaryContainer
+                        m3ContentColor: Appearance.lockM3colors.m3onTertiaryContainer
 
                         Item {
                             visible: Notifications.unread > 0 && !lockStatusBarContainer.notifIsLeft
@@ -713,8 +725,8 @@ MouseArea {
                         id: lockM3PrivacyWrapper
                         Layout.alignment: Qt.AlignVCenter
                         show: Privacy.anyActive
-                        m3Color: Appearance.m3colors.m3primary
-                        m3ContentColor: Appearance.m3colors.m3onPrimary
+                        m3Color: Appearance.lockM3colors.m3primary
+                        m3ContentColor: Appearance.lockM3colors.m3onPrimary
 
                         MaterialSymbol {
                             visible: Privacy.microphoneActive
@@ -752,7 +764,7 @@ MouseArea {
 
         NandoClock {
             id: lockClock
-            color: Appearance.colors.colLockscreenClock
+            color: Appearance.lockM3colors.m3onSurface
             isLockscreen: true
             anchors.horizontalCenter: parent.horizontalCenter
             x: 0; y: 0 // Override NandoClock's internal x/y centering
@@ -801,7 +813,7 @@ MouseArea {
         implicitHeight: Math.min(56 * Appearance.effectiveScale, Quickshell.screens[0].height * 0.08)
         implicitWidth: innerRow.implicitWidth + (16 * Appearance.effectiveScale)
         radius: height / 2
-        color: Appearance.colors.colLayer2 // Surface Container
+        color: Appearance.lockM3colors.m3surfaceContainer
         
         StyledRectangularShadow {
             target: parent
@@ -829,8 +841,8 @@ MouseArea {
         Layout.alignment: Qt.AlignVCenter
         implicitWidth: 40 * Appearance.effectiveScale; implicitHeight: 40 * Appearance.effectiveScale; buttonRadius: 20 * Appearance.effectiveScale
         
-        colBackground: isActive ? Appearance.m3colors.m3primary : "transparent"
-        colBackgroundHover: isActive ? Qt.darker(Appearance.m3colors.m3primary, 1.1) : Appearance.colors.colLayer2Hover
+        colBackground: isActive ? Appearance.lockM3colors.m3primary : "transparent"
+        colBackgroundHover: isActive ? Qt.darker(Appearance.lockM3colors.m3primary, 1.1) : Functions.ColorUtils.mix(Appearance.lockM3colors.m3surfaceContainer, Appearance.lockM3colors.m3onSurface, 0.90)
         onClicked: {
                 if (!root.requirePasswordToPower) {
                 root.context.unlocked(pb.targetAction); return
@@ -846,7 +858,7 @@ MouseArea {
             anchors.centerIn: parent
             text: pb.btnIcon
             iconSize: 20 * Appearance.effectiveScale
-            color: pb.isActive ? Appearance.m3colors.m3onPrimary : Appearance.m3colors.m3onSurfaceVariant
+            color: pb.isActive ? Appearance.lockM3colors.m3onPrimary : Appearance.lockM3colors.m3onSurfaceVariant
         }
     }
 
@@ -890,7 +902,7 @@ MouseArea {
             sourceComponent: MaterialSymbol {
                 text: "fingerprint"
                 iconSize: Appearance.font.pixelSize.huge
-                color: Appearance.m3colors.m3primary
+                color: Appearance.lockM3colors.m3primary
             }
         }
 
@@ -899,7 +911,7 @@ MouseArea {
             id: inputWrapper
             Layout.fillWidth: true
             Layout.fillHeight: true
-            color: Appearance.colors.colLayer1
+            color: Appearance.lockM3colors.m3surfaceContainerLow
             radius: height / 2
 
             TextInput {
@@ -937,7 +949,7 @@ MouseArea {
                     cursorPosition: passwordInput.cursorPosition
                     
                     charSize: 18 * Appearance.effectiveScale
-                    selectionColor: Appearance.m3colors.m3secondary
+                    selectionColor: Appearance.lockM3colors.m3secondary
                 }
 
                 Text {
@@ -946,7 +958,7 @@ MouseArea {
                     text: GlobalStates.screenUnlockFailed ? "Incorrect password" : "Enter password"
                     font.pixelSize: Appearance.font.pixelSize.small
                     font.family: Appearance.font.family.main
-                    color: GlobalStates.screenUnlockFailed ? Appearance.m3colors.m3error : Appearance.m3colors.m3onSurfaceVariant
+                    color: GlobalStates.screenUnlockFailed ? Appearance.lockM3colors.m3error : Appearance.lockM3colors.m3onSurfaceVariant
                 }
             }
             
@@ -974,11 +986,11 @@ MouseArea {
             implicitWidth: 64 * Appearance.effectiveScale; implicitHeight: 40 * Appearance.effectiveScale; buttonRadius: 20 * Appearance.effectiveScale
             
             colBackground: root.context.unlockInProgress 
-                ? Appearance.m3colors.m3surfaceContainerHigh 
-                : Appearance.m3colors.m3primary
+                ? Appearance.lockM3colors.m3surfaceContainerHigh 
+                : Appearance.lockM3colors.m3primary
             colBackgroundHover: root.context.unlockInProgress
-                ? Appearance.m3colors.m3surfaceContainerHigh
-                : Qt.darker(Appearance.m3colors.m3primary, 1.1)
+                ? Appearance.lockM3colors.m3surfaceContainerHigh
+                : Qt.darker(Appearance.lockM3colors.m3primary, 1.1)
 
             enabled: !root.context.unlockInProgress
             onClicked: root.context.tryUnlock()
@@ -988,8 +1000,8 @@ MouseArea {
                 iconSize: 22 * Appearance.effectiveScale
                 text: root.context.unlockInProgress ? "progress_activity" : "arrow_right_alt"
                 color: root.context.unlockInProgress
-                    ? Appearance.m3colors.m3onSurfaceVariant
-                    : Appearance.m3colors.m3onPrimary
+                    ? Appearance.lockM3colors.m3onSurfaceVariant
+                    : Appearance.lockM3colors.m3onPrimary
             }
         }
     }

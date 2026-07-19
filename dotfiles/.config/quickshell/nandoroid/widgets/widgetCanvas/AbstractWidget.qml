@@ -27,6 +27,7 @@ import "../../core"
  */
 MouseArea {
     id: root
+    property string childId: ""
     property bool isAbstractWidget: true
     property bool animateXPos: !root.dragging && root.isLoaded
     property bool animateYPos: !root.dragging && root.isLoaded

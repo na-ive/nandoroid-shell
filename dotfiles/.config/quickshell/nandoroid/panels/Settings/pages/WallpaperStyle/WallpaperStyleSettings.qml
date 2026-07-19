@@ -76,8 +76,6 @@ Flickable {
     property var matugenPreviews: ({})
     property var pendingPreviews: ({})
     property string desktopSourceHex: ""
-    property string lockscreenSourceHex: ""
-    readonly property string currentSourceHex: previewMatugen.currentSource === "lockscreen" ? lockscreenSourceHex : desktopSourceHex
 
     Timer {
         id: batchUpdateTimer
@@ -107,9 +105,9 @@ Flickable {
 
     Process {
         id: previewMatugen
-        command: root.currentSourceHex === "" 
+        command: root.desktopSourceHex === "" 
             ? ["bash", "-c", `[ -f "$3" ] && matugen -c ~/.config/matugen/config.toml -t "$1" -m "$2" image "$3" --dry-run -j hex --old-json-output --source-color-index 0`, "matugen", currentScheme, (Config.options.appearance.background.darkmode ? "dark" : "light"), currentPath]
-            : ["bash", "-c", `matugen -c ~/.config/matugen/config.toml -t "$1" -m "$2" color hex "$3" --dry-run -j hex --old-json-output`, "matugen", currentScheme, (Config.options.appearance.background.darkmode ? "dark" : "light"), root.currentSourceHex]
+            : ["bash", "-c", `matugen -c ~/.config/matugen/config.toml -t "$1" -m "$2" color hex "$3" --dry-run -j hex --old-json-output`, "matugen", currentScheme, (Config.options.appearance.background.darkmode ? "dark" : "light"), root.desktopSourceHex]
         property string currentScheme: ""
         property string currentPath: ""
         property string currentSource: ""
@@ -137,16 +135,12 @@ Flickable {
                     
                     const data = JSON.parse(rawText.substring(jsonStart, jsonEnd + 1));
                     
-                    if (root.currentSourceHex === "" && data.colors && data.colors.source_color) {
+                    if (root.desktopSourceHex === "" && data.colors && data.colors.source_color) {
                         const sc = data.colors.source_color;
                         let extracted = sc.default || (sc.light ? sc.light : (sc.dark ? sc.dark : ""));
                         if (typeof extracted === 'object') extracted = extracted.color || "";
                         if (typeof extracted === 'string' && extracted.startsWith("#")) {
-                            if (previewMatugen.currentSource === "lockscreen") {
-                                root.lockscreenSourceHex = extracted;
-                            } else {
-                                root.desktopSourceHex = extracted;
-                            }
+                            root.desktopSourceHex = extracted;
                         }
                     }
                     
@@ -191,20 +185,13 @@ Flickable {
             }
 
             if (previewIndex >= matugenSchemes.length) {
-                if (previewSource === "desktop" && Config.options.lock.useSeparateWallpaper) {
-                    previewSource = "lockscreen";
-                    previewIndex = 0;
-                } else {
-                    return;
-                }
+                return;
             }
             
             const scheme = matugenSchemes[previewIndex].id;
-            let path = (previewSource === "lockscreen" && Config.options.lock) 
-                ? Config.options.lock.wallpaperPath 
-                : (Config.options.appearance && Config.options.appearance.background ? Config.options.appearance.background.wallpaperPath : "");
+            let path = Config.options.appearance && Config.options.appearance.background ? Config.options.appearance.background.wallpaperPath : "";
             
-            if (previewSource === "desktop" && WallpaperEngineService.active) {
+            if (WallpaperEngineService.active) {
                 path = WallpaperEngineService.screenshotPath;
             }
             
@@ -236,7 +223,6 @@ Flickable {
         previewSource = "desktop";
         root.pendingPreviews = {};
         root.desktopSourceHex = "";
-        root.lockscreenSourceHex = "";
         previewIterateTimer.restart();
     }
 
@@ -253,12 +239,6 @@ Flickable {
         function onWallpaperPathChanged() { refreshPreviews() }
     }
     
-    Connections {
-        target: Config.ready ? Config.options.lock : null
-        function onWallpaperPathChanged() { refreshPreviews() }
-        function onUseSeparateWallpaperChanged() { refreshPreviews() }
-    }
-
     Connections {
         target: WallpaperEngineService
         function onScreenshotVersionChanged() { refreshPreviews() }

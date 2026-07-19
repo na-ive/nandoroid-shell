@@ -27,6 +27,7 @@ Singleton {
 
     // Matugen colors path
     property string generatedMaterialThemePath: Functions.FileUtils.trimFileProtocol(`${state}/user/generated/colors.json`)
+    property string generatedLockColorsPath: Functions.FileUtils.trimFileProtocol(`${state}/user/generated/lockscreencolors.json`)
 
     // Notifications cache
     property string notificationsPath: Functions.FileUtils.trimFileProtocol(`${cache}/notifications/notifications.json`)

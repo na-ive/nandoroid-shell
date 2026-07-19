@@ -6,18 +6,33 @@ MouseArea {
     id: root
 
     property string colorString: ""
+    property bool useLockColors: false
     property color buttonColor: {
-        if (colorString === "primary") return Appearance.colors.colPrimary
-        if (colorString === "secondary") return Appearance.colors.colSecondary
-        if (colorString === "tertiary") return Appearance.m3colors.m3tertiary
-        if (colorString === "onSurface") return Appearance.m3colors.m3onSurface
-        if (colorString === "onLayer1") return Appearance.colors.colOnLayer1
-        if (colorString === "surface") return Appearance.m3colors.m3surface
-        if (colorString === "error") return Appearance.colors.colError
-        if (colorString === "surfaceContainerHigh") return Appearance.m3colors.m3surfaceContainerHigh
-        if (colorString === "primaryContainer") return Appearance.m3colors.m3primaryContainer
-        if (colorString === "secondaryContainer") return Appearance.m3colors.m3secondaryContainer
-        if (colorString === "surfaceContainerLowest") return Appearance.m3colors.m3surfaceContainerLowest
+        if (useLockColors) {
+            if (colorString === "primary") return Appearance.lockM3colors.m3primary
+            if (colorString === "secondary") return Appearance.lockM3colors.m3secondary
+            if (colorString === "tertiary") return Appearance.lockM3colors.m3tertiary
+            if (colorString === "onSurface") return Appearance.lockM3colors.m3onSurface
+            if (colorString === "onLayer1") return Appearance.lockM3colors.m3onSurfaceVariant
+            if (colorString === "surface") return Appearance.lockM3colors.m3surface
+            if (colorString === "error") return Appearance.lockM3colors.m3error
+            if (colorString === "surfaceContainerHigh") return Appearance.lockM3colors.m3surfaceContainerHigh
+            if (colorString === "primaryContainer") return Appearance.lockM3colors.m3primaryContainer
+            if (colorString === "secondaryContainer") return Appearance.lockM3colors.m3secondaryContainer
+            if (colorString === "surfaceContainerLowest") return Appearance.lockM3colors.m3surfaceContainerLowest
+        } else {
+            if (colorString === "primary") return Appearance.colors.colPrimary
+            if (colorString === "secondary") return Appearance.colors.colSecondary
+            if (colorString === "tertiary") return Appearance.m3colors.m3tertiary
+            if (colorString === "onSurface") return Appearance.m3colors.m3onSurface
+            if (colorString === "onLayer1") return Appearance.colors.colOnLayer1
+            if (colorString === "surface") return Appearance.m3colors.m3surface
+            if (colorString === "error") return Appearance.colors.colError
+            if (colorString === "surfaceContainerHigh") return Appearance.m3colors.m3surfaceContainerHigh
+            if (colorString === "primaryContainer") return Appearance.m3colors.m3primaryContainer
+            if (colorString === "secondaryContainer") return Appearance.m3colors.m3secondaryContainer
+            if (colorString === "surfaceContainerLowest") return Appearance.m3colors.m3surfaceContainerLowest
+        }
         return "transparent"
     }
     property bool isHighlighted: false
@@ -37,7 +52,7 @@ MouseArea {
         radius: root.isHighlighted ? (14 * Appearance.effectiveScale) : (width / 2)
         color: "transparent"
         // Thin border, colored dynamically or white/onSurface
-        border.color: Appearance.m3colors.m3onSurface
+        border.color: root.useLockColors ? Appearance.lockM3colors.m3onSurface : Appearance.m3colors.m3onSurface
         border.width: root.isHighlighted ? Math.max(1, 2 * Appearance.effectiveScale) : 0
         opacity: root.isHighlighted ? 1 : 0
         scale: root.isHighlighted ? 1 : 0.8

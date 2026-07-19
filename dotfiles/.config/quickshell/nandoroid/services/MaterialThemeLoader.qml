@@ -32,14 +32,28 @@ Singleton {
         const json = JSON.parse(fileContent)
         for (const key in json) {
             if (json.hasOwnProperty(key)) {
-                // Convert snake_case to camelCase, then prefix with m3
                 const camelCaseKey = key.replace(/_([a-z])/g, (g) => g[1].toUpperCase())
                 const m3Key = `m3${camelCaseKey}`
-                Appearance.m3colors[m3Key] = json[key]
+                if (Appearance.m3colors.hasOwnProperty(m3Key)) {
+                    Appearance.m3colors[m3Key] = json[key]
+                }
             }
         }
         Appearance.m3colors.darkmode = Functions.ColorUtils.isDark(Appearance.m3colors.m3background)
+    }
 
+    function applyLockColors(fileContent) {
+        const json = JSON.parse(fileContent)
+        for (const key in json) {
+            if (json.hasOwnProperty(key)) {
+                const camelCaseKey = key.replace(/_([a-z])/g, (g) => g[1].toUpperCase())
+                const m3Key = `m3${camelCaseKey}`
+                if (Appearance.lockM3colors.hasOwnProperty(m3Key)) {
+                    Appearance.lockM3colors[m3Key] = json[key]
+                }
+            }
+        }
+        Appearance.lockM3colors.darkmode = Functions.ColorUtils.isDark(Appearance.lockM3colors.m3background)
     }
 
     Timer {

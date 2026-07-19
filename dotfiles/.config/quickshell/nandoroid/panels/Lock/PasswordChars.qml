@@ -20,9 +20,9 @@ StyledFlickable {
 
     property int cursorPosition: length
 
-    property color shapeColor: Appearance.colors.colPrimary
-    property color selectedTextColor: Appearance.m3colors.m3onSecondaryContainer
-    property color selectionColor:    Appearance.m3colors.m3secondaryContainer
+    property color shapeColor: Appearance.lockM3colors.m3primary
+    property color selectedTextColor: Appearance.lockM3colors.m3onSecondaryContainer
+    property color selectionColor:    Appearance.lockM3colors.m3secondaryContainer
 
     property int charSize: 22 * Appearance.effectiveScale
 
@@ -122,7 +122,7 @@ StyledFlickable {
 
                     // Watch selection changes manually (binding would conflict with animation)
                     property bool selected: charItem.selected
-                    onSelectedChanged: color = selected ? root.selectedTextColor : Appearance.colors.colOnLayer1
+                    onSelectedChanged: color = selected ? root.selectedTextColor : Appearance.lockM3colors.m3onSurfaceVariant
 
                     Component.onCompleted: {
                         color = root.shapeColor  // imperative set — no binding overhead
@@ -157,9 +157,9 @@ StyledFlickable {
                         ColorAnimation {
                             target: shape
                             properties: "color"
-                            from: Appearance.colors.colPrimary
-                            to: Appearance.colors.colOnLayer1
-                            duration: 1500 // Snappy yet smooth transition
+                            from: Appearance.lockM3colors.m3primary
+                            to: Appearance.lockM3colors.m3onSurfaceVariant
+                            duration: 1500
                             easing.type: Easing.InOutCubic
                         }
                     }

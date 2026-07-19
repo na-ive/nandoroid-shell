@@ -19,16 +19,18 @@ ColumnLayout {
         return Config.options.appearance.clock.code
     }
 
+    // Switch between lock and desktop color palettes
+    readonly property var m3: isLockscreen ? Appearance.lockM3colors : Appearance.m3colors
+
     // ── Color resolver ──────────────────────────────────────────
     function resolveColor(style) {
-        if (isLockscreen) return Appearance.colors.colLockscreenClock
         switch (style) {
-            case "primary":   return Appearance.colors.colPrimary
-            case "secondary": return Appearance.colors.colSecondary
-            case "tertiary":  return Appearance.colors.colTertiary
-            case "onSurface": return Appearance.m3colors.m3onSurface
-            case "surface":   return Appearance.m3colors.m3surfaceContainerHighest
-            default:          return Appearance.m3colors.m3onSurface
+            case "primary":   return m3.m3primary
+            case "secondary": return m3.m3secondary
+            case "tertiary":  return m3.m3tertiary
+            case "onSurface": return m3.m3onSurface
+            case "surface":   return m3.m3surfaceContainerHighest
+            default:          return m3.m3onSurface
         }
     }
 

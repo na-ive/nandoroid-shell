@@ -105,6 +105,31 @@ Singleton {
         }
     }
 
+    // Lockscreen colors file watcher
+    FileView {
+        id: lockColorsFile
+        path: "file://" + Directories.generatedLockColorsPath
+        watchChanges: true
+        onFileChanged: {
+            reload()
+        }
+        onLoaded: {
+            try {
+                const content = text();
+                if (content.trim() !== "") {
+                    MaterialThemeLoader.applyLockColors(content);
+                }
+            } catch(e) {
+                console.error("[Wallpapers] Failed to load lockscreen colors:", e);
+            }
+        }
+        onLoadFailed: error => {
+            if (error != FileViewError.FileNotFound) {
+                console.error("[Wallpapers] Lockscreen colors load error:", error);
+            }
+        }
+    }
+
     // Helper process to generate material colors
     Process {
         id: matugenProc
@@ -141,6 +166,51 @@ Singleton {
                 // Ignore benign errors (missing unrelated files/commands)
                 if (this.text.includes("Failed to generate base16 color schemes")) {
                     root.sendNotification("Theming Error", "Failed to generate theme from color.");
+                }
+            }
+        }
+    }
+
+    // Process to generate lockscreen matugen colors (output as JSON, no config file needed)
+    Process {
+        id: matugenLockscreenProc
+        command: [
+            "bash", "-c",
+            `matugen --dry-run -t "$1" -m "$2" image "$3" --source-color-index 0 -j hex --old-json-output`,
+            "matugen",
+            scheme,
+            (Config.options.appearance.background.darkmode ? "dark" : "light"),
+            filePath
+        ]
+        property string filePath
+        property string scheme: Config.options.appearance.background.matugenScheme || "scheme-tonal-spot"
+
+        onRunningChanged: if (running) CavaService.stop(); else CavaService.start();
+
+        stdout: StdioCollector {
+            onStreamFinished: {
+                try {
+                    const json = JSON.parse(this.text);
+                    const mode = Config.options.appearance.background.darkmode ? "dark" : "light";
+                    const flat = {};
+                    for (const key in json.colors) {
+                        flat[key] = json.colors[key][mode] || json.colors[key]["default"];
+                    }
+                    const flatStr = JSON.stringify(flat, null, 2);
+                    Quickshell.execDetached([
+                        "sh", "-c", 'printf "%s" "$1" > "$2"',
+                        "sh", flatStr, Directories.generatedLockColorsPath
+                    ]);
+                } catch(e) {
+                    console.error("[Wallpapers] Failed to process lockscreen matugen:", e);
+                }
+            }
+        }
+
+        stderr: StdioCollector {
+            onStreamFinished: {
+                if (this.text.includes("Failed to generate base16 color schemes") || this.text.includes("Invalid PNG signature")) {
+                    Wallpapers.sendNotification("Lockscreen Theming Error", "Failed to process lockscreen wallpaper.");
                 }
             }
         }
@@ -187,6 +257,15 @@ Singleton {
             const hex = Config.options.appearance.background.matugenCustomColor
             if (hex) applyColor(hex)
         }
+
+        // Also regenerate lockscreen colors if using separate wallpaper
+        if (Config.options.lock.useSeparateWallpaper && Config.options.lock.wallpaperPath) {
+            const lockPath = Config.options.lock.wallpaperPath.toString().replace("file://", "");
+            if (lockPath !== "") {
+                matugenLockscreenProc.filePath = lockPath
+                matugenLockscreenProc.running = true
+            }
+        }
     }
 
     function select(path) {
@@ -221,6 +300,15 @@ Singleton {
             if (cleanPath === "") return
             matugenProc.filePath = cleanPath
             matugenProc.running = true
+        }
+
+        // Also regenerate lockscreen colors if using separate wallpaper
+        if (Config.options.lock.useSeparateWallpaper && Config.options.lock.wallpaperPath) {
+            const lockPath = Config.options.lock.wallpaperPath.toString().replace("file://", "");
+            if (lockPath !== "") {
+                matugenLockscreenProc.filePath = lockPath
+                matugenLockscreenProc.running = true
+            }
         }
     }
 
@@ -396,6 +484,12 @@ Singleton {
     function selectForLockscreen(path) {
         const cleanPath = path.toString().startsWith("file://") ? path.toString().substring(7) : path.toString()
         Config.options.lock.wallpaperPath = "file://" + cleanPath
+
+        if (Config.options.appearance.background.matugen) {
+            matugenLockscreenProc.running = false;
+            matugenLockscreenProc.filePath = cleanPath
+            Qt.callLater(() => { matugenLockscreenProc.running = true; });
+        }
     }
 
     function generateColors(path) {
@@ -403,6 +497,13 @@ Singleton {
         if (Config.options.appearance.background.matugen) {
             matugenProc.filePath = cleanPath
             matugenProc.running = true
+        }
+        // Also generate lockscreen colors if the lockscreen uses this path
+        if (Config.options.lock.useSeparateWallpaper &&
+            Config.options.lock.wallpaperPath &&
+            Config.options.lock.wallpaperPath === path) {
+            matugenLockscreenProc.filePath = cleanPath
+            matugenLockscreenProc.running = true
         }
     }
 
@@ -460,6 +561,18 @@ Singleton {
         if (_autoCycleEnabled) {
             // Kickstart the cycle on startup or reload
             autoCycleStartTimer.restart();
+        }
+
+        // Generate lockscreen colors on startup if using separate wallpaper
+        if (Config.options.lock.useSeparateWallpaper &&
+            Config.options.lock.wallpaperPath &&
+            Config.options.lock.wallpaperPath !== "" &&
+            Config.options.appearance.background.matugen) {
+            const lockPath = Config.options.lock.wallpaperPath.toString().replace("file://", "");
+            if (lockPath !== "") {
+                matugenLockscreenProc.filePath = lockPath;
+                matugenLockscreenProc.running = true;
+            }
         }
     }
 

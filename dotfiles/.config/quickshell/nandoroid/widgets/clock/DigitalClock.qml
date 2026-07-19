@@ -19,16 +19,18 @@ ColumnLayout {
         return Config.options.appearance.clock.digital
     }
 
+    // Switch between lock and desktop color palettes
+    readonly property var m3: isLockscreen ? Appearance.lockM3colors : Appearance.m3colors
+
     // ── Color ──────────────────────────────────────────────────
     readonly property color color: {
-        if (isLockscreen) return Appearance.colors.colLockscreenClock
-        if (!Config.ready) return Appearance.m3colors.m3onSurface
+        if (!Config.ready) return m3.m3onSurface
         const s = cfg.colorStyle
-        if (s === "primary")   return Appearance.colors.colPrimary
-        if (s === "secondary") return Appearance.colors.colSecondary
-        if (s === "onSurface") return Appearance.m3colors.m3onSurface
-        if (s === "surface")   return Appearance.m3colors.m3surfaceContainerHighest
-        return Appearance.m3colors.m3onSurface
+        if (s === "primary")   return m3.m3primary
+        if (s === "secondary") return m3.m3secondary
+        if (s === "onSurface") return m3.m3onSurface
+        if (s === "surface")   return m3.m3surfaceContainerHighest
+        return m3.m3onSurface
     }
     readonly property color dateColor: isLockscreen ? Appearance.colors.colLockscreenDate : color
 

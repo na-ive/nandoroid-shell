@@ -252,6 +252,7 @@ ColumnLayout {
                             delegate: ColorPickerButton {
                                 required property string modelData
                                 colorString: modelData
+                                useLockColors: rootClock.dedicatedIsLock
                                 isHighlighted: Config.ready && advancedPanel.digitalCfg.colorStyle === modelData
                                 onClicked: advancedPanel.digitalCfg.colorStyle = modelData
                             }
@@ -463,6 +464,7 @@ ColumnLayout {
                             delegate: ColorPickerButton {
                                 required property string modelData
                                 colorString: modelData
+                                useLockColors: rootClock.dedicatedIsLock
                                 isHighlighted: Config.ready && advancedPanel.codeCfg.valueColorStyle === modelData
                                 onClicked: advancedPanel.codeCfg.valueColorStyle = modelData
                             }
@@ -477,6 +479,7 @@ ColumnLayout {
                             delegate: ColorPickerButton {
                                 required property string modelData
                                 colorString: modelData
+                                useLockColors: rootClock.dedicatedIsLock
                                 isHighlighted: Config.ready && advancedPanel.codeCfg.keywordColorStyle === modelData
                                 onClicked: advancedPanel.codeCfg.keywordColorStyle = modelData
                             }
@@ -491,6 +494,7 @@ ColumnLayout {
                             delegate: ColorPickerButton {
                                 required property string modelData
                                 colorString: modelData
+                                useLockColors: rootClock.dedicatedIsLock
                                 isHighlighted: Config.ready && advancedPanel.codeCfg.blockColorStyle === modelData
                                 onClicked: advancedPanel.codeCfg.blockColorStyle = modelData
                             }
@@ -546,6 +550,7 @@ ColumnLayout {
                             delegate: ColorPickerButton {
                                 required property string modelData
                                 colorString: modelData
+                                useLockColors: rootClock.dedicatedIsLock
                                 isHighlighted: Config.ready && advancedPanel.stackedCfg.colorStyle === modelData
                                 onClicked: advancedPanel.stackedCfg.colorStyle = modelData
                             }
@@ -560,6 +565,7 @@ ColumnLayout {
                             delegate: ColorPickerButton {
                                 required property string modelData
                                 colorString: modelData
+                                useLockColors: rootClock.dedicatedIsLock
                                 isHighlighted: Config.ready && advancedPanel.stackedCfg.textColorStyle === modelData
                                 onClicked: advancedPanel.stackedCfg.textColorStyle = modelData
                             }
@@ -621,6 +627,7 @@ ColumnLayout {
                             delegate: ColorPickerButton {
                                 required property string modelData
                                 colorString: modelData
+                                useLockColors: rootClock.dedicatedIsLock
                                 isHighlighted: Config.ready && advancedPanel.textCfg.timeColorStyle === modelData
                                 onClicked: advancedPanel.textCfg.timeColorStyle = modelData
                             }
@@ -635,6 +642,7 @@ ColumnLayout {
                             delegate: ColorPickerButton {
                                 required property string modelData
                                 colorString: modelData
+                                useLockColors: rootClock.dedicatedIsLock
                                 isHighlighted: Config.ready && advancedPanel.textCfg.dateColorStyle === modelData
                                 onClicked: advancedPanel.textCfg.dateColorStyle = modelData
                             }
@@ -696,6 +704,7 @@ ColumnLayout {
                             delegate: ColorPickerButton {
                                 required property string modelData
                                 colorString: modelData
+                                useLockColors: rootClock.dedicatedIsLock
                                 isHighlighted: Config.ready && advancedPanel.pillCfg.timeColorStyle === modelData
                                 onClicked: advancedPanel.pillCfg.timeColorStyle = modelData
                             }
@@ -710,6 +719,7 @@ ColumnLayout {
                             delegate: ColorPickerButton {
                                 required property string modelData
                                 colorString: modelData
+                                useLockColors: rootClock.dedicatedIsLock
                                 isHighlighted: Config.ready && advancedPanel.pillCfg.pillColorStyle === modelData
                                 onClicked: advancedPanel.pillCfg.pillColorStyle = modelData
                             }

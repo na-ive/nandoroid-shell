@@ -136,6 +136,80 @@ Singleton {
         property color m3base0f: "#eddfe1"
     }
 
+    // --- Lockscreen Material 3 Color Tokens (populated by Wallpapers/Matugen) ---
+    property QtObject lockM3colors: QtObject {
+        property bool darkmode: root.m3colors.darkmode
+        property color m3background: root.m3colors.m3background
+        property color m3onBackground: root.m3colors.m3onBackground
+        property color m3surface: root.m3colors.m3surface
+        property color m3surfaceDim: root.m3colors.m3surfaceDim
+        property color m3surfaceBright: root.m3colors.m3surfaceBright
+        property color m3surfaceContainerLowest: root.m3colors.m3surfaceContainerLowest
+        property color m3surfaceContainerLow: root.m3colors.m3surfaceContainerLow
+        property color m3surfaceContainer: root.m3colors.m3surfaceContainer
+        property color m3surfaceContainerHigh: root.m3colors.m3surfaceContainerHigh
+        property color m3surfaceContainerHighest: root.m3colors.m3surfaceContainerHighest
+        property color m3onSurface: root.m3colors.m3onSurface
+        property color m3surfaceVariant: root.m3colors.m3surfaceVariant
+        property color m3onSurfaceVariant: root.m3colors.m3onSurfaceVariant
+        property color m3inverseSurface: root.m3colors.m3inverseSurface
+        property color m3inverseOnSurface: root.m3colors.m3inverseOnSurface
+        property color m3outline: root.m3colors.m3outline
+        property color m3outlineVariant: root.m3colors.m3outlineVariant
+        property color m3shadow: root.m3colors.m3shadow
+        property color m3scrim: root.m3colors.m3scrim
+        property color m3surfaceTint: root.m3colors.m3surfaceTint
+        property color m3primary: root.m3colors.m3primary
+        property color m3onPrimary: root.m3colors.m3onPrimary
+        property color m3primaryContainer: root.m3colors.m3primaryContainer
+        property color m3onPrimaryContainer: root.m3colors.m3onPrimaryContainer
+        property color m3inversePrimary: root.m3colors.m3inversePrimary
+        property color m3secondary: root.m3colors.m3secondary
+        property color m3onSecondary: root.m3colors.m3onSecondary
+        property color m3secondaryContainer: root.m3colors.m3secondaryContainer
+        property color m3onSecondaryContainer: root.m3colors.m3onSecondaryContainer
+        property color m3tertiary: root.m3colors.m3tertiary
+        property color m3onTertiary: root.m3colors.m3onTertiary
+        property color m3tertiaryContainer: root.m3colors.m3tertiaryContainer
+        property color m3onTertiaryContainer: root.m3colors.m3onTertiaryContainer
+        property color m3error: root.m3colors.m3error
+        property color m3onError: root.m3colors.m3onError
+        property color m3errorContainer: root.m3colors.m3errorContainer
+        property color m3onErrorContainer: root.m3colors.m3onErrorContainer
+        property color m3primaryFixed: root.m3colors.m3primaryFixed
+        property color m3primaryFixedDim: root.m3colors.m3primaryFixedDim
+        property color m3onPrimaryFixed: root.m3colors.m3onPrimaryFixed
+        property color m3onPrimaryFixedVariant: root.m3colors.m3onPrimaryFixedVariant
+        property color m3secondaryFixed: root.m3colors.m3secondaryFixed
+        property color m3secondaryFixedDim: root.m3colors.m3secondaryFixedDim
+        property color m3onSecondaryFixed: root.m3colors.m3onSecondaryFixed
+        property color m3onSecondaryFixedVariant: root.m3colors.m3onSecondaryFixedVariant
+        property color m3tertiaryFixed: root.m3colors.m3tertiaryFixed
+        property color m3tertiaryFixedDim: root.m3colors.m3tertiaryFixedDim
+        property color m3onTertiaryFixed: root.m3colors.m3onTertiaryFixed
+        property color m3onTertiaryFixedVariant: root.m3colors.m3onTertiaryFixedVariant
+        property color m3success: root.m3colors.m3success
+        property color m3onSuccess: root.m3colors.m3onSuccess
+        property color m3successContainer: root.m3colors.m3successContainer
+        property color m3onSuccessContainer: root.m3colors.m3onSuccessContainer
+        property color m3base00: root.m3colors.m3base00
+        property color m3base01: root.m3colors.m3base01
+        property color m3base02: root.m3colors.m3base02
+        property color m3base03: root.m3colors.m3base03
+        property color m3base04: root.m3colors.m3base04
+        property color m3base05: root.m3colors.m3base05
+        property color m3base06: root.m3colors.m3base06
+        property color m3base07: root.m3colors.m3base07
+        property color m3base08: root.m3colors.m3base08
+        property color m3base09: root.m3colors.m3base09
+        property color m3base0a: root.m3colors.m3base0a
+        property color m3base0b: root.m3colors.m3base0b
+        property color m3base0c: root.m3colors.m3base0c
+        property color m3base0d: root.m3colors.m3base0d
+        property color m3base0e: root.m3colors.m3base0e
+        property color m3base0f: root.m3colors.m3base0f
+    }
+
     // --- Derived Layer Colors ---
     colors: QtObject {
         property color colSubtext: m3colors.m3outline
@@ -236,18 +310,17 @@ Singleton {
 
         // Smart Lockscreen Text
         property bool lockscreenDarkText: false
-        property color colLockscreenClock: lockscreenDarkText ? "#1E1E1E" : "#F5F5F5"
-        property color colLockscreenDate: Functions.ColorUtils.applyAlpha(colLockscreenClock, 0.8)
+        property color colLockscreenClock: root.lockM3colors.m3onSurface
+        property color colLockscreenDate: Functions.ColorUtils.applyAlpha(root.lockM3colors.m3onSurfaceVariant, 0.8)
 
         // Lockscreen Weather Text (follows adaptive/light/dark config)
-        readonly property bool resolvedLockscreenWeatherDarkText: {
-            if (!Config.ready || !Config.options.lock?.weather) return lockscreenDarkText;
+        property color colLockscreenWeatherText: {
+            if (!Config.ready || !Config.options.lock?.weather) return root.lockM3colors.m3onSurface;
             const mode = Config.options.lock.weather.textColorMode ?? "adaptive";
-            if (mode === "dark") return true;
-            if (mode === "light") return false;
-            return lockscreenDarkText; // adaptive
+            if (mode === "dark") return "#1E1E1E";
+            if (mode === "light") return "#F5F5F5";
+            return root.lockM3colors.m3onSurface; // adaptive
         }
-        property color colLockscreenWeatherText: resolvedLockscreenWeatherDarkText ? "#1E1E1E" : "#F5F5F5"
         property color colLockscreenWeatherSubtext: Functions.ColorUtils.applyAlpha(colLockscreenWeatherText, 0.8)
 
         Behavior on colLockscreenWeatherText { ColorAnimation { duration: 300 } }

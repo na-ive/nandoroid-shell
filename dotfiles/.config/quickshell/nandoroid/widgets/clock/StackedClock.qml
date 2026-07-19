@@ -38,25 +38,28 @@ ColumnLayout {
 
     readonly property bool showDate: Config.ready ? (root.isLockscreen ? (Config.options.appearance.clock.useSameStyle ? Config.options.appearance.clock.showDesktopDate : Config.options.appearance.clock.showLockscreenDate) : Config.options.appearance.clock.showDesktopDate) : true
 
+    // Switch between lock and desktop color palettes
+    readonly property var m3: isLockscreen ? Appearance.lockM3colors : Appearance.m3colors
+
     readonly property color mainColor: {
-        if (!Config.ready || !cfg) return Appearance.colors.colPrimary
+        if (!Config.ready || !cfg) return m3.m3primary
         const s = cfg.colorStyle
-        if (s === "primary") return Appearance.colors.colPrimary
-        if (s === "secondary") return Appearance.colors.colSecondary
-        if (s === "tertiary") return Appearance.colors.colTertiary
-        if (s === "error") return Appearance.m3colors.m3error
-        return Appearance.m3colors.m3onSurface
+        if (s === "primary") return m3.m3primary
+        if (s === "secondary") return m3.m3secondary
+        if (s === "tertiary") return m3.m3tertiary
+        if (s === "error") return m3.m3error
+        return m3.m3onSurface
     }
 
     readonly property color labelColor: {
-        if (!Config.ready || !cfg) return Appearance.m3colors.m3onSurface
+        if (!Config.ready || !cfg) return m3.m3onSurface
         const s = cfg.textColorStyle
-        if (s === "primary") return Appearance.colors.colPrimary
-        if (s === "secondary") return Appearance.colors.colSecondary
-        if (s === "tertiary") return Appearance.colors.colTertiary
-        if (s === "onSurface") return Appearance.m3colors.m3onSurface
-        if (s === "surface") return Appearance.m3colors.m3surface
-        return Appearance.m3colors.m3onSurface
+        if (s === "primary") return m3.m3primary
+        if (s === "secondary") return m3.m3secondary
+        if (s === "tertiary") return m3.m3tertiary
+        if (s === "onSurface") return m3.m3onSurface
+        if (s === "surface") return m3.m3surface
+        return m3.m3onSurface
     }
 
     function fontW(w) {

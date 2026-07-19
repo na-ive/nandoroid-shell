@@ -28,28 +28,31 @@ ColumnLayout {
 
     readonly property string alignment: root.cfg.alignment || "center"
     
+    // Switch between lock and desktop color palettes
+    readonly property var m3: isLockscreen ? Appearance.lockM3colors : Appearance.m3colors
+
     readonly property color timeColor: {
-        if (!Config.ready || !cfg) return Appearance.colors.colOnLayer0
+        if (!Config.ready || !cfg) return m3.m3onSurface
         const s = cfg.timeColorStyle
-        if (s === "primary") return Appearance.colors.colPrimary
-        if (s === "secondary") return Appearance.colors.colSecondary
-        if (s === "tertiary") return Appearance.colors.colTertiary
-        if (s === "error") return Appearance.m3colors.m3error
-        if (s === "onSurface") return Appearance.m3colors.m3onSurface
-        if (s === "surface") return Appearance.m3colors.m3surface
-        return isLockscreen ? Appearance.colors.colLockscreenClock : Appearance.colors.colOnLayer0
+        if (s === "primary") return m3.m3primary
+        if (s === "secondary") return m3.m3secondary
+        if (s === "tertiary") return m3.m3tertiary
+        if (s === "error") return m3.m3error
+        if (s === "onSurface") return m3.m3onSurface
+        if (s === "surface") return m3.m3surface
+        return m3.m3onSurface
     }
 
     readonly property color dateColor: {
-        if (!Config.ready || !cfg) return Appearance.colors.colPrimary
+        if (!Config.ready || !cfg) return m3.m3primary
         const s = cfg.dateColorStyle
-        if (s === "primary") return Appearance.colors.colPrimary
-        if (s === "secondary") return Appearance.colors.colSecondary
-        if (s === "tertiary") return Appearance.colors.colTertiary
-        if (s === "error") return Appearance.m3colors.m3error
-        if (s === "onSurface") return Appearance.m3colors.m3onSurface
-        if (s === "surface") return Appearance.m3colors.m3surface
-        return Appearance.colors.colPrimary
+        if (s === "primary") return m3.m3primary
+        if (s === "secondary") return m3.m3secondary
+        if (s === "tertiary") return m3.m3tertiary
+        if (s === "error") return m3.m3error
+        if (s === "onSurface") return m3.m3onSurface
+        if (s === "surface") return m3.m3surface
+        return m3.m3primary
     }
 
     readonly property real fontSize: (root.cfg.fontSize || 42) * Appearance.effectiveScale
