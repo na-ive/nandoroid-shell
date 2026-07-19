@@ -1,6 +1,8 @@
 <div align="center">
 
-# 【 NAnDoroid-shell 】
+<img src="./dotfiles/.config/quickshell/nandoroid/assets/icons/NAnDoroid.svg" alt="NAnDoroid" width="128"/>
+
+# NAnDoroid-shell
 
 [![Last Commit](https://img.shields.io/github/last-commit/na-ive/nandoroid-shell?style=for-the-badge&logo=git&color=8bd5ca&logoColor=D9E0EE&labelColor=303446)](https://github.com/na-ive/nandoroid-shell/commits/main)
 [![Stars](https://img.shields.io/github/stars/na-ive/nandoroid-shell?style=for-the-badge&logo=github&color=c6a0f6&logoColor=D9E0EE&labelColor=303446)](https://github.com/na-ive/nandoroid-shell/stargazers)
