@@ -238,19 +238,21 @@ Nandoroid uses native Quickshell Global Shortcuts for specialized tool operation
 
 ## Credits
 
+NAnDoroid draws inspiration from several open-source Quickshell projects. Their ideas, architecture, and design references helped shape this project, while many aspects have been adapted and expanded to fit Nandoroid's own direction.
+
 ### Core Framework
 
-- **[Quickshell](https://github.com/outfoxxed)** - The QML-based framework powering this shell environment.
+- **[Quickshell](https://github.com/outfoxxed)** - The QML-based framework powering NAnDoroid.
 
 ### Design References & Special Thanks
 
-This project is a personal creation heavily inspired by the following developers and their repositories:
+This project is a personal creation inspired by the following open-source developers and their projects:
 
-- **[end-4](https://github.com/end-4)** - Architecture and shell logic inspired by [dots-hyprland](https://github.com/end-4/dots-hyprland).
-- **[pC](https://github.com/pctrade)** - Design and layout references from [end4-pC](https://github.com/pctrade/end4-pC).
-- **[vaguesyntax (Vynx)](https://github.com/vaguesyntax)** - Design and layout references from [ii-vynx](https://github.com/vaguesyntax/ii-vynx).
-- **[AvengeMedia](https://github.com/AvengeMedia)** - System monitoring logic from [DankMaterialShell](https://github.com/AvengeMedia/DankMaterialShell) and [dgop](https://github.com/AvengeMedia/dgop).
-- **[Axenide](https://github.com/Axenide)** - Notch concept and spatial references from [Ambxst](https://github.com/Axenide/Ambxst).
+- **[end-4](https://github.com/end-4)** - Core architecture, project structure, and shell logic inspired by [dots-hyprland](https://github.com/end-4/dots-hyprland).
+- **[pC](https://github.com/pctrade)** - UI design, layout, and interaction references from [end4-pC](https://github.com/pctrade/end4-pC).
+- **[vaguesyntax (Vynx)](https://github.com/vaguesyntax)** - UI design and interaction references from [ii-vynx](https://github.com/vaguesyntax/ii-vynx).
+- **[AvengeMedia](https://github.com/AvengeMedia)** - System monitoring implementation inspired by [DankMaterialShell](https://github.com/AvengeMedia/DankMaterialShell) and powered by [dgop](https://github.com/AvengeMedia/dgop).
+- **[Axenide](https://github.com/Axenide)** - Spatial UI and Dynamic Island (notch) design references from [Ambxst](https://github.com/Axenide/Ambxst).
 
 ### Assets
 
