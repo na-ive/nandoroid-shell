@@ -511,7 +511,7 @@ Item {
                             anchors.centerIn: parent
                             text: "power_settings_new"
                             iconSize: 18 * Appearance.effectiveScale
-                            color: Appearance.m3colors.m3error
+                            color: Appearance.m3colors.m3onSurface
                         }
                         StyledToolTip { text: "Power Menu" }
                     }
