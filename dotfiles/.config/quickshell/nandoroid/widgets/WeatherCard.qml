@@ -28,6 +28,7 @@ Rectangle {
 
     readonly property color contentColor: Appearance.m3colors.m3onSurface
     readonly property real lowOpacity: 0.6
+    readonly property real midOpacity: 0.8
 
     WeatherAnimation {
         id: weatherAnim
