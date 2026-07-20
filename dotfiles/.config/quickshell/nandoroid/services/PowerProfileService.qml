@@ -40,8 +40,7 @@ Singleton {
 
     onUseCustomProfileChanged: {
         if (useCustomProfile) {
-            customFileView.path = root.customPath;
-            customFileView.reload();
+            ensureFileExists();
         } else {
             customFileView.path = "";
             // Read from PowerProfiles immediately
@@ -56,6 +55,18 @@ Singleton {
             customFileView.path = root.customPath;
             customFileView.reload();
         }
+    }
+
+    Component.onCompleted: {
+        if (useCustomProfile)
+            ensureFileExists();
+    }
+
+    function ensureFileExists() {
+        // Ensure file exists before FileView reads it (silences warnings)
+        Quickshell.execDetached(["bash", "-c", `[ -f "${customPath}" ] && grep -qsE '^(daily|balanced|performance)$' "${customPath}" || echo "${currentProfile}" > "${customPath}"`]);
+        customFileView.path = root.customPath;
+        customFileView.reload();
     }
 
     function setProfile(profile) {
