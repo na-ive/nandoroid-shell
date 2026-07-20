@@ -866,6 +866,7 @@ MouseArea {
     MediaCard {
         id: lockMediaCard
         showVisualizer: false
+        isLockscreen: true
         anchors.bottom: bottomIsland.top
         anchors.bottomMargin: 24 * Appearance.effectiveScale
         anchors.horizontalCenter: parent.horizontalCenter

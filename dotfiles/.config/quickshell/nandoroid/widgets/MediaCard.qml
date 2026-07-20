@@ -16,12 +16,28 @@ Rectangle {
     id: root
     implicitHeight: 118 * Appearance.effectiveScale
     radius: Appearance.rounding.card
-    color: Functions.ColorUtils.applyAlpha(MprisController.dynLayer0, 1)
+    color: Functions.ColorUtils.applyAlpha(root.effectiveLayer0, 1)
     visible: MprisController.activePlayer !== null
     clip: true
 
     property bool showVisualizer: true
+    property bool isLockscreen: false
     readonly property var player: MprisController.activePlayer
+    readonly property bool hasArt: MprisController.displayedArtFilePath.toString() !== ""
+
+    // When on lockscreen with no art, use lockscreen palette instead of desktop-based dyn* colors
+    readonly property var m3: isLockscreen ? Appearance.lockM3colors : Appearance.m3colors
+    readonly property color effectiveLayer0:    (!hasArt && isLockscreen) ? m3.m3surfaceContainerHigh : MprisController.dynLayer0
+    readonly property color effectiveOnLayer0:  (!hasArt && isLockscreen) ? m3.m3onSurface           : MprisController.dynOnLayer0
+    readonly property color effectiveSubtext:   (!hasArt && isLockscreen) ? m3.m3onSurfaceVariant    : MprisController.dynSubtext
+    readonly property color effectivePrimary:   (!hasArt && isLockscreen) ? m3.m3primary             : MprisController.dynPrimary
+    readonly property color effectivePrimaryHover: (!hasArt && isLockscreen) ? Qt.lighter(m3.m3primary, 1.1) : MprisController.dynPrimaryHover
+    readonly property color effectivePrimaryActive: (!hasArt && isLockscreen) ? Qt.darker(m3.m3primary, 1.1) : MprisController.dynPrimaryActive
+    readonly property color effectiveSecondaryContainer:       (!hasArt && isLockscreen) ? m3.m3secondaryContainer       : MprisController.dynSecondaryContainer
+    readonly property color effectiveSecondaryContainerHover:  (!hasArt && isLockscreen) ? Qt.lighter(m3.m3secondaryContainer, 1.1) : MprisController.dynSecondaryContainerHover
+    readonly property color effectiveSecondaryContainerActive: (!hasArt && isLockscreen) ? Qt.darker(m3.m3secondaryContainer, 1.1) : MprisController.dynSecondaryContainerActive
+    readonly property color effectiveOnSecondaryContainer: (!hasArt && isLockscreen) ? m3.m3onSecondaryContainer : MprisController.dynOnSecondaryContainer
+    readonly property color effectiveOnPrimary: (!hasArt && isLockscreen) ? m3.m3onPrimary : MprisController.dynOnPrimary
 
     // --- Cava Lifecycle Management ---
     property bool _cavaActive: false
@@ -70,7 +86,7 @@ Rectangle {
 
             Rectangle {
                 anchors.fill: parent
-                color: Functions.ColorUtils.transparentize(MprisController.dynLayer0, 0.3)
+                color: Functions.ColorUtils.transparentize(root.effectiveLayer0, 0.3)
             }
         }
 
@@ -98,14 +114,14 @@ Rectangle {
             height: 86 * Appearance.effectiveScale
             image: MprisController.displayedArtFilePath
             shape: MaterialShape.Shape.Square
-            color: MprisController.dynLayer0
+            color: root.effectiveLayer0
             
             MaterialSymbol {
                 anchors.centerIn: parent
                 text: "music_note"
                 iconSize: 32 * Appearance.effectiveScale
                 fill: 1
-                color: MprisController.dynSubtext
+                color: root.effectiveSubtext
                 visible: !parent.image || parent.image.toString() === ""
             }
 
@@ -163,7 +179,7 @@ Rectangle {
                                 text: Functions.StringUtils.cleanMusicTitle(MprisController.trackTitle) || "No media"
                                 font.pixelSize: Appearance.font.pixelSize.normal
                                 font.weight: Font.DemiBold
-                                color: MprisController.dynOnLayer0
+                                color: root.effectiveOnLayer0
                                 elide: Text.ElideRight
                                 verticalAlignment: Text.AlignTop
                             }
@@ -172,7 +188,7 @@ Rectangle {
                                 Layout.fillWidth: true
                                 text: MprisController.trackArtist || "Unknown Artist"
                                 font.pixelSize: Appearance.font.pixelSize.smaller
-                                color: MprisController.dynSubtext
+                                color: root.effectiveSubtext
                                 elide: Text.ElideRight
                                 verticalAlignment: Text.AlignTop
                             }
@@ -191,9 +207,9 @@ Rectangle {
                     Layout.alignment: Qt.AlignTop
                     buttonRadius: MprisController.isPlaying ? Appearance.rounding.large : Appearance.rounding.normal
                     
-                    colBackground: MprisController.isPlaying ? MprisController.dynPrimary : MprisController.dynSecondaryContainer
-                    colBackgroundHover: MprisController.isPlaying ? MprisController.dynPrimaryHover : MprisController.dynSecondaryContainerHover
-                    colRipple: MprisController.isPlaying ? MprisController.dynPrimaryActive : MprisController.dynSecondaryContainerActive
+                    colBackground: MprisController.isPlaying ? root.effectivePrimary : root.effectiveSecondaryContainer
+                    colBackgroundHover: MprisController.isPlaying ? root.effectivePrimaryHover : root.effectiveSecondaryContainerHover
+                    colRipple: MprisController.isPlaying ? root.effectivePrimaryActive : root.effectiveSecondaryContainerActive
                     
                     onClicked: MprisController.togglePlaying()
                     
@@ -202,7 +218,7 @@ Rectangle {
                         text: MprisController.isPlaying ? "pause" : "play_arrow"
                         iconSize: 28 * Appearance.effectiveScale
                         fill: 1
-                        color: MprisController.isPlaying ? MprisController.dynOnPrimary : MprisController.dynOnSecondaryContainer
+                        color: MprisController.isPlaying ? root.effectiveOnPrimary : root.effectiveOnSecondaryContainer
                     }
                 }
             }
@@ -231,7 +247,7 @@ Rectangle {
                     MaterialSymbol {
                         anchors.centerIn: parent
                         text: "skip_previous"; iconSize: 18 * Appearance.effectiveScale; fill: 1
-                        color: prevBtn.hovered ? MprisController.dynPrimary : MprisController.dynOnSecondaryContainer
+                        color: prevBtn.hovered ? root.effectivePrimary : root.effectiveOnSecondaryContainer
                         Behavior on color { ColorAnimation { duration: 150 } }
                     }
                 }
@@ -244,7 +260,7 @@ Rectangle {
                     font.family: Appearance.font.family.numbers
                     font.features: { "tnum": 1 }
                     font.weight: Font.Medium
-                    color: MprisController.dynSubtext
+                    color: root.effectiveSubtext
                     Layout.alignment: Qt.AlignVCenter
                     verticalAlignment: Text.AlignVCenter
                     Layout.leftMargin: 0
@@ -263,9 +279,9 @@ Rectangle {
                     animateValue: false
                     value: (MprisController.length > 0 ? (MprisController.position / MprisController.length) : 0) || 0
                     wavy: MprisController.isPlaying
-                    highlightColor: MprisController.dynPrimary
-                    trackColor: MprisController.dynSecondaryContainer
-                    handleColor: MprisController.dynPrimary
+                    highlightColor: root.effectivePrimary
+                    trackColor: root.effectiveSecondaryContainer
+                    handleColor: root.effectivePrimary
                     
                     onMoved: {
                         if (player && player.canSeek) {
@@ -291,7 +307,7 @@ Rectangle {
                     font.family: Appearance.font.family.numbers
                     font.features: { "tnum": 1 }
                     font.weight: Font.Medium
-                    color: MprisController.dynSubtext
+                    color: root.effectiveSubtext
                     Layout.alignment: Qt.AlignVCenter
                     verticalAlignment: Text.AlignVCenter
                     Layout.leftMargin: 6 * Appearance.effectiveScale
@@ -314,7 +330,7 @@ Rectangle {
                     MaterialSymbol {
                         anchors.centerIn: parent
                         text: "skip_next"; iconSize: 18 * Appearance.effectiveScale; fill: 1
-                        color: nextBtn.hovered ? MprisController.dynPrimary : MprisController.dynOnSecondaryContainer
+                        color: nextBtn.hovered ? root.effectivePrimary : root.effectiveOnSecondaryContainer
                         Behavior on color { ColorAnimation { duration: 150 } }
                     }
                 }
@@ -336,7 +352,7 @@ Rectangle {
                     MaterialSymbol {
                         anchors.centerIn: parent
                         text: "lyrics"; iconSize: 18 * Appearance.effectiveScale; fill: Config.options.appearance.lyrics.showFloatingLyrics ? 1 : 0
-                        color: (lyricsBtn.hovered || Config.options.appearance.lyrics.showFloatingLyrics) ? MprisController.dynPrimary : MprisController.dynOnSecondaryContainer
+                        color: (lyricsBtn.hovered || Config.options.appearance.lyrics.showFloatingLyrics) ? root.effectivePrimary : root.effectiveOnSecondaryContainer
                         Behavior on color { ColorAnimation { duration: 150 } }
                     }
                 }
