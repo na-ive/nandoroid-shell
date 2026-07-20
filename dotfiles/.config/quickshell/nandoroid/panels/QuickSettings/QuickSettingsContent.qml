@@ -442,7 +442,7 @@ Item {
                         implicitWidth: 36 * Appearance.effectiveScale
                         implicitHeight: 36 * Appearance.effectiveScale
                         buttonRadius: 18 * Appearance.effectiveScale
-                        colBackground: Appearance.colors.colLayer2
+                        colBackground: "transparent"
                         colBackgroundHover: Appearance.colors.colLayer2
                         colRipple: Appearance.colors.colLayer2Active
                         onClicked: {
@@ -463,7 +463,7 @@ Item {
                         implicitWidth: 36 * Appearance.effectiveScale
                         implicitHeight: 36 * Appearance.effectiveScale
                         buttonRadius: 18 * Appearance.effectiveScale
-                        colBackground: root.editMode ? Appearance.m3colors.m3primaryContainer : Appearance.colors.colLayer2
+                        colBackground: root.editMode ? Appearance.m3colors.m3primaryContainer : "transparent"
                         colBackgroundHover: Appearance.colors.colLayer2
                         colRipple: Appearance.colors.colLayer2Active
                         onClicked: GlobalStates.quickSettingsEditMode = !GlobalStates.quickSettingsEditMode
@@ -480,7 +480,7 @@ Item {
                         implicitWidth: 36 * Appearance.effectiveScale
                         implicitHeight: 36 * Appearance.effectiveScale
                         buttonRadius: 18 * Appearance.effectiveScale
-                        colBackground: Appearance.colors.colLayer2
+                        colBackground: "transparent"
                         colBackgroundHover: Appearance.colors.colLayer2
                         colRipple: Appearance.colors.colLayer2Active
                         onClicked: {
@@ -500,7 +500,7 @@ Item {
                         implicitWidth: 36 * Appearance.effectiveScale
                         implicitHeight: 36 * Appearance.effectiveScale
                         buttonRadius: 18 * Appearance.effectiveScale
-                        colBackground: Appearance.colors.colLayer2
+                        colBackground: "transparent"
                         colBackgroundHover: Appearance.colors.colLayer2
                         colRipple: Appearance.colors.colLayer2Active
                         onClicked: {
