@@ -8,17 +8,12 @@ import Quickshell
 
 import "./weather"
 
-/**
- * Weather widget with Android 16 aesthetics.
- * Features full-card atmospheric animations and a clean M3 surface.
- */
 Rectangle {
     id: root
     implicitHeight: mainLayout.implicitHeight
-    radius: Appearance.rounding.card
-    color: Appearance.m3colors.m3surfaceContainerLow
-    
-    // Clipping mask to ensure animations respect card corners
+    radius: 30 * Appearance.effectiveScale
+    color: Appearance.colors.colOnPrimary
+
     layer.enabled: true
     layer.effect: OpacityMask {
         maskSource: Rectangle {
@@ -27,20 +22,18 @@ Rectangle {
             radius: root.radius
         }
     }
-    
+
     readonly property string weatherIconsDir: "assets/icons/google-weather"
     readonly property bool showDailyForecast: Config.options.weather ? Config.options.weather.showDailyForecast : true
-    
+
     readonly property color contentColor: Appearance.m3colors.m3onSurface
-    readonly property real midOpacity: 0.8
     readonly property real lowOpacity: 0.6
 
-    // --- Atmospheric Overlay ---
     WeatherAnimation {
         id: weatherAnim
         anchors.fill: parent
         animationsEnabled: root.visible
-        backgroundEnabled: false 
+        backgroundEnabled: false
     }
 
     ColumnLayout {
@@ -48,24 +41,37 @@ Rectangle {
         anchors.fill: parent
         spacing: 0
 
-        // ── Top Section: Primary Conditions ──
         RowLayout {
             Layout.fillWidth: true
             Layout.margins: 20 * Appearance.effectiveScale
             Layout.bottomMargin: 12 * Appearance.effectiveScale
-            spacing: 0 
+            spacing: 0
 
             ColumnLayout {
                 Layout.alignment: Qt.AlignLeft | Qt.AlignTop
                 spacing: 6 * Appearance.effectiveScale
-                
+
                 RowLayout {
                     spacing: 8 * Appearance.effectiveScale
-                    CustomIcon {
-                        source: Weather.current.icon
-                        iconFolder: root.weatherIconsDir
-                        width: 32 * Appearance.effectiveScale; height: 32 * Appearance.effectiveScale; colorize: false
+
+                    MaterialShape {
+                        Layout.alignment: Qt.AlignVCenter
+                        implicitWidth: 44 * Appearance.effectiveScale
+                        implicitHeight: 44 * Appearance.effectiveScale
+                        shape: MaterialShape.Shape.Pentagon
+                        color: Appearance.colors.colPrimary
+
+                        CustomIcon {
+                            anchors.centerIn: parent
+                            source: Weather.current.icon
+                            iconFolder: root.weatherIconsDir
+                            width: 26 * Appearance.effectiveScale
+                            height: 26 * Appearance.effectiveScale
+                            colorize: true
+                            color: Appearance.colors.colOnPrimary
+                        }
                     }
+
                     StyledText {
                         text: Weather.loading ? "Updating..." : Weather.current.condition
                         font.pixelSize: Appearance.font.pixelSize.large
@@ -75,7 +81,7 @@ Rectangle {
                 }
 
                 StyledText {
-                    text: `Feels like ${Weather.current.feelsLike}°`
+                    text: "Feels like " + Weather.current.feelsLike + "\u00b0"
                     font.pixelSize: Appearance.font.pixelSize.normal
                     color: root.contentColor
                     opacity: root.midOpacity
@@ -83,55 +89,72 @@ Rectangle {
 
                 StyledText {
                     text: `${Weather.todayHigh}° · ${Weather.todayLow}°`
-                    font.pixelSize: Appearance.font.pixelSize.normal
+                    font.pixelSize: Appearance.font.pixelSize.small
                     color: root.contentColor
                     opacity: root.lowOpacity
                 }
             }
 
-            Item { Layout.fillWidth: true } 
+            Item { Layout.fillWidth: true }
 
             StyledText {
-                text: Weather.current.temp + "°"
-                font.pixelSize: Math.round(64 * Appearance.effectiveScale)
-                font.weight: Font.Normal
-                color: root.contentColor
+                text: Weather.loading ? "--" : Weather.current.temp + "\u00b0"
+                font.pixelSize: Math.round(48 * Appearance.effectiveScale)
+                font.weight: Font.DemiBold
+                color: Appearance.colors.colPrimary
                 Layout.alignment: Qt.AlignTop | Qt.AlignRight
             }
         }
 
-        // ── Middle Section: Hourly (Transparent) ──
-        Item {
+        Rectangle {
             Layout.fillWidth: true
-            implicitHeight: hourlyCol.implicitHeight + 32 * Appearance.effectiveScale
-            
-            ColumnLayout {
-                id: hourlyCol
-                anchors.fill: parent
-                anchors.leftMargin: 20 * Appearance.effectiveScale; anchors.rightMargin: 20 * Appearance.effectiveScale
-                anchors.topMargin: 16 * Appearance.effectiveScale; anchors.bottomMargin: 16 * Appearance.effectiveScale
-                
-                RowLayout {
-                    Layout.fillWidth: true
-                    spacing: 0
-                    Repeater {
-                        model: Weather.hourly
-                        delegate: ColumnLayout {
+            Layout.margins: 20 * Appearance.effectiveScale
+            Layout.bottomMargin: 10 * Appearance.effectiveScale
+            implicitHeight: hourlyRow.implicitHeight + 24 * Appearance.effectiveScale
+            radius: 14 * Appearance.effectiveScale
+            color: Qt.rgba(1, 1, 1, 0.03)
+
+            RowLayout {
+                id: hourlyRow
+                anchors { left: parent.left; right: parent.right; top: parent.top }
+                anchors.margins: 12 * Appearance.effectiveScale
+                spacing: 0
+
+                Repeater {
+                    model: Weather.hourly
+                    delegate: ColumnLayout {
+                        Layout.fillWidth: true
+                        Layout.preferredWidth: 0
+                        spacing: 4 * Appearance.effectiveScale
+
+                        StyledText {
+                            text: index === 0 ? "Now" : modelData.time
+                            font.pixelSize: Math.round(9 * Appearance.effectiveScale)
+                            font.weight: index === 0 ? Font.DemiBold : Font.Medium
+                            color: index === 0 ? Appearance.colors.colPrimary : root.contentColor
+                            Layout.alignment: Qt.AlignHCenter
+                            horizontalAlignment: Text.AlignHCenter
                             Layout.fillWidth: true
-                            Layout.preferredWidth: 0
-                            spacing: 8 * Appearance.effectiveScale
-                            StyledText {
-                                text: modelData.temp + "°"; font.pixelSize: Appearance.font.pixelSize.small
-                                font.weight: Font.Medium; color: root.contentColor; Layout.alignment: Qt.AlignHCenter
-                            }
+                        }
+
+                        RowLayout {
+                            Layout.alignment: Qt.AlignHCenter
+                            spacing: 2 * Appearance.effectiveScale
+
                             CustomIcon {
-                                source: modelData.icon; iconFolder: root.weatherIconsDir
-                                width: 28 * Appearance.effectiveScale; height: 28 * Appearance.effectiveScale; colorize: false; Layout.alignment: Qt.AlignHCenter
+                                source: modelData.icon
+                                iconFolder: root.weatherIconsDir
+                                width: 20 * Appearance.effectiveScale
+                                height: 20 * Appearance.effectiveScale
+                                colorize: true
+                                color: index === 0 ? Appearance.colors.colPrimary : root.contentColor
                             }
+
                             StyledText {
-                                text: index === 0 ? "Now" : modelData.time
-                                font.pixelSize: Appearance.font.pixelSize.smallest; color: root.contentColor; opacity: root.lowOpacity
-                                Layout.alignment: Qt.AlignHCenter; horizontalAlignment: Text.AlignHCenter; Layout.fillWidth: true
+                                text: modelData.temp + "\u00b0"
+                                font.pixelSize: Math.round(9 * Appearance.effectiveScale)
+                                font.weight: index === 0 ? Font.DemiBold : Font.Medium
+                                color: index === 0 ? Appearance.colors.colPrimary : root.contentColor
                             }
                         }
                     }
@@ -139,76 +162,117 @@ Rectangle {
             }
         }
 
-        // ── Bottom Section: Daily (Transparent) ──
-        Item {
+        Loader {
             visible: Weather.daily.length > 0
             Layout.fillWidth: true
-            implicitHeight: dailyCol.implicitHeight + 24 * Appearance.effectiveScale
-            
-            ColumnLayout {
-                id: dailyCol
-                anchors.fill: parent
-                anchors.leftMargin: 20 * Appearance.effectiveScale; anchors.rightMargin: 20 * Appearance.effectiveScale
-                anchors.topMargin: 12 * Appearance.effectiveScale; anchors.bottomMargin: 12 * Appearance.effectiveScale
-                spacing: 8 * Appearance.effectiveScale
-                Repeater {
-                    model: root.showDailyForecast ? Weather.daily : Weather.daily.slice(0, 1)
-                    delegate: RowLayout {
-                        Layout.fillWidth: true
-                        Layout.leftMargin: 8 * Appearance.effectiveScale; Layout.rightMargin: 8 * Appearance.effectiveScale
-                        spacing: 12 * Appearance.effectiveScale
-                        StyledText {
-                            text: modelData.date; font.pixelSize: Appearance.font.pixelSize.small
-                            color: root.contentColor; Layout.fillWidth: true
-                        }
-                        StyledText {
-                            text: `${modelData.maxTemp}° ${modelData.minTemp}°`
-                            font.pixelSize: Appearance.font.pixelSize.small; color: root.contentColor; opacity: root.midOpacity
-                        }
+            Layout.margins: 20 * Appearance.effectiveScale
+            Layout.topMargin: 0
+            sourceComponent: root.showDailyForecast ? dailyGrid : singleDay
+        }
+
+        Component {
+            id: singleDay
+
+            Rectangle {
+                implicitHeight: Math.round(54 * Appearance.effectiveScale)
+                radius: 12 * Appearance.effectiveScale
+                color: Qt.rgba(1, 1, 1, 0.03)
+
+                RowLayout {
+                    anchors { left: parent.left; right: parent.right; verticalCenter: parent.verticalCenter }
+                    anchors.leftMargin: 12 * Appearance.effectiveScale
+                    anchors.rightMargin: 12 * Appearance.effectiveScale
+
+                    StyledText {
+                        text: Weather.daily[0].date
+                        font.pixelSize: Math.round(13 * Appearance.effectiveScale)
+                        font.weight: Font.DemiBold
+                        color: root.contentColor
+                    }
+
+                    Item { Layout.fillWidth: true }
+
+                    RowLayout {
+                        spacing: 4 * Appearance.effectiveScale
+
                         CustomIcon {
-                            source: modelData.icon; iconFolder: root.weatherIconsDir
-                            width: 24 * Appearance.effectiveScale; height: 24 * Appearance.effectiveScale; colorize: false
+                            source: Weather.daily[0].icon
+                            iconFolder: root.weatherIconsDir
+                            width: 26 * Appearance.effectiveScale
+                            height: 26 * Appearance.effectiveScale
+                            colorize: true
+                            color: Appearance.colors.colPrimary
+                        }
+
+                        StyledText {
+                            text: Weather.daily[0].maxTemp + "\u00b0/" + Weather.daily[0].minTemp + "\u00b0"
+                            font.pixelSize: Math.round(13 * Appearance.effectiveScale)
+                            font.weight: Font.DemiBold
+                            color: root.contentColor
                         }
                     }
                 }
             }
         }
 
-        // ── Footer Section: Status ──
-        ColumnLayout {
-            Layout.fillWidth: true
-            spacing: 0
-            Layout.topMargin: 4 * Appearance.effectiveScale
-            Layout.bottomMargin: 16 * Appearance.effectiveScale
+        Component {
+            id: dailyGrid
 
             Item {
-                Layout.fillWidth: true
-                Layout.preferredHeight: 20 * Appearance.effectiveScale
-                
-                StyledText {
-                    id: timestampText
-                    anchors.centerIn: parent
-                    font.pixelSize: Math.round(9 * Appearance.effectiveScale)
-                    color: root.contentColor; opacity: root.lowOpacity; textFormat: Text.StyledText
-                    
-                    property string timeString: "just now"
-                    text: Weather.loading ? Weather.status : `Updated ${timeString}, click to refresh`
-                    
-                    function updateRelativeTime() {
-                        if (!Weather.lastUpdateTime) { timeString = "unknown"; return; }
-                        let diff = Math.floor((new Date() - Weather.lastUpdateTime) / 60000);
-                        if (diff < 1) timeString = "just now";
-                        else if (diff < 60) timeString = diff + " mins ago";
-                        else timeString = Math.floor(diff / 60) + " hours ago";
-                    }
-                    Timer { interval: 60000; running: true; repeat: true; onTriggered: timestampText.updateRelativeTime(); triggeredOnStart: true }
-                }
+                implicitHeight: dailyRow.implicitHeight
 
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: Weather.fetch()
+                RowLayout {
+                    id: dailyRow
+                    anchors { left: parent.left; right: parent.right; top: parent.top }
+                    spacing: 10 * Appearance.effectiveScale
+
+                    Repeater {
+                        model: Weather.daily
+                        delegate: Rectangle {
+                            Layout.fillWidth: true
+                            implicitHeight: Math.round(54 * Appearance.effectiveScale)
+                            radius: 12 * Appearance.effectiveScale
+                            color: Qt.rgba(1, 1, 1, 0.03)
+
+                            ColumnLayout {
+                                id: dayCol
+                                anchors.centerIn: parent
+                                spacing: 4 * Appearance.effectiveScale
+
+                                StyledText {
+                                    text: modelData.date
+                                    font.pixelSize: Math.round(9 * Appearance.effectiveScale)
+                                    font.weight: Font.DemiBold
+                                    color: root.contentColor
+                                    Layout.alignment: Qt.AlignHCenter
+                                }
+
+                                RowLayout {
+                                    Layout.alignment: Qt.AlignHCenter
+                                    spacing: 2 * Appearance.effectiveScale
+
+                                    CustomIcon {
+                                        source: modelData.icon
+                                        iconFolder: root.weatherIconsDir
+                                        width: 20 * Appearance.effectiveScale
+                                        height: 20 * Appearance.effectiveScale
+                                        colorize: true
+                                        color: Appearance.colors.colPrimary
+                                    }
+
+                                    StyledText {
+                                        text: modelData.maxTemp + "\u00b0/" + modelData.minTemp + "\u00b0"
+                                        font.pixelSize: Math.round(9 * Appearance.effectiveScale)
+                                        font.weight: Font.DemiBold
+                                        color: root.contentColor
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
+
     }
 }
