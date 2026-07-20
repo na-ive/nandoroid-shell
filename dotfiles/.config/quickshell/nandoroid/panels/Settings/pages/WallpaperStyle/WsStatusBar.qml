@@ -15,7 +15,7 @@ ColumnLayout {
 
     SearchHandler { 
         searchString: "Status Bar"
-        aliases: ["Bar", "Top Bar", "Panel", "Statusbar"]
+        aliases: ["Bar", "Top Bar", "Panel", "Statusbar", "Distro Icon", "Notification Counter", "Notification Position"]
     }
 
     // ── Status Bar Section ──
@@ -320,6 +320,27 @@ ColumnLayout {
                         }
                     }
 
+                    // ── Distro Icon ────────────────────────────────────────────
+                    SegmentedWrapper {
+                        Layout.fillWidth: true
+                        implicitHeight: distroIconRow.implicitHeight + (32 * Appearance.effectiveScale)
+                        orientation: Qt.Vertical
+                        maxRadius: 20 * Appearance.effectiveScale
+                        color: Appearance.m3colors.m3surfaceContainerHigh
+                        RowLayout {
+                            id: distroIconRow
+                            anchors.fill: parent; anchors.margins: 16 * Appearance.effectiveScale
+                            spacing: 16 * Appearance.effectiveScale
+                            MaterialSymbol { text: "computer"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
+                            StyledText { text: "Distro Icon"; Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
+                            AndroidToggle {
+                                checked: Config.ready && Config.options.bar && Config.options.bar.show_distro_icon
+                                onToggled: if (Config.ready && Config.options.bar)
+                                    Config.options.bar.show_distro_icon = !Config.options.bar.show_distro_icon
+                            }
+                        }
+                    }
+
                     // ── Notification Position (Left / Right) ────────────
                     SegmentedWrapper {
                         Layout.fillWidth: true
@@ -333,7 +354,7 @@ ColumnLayout {
                             anchors.margins: 16 * Appearance.effectiveScale
                             spacing: 16 * Appearance.effectiveScale
                             MaterialSymbol { text: "notifications"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
-                            StyledText { text: "Notification Counter"; Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
+                            StyledText { text: "Notification Position"; Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
                             RowLayout {
                                 spacing: 2 * Appearance.effectiveScale
                                 Repeater {
@@ -352,6 +373,45 @@ ColumnLayout {
                                         colInactive: Appearance.m3colors.m3surfaceContainerLow
                                         onClicked: if (Config.ready && Config.options.notifications)
                                             Config.options.notifications.position = modelData.id
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // ── Notification Counter Style ────────────
+                    SegmentedWrapper {
+                        Layout.fillWidth: true
+                        implicitHeight: notifCounterStyleRow.implicitHeight + (36 * Appearance.effectiveScale)
+                        orientation: Qt.Vertical
+                        maxRadius: 20 * Appearance.effectiveScale
+                        color: Appearance.m3colors.m3surfaceContainerHigh
+                        RowLayout {
+                            id: notifCounterStyleRow
+                            anchors.fill: parent
+                            anchors.margins: 16 * Appearance.effectiveScale
+                            spacing: 16 * Appearance.effectiveScale
+                            MaterialSymbol { text: "mark_chat_unread"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
+                            StyledText { text: "Notification Counter"; Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
+                            RowLayout {
+                                spacing: 2 * Appearance.effectiveScale
+                                Repeater {
+                                    model: [
+                                        { id: "counter", label: "Counter" },
+                                        { id: "simple", label: "Simple" },
+                                        { id: "hidden", label: "Hidden" }
+                                    ]
+                                    delegate: SegmentedButton {
+                                        required property var modelData
+                                        buttonText: modelData.label
+                                        isHighlighted: Config.ready && Config.options.notifications
+                                            ? Config.options.notifications.counterStyle === modelData.id
+                                            : modelData.id === "counter"
+                                        colActive: Appearance.m3colors.m3primary
+                                        colActiveText: Appearance.m3colors.m3onPrimary
+                                        colInactive: Appearance.m3colors.m3surfaceContainerLow
+                                        onClicked: if (Config.ready && Config.options.notifications)
+                                            Config.options.notifications.counterStyle = modelData.id
                                     }
                                 }
                             }

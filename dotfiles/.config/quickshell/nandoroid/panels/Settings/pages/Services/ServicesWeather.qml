@@ -79,52 +79,6 @@ ColumnLayout {
             }
         }
 
-        SegmentedWrapper {
-            Layout.fillWidth: true
-            implicitHeight: weatherNotifRow.implicitHeight + 40 * Appearance.effectiveScale
-            orientation: Qt.Vertical
-            color: Appearance.m3colors.m3surfaceContainerHigh
-            smallRadius: 8 * Appearance.effectiveScale
-            fullRadius: 20 * Appearance.effectiveScale
-
-            enabled: Config.ready && Config.options.weather && Config.options.weather.enable
-            opacity: enabled ? 1.0 : 0.5
-            Behavior on opacity { NumberAnimation { duration: 200 } }
-            
-            RowLayout {
-                id: weatherNotifRow
-                anchors.fill: parent
-                anchors.margins: 20 * Appearance.effectiveScale
-                spacing: 20 * Appearance.effectiveScale
-
-                ColumnLayout {
-                    spacing: 2 * Appearance.effectiveScale
-                    StyledText {
-                        text: "Show in Notification Center"
-                        font.pixelSize: Appearance.font.pixelSize.normal
-                        font.weight: Font.Medium
-                        color: Appearance.colors.colOnLayer1
-                    }
-                    StyledText {
-                        text: "Display the weather card when the notification center is open."
-                        font.pixelSize: Appearance.font.pixelSize.small
-                        color: Appearance.colors.colSubtext
-                    }
-                }
-                
-                Item { Layout.fillWidth: true }
-                
-                AndroidToggle {
-                    checked: (Config.ready && Config.options.weather && Config.options.weather.showInNotificationCenter)
-                    onToggled: {
-                        if (Config.ready && Config.options.weather) {
-                            Config.options.weather.showInNotificationCenter = !Config.options.weather.showInNotificationCenter;
-                        }
-                    }
-                }
-            }
-        }
-
         // 2. Weather Provider Card
         SegmentedWrapper {
             Layout.fillWidth: true

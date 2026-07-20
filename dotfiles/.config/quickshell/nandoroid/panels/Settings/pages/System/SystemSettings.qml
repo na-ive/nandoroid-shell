@@ -42,7 +42,7 @@ Flickable {
                 color: Appearance.colors.colOnLayer1
             }
             StyledText {
-                text: "Date & time, language, storage paths, performance, and system interface."
+                text: "Date & time, language, storage paths, performance, and system behavior."
                 font.pixelSize: Appearance.font.pixelSize.normal
                 color: Appearance.colors.colSubtext
             }

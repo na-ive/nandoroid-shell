@@ -404,6 +404,9 @@ Flickable {
         // ── Lockscreen Section ──
         WsLockscreen { Layout.fillWidth: true; visible: !root.isOnboarding }
 
+        // ── Overlay Section (Notification Center / Quick Settings) ──
+        WsOverlay { Layout.fillWidth: true; visible: !root.isOnboarding }
+
         // ── Status Bar Section ──
         WsStatusBar { Layout.fillWidth: true; visible: !root.isOnboarding }
 

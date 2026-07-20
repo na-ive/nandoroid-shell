@@ -1,6 +1,7 @@
 WallpaperStyleSettings 1.0 WallpaperStyleSettings.qml
 WsScreenDecor 1.0 WsScreenDecor.qml
 WsStatusBar 1.0 WsStatusBar.qml
+WsOverlay 1.0 WsOverlay.qml
 WsLockscreen 1.0 WsLockscreen.qml
 WsClock 1.0 WsClock.qml
 WsOverview 1.0 WsOverview.qml

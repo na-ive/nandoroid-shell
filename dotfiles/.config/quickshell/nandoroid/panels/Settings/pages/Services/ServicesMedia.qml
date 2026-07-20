@@ -90,51 +90,6 @@ ColumnLayout {
             }
         }
 
-        // --- Show Media Card Toggle (Notification Center) ---
-        SegmentedWrapper {
-            Layout.fillWidth: true
-            implicitHeight: showMediaCardRow.implicitHeight + 40 * Appearance.effectiveScale
-            orientation: Qt.Vertical
-            maxRadius: 20 * Appearance.effectiveScale
-            color: Appearance.m3colors.m3surfaceContainerHigh
-
-            RowLayout {
-                id: showMediaCardRow
-                anchors.fill: parent
-                anchors.margins: 20 * Appearance.effectiveScale
-                spacing: 20 * Appearance.effectiveScale
-
-                ColumnLayout {
-                    spacing: 2 * Appearance.effectiveScale
-                    Layout.maximumWidth: 400 * Appearance.effectiveScale
-                    StyledText {
-                        text: "Show Media Card"
-                        font.pixelSize: Appearance.font.pixelSize.normal
-                        font.weight: Font.Medium
-                        color: Appearance.colors.colOnLayer1
-                    }
-                    StyledText {
-                        text: "Show the media player card in the Notification Center."
-                        font.pixelSize: Appearance.font.pixelSize.small
-                        color: Appearance.colors.colSubtext
-                        wrapMode: Text.Wrap
-                        Layout.fillWidth: true
-                    }
-                }
-                Item { Layout.fillWidth: true }
-
-                // Custom Switch
-                AndroidToggle {
-                        checked: (Config.ready && Config.options.media && Config.options.media.showMediaCard)
-                        onToggled: {
-                            if (Config.ready && Config.options.media) {
-                                Config.options.media.showMediaCard = !Config.options.media.showMediaCard;
-                    }
-                    }
-                }
-            }
-        }
-
         // --- Dynamic Island Hover Toggle ---
         SegmentedWrapper {
             Layout.fillWidth: true
