@@ -38,6 +38,7 @@ Item {
                     value: rootRing.value
                     implicitSize: 20 * Appearance.effectiveScale
                     enableAnimation: false
+                    colPrimary: rootRing.highlightColor
                     Item {
                         anchors.centerIn: parent
                         width: 20 * Appearance.effectiveScale
@@ -48,7 +49,7 @@ Item {
                             fill: 1
                             text: rootRing.iconName
                             iconSize: Appearance.font.pixelSize.normal
-                            color: Appearance.colors.colOnSecondaryContainer
+                            color: rootRing.highlightColor
                         }
                     }
                 }
@@ -62,6 +63,7 @@ Item {
                     implicitSize: 20 * Appearance.effectiveScale
                     accountForLightBleeding: true
                     enableAnimation: false
+                    colPrimary: rootRing.highlightColor
                     Item {
                         anchors.centerIn: parent
                         width: 20 * Appearance.effectiveScale
@@ -72,7 +74,7 @@ Item {
                             fill: 1
                             text: rootRing.iconName
                             iconSize: Appearance.font.pixelSize.normal
-                            color: Appearance.colors.colOnSecondaryContainer
+                            color: rootRing.highlightColor
                         }
                     }
                 }
