@@ -78,7 +78,8 @@ Item {
         // ── Weather Card ──
         WeatherCard {
             Layout.fillWidth: true
-            visible: Config.options.weather?.enable ?? true
+            visible: (Config.options.weather?.enable ?? true)
+                && (Config.options.weather?.showInNotificationCenter ?? true)
         }
 
         // ── Notification Island ──

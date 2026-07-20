@@ -454,6 +454,7 @@ property JsonObject background: JsonObject {
             // --- Weather ---
             property JsonObject weather: JsonObject {
                 property bool enable: true
+                property bool showInNotificationCenter: true
                 property bool autoLocation: true
                 property string location: ""
                 property string unit: "C" 

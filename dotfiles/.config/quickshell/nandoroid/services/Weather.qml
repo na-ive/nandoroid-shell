@@ -58,6 +58,11 @@ Singleton {
 
     property double nextUpdateTime: 0
 
+    onUnitChanged: root.fetch(true)
+    onProviderChanged: root.fetch(true)
+    onAutoLocationChanged: root.fetch(true)
+    onManualLocationChanged: root.fetch(true)
+
     onUpdateIntervalChanged: {
         root.nextUpdateTime = Date.now() + (updateInterval * 60000);
         root.scheduleNext();
