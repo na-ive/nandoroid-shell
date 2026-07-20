@@ -7,12 +7,32 @@ import QtQuick
 Singleton {
     id: root
 
+    Timer {
+        id: lockDelayTimer
+        interval: 200
+        repeat: false
+        property bool useHyprlock: false
+        onTriggered: {
+            if (useHyprlock) {
+                Quickshell.execDetached(["bash", "-c", "pidof hyprlock || hyprlock"]);
+            } else {
+                GlobalStates.screenLocked = true;
+            }
+        }
+    }
+
     function lock() {
-        if (Config.options.lock.useHyprlock) {
-            Quickshell.execDetached(["bash", "-c", "pidof hyprlock || hyprlock"]);
+        if (GlobalStates.sessionOpen) {
+            lockDelayTimer.useHyprlock = Config.options.lock.useHyprlock;
+            lockDelayTimer.start();
             return;
         }
-        GlobalStates.screenLocked = true;
+
+        if (Config.options.lock.useHyprlock) {
+            Quickshell.execDetached(["bash", "-c", "pidof hyprlock || hyprlock"]);
+        } else {
+            GlobalStates.screenLocked = true;
+        }
     }
 
     function suspend() {

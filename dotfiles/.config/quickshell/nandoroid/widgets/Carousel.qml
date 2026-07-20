@@ -37,6 +37,18 @@ Item {
     property bool showFooter: false
     property bool isOpen: true
 
+    Component.onCompleted: {
+        if (model && model.length > 0) {
+            listView.currentIndex = 0
+        }
+    }
+
+    onModelChanged: {
+        if (model && model.length > 0 && listView.currentIndex < 0) {
+            listView.currentIndex = 0
+        }
+    }
+
     signal wallpaperSelected(string path)
     signal openMoreWallpapers()
     signal itemSelected(int index)
