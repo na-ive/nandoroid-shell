@@ -30,11 +30,12 @@ Rectangle {
     readonly property real lowOpacity: 0.6
     readonly property real midOpacity: 0.8
 
-    WeatherAnimation {
-        id: weatherAnim
+    Loader {
+        active: root.visible
         anchors.fill: parent
-        animationsEnabled: root.visible
-        backgroundEnabled: false
+        sourceComponent: WeatherAnimation {
+            backgroundEnabled: false
+        }
     }
 
     ColumnLayout {
