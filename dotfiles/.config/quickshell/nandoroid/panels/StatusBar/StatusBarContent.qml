@@ -255,6 +255,7 @@ Item {
         anchors.top: parent.top
         monitor: root.monitor
         indicatorWidth: wsIndicator.implicitWidth
+        indicatorStyle: wsIndicator.indicatorStyle
     }
 
     // Time (Left of Notch)
@@ -285,6 +286,9 @@ Item {
         anchors.centerIn: parent
         monitor: root.monitor
         z: 10 // Ensure it's above the island background
+        onHoveredChanged: (hovered) => {
+            if (hovered) dynamicIsland.triggerMediaHover()
+        }
     }
 
 

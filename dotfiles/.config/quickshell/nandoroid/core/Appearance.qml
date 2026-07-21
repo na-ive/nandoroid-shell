@@ -330,6 +330,7 @@ Singleton {
         property color colNotchText: "#E2E2E2" // Modern M3 off-white
         property color colNotchSubtext: Functions.ColorUtils.applyAlpha("#E2E2E2", 0.7)
         property color colNotchPrimary: m3colors.m3primary // Use dynamic primary from matugen
+        property color colNotchActive: "#1E1E1E" // Active/foreground items on notch (dark for contrast)
     }
 
     // Process to determine the top color of the wallpaper

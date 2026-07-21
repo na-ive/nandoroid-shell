@@ -283,6 +283,7 @@ Item {
                 anchors.centerIn: parent
                 monitor: rootM3.monitor
                 indicatorWidth: wsIndicator.implicitWidth
+                indicatorStyle: wsIndicator.indicatorStyle
             }
             WorkspaceIndicator {
                 id: wsIndicator

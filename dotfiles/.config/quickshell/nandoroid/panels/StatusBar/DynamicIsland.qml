@@ -28,9 +28,19 @@ Item {
     readonly property string islandStyle: forcedStyle !== "" ? forcedStyle : (Config.options.statusBar && Config.options.statusBar.islandStyle !== undefined ? Config.options.statusBar.islandStyle : "pill")
     readonly property bool isWaterdrop: islandStyle === "waterdrop"
     readonly property bool isM3: islandStyle === "m3"
+    property string indicatorStyle: "pill"
 
     // Expose the background pill for absolute anchoring
     property alias pill: backgroundPill
+
+    // Expand ears on hover without opening media notch
+    function triggerMediaHover() {
+        if (MprisController.activePlayer) {
+            root.mediaShowing = true;
+            mediaTimer.restart();
+            if (GlobalStates.mediaNotchOpen) GlobalStates.stopMediaNotchTimer();
+        }
+    }
 
     // --- State Logic ---
     property string islandStateOverride: ""
@@ -106,8 +116,8 @@ Item {
         return Math.min(maxNatural, root.currentEarMaxWidth)
     }
 
-    // Gap width: 4px in idle, tight 2px in active states.
-    readonly property real gapHalf: (indicatorWidth / 2) + (islandState === "idle" ? 4 * Appearance.effectiveScale : 2 * Appearance.effectiveScale)
+    // Gap width: 0px in idle, tight 2px in active states (0 means ear flush with pill edge)
+    readonly property real gapHalf: (indicatorWidth / 2) + (islandState === "idle" ? 0 : 8 * Appearance.effectiveScale)
 
     // --- LEFT EAR ---
     Item {
@@ -310,7 +320,7 @@ Item {
         radius: height / 2
         
         z: -1
-        readonly property real margin: isM3 ? 12 * Appearance.effectiveScale : ((islandState === "idle") ? 10 * Appearance.effectiveScale : 8 * Appearance.effectiveScale)
+        readonly property real margin: isM3 ? 8 * Appearance.effectiveScale : (isWaterdrop && root.indicatorStyle === "unified" ? 10 : root.indicatorStyle === "unified" ? 4 : 10) * Appearance.effectiveScale
         x: leftEar.x - margin
         width: (rightEar.x + rightEar.width) - leftEar.x + (2 * margin)
 
