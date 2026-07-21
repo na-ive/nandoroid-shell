@@ -162,20 +162,18 @@ Variants {
             onReleased: { isDragging = false; }
         }
 
-        FadeLoader {
-            id: desktopVisualizerLoader
+        WaveVisualizer {
+            id: desktopWave
             anchors.bottom: parent.bottom
             anchors.left: parent.left
             anchors.right: parent.right
             height: parent.height * 0.4
             z: 5
-            shown: widgetRoot._showVisualizer
-
-            sourceComponent: WaveVisualizer {
-                anchors.fill: parent
-                color: Appearance.m3colors.m3primary
-                opacityMultiplier: Config.options.appearance.background.cavaOpacity
-            }
+            color: Appearance.m3colors.m3primary
+            opacityMultiplier: Config.options.appearance.background.cavaOpacity
+            opacity: widgetRoot._showVisualizer ? 1.0 : 0
+            visible: opacity > 0
+            Behavior on opacity { NumberAnimation { duration: 800; easing.type: Easing.InOutQuad } }
         }
 
         WidgetCanvas {

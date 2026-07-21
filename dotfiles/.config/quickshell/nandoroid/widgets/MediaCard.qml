@@ -91,16 +91,12 @@ Rectangle {
         }
 
         // --- Wave Visualizer Overlay ---
-        Loader {
-            active: root.shouldVisualize
+        WaveVisualizer {
             anchors.fill: parent
             anchors.topMargin: parent.height * 0.4
-
-            sourceComponent: WaveVisualizer {
-                anchors.fill: parent
-                color: MprisController.dynPrimary
-                opacityMultiplier: 0.2
-            }
+            color: MprisController.dynPrimary
+            opacityMultiplier: 0.2
+            visible: root.shouldVisualize
         }
     }
 
