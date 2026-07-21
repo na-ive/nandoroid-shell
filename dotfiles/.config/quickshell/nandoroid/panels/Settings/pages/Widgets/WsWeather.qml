@@ -6,7 +6,11 @@ import QtQuick.Controls
 
 Rectangle {
     id: rootWeatherSettings
+    readonly property bool weatherServiceOn: Config.ready && (Config.options.weather?.enable ?? true)
     visible: Config.ready && Config.options.appearance && Config.options.appearance.weatherWidget
+    enabled: weatherServiceOn
+    opacity: weatherServiceOn ? 1.0 : 0.5
+    Behavior on opacity { NumberAnimation { duration: 200 } }
     Layout.fillWidth: true
     implicitHeight: 96 * Appearance.effectiveScale
     radius: 24 * Appearance.effectiveScale
@@ -39,8 +43,10 @@ Rectangle {
         Item { Layout.fillWidth: true } // Spacer
 
         AndroidToggle {
-            checked: Config.ready && Config.options.appearance && Config.options.appearance.weatherWidget && Config.options.appearance.weatherWidget.showOnDesktop
+            enabled: rootWeatherSettings.weatherServiceOn
+            checked: Config.ready && Config.options.appearance && Config.options.appearance.weatherWidget && rootWeatherSettings.weatherServiceOn && Config.options.appearance.weatherWidget.showOnDesktop
             onToggled: {
+                if (!rootWeatherSettings.weatherServiceOn) return
                 if (Config.ready && Config.options.appearance && Config.options.appearance.weatherWidget) {
                     Config.options.appearance.weatherWidget.showOnDesktop = !Config.options.appearance.weatherWidget.showOnDesktop
                 }
@@ -71,7 +77,12 @@ Rectangle {
             }
             StyledText {
                 id: statusText
-                text: (Config.ready && Config.options.appearance && Config.options.appearance.weatherWidget && Config.options.appearance.weatherWidget.showOnDesktop) ? "Enabled" : "Disabled"
+                text: {
+                    if (!rootWeatherSettings.weatherServiceOn)
+                        return "Enable Weather Service first"
+                    const on = Config.ready && Config.options.appearance?.weatherWidget?.showOnDesktop
+                    return on ? "Enabled" : "Disabled"
+                }
                 font.pixelSize: Appearance.font.pixelSize.smaller
                 color: Appearance.colors.colSubtext
             }
@@ -85,11 +96,13 @@ Rectangle {
             color: maResetWeather.containsMouse ? Appearance.colors.colPrimaryHover : Appearance.colors.colPrimary
             Layout.alignment: Qt.AlignBottom
             Layout.bottomMargin: 1 * Appearance.effectiveScale
+            opacity: rootWeatherSettings.weatherServiceOn ? 1.0 : 0.5
 
             MouseArea {
                 id: maResetWeather
                 anchors.fill: parent
-                hoverEnabled: true
+                hoverEnabled: rootWeatherSettings.weatherServiceOn
+                enabled: rootWeatherSettings.weatherServiceOn
                 cursorShape: Qt.PointingHandCursor
                 onClicked: {
                     if (Config.ready && Config.options.appearance && Config.options.appearance.weatherWidget) {

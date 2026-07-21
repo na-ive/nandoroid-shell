@@ -50,8 +50,11 @@ ColumnLayout {
         }
 
         ColumnLayout {
+            id: weatherColumn
             Layout.fillWidth: true
             spacing: 4 * Appearance.effectiveScale
+
+            readonly property bool weatherServiceOn: Config.ready && (Config.options.weather?.enable ?? true)
 
             SegmentedWrapper {
                 Layout.fillWidth: true
@@ -80,15 +83,43 @@ ColumnLayout {
                 orientation: Qt.Vertical
                 maxRadius: 20 * Appearance.effectiveScale
                 color: Appearance.m3colors.m3surfaceContainerHigh
+                opacity: weatherColumn.weatherServiceOn ? 1.0 : 0.5
+
                 RowLayout {
                     id: showNcWeatherRow
                     anchors.fill: parent
                     anchors.margins: 16 * Appearance.effectiveScale
                     spacing: 16 * Appearance.effectiveScale
-                    MaterialSymbol { text: "cloud"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
-                    StyledText { text: "Show Weather Card"; Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
+
+                    MaterialSymbol {
+                        text: "cloud"
+                        iconSize: 24 * Appearance.effectiveScale
+                        color: Appearance.colors.colPrimary
+                        Layout.alignment: Qt.AlignVCenter
+                    }
+
+                    ColumnLayout {
+                        spacing: 2 * Appearance.effectiveScale
+                        StyledText {
+                            text: "Show Weather Card"
+                            color: Appearance.colors.colOnLayer1
+                        }
+                        StyledText {
+                            text: "Enable Weather Service first"
+                            font.pixelSize: Appearance.font.pixelSize.smaller
+                            color: Appearance.colors.colSubtext
+                            visible: !weatherColumn.weatherServiceOn
+                        }
+                    }
+
+                    Item { Layout.fillWidth: true }
+
                     AndroidToggle {
-                        checked: Config.ready && Config.options.weather && Config.options.weather.showInNotificationCenter
+                        Layout.alignment: Qt.AlignVCenter
+                        enabled: weatherColumn.weatherServiceOn
+                        checked: Config.ready && Config.options.weather
+                            && weatherColumn.weatherServiceOn
+                            && Config.options.weather.showInNotificationCenter
                         onToggled: if (Config.ready && Config.options.weather)
                             Config.options.weather.showInNotificationCenter = !Config.options.weather.showInNotificationCenter
                     }

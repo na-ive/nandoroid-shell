@@ -50,6 +50,7 @@ Singleton {
     readonly property string provider: (Config.ready && Config.options.weather) ? (Config.options.weather.provider || "open-meteo") : "open-meteo"
     readonly property bool autoLocation: (Config.ready && Config.options.weather) ? Config.options.weather.autoLocation : true
     readonly property string manualLocation: (Config.ready && Config.options.weather) ? (Config.options.weather.location || "") : ""
+    readonly property bool serviceEnabled: (Config.ready && Config.options.weather) ? Config.options.weather.enable : true
     readonly property int updateInterval: {
         if (!Config.ready || !Config.options.weather) return 30;
         const val = parseInt(Config.options.weather.updateInterval);
@@ -62,6 +63,12 @@ Singleton {
     onProviderChanged: root.fetch(true)
     onAutoLocationChanged: root.fetch(true)
     onManualLocationChanged: root.fetch(true)
+    onServiceEnabledChanged: {
+        if (root.serviceEnabled)
+            root.fetch(true)
+        else
+            root.scheduleNext()
+    }
 
     onUpdateIntervalChanged: {
         root.nextUpdateTime = Date.now() + (updateInterval * 60000);

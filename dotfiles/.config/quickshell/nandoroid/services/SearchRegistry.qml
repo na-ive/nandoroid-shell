@@ -41,6 +41,7 @@ Item {
             { file: "panels/Settings/pages/WallpaperStyle/WsOverview.qml", pageIndex: 4 },
             { file: "panels/Settings/pages/WallpaperStyle/WsOverview.qml", pageIndex: 4 },
             { file: "panels/Settings/pages/WallpaperStyle/WsLockscreen.qml", pageIndex: 4 },
+            { file: "panels/Settings/pages/WallpaperStyle/WsOverlay.qml", pageIndex: 4 },
             { file: "panels/Settings/pages/WallpaperStyle/WsStatusBar.qml", pageIndex: 4 },
             { file: "panels/Settings/pages/WallpaperStyle/WsDock.qml", pageIndex: 4 },
             { file: "panels/Settings/pages/WallpaperStyle/WsScreenDecor.qml", pageIndex: 4 },

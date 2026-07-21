@@ -428,7 +428,10 @@ Variants {
                 height: desktopWeatherWidgetItem.height
                 gridSize: 12
                 configObject: Config.ready ? Config.options.appearance.weatherWidget : null
-                visible: Config.ready && Config.options.appearance.weatherWidget.showOnDesktop && !GlobalStates.screenLocked
+                visible: Config.ready
+                    && (Config.options.weather?.enable ?? true)
+                    && Config.options.appearance.weatherWidget.showOnDesktop
+                    && !GlobalStates.screenLocked
                 opacity: visible ? 1 : 0
                 Behavior on opacity { NumberAnimation { duration: 300 } }
 

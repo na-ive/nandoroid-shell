@@ -37,6 +37,7 @@ Item {
             
             Layout.fillWidth: true
             Layout.preferredHeight: Appearance.sizes.contextMenuItemHeight
+            opacity: enabled ? 1.0 : 0.45
             
             buttonRadius: Appearance.rounding.small
             colBackground: "transparent"
@@ -44,7 +45,7 @@ Item {
             leftPadding: 12 * Appearance.effectiveScale
             rightPadding: 12 * Appearance.effectiveScale
             
-            onClicked: customToggled()
+            onClicked: if (enabled) customToggled()
             
             contentItem: RowLayout {
                 spacing: 12 * Appearance.effectiveScale
@@ -63,6 +64,7 @@ Item {
                     MouseArea {
                         anchors.fill: parent
                         anchors.margins: -8 * Appearance.effectiveScale
+                        enabled: itemRoot.enabled
                         cursorShape: Qt.PointingHandCursor
                         onClicked: itemRoot.lockToggled()
                     }
@@ -77,9 +79,11 @@ Item {
                 
                 AndroidToggle {
                     id: toggle
+                    enabled: itemRoot.enabled
                     // Stop mouse events from reaching the RippleButton to prevent double toggles when clicking the toggle directly
                     MouseArea {
                         anchors.fill: parent
+                        enabled: itemRoot.enabled
                         onClicked: itemRoot.customToggled()
                     }
                 }
@@ -125,9 +129,10 @@ Item {
         SubmenuItem {
             menuText: "Weather"
             visible: Config.ready && Config.options.appearance && Config.options.appearance.weatherWidget
+            enabled: Config.ready && (Config.options.weather?.enable ?? true)
             widgetLocked: (Config.ready && Config.options.appearance && Config.options.appearance.weatherWidget) ? Config.options.appearance.weatherWidget.locked : false
             onLockToggled: if (Config.ready && Config.options.appearance && Config.options.appearance.weatherWidget) Config.options.appearance.weatherWidget.locked = !Config.options.appearance.weatherWidget.locked
-            toggleChecked: Config.ready && Config.options.appearance && Config.options.appearance.weatherWidget && Config.options.appearance.weatherWidget.showOnDesktop
+            toggleChecked: Config.ready && Config.options.appearance && Config.options.appearance.weatherWidget && (Config.options.weather?.enable ?? true) && Config.options.appearance.weatherWidget.showOnDesktop
             onCustomToggled: if (Config.ready && Config.options.appearance && Config.options.appearance.weatherWidget) Config.options.appearance.weatherWidget.showOnDesktop = !Config.options.appearance.weatherWidget.showOnDesktop
         }
 
