@@ -99,11 +99,11 @@ Variants {
                         text: "music_note"
                         iconSize: 18 * Appearance.effectiveScale
                         fill: 1
-                        visible: !MprisController.displayedArtFilePath || MprisController.displayedArtFilePath.toString() === ""
+                        visible: !MprisController.isPlaying && (MprisController.displayedArtFilePath?.toString() === "")
                         color: Appearance.colors.colNotchText
                     }
 
-                    // Play/Pause Overlay
+                    // Play/Pause (visible when playing or when art exists)
                     MaterialSymbol {
                         anchors.centerIn: parent
                         text: MprisController.isPlaying ? "pause" : "play_arrow"
@@ -111,6 +111,7 @@ Variants {
                         fill: 1
                         color: "white"
                         opacity: 0.9
+                        visible: MprisController.isPlaying || (MprisController.displayedArtFilePath?.toString() !== "")
                     }
 
                     MouseArea {
