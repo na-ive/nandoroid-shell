@@ -9,9 +9,9 @@ Loader {
     property bool shown: true
     property alias fade: opacityBehavior.enabled
     
-    opacity: (shown && active) ? 1 : 0
+    opacity: shown ? 1 : 0
     visible: opacity > 0
-    active: true // Standard Loader active property
+    active: visible
 
     Behavior on opacity {
         id: opacityBehavior

@@ -86,20 +86,20 @@ MouseArea {
         if (_cavaActive) CavaService.refCount--;
     }
 
-    WaveVisualizer {
-        id: lockWave
+    FadeLoader {
+        id: lockVisualizerLoader
         anchors.bottom: parent.bottom
         anchors.left: parent.left
         anchors.right: parent.right
         height: parent.height * 0.6
         z: -1 // Behind Jam and Password input
-        
-        color: Appearance.lockM3colors.m3primary
-        opacityMultiplier: (Config.ready && Config.options.lock) ? Config.options.lock.cavaOpacity : 0.15
-        opacity: root.shouldVisualize ? root.islandOpacity : 0
-        visible: opacity > 0
-        
-        Behavior on opacity { NumberAnimation { duration: 800; easing.type: Easing.InOutQuad } }
+        shown: root.shouldVisualize
+
+        sourceComponent: WaveVisualizer {
+            anchors.fill: parent
+            color: Appearance.lockM3colors.m3primary
+            opacityMultiplier: (Config.ready && Config.options.lock) ? Config.options.lock.cavaOpacity : 0.15
+        }
     }
 
     // Scrim removed as requested

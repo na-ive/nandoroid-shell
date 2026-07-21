@@ -111,6 +111,25 @@ Variants {
             return realWindows.length === 0;
         }
 
+        // ── Desktop Visualizer State ──
+        readonly property bool _showVisualizer: {
+            if (!Config.ready || !Config.options.appearance.background.showCava) return false;
+            return MprisController.isPlaying;
+        }
+        property bool _cavaActive: false
+        on_ShowVisualizerChanged: {
+            if (_showVisualizer && !_cavaActive) {
+                CavaService.refCount++;
+                _cavaActive = true;
+            } else if (!_showVisualizer && _cavaActive) {
+                CavaService.refCount--;
+                _cavaActive = false;
+            }
+        }
+        Component.onDestruction: {
+            if (_cavaActive) CavaService.refCount--;
+        }
+
         // Mouse interaction for the desktop
         MouseArea {
             id: gestureArea
@@ -143,39 +162,19 @@ Variants {
             onReleased: { isDragging = false; }
         }
 
-        WaveVisualizer {
-            id: desktopWave
+        FadeLoader {
+            id: desktopVisualizerLoader
             anchors.bottom: parent.bottom
             anchors.left: parent.left
             anchors.right: parent.right
             height: parent.height * 0.4
             z: 5
-            color: Appearance.m3colors.m3primary
-            opacityMultiplier: Config.options.appearance.background.cavaOpacity
-            
-            readonly property bool shouldVisualize: {
-                if (!Config.ready || !Config.options.appearance.background.showCava) return false;
-                return MprisController.isPlaying;
-            }
+            shown: widgetRoot._showVisualizer
 
-            opacity: shouldVisualize ? 1.0 : 0
-            visible: opacity > 0
-            Behavior on opacity { NumberAnimation { duration: 800; easing.type: Easing.InOutQuad } }
-
-            // Manage CavaService reference counting — use flag to prevent double-decrement
-            property bool _cavaActive: false
-            onShouldVisualizeChanged: {
-                if (shouldVisualize && !_cavaActive) {
-                    CavaService.refCount++;
-                    _cavaActive = true;
-                } else if (!shouldVisualize && _cavaActive) {
-                    CavaService.refCount--;
-                    _cavaActive = false;
-                }
-            }
-
-            Component.onDestruction: {
-                if (_cavaActive) CavaService.refCount--;
+            sourceComponent: WaveVisualizer {
+                anchors.fill: parent
+                color: Appearance.m3colors.m3primary
+                opacityMultiplier: Config.options.appearance.background.cavaOpacity
             }
         }
 
