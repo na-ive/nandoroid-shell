@@ -823,6 +823,19 @@ Item {
                             readonly property string previewPath: (delegateRoot.inWallhavenMode || delegateRoot.inNaiveMode || delegateRoot.inLiveMode) ? (model.preview || "") : ("file://" + currentFilePath)
                             
                             readonly property bool isSelected: delegateRoot.selector.selectedWallpaper !== null && (delegateRoot.inLiveMode ? delegateRoot.selector.selectedWallpaper.id === model.id : delegateRoot.selector.selectedWallpaper.filePath === currentFilePath)
+                            readonly property bool isCurrentWallpaper: {
+                                if (delegateRoot.inWallhavenMode || delegateRoot.inNaiveMode) return false;
+                                if (delegateRoot.inLiveMode) {
+                                    let livePath = Config.ready ? Config.options.appearance.background.liveWallpaperPath : "";
+                                    return GlobalStates.wallpaperSelectorTarget === "desktop" && livePath !== "" && mainSelector.normalizePath(livePath) === mainSelector.normalizePath(model.folder);
+                                }
+                                if (!Config.ready || currentFilePath === "") return false;
+                                if (GlobalStates.wallpaperSelectorTarget === "lock") {
+                                    if (!Config.options.lock.useSeparateWallpaper) return false;
+                                    return mainSelector.normalizePath(Config.options.lock.wallpaperPath) === mainSelector.normalizePath("file://" + currentFilePath);
+                                }
+                                return mainSelector.normalizePath(Config.options.appearance.background.wallpaperPath) === mainSelector.normalizePath("file://" + currentFilePath);
+                            }
                             
                             readonly property string wallhavenId: {
                                 if (delegateRoot.inWallhavenMode) return model.id || "";
@@ -867,13 +880,37 @@ Item {
                                             asynchronous: true; cache: true; playing: true
                                         }
 
+                                        // Highlight border: selected (live preview) or currently applied wallpaper
                                         Rectangle {
                                             anchors.fill: parent
-                                            border.width: 3 * Appearance.effectiveScale
+                                            border.width: (delegateRoot.isSelected ? 3 : 4) * Appearance.effectiveScale
                                             border.color: Appearance.colors.colPrimary
                                             radius: 18 * Appearance.effectiveScale
                                             color: "transparent"
-                                            visible: delegateRoot.isSelected
+                                            visible: delegateRoot.isSelected || delegateRoot.isCurrentWallpaper
+                                        }
+                                        
+                                        // Active wallpaper checkmark badge
+                                        Rectangle {
+                                            visible: delegateRoot.isCurrentWallpaper && !delegateRoot.isSelected
+                                            anchors.top: parent.top; anchors.left: parent.left
+                                            anchors.margins: 8 * Appearance.effectiveScale
+                                            width: 28 * Appearance.effectiveScale; height: 28 * Appearance.effectiveScale
+                                            radius: 14 * Appearance.effectiveScale
+                                            color: Appearance.colors.colPrimary
+                                            border.width: 2 * Appearance.effectiveScale
+                                            border.color: Appearance.colors.colOnPrimary
+
+                                            MaterialSymbol {
+                                                anchors.centerIn: parent
+                                                text: "check"
+                                                iconSize: 18 * Appearance.effectiveScale
+                                                color: Appearance.colors.colOnPrimary
+                                                fill: 1
+                                            }
+
+                                            Behavior on opacity { NumberAnimation { duration: 200 } }
+                                            opacity: visible ? 1 : 0
                                         }
                                         
                                         Rectangle {
