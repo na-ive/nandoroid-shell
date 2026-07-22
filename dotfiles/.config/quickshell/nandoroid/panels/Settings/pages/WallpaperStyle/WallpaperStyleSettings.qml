@@ -349,7 +349,7 @@ Flickable {
         RowLayout {
             id: previewRow
             Layout.fillWidth: true
-            spacing: 24 * Appearance.effectiveScale
+            spacing: 12 * Appearance.effectiveScale
 
             property string selection: "desktop"
 

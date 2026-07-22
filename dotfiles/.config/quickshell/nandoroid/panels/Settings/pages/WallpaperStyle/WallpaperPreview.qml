@@ -20,7 +20,7 @@ ColumnLayout {
         Rectangle {
             id: imgContainer
             anchors.fill: parent
-            radius: 24 * Appearance.effectiveScale; 
+            radius: 20 * Appearance.effectiveScale;
             color: Appearance.colors.colLayer1
             
             layer.enabled: true
