@@ -115,73 +115,65 @@ ColumnLayout {
             }
         }
 
-        // Style Picker
-        Rectangle {
+        // Style Picker (single row)
+        RowLayout {
             Layout.fillWidth: true
             visible: rootClock.dedicatedIsLock || (Config.ready && !Config.options.appearance.clock.useSameStyle)
-            implicitHeight: 120 * Appearance.effectiveScale
-            radius: 20 * Appearance.effectiveScale
-            color: Appearance.m3colors.m3surfaceContainerHigh
-            
-            RowLayout {
-                anchors.fill: parent
-                anchors.margins: 20 * Appearance.effectiveScale
-                spacing: 20 * Appearance.effectiveScale
+            spacing: 4 * Appearance.effectiveScale
 
-                Repeater {
-                    model: [
-                        { id: "digital", name: "Digital", icon: "numbers" },
-                        { id: "analog",  name: "Analog",  icon: "watch" },
-                        { id: "stacked", name: "Stacked", icon: "view_day" },
-                        { id: "text",    name: "Text",    icon: "text_fields" },
-                        { id: "pill",    name: "Pill",    icon: "smart_button" },
-                        { id: "code",    name: "Code",    icon: "code" }
-                    ]
-                    delegate: RippleButton {
-                        id: clockStyleBtn
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
-                        buttonRadius: 16 * Appearance.effectiveScale
-                        
-                        readonly property bool isSelected: {
-                            if (!Config.ready) return false
-                            if (Config.options.appearance.clock.useSameStyle) return Config.options.appearance.clock.styleLocked === modelData.id
-                            if (clockStyleSection.activeContext === "lock") return Config.options.appearance.clock.styleLocked === modelData.id
-                            return Config.options.appearance.clock.style === modelData.id
-                        }
-                        
-                        colBackground: isSelected ? Appearance.colors.colPrimary : Appearance.m3colors.m3surfaceContainerLow
-                        colRipple: Appearance.m3colors.m3primary
-                        
-                        onClicked: {
-                            if (!Config.ready) return
-                            if (Config.options.appearance.clock.useSameStyle) {
+            Repeater {
+                model: [
+                    { id: "digital", name: "Digital", icon: "numbers" },
+                    { id: "analog",  name: "Analog",  icon: "watch" },
+                    { id: "stacked", name: "Stacked", icon: "view_day" },
+                    { id: "text",    name: "Text",    icon: "text_fields" },
+                    { id: "pill",    name: "Pill",    icon: "smart_button" },
+                    { id: "code",    name: "Code",    icon: "code" }
+                ]
+                delegate: RippleButton {
+                    id: clockStyleBtn
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 68 * Appearance.effectiveScale
+                    buttonRadius: 20 * Appearance.effectiveScale
+                    
+                    readonly property bool isSelected: {
+                        if (!Config.ready) return false
+                        if (Config.options.appearance.clock.useSameStyle) return Config.options.appearance.clock.styleLocked === modelData.id
+                        if (clockStyleSection.activeContext === "lock") return Config.options.appearance.clock.styleLocked === modelData.id
+                        return Config.options.appearance.clock.style === modelData.id
+                    }
+                    
+                    colBackground: isSelected ? Appearance.colors.colPrimary : Appearance.m3colors.m3surfaceContainerHigh
+                    colRipple: Appearance.m3colors.m3primary
+                    
+                    onClicked: {
+                        if (!Config.ready) return
+                        if (Config.options.appearance.clock.useSameStyle) {
+                            Config.options.appearance.clock.styleLocked = modelData.id
+                        } else {
+                            if (clockStyleSection.activeContext === "lock") {
                                 Config.options.appearance.clock.styleLocked = modelData.id
                             } else {
-                                if (clockStyleSection.activeContext === "lock") {
-                                    Config.options.appearance.clock.styleLocked = modelData.id
-                                } else {
-                                    Config.options.appearance.clock.style = modelData.id
-                                }
+                                Config.options.appearance.clock.style = modelData.id
                             }
                         }
-                        
-                        ColumnLayout {
-                            anchors.centerIn: parent
-                            spacing: 8 * Appearance.effectiveScale
-                            MaterialSymbol {
-                                Layout.alignment: Qt.AlignHCenter
-                                text: modelData.icon
-                                iconSize: 24 * Appearance.effectiveScale
-                                color: clockStyleBtn.isSelected ? Appearance.colors.colOnPrimary : Appearance.m3colors.m3onSurfaceVariant
-                            }
-                            StyledText {
-                                Layout.alignment: Qt.AlignHCenter
-                                text: modelData.name
-                                font.pixelSize: Math.round(12 * Appearance.effectiveScale)
-                                font.weight: clockStyleBtn.isSelected ? Font.DemiBold : Font.Normal
-                                color: clockStyleBtn.isSelected ? Appearance.colors.colOnPrimary : Appearance.m3colors.m3onSurface
-                            }
+                    }
+                    
+                    ColumnLayout {
+                        anchors.centerIn: parent
+                        spacing: 4 * Appearance.effectiveScale
+                        MaterialSymbol {
+                            Layout.alignment: Qt.AlignHCenter
+                            text: modelData.icon
+                            iconSize: 22 * Appearance.effectiveScale
+                            color: clockStyleBtn.isSelected ? Appearance.colors.colOnPrimary : Appearance.colors.colOnLayer1
+                        }
+                        StyledText {
+                            Layout.alignment: Qt.AlignHCenter
+                            text: modelData.name
+                            font.pixelSize: Math.round(11 * Appearance.effectiveScale)
+                            font.weight: clockStyleBtn.isSelected ? Font.DemiBold : Font.Normal
+                            color: clockStyleBtn.isSelected ? Appearance.colors.colOnPrimary : Appearance.colors.colOnLayer1
                         }
                     }
                 }
