@@ -375,18 +375,18 @@ Item {
             m3Color: Appearance.m3colors.m3surfaceContainerHigh
             m3ContentColor: Appearance.m3colors.m3onSurfaceVariant
 
+            function formatSpeed(bytes) {
+                const k = 1024;
+                const mt = 1024 * 1024;
+                if (bytes >= mt) return (bytes / mt).toFixed(1) + " MB/s";
+                return (bytes / k).toFixed(1) + " KB/s";
+            }
+
             RowLayout {
                 Layout.alignment: Qt.AlignVCenter
                 Layout.leftMargin: 8 * Appearance.effectiveScale
                 Layout.rightMargin: 8 * Appearance.effectiveScale
                 spacing: 4 * Appearance.effectiveScale
-
-                function formatSpeed(bytes) {
-                    const k = 1024;
-                    const mt = 1024 * 1024;
-                    if (bytes >= mt) return (bytes / mt).toFixed(1) + " MB/s";
-                    return (bytes / k).toFixed(1) + " KB/s";
-                }
 
                 // TX
                 RowLayout {
@@ -396,11 +396,18 @@ Item {
                         iconSize: 14 * Appearance.effectiveScale
                         color: SystemData.networkTxRate > 1024 ? rightNetSpeedWrapper.contentColor : rightNetSpeedWrapper.subtextColor
                     }
-                    StyledText {
-                        text: parent.parent.formatSpeed(SystemData.networkTxRate)
-                        font.pixelSize: Appearance.font.pixelSize.small
-                        font.weight: Font.Medium
-                        color: rightNetSpeedWrapper.contentColor
+                    Item {
+                        implicitWidth: txSpeedMetrics.width
+                        implicitHeight: txSpeedText.implicitHeight
+                        TextMetrics { id: txSpeedMetrics; text: "999.9 MB/s" }
+                        StyledText {
+                            id: txSpeedText
+                            anchors.centerIn: parent
+                            text: rightNetSpeedWrapper.formatSpeed(SystemData.networkTxRate)
+                            font.pixelSize: Appearance.font.pixelSize.small
+                            font.weight: Font.Medium
+                            color: rightNetSpeedWrapper.contentColor
+                        }
                     }
                 }
 
@@ -418,11 +425,18 @@ Item {
                         iconSize: 14 * Appearance.effectiveScale
                         color: SystemData.networkRxRate > 1024 ? rightNetSpeedWrapper.contentColor : rightNetSpeedWrapper.subtextColor
                     }
-                    StyledText {
-                        text: parent.parent.formatSpeed(SystemData.networkRxRate)
-                        font.pixelSize: Appearance.font.pixelSize.small
-                        font.weight: Font.Medium
-                        color: rightNetSpeedWrapper.contentColor
+                    Item {
+                        implicitWidth: rxSpeedMetrics.width
+                        implicitHeight: rxSpeedText.implicitHeight
+                        TextMetrics { id: rxSpeedMetrics; text: "999.9 MB/s" }
+                        StyledText {
+                            id: rxSpeedText
+                            anchors.centerIn: parent
+                            text: rightNetSpeedWrapper.formatSpeed(SystemData.networkRxRate)
+                            font.pixelSize: Appearance.font.pixelSize.small
+                            font.weight: Font.Medium
+                            color: rightNetSpeedWrapper.contentColor
+                        }
                     }
                 }
             }
