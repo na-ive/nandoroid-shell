@@ -141,11 +141,6 @@ Singleton {
             launcherOpen = false
             spotlightOpen = false
             sessionOpen = false
-            
-            // HUD/Centered statusbar mode: Close dashboard when sidebar opens
-            if (isCenteredStatusbar) {
-                dashboardOpen = false
-            }
         }
     }
 
@@ -183,7 +178,6 @@ Singleton {
             if (isCenteredStatusbar) {
                 notificationCenterOpen = false
                 quickSettingsOpen = false
-                quickActionsOpen = false
             }
         }
     }

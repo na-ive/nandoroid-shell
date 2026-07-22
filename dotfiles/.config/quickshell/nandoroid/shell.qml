@@ -7,7 +7,10 @@ import "core"
 import "services"
 import "widgets"
 import "panels/StatusBar"
-import "panels/Overlay"
+import "panels/Dashboard"
+import "panels/NotificationCenter"
+import "panels/QuickSettings"
+import "panels/QuickActions"
 import "panels/WallpaperSelector"
 import "panels/Background"
 import "panels/NotificationPopup"
@@ -68,8 +71,23 @@ ShellRoot {
     // ── Phase 3: Popups ──
     NotificationPopup {}
 
-    // ── Phase 4: Overlay (Dashboard, NotificationCenter, QuickSettings, QuickActions) ──
-    Overlay {}
+    // ── Phase 4: Floating Panels (Dashboard, NotificationCenter, QuickSettings, QuickActions) ──
+    NotificationCenterPanel {}
+    QuickSettingsPanel {}
+    DashboardPanel {}
+    QuickActionsPanel {}
+
+    // ── Phase 5: Popup closer (bridges closePopups signal to panel states) ──
+    Connections {
+        target: GlobalStates
+        function onClosePopups() {
+            GlobalStates.notificationCenterOpen = false;
+            GlobalStates.quickSettingsOpen = false;
+            GlobalStates.quickSettingsEditMode = false;
+            GlobalStates.dashboardOpen = false;
+            GlobalStates.quickActionsOpen = false;
+        }
+    }
 
     // ── Phase 6: Wallpaper Selector & Screen Decor ──
     WallpaperSelector {}

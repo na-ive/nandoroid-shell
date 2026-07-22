@@ -27,6 +27,9 @@ Scope {
             PanelWindow {
                 id: dockWindow
                 screen: modelData
+
+                Component.onCompleted: GlobalFocusGrab.addPersistent(dockWindow)
+                Component.onDestruction: GlobalFocusGrab.removePersistent(dockWindow)
                 
                 // --- LAYER FIX: Sits at 'Top' layer so 'Overlay' panels stay in front ---
                 WlrLayershell.layer: WlrLayer.Top

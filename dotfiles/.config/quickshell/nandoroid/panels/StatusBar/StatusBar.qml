@@ -27,6 +27,9 @@ Scope {
 
             screen: modelData
             exclusionMode: ExclusionMode.Ignore
+
+            Component.onCompleted: GlobalFocusGrab.addPersistent(barWindow)
+            Component.onDestruction: GlobalFocusGrab.removePersistent(barWindow)
             
             readonly property bool autoHide: Config.ready && Config.options.statusBar ? Config.options.statusBar.autoHide : false
             property bool forceShowByHover: false
