@@ -28,6 +28,7 @@ Singleton {
     }
 
     function restart() {
+        root.updateCavaConfig();
         if (cavaProcess.running) {
             cavaProcess.running = false;
             Qt.callLater(() => { cavaProcess.running = true; });
@@ -60,7 +61,7 @@ Singleton {
     function updateCavaConfig() {
         const config = `
 [general]
-framerate=60
+framerate=30
 bars=${root.barCount}
 autosens=1
 sensitivity=75

@@ -144,7 +144,7 @@ property JsonObject background: JsonObject {
                 property list<string> customFolders: []
                 property bool showCava: false
                 property real cavaOpacity: 0.15
-                property int cavaBars: 32
+                property int cavaBars: 128
                 property bool showGrid: false
                 property int gridSpacing: 12
                 property bool showSnapLines: true
