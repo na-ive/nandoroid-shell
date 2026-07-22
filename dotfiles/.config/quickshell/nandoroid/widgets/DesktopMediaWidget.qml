@@ -275,15 +275,13 @@ Item {
                 Layout.alignment: Qt.AlignHCenter
                 Layout.preferredHeight: 12 * Appearance.effectiveScale
                 handleMargins: 0
-                configuration: StyledSlider.Configuration.Wavy
+                configuration: StyledSlider.Configuration.X0
                 stopIndicatorValues: []
                 animateValue: false
                 value: (MprisController.length > 0 ? (MprisController.position / MprisController.length) : 0) || 0
-                wavy: MprisController.isPlaying
                 highlightColor: Appearance.colors.colPrimary
                 trackColor: Functions.ColorUtils.applyAlpha(Appearance.colors.colPrimary, 0.25)
 
-                // Circle dot handle
                 handle: Rectangle {
                     x: progressSlider.leftPadding + (progressSlider.visualPosition * (progressSlider.availableWidth - width))
                     y: (progressSlider.height - height) / 2
