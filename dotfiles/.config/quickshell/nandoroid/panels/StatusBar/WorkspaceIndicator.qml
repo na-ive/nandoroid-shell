@@ -13,7 +13,7 @@ import Quickshell.Wayland
 /**
  * Workspace indicator with two modes:
  *   "pill"    — simple Android-style expanding dots
- *   "unified" — sliding tab indicator + occupied pill stretching (port of end4-pC)
+ *   "unified" — sliding tab indicator + occupied pill stretching
  */
 Item {
     id: root
@@ -56,9 +56,10 @@ Item {
         root.updateOccupied()
     }
 
-    // AnimatedTabIndexPair (end4-pC pattern: idx1 fast, idx2 slow)
+    // AnimatedTabIndexPair (idx1 fast, idx2 slow)
     property real _tabIdx1: 0
     property real _tabIdx2: 0
+    property int _hoveredIndex: -1
 
     Behavior on _tabIdx1 {
         NumberAnimation { duration: 100; easing.type: Easing.OutSine }
@@ -213,7 +214,7 @@ Item {
                         }
                         font.pixelSize: Math.round(10 * Appearance.effectiveScale)
                         font.weight: isActive ? Font.DemiBold : Font.Normal
-                        color: isActive ? Appearance.colors.colNotchActive : (isHovered ? Appearance.colors.colNotchActive : Appearance.colors.colNotchSubtext)
+                        color: isActive ? Appearance.colors.colNotchActive : Appearance.colors.colNotchSubtext
                         opacity: isPill ? ((isActive || isHovered) ? 1 : 0) : 1
                     }
                 }
@@ -238,13 +239,18 @@ Item {
                     hoverEnabled: true
                     cursorShape: Qt.PointingHandCursor
                     onClicked: Hyprland.dispatch(HyprlandCompat.dspWorkspace(wsId))
+                    onEntered: root._hoveredIndex = index
+                    onExited: {
+                        if (root._hoveredIndex === index)
+                            root._hoveredIndex = -1
+                    }
                 }
             }
         }
     }
 
     // ====================================================================
-    // UNIFIED STYLE — visual overlay (port of end4-pC Workspaces.qml)
+    // UNIFIED STYLE — visual overlay
     // ====================================================================
     Item {
         id: unifiedSection
@@ -291,6 +297,19 @@ Item {
             radius: height / 2
 
             color: Appearance.m3colors.darkmode ? Appearance.colors.colNotchPrimary : Appearance.colors.colPrimaryContainer
+        }
+
+        // Hover overlay (white circle)
+        Rectangle {
+            anchors.verticalCenter: parent.verticalCenter
+            x: root._hoveredIndex * root._tabStep
+            implicitWidth: root._tabDotSize
+            implicitHeight: root._tabDotSize
+            radius: height / 2
+            color: "#ffffff"
+            opacity: root._hoveredIndex >= 0 ? 0.15 : 0
+            Behavior on x { NumberAnimation { duration: 100; easing.type: Easing.OutSine } }
+            Behavior on opacity { NumberAnimation { duration: 100 } }
         }
 
     }
