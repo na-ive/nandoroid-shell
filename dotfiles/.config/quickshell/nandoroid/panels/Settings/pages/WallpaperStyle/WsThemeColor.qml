@@ -118,8 +118,8 @@ ColumnLayout {
                         id: matugenColorGrid
                         anchors.fill: parent
                         columns: 5
-                        rowSpacing: 16 * Appearance.effectiveScale
-                        columnSpacing: 16 * Appearance.effectiveScale
+                        rowSpacing: 4 * Appearance.effectiveScale
+                        columnSpacing: 4 * Appearance.effectiveScale
 
                         opacity: (previewIterateTimer.running || previewMatugen.running) ? 0.3 : 1.0
                         Behavior on opacity { NumberAnimation { duration: 300; easing.type: Easing.InOutQuad } }
@@ -187,8 +187,8 @@ ColumnLayout {
                 GridLayout {
                     Layout.fillWidth: true
                     columns: 5
-                    rowSpacing: 16 * Appearance.effectiveScale
-                    columnSpacing: 16 * Appearance.effectiveScale
+                    rowSpacing: 4 * Appearance.effectiveScale
+                    columnSpacing: 4 * Appearance.effectiveScale
 
                     Repeater {
                         model: colorSettingsCol.showAllBasic ? root.basicColors : root.basicColors.slice(0, 10)

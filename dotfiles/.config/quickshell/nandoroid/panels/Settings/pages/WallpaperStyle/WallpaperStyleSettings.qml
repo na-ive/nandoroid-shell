@@ -234,6 +234,10 @@ Flickable {
         onTriggered: refreshPreviews()
     }
 
+    // Watch darkmode via Appearance.m3colors.darkmode (proper QML signal)
+    property bool currentDarkMode: Appearance.m3colors.darkmode
+    onCurrentDarkModeChanged: refreshPreviews()
+
     Connections {
         target: Config.ready ? Config.options.appearance.background : null
         function onWallpaperPathChanged() { refreshPreviews() }

@@ -12,108 +12,116 @@ RippleButton {
     property bool isSelected: false
     
     implicitWidth: 104 * Appearance.effectiveScale
-    implicitHeight: 120 * Appearance.effectiveScale
-    buttonRadius: 28 * Appearance.effectiveScale
-    colBackground: Appearance.colors.colLayer2
-    colBackgroundToggled: Appearance.colors.colLayer2 // Handled by border
-    colText: "white"
-    colTextToggled: "white"
+    implicitHeight: 124 * Appearance.effectiveScale
+    buttonRadius: 20 * Appearance.effectiveScale
+    colBackground: Appearance.m3colors.m3surfaceContainerHigh
+    colBackgroundToggled: Appearance.m3colors.m3surfaceContainerHigh
     colRipple: Appearance.colors.colLayer2Active
+
+    readonly property real s: Appearance.effectiveScale
 
     contentItem: Item {
         anchors.fill: parent
-        
-        // Custom background with 3 bars
-        Rectangle {
-            id: cardContent
-            anchors.fill: parent
-            radius: card.buttonRadius
-            clip: true
-            color: Appearance.colors.colLayer2
-            
-            layer.enabled: true
-            layer.effect: OpacityMask {
-                maskSource: Rectangle {
-                    width: cardContent.width
-                    height: cardContent.height
-                    radius: cardContent.radius
-                }
-            }
 
-            Row {
+        Item {
+            anchors.centerIn: parent
+            anchors.verticalCenterOffset: -12 * s
+            width: 76 * s
+            height: 76 * s
+
+            // 3-color swatch (Canvas for proper circle masking)
+            Canvas {
                 anchors.fill: parent
-                // Show bars if no icon is set OR if the card is selected (even if it has an icon)
                 visible: card.iconName === "" || card.isSelected
-                Rectangle { width: parent.width/3; height: parent.height; color: card.cardColors[0] }
-                Rectangle { width: parent.width/3; height: parent.height; color: card.cardColors[1] }
-                Rectangle { width: parent.width/3; height: parent.height; color: card.cardColors[2] }
-            }
 
-            // Icon support
-            MaterialSymbol {
-                anchors.centerIn: parent
-                // Only show icon if set AND card is NOT selected
-                visible: card.iconName !== "" && !card.isSelected
-                text: card.iconName
-                iconSize: 48 * Appearance.effectiveScale
-                color: "white" // Neutral color when inactive
-            }
-            
-            // Bottom Gradient for text readability
-            Rectangle {
-                anchors.bottom: parent.bottom
-                width: parent.width
-                height: 48 * Appearance.effectiveScale
-                visible: card.iconName === "" || card.isSelected
-                gradient: Gradient {
-                    GradientStop { position: 0.0; color: "transparent" }
-                    GradientStop { position: 1.0; color: Qt.rgba(0,0,0,0.6) }
+                property var cols: card.cardColors
+                onColsChanged: requestPaint()
+
+                onPaint: {
+                    var ctx = getContext("2d");
+                    var cx = width / 2, cy = height / 2, r = width / 2;
+
+                    ctx.clearRect(0, 0, width, height);
+
+                    var c0 = card.cardColors[0] || "transparent";
+                    var c1 = card.cardColors[1] || "transparent";
+                    var c2 = card.cardColors[2] || "transparent";
+
+                    // Top half: primary
+                    ctx.beginPath();
+                    ctx.moveTo(cx, cy);
+                    ctx.arc(cx, cy, r, Math.PI, 2 * Math.PI);
+                    ctx.closePath();
+                    ctx.fillStyle = c0;
+                    ctx.fill();
+
+                    // Bottom-left: secondary
+                    ctx.beginPath();
+                    ctx.moveTo(cx, cy);
+                    ctx.arc(cx, cy, r, Math.PI, Math.PI * 0.5, true);
+                    ctx.closePath();
+                    ctx.fillStyle = c1;
+                    ctx.fill();
+
+                    // Bottom-right: tertiary
+                    ctx.beginPath();
+                    ctx.moveTo(cx, cy);
+                    ctx.arc(cx, cy, r, Math.PI * 0.5, 2 * Math.PI, true);
+                    ctx.closePath();
+                    ctx.fillStyle = c2;
+                    ctx.fill();
                 }
             }
-        }
-        
-        // Selection Border / Glow
-        Rectangle {
-            anchors.fill: parent
-            color: "transparent"
-            border.width: 3 * Appearance.effectiveScale
-            border.color: Appearance.m3colors.m3primary
-            radius: card.buttonRadius
-            visible: card.isSelected
-            opacity: 0.8
+
+            // Icon circle (for Accent Picker)
+            Rectangle {
+                anchors.fill: parent
+                visible: card.iconName !== "" && !card.isSelected
+                radius: width / 2
+                color: Appearance.m3colors.m3surfaceContainerLow
+
+                MaterialSymbol {
+                    anchors.centerIn: parent
+                    text: card.iconName
+                    iconSize: 38 * s
+                    color: Appearance.m3colors.m3onSurface
+                }
+            }
+
+            // Checkmark (selection indicator)
+            Rectangle {
+                anchors.centerIn: parent
+                width: 34 * s
+                height: 34 * s
+                radius: width / 2
+                color: Appearance.m3colors.m3surfaceContainerLowest
+                visible: card.isSelected
+
+                MaterialSymbol {
+                    anchors.centerIn: parent
+                    text: "check"
+                    iconSize: 20 * s
+                    color: Appearance.m3colors.m3onSurface
+                }
+            }
         }
 
         // Label
         StyledText {
             anchors.bottom: parent.bottom
-            anchors.bottomMargin: 8 * Appearance.effectiveScale
+            anchors.bottomMargin: 8 * s
             anchors.horizontalCenter: parent.horizontalCenter
             text: card.label
             font.pixelSize: Appearance.font.pixelSize.smaller
             font.weight: Font.Medium
-            color: "white"
+            color: card.isSelected ? Appearance.m3colors.m3primary : Appearance.colors.colOnLayer1
             horizontalAlignment: Text.AlignHCenter
             wrapMode: Text.WordWrap
             lineHeight: 0.9
             maximumLineCount: 2
-            width: parent.width - (12 * Appearance.effectiveScale)
-        }
-        
-        // Centered Checkmark in Circle
-        Rectangle {
-            anchors.centerIn: parent
-            width: 32 * Appearance.effectiveScale
-            height: 32 * Appearance.effectiveScale
-            radius: 16 * Appearance.effectiveScale
-            color: "#1A1C1E"
-            visible: card.isSelected
-            
-            MaterialSymbol {
-                anchors.centerIn: parent
-                text: "check"
-                iconSize: 20 * Appearance.effectiveScale
-                color: "white"
-            }
+            width: parent.width - (12 * s)
+
+            Behavior on color { ColorAnimation { duration: 200; easing.type: Easing.OutCubic } }
         }
     }
 }
