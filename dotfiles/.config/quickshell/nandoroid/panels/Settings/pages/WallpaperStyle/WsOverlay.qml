@@ -43,10 +43,9 @@ ColumnLayout {
         // ── Notification Center ──
         StyledText {
             text: "Notification Center"
-            font.pixelSize: Appearance.font.pixelSize.normal
-            font.weight: Font.DemiBold
+            font.pixelSize: Appearance.font.pixelSize.small
+            font.weight: Font.Medium
             color: Appearance.colors.colPrimary
-            Layout.bottomMargin: 4 * Appearance.effectiveScale
         }
 
         ColumnLayout {
@@ -130,11 +129,10 @@ ColumnLayout {
         // ── Quick Settings ──
         StyledText {
             text: "Quick Settings"
-            font.pixelSize: Appearance.font.pixelSize.normal
-            font.weight: Font.DemiBold
+            font.pixelSize: Appearance.font.pixelSize.small
+            font.weight: Font.Medium
             color: Appearance.colors.colPrimary
             Layout.topMargin: 12 * Appearance.effectiveScale
-            Layout.bottomMargin: 4 * Appearance.effectiveScale
         }
 
         ColumnLayout {

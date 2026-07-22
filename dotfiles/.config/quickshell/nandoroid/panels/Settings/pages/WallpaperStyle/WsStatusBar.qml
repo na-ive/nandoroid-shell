@@ -88,11 +88,10 @@ ColumnLayout {
                     // ── Layout & Appearance ─────────────────────────────
                     StyledText {
                         text: "Layout & Appearance"
-                        font.pixelSize: Appearance.font.pixelSize.normal
-                        font.weight: Font.DemiBold
+                        font.pixelSize: Appearance.font.pixelSize.small
+                        font.weight: Font.Medium
                         color: Appearance.colors.colPrimary
                         Layout.topMargin: 12 * Appearance.effectiveScale
-                        Layout.bottomMargin: 4 * Appearance.effectiveScale
                     }
 
                     ColumnLayout {
@@ -227,6 +226,47 @@ ColumnLayout {
                         }
                     }
 
+                     // ── Corner radius (visible when ANY background style is active) ──
+                    SegmentedWrapper {
+                        Layout.fillWidth: true
+                        implicitHeight: sbCornerRow.implicitHeight + (36 * Appearance.effectiveScale)
+                        orientation: Qt.Vertical
+                        maxRadius: 20 * Appearance.effectiveScale
+                        color: Appearance.m3colors.m3surfaceContainerHigh
+                        visible: sbSettingsCol.parent.sbAnyBgStyle && !sbSettingsCol.parent.isM3Style
+                        RowLayout {
+                            id: sbCornerRow
+                            anchors.fill: parent; anchors.margins: 16 * Appearance.effectiveScale
+                            spacing: 20 * Appearance.effectiveScale
+
+                            RowLayout {
+                                spacing: 16 * Appearance.effectiveScale
+                                Layout.preferredWidth: 70 * Appearance.effectiveScale
+                                MaterialSymbol { text: "rounded_corner"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
+                                StyledText { 
+                                    text: "Corner radius"
+                                    Layout.fillWidth: true
+                                    color: Appearance.colors.colOnLayer1 
+                                }
+                            }
+
+                            StyledSlider {
+                                Layout.fillWidth: true
+                                from: 0; to: 20; stepSize: 1
+                                value: Config.ready && Config.options.statusBar ? (Config.options.statusBar.backgroundCornerRadius ?? 20) : 20
+                                onMoved: if (Config.ready && Config.options.statusBar)
+                                    Config.options.statusBar.backgroundCornerRadius = Math.round(value)
+                            }
+                            StyledText {
+                                text: Math.round(Config.ready && Config.options.statusBar
+                                    ? (Config.options.statusBar.backgroundCornerRadius ?? 20) : 20).toString() + "px"
+                                color: Appearance.colors.colOnLayer1
+                                Layout.preferredWidth: 50
+                                horizontalAlignment: Text.AlignRight
+                            }
+                        }
+                    }
+
                     // ── Layout Style (Standard / Centered) ────────────
                     SegmentedWrapper {
                         visible: !sbSettingsCol.parent.isM3Style
@@ -271,11 +311,10 @@ ColumnLayout {
                     // ── Modules Positioning ──────────────────────────────────
                     StyledText {
                         text: "Modules Positioning"
-                        font.pixelSize: Appearance.font.pixelSize.normal
-                        font.weight: Font.DemiBold
+                        font.pixelSize: Appearance.font.pixelSize.small
+                        font.weight: Font.Medium
                         color: Appearance.colors.colPrimary
                         Layout.topMargin: 12 * Appearance.effectiveScale
-                        Layout.bottomMargin: 4 * Appearance.effectiveScale
                     }
 
                     ColumnLayout {
@@ -625,57 +664,15 @@ ColumnLayout {
                         }
                     }
 
-                    // ── Corner radius (visible when ANY background style is active) ──
-                    SegmentedWrapper {
-                        Layout.fillWidth: true
-                        implicitHeight: sbCornerRow.implicitHeight + (36 * Appearance.effectiveScale)
-                        orientation: Qt.Vertical
-                        maxRadius: 20 * Appearance.effectiveScale
-                        color: Appearance.m3colors.m3surfaceContainerHigh
-                        visible: sbSettingsCol.parent.sbAnyBgStyle
-                        RowLayout {
-                            id: sbCornerRow
-                            anchors.fill: parent; anchors.margins: 16 * Appearance.effectiveScale
-                            spacing: 20 * Appearance.effectiveScale
-
-                            RowLayout {
-                                spacing: 16 * Appearance.effectiveScale
-                                Layout.preferredWidth: 70 * Appearance.effectiveScale
-                                MaterialSymbol { text: "rounded_corner"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
-                                StyledText { 
-                                    text: "Corner radius"
-                                    Layout.fillWidth: true
-                                    color: Appearance.colors.colOnLayer1 
-                                }
-                            }
-
-                            StyledSlider {
-                                Layout.fillWidth: true
-                                from: 0; to: 20; stepSize: 1
-                                value: Config.ready && Config.options.statusBar ? (Config.options.statusBar.backgroundCornerRadius ?? 20) : 20
-                                onMoved: if (Config.ready && Config.options.statusBar)
-                                    Config.options.statusBar.backgroundCornerRadius = Math.round(value)
-                            }
-                            StyledText {
-                                text: Math.round(Config.ready && Config.options.statusBar
-                                    ? (Config.options.statusBar.backgroundCornerRadius ?? 20) : 20).toString() + "px"
-                                color: Appearance.colors.colOnLayer1
-                                Layout.preferredWidth: 50
-                                horizontalAlignment: Text.AlignRight
-                            }
-                        }
-                    }
-
                     } // End Modules Positioning ColumnLayout
 
                     // ── Modules Styling ──────────────────────────────────────
                     StyledText {
                         text: "Modules Styling"
-                        font.pixelSize: Appearance.font.pixelSize.normal
+                        font.pixelSize: Appearance.font.pixelSize.small
                         font.weight: Font.DemiBold
                         color: Appearance.colors.colPrimary
                         Layout.topMargin: 12 * Appearance.effectiveScale
-                        Layout.bottomMargin: 4 * Appearance.effectiveScale
                     }
 
                     ColumnLayout {
@@ -684,6 +681,7 @@ ColumnLayout {
 
                     // ── Workspace Style (Shape) ──
                     SegmentedWrapper {
+                        visible: !sbSettingsCol.parent.isM3Style
                         Layout.fillWidth: true
                         implicitHeight: wsStyleRow.implicitHeight + (36 * Appearance.effectiveScale)
                         orientation: Qt.Vertical
