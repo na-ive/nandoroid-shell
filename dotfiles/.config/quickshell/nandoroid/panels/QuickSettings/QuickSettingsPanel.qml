@@ -82,14 +82,5 @@ Variants {
         GlobalStates.quickSettingsEditMode = false;
       }
     }
-
-    MouseArea {
-      anchors.fill: parent
-      onClicked: {
-        GlobalStates.quickSettingsOpen = false;
-        GlobalStates.quickSettingsEditMode = false;
-      }
-      z: -1
-    }
   }
 }

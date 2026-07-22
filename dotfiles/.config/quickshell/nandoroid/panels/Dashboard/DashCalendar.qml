@@ -105,11 +105,6 @@ RowLayout {
         radius: Appearance.rounding.normal
         clip: true
 
-        MouseArea {
-            anchors.fill: parent
-            onClicked: GlobalStates.closePopups()
-        }
-
         ColumnLayout {
             anchors.fill: parent
             anchors.margins: 16 * Appearance.effectiveScale

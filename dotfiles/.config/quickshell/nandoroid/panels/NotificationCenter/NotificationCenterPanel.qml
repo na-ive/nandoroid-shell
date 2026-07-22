@@ -77,11 +77,5 @@ Variants {
 
       onClosed: GlobalStates.notificationCenterOpen = false
     }
-
-    MouseArea {
-      anchors.fill: parent
-      onClicked: GlobalStates.notificationCenterOpen = false
-      z: -1
-    }
   }
 }

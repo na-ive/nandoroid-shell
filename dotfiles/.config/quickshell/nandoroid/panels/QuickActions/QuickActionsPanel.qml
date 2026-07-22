@@ -63,11 +63,5 @@ Variants {
 
       onClosed: GlobalStates.quickActionsOpen = false
     }
-
-    MouseArea {
-      anchors.fill: parent
-      onClicked: GlobalStates.quickActionsOpen = false
-      z: -1
-    }
   }
 }

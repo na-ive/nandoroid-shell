@@ -59,11 +59,5 @@ Variants {
     DashboardContent {
       onClosed: GlobalStates.dashboardOpen = false
     }
-
-    MouseArea {
-      anchors.fill: parent
-      onClicked: GlobalStates.dashboardOpen = false
-      z: -1
-    }
   }
 }
