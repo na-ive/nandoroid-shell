@@ -22,6 +22,12 @@ Rectangle {
 
     property bool showVisualizer: true
     property bool isLockscreen: false
+    // Effective shown-state for the wavy progress bar. When false, the WavyLine
+    // Canvas + its 60fps FrameAnimation are destroyed (no off-screen repaint).
+    // Defaults to `visible` (correct for hosts that actually toggle visibility),
+    // but hosts that collapse this card via opacity should bind this to their
+    // real open-state.
+    property bool wavyVisible: visible
     readonly property var player: MprisController.activePlayer
     readonly property bool hasArt: MprisController.displayedArtFilePath.toString() !== ""
 
@@ -277,6 +283,7 @@ Rectangle {
                     configuration: StyledSlider.Configuration.Wavy
                     stopIndicatorValues: []
                     animateValue: false
+                    wavyVisible: root.wavyVisible
                     value: (MprisController.length > 0 ? (MprisController.position / MprisController.length) : 0) || 0
                     wavy: MprisController.isPlaying
                     highlightColor: root.effectivePrimary

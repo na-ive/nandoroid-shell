@@ -259,7 +259,6 @@ Item {
                     opacity: 0.35
                     onPaint: {
                         var ctx = getContext("2d");
-                        ctx.reset();
                         ctx.clearRect(0, 0, width, height);
 
                         // Draw a smooth sparkline trend

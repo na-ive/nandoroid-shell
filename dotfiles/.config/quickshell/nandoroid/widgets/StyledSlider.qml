@@ -56,6 +56,12 @@ Slider {
     property string tooltipContent: usePercentTooltip ? `${Math.round(((value - from) / (to - from)) * 100)}%` : `${Math.round(value)}`
     property bool wavy: configuration === StyledSlider.Configuration.Wavy // If true, the progress bar will have a wavy fill effect
     property bool animateWave: true
+    // Effective visibility used to gate the wavy Canvas + FrameAnimation.
+    // Defaults to `visible`, but hosts that toggle a parent panel via opacity
+    // (so this slider's `visible` stays true while collapsed) should bind this
+    // to the panel's real shown-state. When false, the WavyLine Canvas is fully
+    // destroyed instead of repainting 60fps off-screen.
+    property bool wavyVisible: visible
     property bool animateValue: true
     property real waveAmplitudeMultiplier: wavy ? 0.5 : 0
     property real waveFrequency: 6
@@ -132,16 +138,15 @@ Slider {
             }
             width: root.handleMargins + (root.visualPosition * root.effectiveDraggingWidth) - (root.handleWidth / 2 + root.handleMargins)
             height: root.height
-            active: root.wavy
+            active: root.wavy && root.wavyVisible
             sourceComponent: WavyLine {
                 id: wavyFill
                 frequency: root.waveFrequency
                 fullLength: root.width
                 color: root.highlightColor
                 amplitudeMultiplier: root.wavy ? 0.5 : 0
-                width: root.handleMargins + (root.visualPosition * root.effectiveDraggingWidth) - (root.handleWidth / 2 + root.handleMargins)
-                height: root.height
-                lineWidth: root.trackWidth
+                width: parent.width
+                height: root.trackWidth
                 Connections {
                     target: root
                     function onValueChanged() { wavyFill.requestPaint(); }
@@ -153,7 +158,7 @@ Slider {
                         wavyFill.requestPaint()
                     }
                 }
-            }   
+            }
         }
 
         // Fill right

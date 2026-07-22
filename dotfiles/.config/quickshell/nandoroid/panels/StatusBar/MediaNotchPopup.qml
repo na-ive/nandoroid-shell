@@ -137,6 +137,11 @@ Variants {
                     Layout.fillWidth: true; Layout.preferredHeight: 14 * Appearance.effectiveScale
                     configuration: StyledSlider.Configuration.Wavy
                     wavy: MprisController.isPlaying
+                    // This popup's `visible` lingers true during the 250ms
+                    // opacity fade-out, and the window itself stays visible
+                    // while `contentRect.opacity > 0`. Bind the wavy Canvas
+                    // lifecycle to the real open-state instead.
+                    wavyVisible: GlobalStates.mediaNotchOpen
                     value: MprisController.length > 0 ? (MprisController.position / MprisController.length) : 0
                     highlightColor: MprisController.dynPrimary
                     trackColor: MprisController.dynSecondaryContainer
@@ -185,6 +190,9 @@ Variants {
                 sourceComponent: MediaCard {
                     // Force a slightly different styling if needed
                     radius: Appearance.rounding.button
+                    // Gate wavy Canvas by real open-state; this Loader stays
+                    // active while the popup is in full mode, even when closed.
+                    wavyVisible: GlobalStates.mediaNotchOpen
                 }
             }
         }

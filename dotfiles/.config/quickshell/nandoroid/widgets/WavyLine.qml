@@ -9,12 +9,8 @@ Canvas {
     property real lineWidth: 4
     property real fullLength: width
 
-    onWidthChanged: requestPaint()
-    onHeightChanged: requestPaint()
-
     onPaint: {
         var ctx = getContext("2d");
-        ctx.reset();
         ctx.clearRect(0, 0, width, height);
 
         var amplitude = root.lineWidth * root.amplitudeMultiplier;

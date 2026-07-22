@@ -73,6 +73,11 @@ Item {
         MediaCard {
             Layout.fillWidth: true
             visible: (Config.options.media?.showMediaCard ?? true) && MprisController.activePlayer !== null
+            // This panel is hosted in an always-active Loader and collapsed via
+            // opacity, so the card's `visible` stays true while closed. Bind the
+            // wavy Canvas lifecycle to the real open-state to avoid 60fps
+            // off-screen repaints.
+            wavyVisible: GlobalStates.notificationCenterOpen
         }
 
         // ── Weather Card ──
