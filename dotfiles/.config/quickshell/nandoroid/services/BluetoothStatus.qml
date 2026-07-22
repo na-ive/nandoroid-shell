@@ -42,6 +42,16 @@ Singleton {
         }
     }
 
+    // Catch kernel/hardware resetting the enabled state (e.g. after sleep/wake)
+    Connections {
+        target: Bluetooth.defaultAdapter
+        function onEnabledChanged() {
+            if (!Config.ready || !Config.options.system) return;
+            if (Bluetooth.defaultAdapter.enabled === Config.options.system.bluetoothEnabled) return;
+            Bluetooth.defaultAdapter.enabled = Config.options.system.bluetoothEnabled;
+        }
+    }
+
     signal deviceConnected(var device)
     property string pairingAddress: ""
     property var lastPairingDevice: null
