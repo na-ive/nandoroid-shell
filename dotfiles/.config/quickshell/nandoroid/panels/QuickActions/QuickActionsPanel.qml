@@ -21,7 +21,7 @@ Variants {
 
     exclusiveZone: 0
     WlrLayershell.namespace: "nandoroid:quick-actions"
-    WlrLayershell.layer: isOpen ? WlrLayer.Top : WlrLayer.Background
+    WlrLayershell.layer: isOpen || closeTimer.running ? WlrLayer.Overlay : WlrLayer.Background
     WlrLayershell.keyboardFocus: isOpen ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
     color: "transparent"
 
