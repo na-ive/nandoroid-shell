@@ -191,7 +191,18 @@ ColumnLayout {
                     columnSpacing: 4 * Appearance.effectiveScale
 
                     Repeater {
-                        model: colorSettingsCol.showAllBasic ? root.basicColors : root.basicColors.slice(0, 10)
+                        model: {
+                            if (colorSettingsCol.showAllBasic)
+                                return root.basicColors
+                            const top10 = root.basicColors.slice(0, 10)
+                            const selectedFile = Config.ready && Config.options.appearance && Config.options.appearance.background ? Config.options.appearance.background.matugenThemeFile : null
+                            if (selectedFile) {
+                                const idx = root.basicColors.findIndex(c => c.file === selectedFile)
+                                if (idx >= 10)
+                                    return root.basicColors.slice(0, 9).concat([root.basicColors[idx]])
+                            }
+                            return top10
+                        }
                         delegate: ColorCard {
                             Layout.fillWidth: true
                             label: modelData.name
