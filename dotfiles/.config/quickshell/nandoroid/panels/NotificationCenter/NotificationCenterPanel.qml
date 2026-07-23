@@ -57,8 +57,17 @@ Variants {
       }
     }
 
+    MouseArea {
+      anchors.top: ncContent.bottom
+      anchors.left: parent.left
+      anchors.right: parent.right
+      anchors.bottom: parent.bottom
+      onClicked: if (panelWindow.isOpen) GlobalFocusGrab.dismiss()
+    }
+
     NotificationCenterContent {
       id: ncContent
+      height: implicitHeight
 
       transform: Translate {
         id: ncSlide

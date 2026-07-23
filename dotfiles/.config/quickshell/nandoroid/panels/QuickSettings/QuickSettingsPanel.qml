@@ -59,8 +59,17 @@ Variants {
       }
     }
 
+    MouseArea {
+      anchors.top: qsContent.bottom
+      anchors.left: parent.left
+      anchors.right: parent.right
+      anchors.bottom: parent.bottom
+      onClicked: if (panelWindow.isOpen) GlobalFocusGrab.dismiss()
+    }
+
     QuickSettingsContent {
       id: qsContent
+      height: implicitHeight
 
       transform: Translate {
         id: qsSlide
