@@ -7,10 +7,6 @@ import QtQuick.Controls
 import Quickshell
 import Quickshell.Io
 
-/**
- * Dashboard Tab 3: Notepad
- * Notes stored in ~/.cache/nandoroid/notes.json
- */
 Item {
     id: root
 
@@ -40,7 +36,7 @@ Item {
 
     function newNote() {
         const n = { id: makeId(), title: "Untitled", body: "", updatedAt: new Date().toISOString() }
-        root.notes = root.notes.concat([n])
+        root.notes = [n].concat(root.notes)
         save()
         selectNote(n.id)
     }
@@ -68,34 +64,41 @@ Item {
 
     Component.onCompleted: notesFile.reload()
 
-    // Auto-save debounce
     Timer {
         id: saveTimer
         interval: 500
         repeat: false
         onTriggered: {
             if (!root.selectedId) return
-            root.notes = root.notes.map(n => n.id === root.selectedId
-                ? Object.assign({}, n, { title: titleInput.text, body: bodyArea.text, updatedAt: new Date().toISOString() })
-                : n)
+            var now = new Date().toISOString()
+            for (var i = 0; i < root.notes.length; i++) {
+                if (root.notes[i].id === root.selectedId) {
+                    root.notes[i].title = titleInput.text
+                    root.notes[i].body = bodyArea.text
+                    root.notes[i].updatedAt = now
+                    if (i > 0) {
+                        var note = root.notes.splice(i, 1)[0]
+                        root.notes.unshift(note)
+                    }
+                    break
+                }
+            }
+            root.notes = root.notes.slice()
             root.save()
         }
     }
 
-    // Fixed-width sidebar + flexible editor side-by-side
     Row {
         id: mainRow
         anchors.fill: parent
         spacing: 12 * Appearance.effectiveScale
 
-        // ── Note List Sidebar (fixed width, always same) ──
         ColumnLayout {
             id: sidebar
             width: 200 * Appearance.effectiveScale
             height: parent.height
             spacing: 8 * Appearance.effectiveScale
 
-            // New note button
             RippleButton {
                 Layout.fillWidth: true
                 implicitHeight: 40 * Appearance.effectiveScale
@@ -109,7 +112,6 @@ Item {
                 }
             }
 
-            // Note list
             Rectangle {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
@@ -125,15 +127,20 @@ Item {
                     model: root.notes.slice().sort((a, b) =>
                         new Date(b.updatedAt) - new Date(a.updatedAt))
 
-                    delegate: Rectangle {
+                    delegate: Item {
                         required property var modelData
                         width: noteList.width
                         height: 52 * Appearance.effectiveScale
-                        radius: Appearance.rounding.small
-                        color: root.selectedId === modelData.id
-                            ? Appearance.colors.colPrimaryContainer
-                            : (nMouse.containsMouse ? Appearance.colors.colLayer2 : "transparent")
-                        Behavior on color { ColorAnimation { duration: 120 } }
+
+                        readonly property bool isHovered: nMouse.containsMouse
+
+                        Rectangle {
+                            anchors.fill: parent
+                            radius: Appearance.rounding.small
+                            color: root.selectedId === modelData.id
+                                ? Appearance.colors.colPrimaryContainer
+                                : (isHovered ? Appearance.m3colors.m3surfaceContainerHigh : "transparent")
+                        }
 
                         ColumnLayout {
                             anchors.left: parent.left; anchors.right: parent.right
@@ -176,13 +183,11 @@ Item {
             }
         }
 
-        // ── Note Editor ──
         Item {
             id: editorArea
             width: mainRow.width - sidebar.width - mainRow.spacing
             height: parent.height
 
-            // Show placeholder when nothing is selected
             Item {
                 anchors.fill: parent
                 visible: root.selectedId === ""
@@ -200,13 +205,11 @@ Item {
                 }
             }
 
-            // Editor (only when a note is selected)
             ColumnLayout {
                 anchors.fill: parent
                 spacing: 8 * Appearance.effectiveScale
                 visible: root.selectedId !== ""
 
-            // Title bar + delete button
             RowLayout {
                 Layout.fillWidth: true
                 spacing: 8 * Appearance.effectiveScale
@@ -251,7 +254,6 @@ Item {
                 }
             }
 
-            // Body editor
             Rectangle {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
@@ -271,8 +273,6 @@ Item {
                     TextEdit {
                         id: bodyArea
                         width: bodyFlickable.width
-                        // Always fill at least the visible Flickable height so
-                        // clicking anywhere in the empty area starts typing
                         height: Math.max(implicitHeight, bodyFlickable.height)
                         font.family: Appearance.font.family.main
                         font.pixelSize: Appearance.font.pixelSize.normal
@@ -283,7 +283,7 @@ Item {
                         onTextChanged: saveTimer.restart()
 
                         onCursorRectangleChanged: {
-                            const margin = 20 * Appearance.effectiveScale // Extra padding to keep cursor comfortable
+                            const margin = 20 * Appearance.effectiveScale
                             if (cursorRectangle.y < bodyFlickable.contentY) {
                                 bodyFlickable.contentY = cursorRectangle.y
                             } else if (cursorRectangle.y + cursorRectangle.height + margin > bodyFlickable.contentY + bodyFlickable.height) {
