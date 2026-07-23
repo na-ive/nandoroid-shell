@@ -51,7 +51,7 @@ Singleton {
     property string uptime: ""
     
     // List of objects: { mount: string, usage: real, total: real, used: real }
-    property var diskStats: []
+    property ListModel diskStats: ListModel {}
     
     // Processes (Disabled for now to fix SIGSEGV)
     property var allProcesses: []
@@ -67,12 +67,12 @@ Singleton {
 
     // History tracking
     readonly property int historySize: 60
-    property var cpuHistory: []
-    property var memHistory: []
-    property var networkRxHistory: []
-    property var networkTxHistory: []
-    property var diskReadHistory: []
-    property var diskWriteHistory: []
+    property var cpuHistory: new Array(historySize).fill(0)
+    property var memHistory: new Array(historySize).fill(0)
+    property var networkRxHistory: new Array(historySize).fill(0)
+    property var networkTxHistory: new Array(historySize).fill(0)
+    property var diskReadHistory: new Array(historySize).fill(0)
+    property var diskWriteHistory: new Array(historySize).fill(0)
 
     function addToHistory(array, value) {
         let newArray = (array || []).slice();
@@ -237,17 +237,32 @@ Singleton {
                             if (Config.options.system && Config.options.system.monitoredDisks) {
                                 monitored = Config.options.system.monitoredDisks;
                             }
-                            let newStats = [];
-                            monitored.forEach(diskInfo => {
-                                const path = diskInfo.path || "/", alias = diskInfo.alias || "", hasAlias = alias !== "" && alias !== path, displayLabel = hasAlias ? alias : path;
-                                const disk = data.diskmounts.find(m => m.mount === path || m.mountpoint === path);
-                                if (disk) {
-                                    let pctValue = disk.percent_used || 0;
-                                    if (typeof disk.percent === 'string') pctValue = parseFloat(disk.percent.replace('%', ''));
-                                    newStats.push({ path: path, label: displayLabel.toUpperCase(), hasAlias: hasAlias, usage: isNaN(pctValue) ? 0 : pctValue / 100, total: Math.round((disk.total_bytes || 0) / (1024 * 1024)) || 0, used: Math.round((disk.used_bytes || 0) / (1024 * 1024)) || 0 });
-                                }
-                            });
-                            if (JSON.stringify(root.diskStats) !== JSON.stringify(newStats)) root.diskStats = newStats;
+
+                            if (root.diskStats.count === monitored.length) {
+                                monitored.forEach((diskInfo, i) => {
+                                    const path = diskInfo.path || "/", alias = diskInfo.alias || "", hasAlias = alias !== "" && alias !== path, displayLabel = hasAlias ? alias : path;
+                                    const disk = data.diskmounts.find(m => m.mount === path || m.mountpoint === path);
+                                    if (disk) {
+                                        let pctValue = disk.percent_used || 0;
+                                        if (typeof disk.percent === 'string') pctValue = parseFloat(disk.percent.replace('%', ''));
+                                        const usage = isNaN(pctValue) ? 0 : pctValue / 100;
+                                        const total = Math.round((disk.total_bytes || 0) / (1024 * 1024)) || 0;
+                                        const used = Math.round((disk.used_bytes || 0) / (1024 * 1024)) || 0;
+                                        root.diskStats.set(i, { path: path, label: displayLabel.toUpperCase(), hasAlias: hasAlias, usage: usage, total: total, used: used });
+                                    }
+                                });
+                            } else {
+                                root.diskStats.clear();
+                                monitored.forEach(diskInfo => {
+                                    const path = diskInfo.path || "/", alias = diskInfo.alias || "", hasAlias = alias !== "" && alias !== path, displayLabel = hasAlias ? alias : path;
+                                    const disk = data.diskmounts.find(m => m.mount === path || m.mountpoint === path);
+                                    if (disk) {
+                                        let pctValue = disk.percent_used || 0;
+                                        if (typeof disk.percent === 'string') pctValue = parseFloat(disk.percent.replace('%', ''));
+                                        root.diskStats.append({ path: path, label: displayLabel.toUpperCase(), hasAlias: hasAlias, usage: isNaN(pctValue) ? 0 : pctValue / 100, total: Math.round((disk.total_bytes || 0) / (1024 * 1024)) || 0, used: Math.round((disk.used_bytes || 0) / (1024 * 1024)) || 0 });
+                                    }
+                                });
+                            }
                         }
 
                         if (data.processes && Array.isArray(data.processes)) {
@@ -295,14 +310,11 @@ Singleton {
         if (Config.options.system && Config.options.system.monitoredDisks) {
             monitored = Config.options.system.monitoredDisks;
         }
-        root.diskStats = monitored.map(d => ({
-            path: d.path || "/",
-            label: (d.alias || d.path || "/").toUpperCase(),
-            hasAlias: !!d.alias,
-            usage: 0,
-            total: 0,
-            used: 0
-        }));
+        root.diskStats.clear();
+        monitored.forEach(d => {
+            const path = d.path || "/", alias = d.alias || "", hasAlias = !!alias;
+            root.diskStats.append({ path: path, label: (alias || path).toUpperCase(), hasAlias: hasAlias, usage: 0, total: 0, used: 0 });
+        });
     }
 
     Component.onCompleted: {
