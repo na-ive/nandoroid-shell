@@ -857,13 +857,13 @@ Item {
                                 
                                 Item {
                                     Layout.fillWidth: true; Layout.fillHeight: true
-                                    Rectangle {
-                                        id: imgPlate
-                                        anchors.fill: parent; radius: 18 * Appearance.effectiveScale; color: delegateRoot.inNaiveMode ? (model.color || Appearance.colors.colLayer2) : Appearance.colors.colLayer2
-                                        layer.enabled: true
-                                        layer.effect: OpacityMask {
-                                            maskSource: Rectangle { width: imgPlate.width; height: imgPlate.height; radius: 18 * Appearance.effectiveScale }
-                                        }
+                                        Rectangle {
+                                            id: imgPlate
+                                            anchors.fill: parent; radius: 10 * Appearance.effectiveScale; color: delegateRoot.inNaiveMode ? (model.color || Appearance.colors.colLayer2) : Appearance.colors.colLayer2
+                                            layer.enabled: true
+                                            layer.effect: OpacityMask {
+                                                maskSource: Rectangle { width: imgPlate.width; height: imgPlate.height; radius: 10 * Appearance.effectiveScale }
+                                            }
 
                                         HoverHandler { id: imgHover }
 
@@ -885,7 +885,7 @@ Item {
                                             anchors.fill: parent
                                             border.width: (delegateRoot.isSelected ? 3 : 4) * Appearance.effectiveScale
                                             border.color: Appearance.colors.colPrimary
-                                            radius: 18 * Appearance.effectiveScale
+                                            radius: 10 * Appearance.effectiveScale
                                             color: "transparent"
                                             visible: delegateRoot.isSelected || delegateRoot.isCurrentWallpaper
                                         }
@@ -898,8 +898,6 @@ Item {
                                             width: 28 * Appearance.effectiveScale; height: 28 * Appearance.effectiveScale
                                             radius: 14 * Appearance.effectiveScale
                                             color: Appearance.colors.colPrimary
-                                            border.width: 2 * Appearance.effectiveScale
-                                            border.color: Appearance.colors.colOnPrimary
 
                                             MaterialSymbol {
                                                 anchors.centerIn: parent
@@ -1033,7 +1031,7 @@ Item {
                                 }
                                 StyledText {
                                     Layout.fillWidth: true; text: currentFileName; horizontalAlignment: Text.AlignHCenter
-                                    font.pixelSize: Appearance.font.pixelSize.smallest; elide: Text.ElideRight; color: Appearance.colors.colOnLayer1; opacity: 0.7
+                                    font.pixelSize: Appearance.font.pixelSize.smallest; elide: Text.ElideRight; color: delegateRoot.isCurrentWallpaper ? Appearance.m3colors.m3primary : Appearance.colors.colOnLayer1; opacity: delegateRoot.isCurrentWallpaper ? 1 : 0.7
                                 }
                             }
                         }
