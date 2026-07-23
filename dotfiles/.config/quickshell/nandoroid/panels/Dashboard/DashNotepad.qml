@@ -156,9 +156,11 @@ Item {
                                 property string plainBody: root.stripHtml(modelData.body)
                                 text: plainBody.split("\n")[0] || (modelData.body && modelData.body.trim() !== "" ? "Rich content" : "Empty note")
                                 font.pixelSize: Appearance.font.pixelSize.smaller
-                                color: Appearance.colors.colSubtext
+                                color: root.selectedId === modelData.id
+                                    ? Appearance.colors.colOnPrimaryContainer
+                                    : Appearance.colors.colSubtext
                                 elide: Text.ElideRight
-                                opacity: 0.8
+                                opacity: root.selectedId === modelData.id ? 0.75 : 1.0
                             }
                         }
 

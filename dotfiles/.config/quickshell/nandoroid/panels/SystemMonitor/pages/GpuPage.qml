@@ -89,7 +89,7 @@ Item {
                 MaterialSymbol {
                     text: "videogame_asset_off"
                     iconSize: 48 * Appearance.effectiveScale
-                    color: Appearance.m3colors.m3outline
+                    color: Appearance.colors.colSubtext
                     Layout.alignment: Qt.AlignCenter
                 }
                 StyledText {

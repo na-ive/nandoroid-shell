@@ -212,7 +212,7 @@ Singleton {
 
     // --- Derived Layer Colors ---
     colors: QtObject {
-        property color colSubtext: m3colors.m3outline
+        property color colSubtext: m3colors.m3onSurfaceVariant
         // Layer 0 (background)
         property color colLayer0: m3colors.m3background
         property color colOnLayer0: m3colors.m3onBackground
