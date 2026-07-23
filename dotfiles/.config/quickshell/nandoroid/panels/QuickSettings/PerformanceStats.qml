@@ -86,6 +86,13 @@ Rectangle {
             Repeater {
                 model: SystemData.diskStats
                 delegate: RippleButton {
+                    required property string path
+                    required property string label
+                    required property bool hasAlias
+                    required property real usage
+                    required property real total
+                    required property real used
+
                     Layout.fillWidth: true
                     implicitHeight: 60 * Appearance.effectiveScale
                     buttonRadius: 12 * Appearance.effectiveScale
@@ -111,14 +118,14 @@ Rectangle {
                                 color: Appearance.m3colors.m3primary
                             }
                             StyledText {
-                                text: modelData.hasAlias ? `${modelData.label} DISK USAGE` : `"${modelData.label}" DISK USAGE`
+                                text: hasAlias ? `${label} DISK USAGE` : `"${label}" DISK USAGE`
                                 font.pixelSize: Math.round(10 * Appearance.effectiveScale)
                                 font.weight: Font.DemiBold
                                 color: Appearance.m3colors.m3outline
                             }
                             Item { Layout.fillWidth: true }
                             StyledText {
-                                text: `${Math.round(modelData.usage * 100)}%`
+                                text: `${Math.round(usage * 100)}%`
                                 font.pixelSize: Math.round(10 * Appearance.effectiveScale)
                                 font.weight: Font.DemiBold
                                 color: Appearance.m3colors.m3onSurface
@@ -134,11 +141,11 @@ Rectangle {
                             clip: true
 
                             Rectangle {
-                                width: parent.width * Math.max(0, Math.min(1, modelData.usage))
+                                width: parent.width * Math.max(0, Math.min(1, usage))
                                 height: parent.height
                                 radius: 4 * Appearance.effectiveScale
                                 color: Appearance.m3colors.m3primary
-                                visible: modelData.usage > 0
+                                visible: usage > 0
 
                                 Behavior on width {
                                     NumberAnimation { duration: 500; easing.type: Easing.OutCubic }

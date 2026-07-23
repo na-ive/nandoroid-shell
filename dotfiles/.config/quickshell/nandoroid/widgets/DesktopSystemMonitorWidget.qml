@@ -252,12 +252,7 @@ Item {
                             right: parent.right
                             bottom: parent.bottom
                         }
-                        height: {
-                            if (SystemData.diskStats && SystemData.diskStats.length > 0) {
-                                return parent.height * SystemData.diskStats[0].usage;
-                            }
-                            return 0;
-                        }
+                        height: parent.height * SystemData.primaryDiskUsage
                         color: Appearance.colors.colTertiary
                     }
                 }
@@ -272,13 +267,7 @@ Item {
                     anchors.centerIn: parent
                     text: "storage"
                     iconSize: 16 * Appearance.effectiveScale
-                    color: {
-                        let usage = 0;
-                        if (SystemData.diskStats && SystemData.diskStats.length > 0) {
-                            usage = SystemData.diskStats[0].usage;
-                        }
-                        return usage > 0.55 ? Appearance.colors.colOnTertiary : Appearance.colors.colTertiary;
-                    }
+                    color: SystemData.primaryDiskUsage > 0.55 ? Appearance.colors.colOnTertiary : Appearance.colors.colTertiary
                 }
             }
 
@@ -293,12 +282,7 @@ Item {
 
                 StyledText {
                     Layout.alignment: Qt.AlignHCenter
-                    text: {
-                        if (SystemData.diskStats && SystemData.diskStats.length > 0) {
-                            return Math.round(SystemData.diskStats[0].usage * 100) + "%";
-                        }
-                        return "0%";
-                    }
+                    text: Math.round(SystemData.primaryDiskUsage * 100) + "%"
                     font.pixelSize: Appearance.font.pixelSize.normal
                     font.weight: Font.Bold
                     color: Appearance.colors.colOnTertiaryContainer

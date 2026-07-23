@@ -52,6 +52,7 @@ Singleton {
     
     // List of objects: { mount: string, usage: real, total: real, used: real }
     property ListModel diskStats: ListModel {}
+    property real primaryDiskUsage: 0
     
     // Processes (Disabled for now to fix SIGSEGV)
     property var allProcesses: []
@@ -263,6 +264,7 @@ Singleton {
                                     }
                                 });
                             }
+                            root.primaryDiskUsage = root.diskStats.count > 0 ? root.diskStats.get(0).usage : 0;
                         }
 
                         if (data.processes && Array.isArray(data.processes)) {
