@@ -106,11 +106,14 @@ Item {
     readonly property bool isStandalone: {
         if (forcePill) return true;
         if (forceNotStandalone) return false;
-        
+
         // If user manually set one boundary but not the other, they imply it's part of a group.
         if (forceFirst === true && forceLast === false) return false;
         if (forceFirst === false && forceLast === true) return false;
-        
+
+        // Both explicitly true → definitively a single standalone item.
+        if (forceFirst === true && forceLast === true) return true;
+
         return isFirst && isLast;
     }
     
