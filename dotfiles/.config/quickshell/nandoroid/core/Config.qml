@@ -489,11 +489,18 @@ property JsonObject background: JsonObject {
             }
 
             // --- Overview Panel ---
-            property QtObject overview: QtObject {
+            // Separate scales: default 15% (5-50), niri 50% (10-75)
+            property JsonObject overview: JsonObject {
+                property bool enable: true
+                property string style: "default" // "default" | "niri"
+                property real scale: 0.15 // Range: 5–50%, scale for standard grid
+                property real niriScale: 0.5 // Range: 10–75%, scale for Niri-style layout
                 property int rows: 2
                 property int columns: 5
-                property real scale: 0.15
-                property real workspaceSpacing: 10
+                property bool orderRightLeft: false
+                property bool orderBottomUp: false
+                property bool centerIcons: true
+                property real workspaceSpacing: 10 // Spacing between workspaces in pixels
             }
 
             // --- Notifications ---

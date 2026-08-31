@@ -11,6 +11,7 @@ Item {
     property var currentScreen
 
     readonly property bool isScrollingLayout: GlobalStates.hyprlandLayout === "scrolling"
+    readonly property bool isNiriStyle: Config.ready && Config.options.overview && Config.options.overview.style === "niri"
 
     width: implicitWidth
     height: implicitHeight
@@ -34,7 +35,7 @@ Item {
         id: overviewLoader
         anchors.fill: parent
         active: true
-        sourceComponent: isScrollingLayout ? scrollingOverviewComponent : standardOverviewComponent
+        sourceComponent: isNiriStyle ? niriOverviewComponent : (isScrollingLayout ? scrollingOverviewComponent : standardOverviewComponent)
     }
 
     Component {
@@ -45,5 +46,11 @@ Item {
     Component {
         id: scrollingOverviewComponent
         ScrollingOverview { currentScreen: root.currentScreen }
+    }
+
+    Component {
+        id: niriOverviewComponent
+        // Niri uses `screen` property
+        NiriOverview { screen: root.currentScreen }
     }
 }
