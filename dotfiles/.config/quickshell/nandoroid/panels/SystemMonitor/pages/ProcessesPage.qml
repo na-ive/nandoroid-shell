@@ -202,8 +202,8 @@ Item {
 
                 HeaderItem { text: I18nService.tr("PID"); field: "pid"; Layout.preferredWidth: 65 * Appearance.effectiveScale; alignment: Text.AlignLeft }
                 HeaderItem { text: I18nService.tr("Name"); field: "command"; Layout.fillWidth: true; alignment: Text.AlignLeft }
-                HeaderItem { text: I18nService.tr("CPU"); field: "cpu"; Layout.preferredWidth: 80 * Appearance.effectiveScale; alignment: Text.AlignRight }
-                HeaderItem { text: I18nService.tr("Memory"); field: "memoryKB"; Layout.preferredWidth: 95 * Appearance.effectiveScale; alignment: Text.AlignRight }
+                HeaderItem { text: I18nService.tr("CPU") + " (" + Math.round(SystemData.cpuUsage * 100) + "%)"; field: "cpu"; Layout.preferredWidth: 112 * Appearance.effectiveScale; alignment: Text.AlignRight }
+                HeaderItem { text: I18nService.tr("Memory") + " (" + Math.round(SystemData.memUsage * 100) + "%)"; field: "memoryKB"; Layout.preferredWidth: 128 * Appearance.effectiveScale; alignment: Text.AlignRight }
                 HeaderItem { text: I18nService.tr("User"); field: "username"; Layout.preferredWidth: 95 * Appearance.effectiveScale; alignment: Text.AlignRight }
             }
         }
@@ -272,11 +272,11 @@ Item {
                         }
                     }
 
-                    // CPU Usage Column
+                    // CPU Usage Column (width synced with sort header 112)
                     StyledText {
                         text: modelData.cpu.toFixed(1) + "%"
                         font.family: Appearance.font.family.numbers
-                        Layout.preferredWidth: 80 * Appearance.effectiveScale
+                        Layout.preferredWidth: 112 * Appearance.effectiveScale
                         horizontalAlignment: Text.AlignRight
                         font.pixelSize: Appearance.font.pixelSize.smaller
                         font.weight: Font.Normal
@@ -285,12 +285,12 @@ Item {
                             : (modelData.cpu > 5 ? Appearance.colors.colPrimary : Appearance.m3colors.m3onSurface)
                     }
 
-                    // Memory Column
+                    // Memory Column (width synced with sort header 128)
                     StyledText {
                         readonly property real memMB: modelData.memoryKB / 1024
                         text: memMB >= 1024 ? (memMB / 1024).toFixed(2) + " GB" : memMB.toFixed(1) + " MB"
                         font.family: Appearance.font.family.numbers
-                        Layout.preferredWidth: 95 * Appearance.effectiveScale
+                        Layout.preferredWidth: 128 * Appearance.effectiveScale
                         horizontalAlignment: Text.AlignRight
                         font.pixelSize: Appearance.font.pixelSize.smaller
                         font.weight: Font.Normal
@@ -332,13 +332,13 @@ Item {
         property string text
         property string field
         property int alignment: Text.AlignLeft
-        
+
         Layout.fillHeight: true
         hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
 
         readonly property bool isActive: root.sortField === field
-        
+
         onClicked: {
             if (root.sortField === field) {
                 root.sortAscending = !root.sortAscending;
@@ -351,18 +351,21 @@ Item {
         RowLayout {
             anchors.fill: parent
             spacing: 4 * Appearance.effectiveScale
-            
-            // For Right-Aligned columns: Spacer first, then Arrow (if active), then Text
+
+            // For Right-Aligned columns: Spacer first, then Arrow placeholder, then Text
+            // Arrow uses opacity (not visible) so layout geometry stays fixed when sort changes
             Item {
                 visible: parent.parent.alignment === Text.AlignRight
                 Layout.fillWidth: true
             }
 
             MaterialSymbol {
-                visible: parent.parent.alignment === Text.AlignRight && isActive
+                visible: parent.parent.alignment === Text.AlignRight
+                opacity: isActive ? 1 : 0
                 text: root.sortAscending ? "arrow_upward" : "arrow_downward"
                 iconSize: 12 * Appearance.effectiveScale
                 color: Appearance.colors.colPrimary
+                Layout.alignment: Qt.AlignVCenter
             }
 
             StyledText {
@@ -371,14 +374,18 @@ Item {
                 font.weight: Font.DemiBold
                 color: isActive ? Appearance.colors.colPrimary : Appearance.colors.colSubtext
                 horizontalAlignment: parent.parent.alignment
+                verticalAlignment: Text.AlignVCenter
+                Layout.alignment: Qt.AlignVCenter
             }
 
-            // For Left-Aligned columns: Text first, then Arrow (if active), then Spacer
+            // For Left-Aligned columns: Text first, then Arrow placeholder, then Spacer
             MaterialSymbol {
-                visible: parent.parent.alignment === Text.AlignLeft && isActive
+                visible: parent.parent.alignment === Text.AlignLeft
+                opacity: isActive ? 1 : 0
                 text: root.sortAscending ? "arrow_upward" : "arrow_downward"
                 iconSize: 12 * Appearance.effectiveScale
                 color: Appearance.colors.colPrimary
+                Layout.alignment: Qt.AlignVCenter
             }
 
             Item {
