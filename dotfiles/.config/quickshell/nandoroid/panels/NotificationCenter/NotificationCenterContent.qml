@@ -539,19 +539,19 @@ FocusScope {
                             NumberAnimation { duration: 250; easing.type: Easing.OutSine }
                         }
                         
-                        MaterialShape { 
+                        MaterialShape {
                             Layout.alignment: Qt.AlignCenter
                             implicitWidth: 100 * Appearance.effectiveScale
                             implicitHeight: 100 * Appearance.effectiveScale
-                            color: Appearance.m3colors.m3surfaceContainerHigh
-                            shape: MaterialShape.Shape.Ghostish 
-                            
+                            color: Appearance.m3colors.m3primaryContainer
+                            shape: MaterialShape.Shape.Ghostish
+
                             MaterialSymbol {
                                 id: bellIcon
                                 anchors.centerIn: parent
                                 text: "notifications"
                                 iconSize: 56 * Appearance.effectiveScale
-                                color: Appearance.m3colors.m3onSurfaceVariant 
+                                color: Appearance.m3colors.m3onPrimaryContainer 
                                 
                                 transform: Rotation { origin.x: bellIcon.width / 2; origin.y: 0; angle: 0; id: bellRotation }
 
@@ -592,12 +592,12 @@ FocusScope {
                     }
                 }
 
-                // ── Bottom Action Row ──
+                // ── Bottom Action Row — reverted (muscle memory), idle clear not dimmed ──
                 RowLayout {
                     Layout.fillWidth: true
                     Layout.alignment: Qt.AlignHCenter
                     spacing: 4 * Appearance.effectiveScale
-                    visible: true 
+                    visible: true
 
                     SegmentedButton {
                         id: modeButton
@@ -607,28 +607,28 @@ FocusScope {
                         implicitHeight: 40 * Appearance.effectiveScale
                         iconName: Notifications.mode === 2 ? "notifications_off" : (Notifications.mode === 1 ? "vibration" : "notifications_active")
                         iconSize: 20 * Appearance.effectiveScale
-                        
+
                         colActive: Appearance.m3colors.m3primaryContainer
                         colActiveText: Appearance.m3colors.m3onPrimaryContainer
                         colInactive: Appearance.m3colors.m3surfaceContainerHigh
-                        colInactiveText: Appearance.m3colors.m3onSurfaceVariant
-                        
+                        colInactiveText: Appearance.m3colors.m3onSurface
+
                         onClicked: Notifications.mode = (Notifications.mode + 1) % 3
                     }
 
-                    // Notification Count Wrapper
+                    // Notification Count Wrapper (middle, revert: fillWidth)
                     SegmentedWrapper {
                         Layout.fillWidth: true
                         Layout.preferredHeight: 40 * Appearance.effectiveScale
                         forcePill: true
                         smallRadius: 4 * Appearance.effectiveScale
                         color: Appearance.m3colors.m3surfaceContainerHigh
-                        
+
                         StyledText {
                             anchors.centerIn: parent
                             text: Notifications.list.length > 0 ? Notifications.list.length + " " + I18nService.tr("notifications") : I18nService.tr("No notifications")
                             font.pixelSize: Appearance.font.pixelSize.small
-                            color: Appearance.m3colors.m3onSurfaceVariant
+                            color: Appearance.m3colors.m3onSurface
                         }
                     }
 
@@ -637,16 +637,30 @@ FocusScope {
                         implicitWidth: 56 * Appearance.effectiveScale
                         implicitHeight: 40 * Appearance.effectiveScale
                         forcePill: true
+                        visible: Notifications.list.length > 0
                         iconName: "delete_sweep"
                         iconSize: 20 * Appearance.effectiveScale
-                        enabled: Notifications.list.length > 0
-                        opacity: enabled ? 1 : 0.5
-                        
                         colInactive: Appearance.m3colors.m3surfaceContainerHigh
+                        colInactiveText: Appearance.m3colors.m3onSurface
                         onClicked: {
                             root._triggeredByClear = true
-                            // Give time for list to fade out before actually clearing
                             clearDelayTimer.restart()
+                        }
+                    }
+
+                    SegmentedWrapper {
+                        visible: Notifications.list.length === 0
+                        Layout.preferredWidth: 56 * Appearance.effectiveScale
+                        Layout.preferredHeight: 40 * Appearance.effectiveScale
+                        forcePill: true
+                        smallRadius: 4 * Appearance.effectiveScale
+                        color: Appearance.m3colors.m3surfaceContainerHigh
+
+                        MaterialSymbol {
+                            anchors.centerIn: parent
+                            text: "delete_sweep"
+                            iconSize: 20 * Appearance.effectiveScale
+                            color: Appearance.m3colors.m3onSurface
                         }
                     }
 
