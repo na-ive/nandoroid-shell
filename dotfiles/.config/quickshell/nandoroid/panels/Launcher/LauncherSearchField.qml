@@ -107,33 +107,47 @@ Rectangle {
                 if (!root.launcherContent) return;
                 
                 const isEmojiGrid = LauncherSearch.isEmojiMode;
+                const isWallGrid = LauncherSearch.isWallMode;
                 const emojiFlat = isEmojiGrid && root.launcherContent && root.launcherContent.emojiView ? root.launcherContent.emojiView.flat : null;
                 const navResults = isEmojiGrid ? emojiFlat : LauncherSearch.results;
                 const total = navResults ? navResults.length : 0;
                 if (total <= 0) return;
 
-                const isGrid = (!root.isSpotlightMode && !LauncherSearch.isPluginSearch && !LauncherSearch.query) || isEmojiGrid;
-                const cols = isGrid ? (isEmojiGrid ? root.launcherContent.emojiColumns : (root.launcherContent.gridColumns || 5)) : 1;
+                const isGrid = (!root.isSpotlightMode && !LauncherSearch.isPluginSearch && !LauncherSearch.query) || isEmojiGrid || isWallGrid;
+                let cols = 1;
+                if (isGrid) {
+                    if (isEmojiGrid) cols = root.launcherContent.emojiColumns;
+                    else if (isWallGrid) cols = root.launcherContent.wallColumns || 2;
+                    else cols = root.launcherContent.gridColumns || 5;
+                }
                 const lc = root.launcherContent;
 
                 if (event.key === Qt.Key_Up) {
                     lc.isKeyboardNavigation = true;
-                    lc.selectedIndex = isEmojiGrid ? lc.emojiNavigate(0, -1) : Math.max(0, lc.selectedIndex - cols);
+                    if (isEmojiGrid) lc.selectedIndex = lc.emojiNavigate(0, -1);
+                    else if (isWallGrid) lc.selectedIndex = lc.wallNavigate(0, -1);
+                    else lc.selectedIndex = Math.max(0, lc.selectedIndex - cols);
                     event.accepted = true;
                 } else if (event.key === Qt.Key_Down) {
                     lc.isKeyboardNavigation = true;
-                    lc.selectedIndex = isEmojiGrid ? lc.emojiNavigate(0, 1) : Math.min(Math.max(0, total - 1), lc.selectedIndex + cols);
+                    if (isEmojiGrid) lc.selectedIndex = lc.emojiNavigate(0, 1);
+                    else if (isWallGrid) lc.selectedIndex = lc.wallNavigate(0, 1);
+                    else lc.selectedIndex = Math.min(Math.max(0, total - 1), lc.selectedIndex + cols);
                     event.accepted = true;
                 } else if (event.key === Qt.Key_Left) {
                     if (isGrid) {
                         lc.isKeyboardNavigation = true;
-                        lc.selectedIndex = isEmojiGrid ? lc.emojiNavigate(-1, 0) : Math.max(0, lc.selectedIndex - 1);
+                        if (isEmojiGrid) lc.selectedIndex = lc.emojiNavigate(-1, 0);
+                        else if (isWallGrid) lc.selectedIndex = lc.wallNavigate(-1, 0);
+                        else lc.selectedIndex = Math.max(0, lc.selectedIndex - 1);
                         event.accepted = true;
                     }
                 } else if (event.key === Qt.Key_Right) {
                     if (isGrid) {
                         lc.isKeyboardNavigation = true;
-                        lc.selectedIndex = isEmojiGrid ? lc.emojiNavigate(1, 0) : Math.min(total - 1, lc.selectedIndex + 1);
+                        if (isEmojiGrid) lc.selectedIndex = lc.emojiNavigate(1, 0);
+                        else if (isWallGrid) lc.selectedIndex = lc.wallNavigate(1, 0);
+                        else lc.selectedIndex = Math.min(total - 1, lc.selectedIndex + 1);
                         event.accepted = true;
                     }
                 } else if (event.key === Qt.Key_Delete) {

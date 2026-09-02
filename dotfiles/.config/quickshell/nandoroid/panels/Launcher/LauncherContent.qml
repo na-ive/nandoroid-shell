@@ -23,8 +23,20 @@ Rectangle {
     function emojiNavigate(dx, dy) {
         return emojiContent.emojiNavigate(dx, dy);
     }
+    function wallNavigate(dx, dy) {
+        return wallContent.wallNavigate(dx, dy);
+    }
+    readonly property int wallColumns: 4
 
     function executeSelected() {
+        if (LauncherSearch.isWallMode) {
+            if (root.resultsProxy && root.resultsProxy.length > 0 && selectedIndex >= 0 && selectedIndex < root.resultsProxy.length) {
+                const sel = root.resultsProxy[selectedIndex];
+                sel.execute();
+                if (!sel.keepOpen) GlobalStates.launcherOpen = false;
+            }
+            return;
+        }
         if (LauncherSearch.isEmojiMode) {
             const flat = root.emojiView.flat;
             if (flat && flat.length > 0 && selectedIndex >= 0 && selectedIndex < flat.length) {
@@ -197,11 +209,30 @@ Rectangle {
             }
         }
 
+        LauncherWallContent {
+            id: wallContent
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            visible: LauncherSearch.isWallMode
+            isSpotlight: root.isSpotlight
+            launcherContent: root
+            selectedIndex: root.selectedIndex
+            onSelectedIndexChanged: {
+                if (root.selectedIndex !== selectedIndex)
+                    root.selectedIndex = selectedIndex;
+            }
+            isKeyboardNavigation: root.isKeyboardNavigation
+            onIsKeyboardNavigationChanged: {
+                if (root.isKeyboardNavigation !== isKeyboardNavigation)
+                    root.isKeyboardNavigation = isKeyboardNavigation;
+            }
+        }
+
         // ── Main Content Container (Grid or List) ──
         Item {
             Layout.fillWidth: true
             Layout.fillHeight: true
-            visible: !LauncherSearch.isEmojiMode
+            visible: !LauncherSearch.isEmojiMode && !LauncherSearch.isWallMode
 
             GridView {
                 id: appGrid

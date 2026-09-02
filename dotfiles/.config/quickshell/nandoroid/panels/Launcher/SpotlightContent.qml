@@ -24,8 +24,23 @@ Rectangle {
     function emojiNavigate(dx, dy) {
         return emojiContent.emojiNavigate(dx, dy);
     }
+    function wallNavigate(dx, dy) {
+        return wallContent.wallNavigate(dx, dy);
+    }
+    readonly property int wallColumns: 2
 
     function executeSelected() {
+        if (LauncherSearch.isWallMode) {
+            if (root.resultsProxy && root.resultsProxy.length > 0 && selectedIndex >= 0 && selectedIndex < root.resultsProxy.length) {
+                const sel = root.resultsProxy[selectedIndex];
+                sel.execute();
+                if (!sel.keepOpen) {
+                    GlobalStates.launcherOpen = false;
+                    GlobalStates.spotlightOpen = false;
+                }
+            }
+            return;
+        }
         if (LauncherSearch.isEmojiMode) {
             const flat = root.emojiView.flat;
             if (flat && flat.length > 0 && selectedIndex >= 0 && selectedIndex < flat.length) {
@@ -61,28 +76,26 @@ Rectangle {
     }
     // Backup grid navigation in case focus isn't on the search field
     Keys.onPressed: (event) => {
-        if (!LauncherSearch.isEmojiMode)
-            return ;
-
-        const total = root.emojiView.flat.length;
-        if (total <= 0)
-            return ;
-
+        const isEmoji = LauncherSearch.isEmojiMode;
+        const isWall = LauncherSearch.isWallMode;
+        if (!isEmoji && !isWall) return;
+        const total = isEmoji ? root.emojiView.flat.length : root.resultsProxy.length;
+        if (total <= 0) return;
         if (event.key === Qt.Key_Up) {
             root.isKeyboardNavigation = true;
-            root.selectedIndex = root.emojiNavigate(0, -1);
+            root.selectedIndex = isEmoji ? root.emojiNavigate(0, -1) : root.wallNavigate(0, -1);
             event.accepted = true;
         } else if (event.key === Qt.Key_Down) {
             root.isKeyboardNavigation = true;
-            root.selectedIndex = root.emojiNavigate(0, 1);
+            root.selectedIndex = isEmoji ? root.emojiNavigate(0, 1) : root.wallNavigate(0, 1);
             event.accepted = true;
         } else if (event.key === Qt.Key_Left) {
             root.isKeyboardNavigation = true;
-            root.selectedIndex = root.emojiNavigate(-1, 0);
+            root.selectedIndex = isEmoji ? root.emojiNavigate(-1, 0) : root.wallNavigate(-1, 0);
             event.accepted = true;
         } else if (event.key === Qt.Key_Right) {
             root.isKeyboardNavigation = true;
-            root.selectedIndex = root.emojiNavigate(1, 0);
+            root.selectedIndex = isEmoji ? root.emojiNavigate(1, 0) : root.wallNavigate(1, 0);
             event.accepted = true;
         }
     }
@@ -138,11 +151,30 @@ Rectangle {
             }
         }
 
+        LauncherWallContent {
+            id: wallContent
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            visible: LauncherSearch.isWallMode
+            isSpotlight: root.isSpotlight
+            launcherContent: root
+            selectedIndex: root.selectedIndex
+            onSelectedIndexChanged: {
+                if (root.selectedIndex !== selectedIndex)
+                    root.selectedIndex = selectedIndex;
+            }
+            isKeyboardNavigation: root.isKeyboardNavigation
+            onIsKeyboardNavigationChanged: {
+                if (root.isKeyboardNavigation !== isKeyboardNavigation)
+                    root.isKeyboardNavigation = isKeyboardNavigation;
+            }
+        }
+
         // ── Spotlight Content Container (Result List) ──
         Item {
             Layout.fillWidth: true
             Layout.fillHeight: true
-            visible: !LauncherSearch.isEmojiMode
+            visible: !LauncherSearch.isEmojiMode && !LauncherSearch.isWallMode
 
             ListView {
                 id: pluginList

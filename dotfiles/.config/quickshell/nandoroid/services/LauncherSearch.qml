@@ -733,6 +733,15 @@ Singleton {
         return root.query.trim().startsWith(Config.options.search.clipboardPrefix);
     }
 
+    readonly property bool isWallMode: {
+        if (!Config.ready || !Config.options.search) return false;
+        const q = root.query.trim().toLowerCase();
+        const p = Config.options.search.settingsPrefix.toLowerCase();
+        if (!q.startsWith(p)) return false;
+        const after = q.slice(p.length).trim();
+        return after.startsWith("wall") || after.startsWith("dwall") || after.startsWith("lwall");
+    }
+
     readonly property string emojiQuery: root.isEmojiMode ? root.query.trim().slice(Config.options.search.emojiPrefix.length).trim().toLowerCase() : ""
 
     readonly property var emojiSections: {
