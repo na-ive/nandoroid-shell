@@ -134,18 +134,18 @@ ColumnLayout {
                         rowSpacing: 4 * Appearance.effectiveScale
                         columnSpacing: 4 * Appearance.effectiveScale
 
-                        opacity: (previewIterateTimer.running || previewMatugen.running) ? 0.3 : 1.0
+                        opacity: MatugenPreviewService.loading ? 0.3 : 1.0
                         Behavior on opacity { NumberAnimation { duration: 300; easing.type: Easing.InOutQuad } }
-                        enabled: !(previewIterateTimer.running || previewMatugen.running)
+                        enabled: !MatugenPreviewService.loading
 
                     Repeater {
-                        model: root.matugenSchemes
+                        model: MatugenPreviewService.matugenSchemes
                         delegate: ColorCard {
                             Layout.fillWidth: true
                             label: modelData.name
                             cardColors: {
                                 const key = "desktop_" + modelData.id;
-                                if (root.matugenPreviews[key]) return root.matugenPreviews[key];
+                                if (MatugenPreviewService.previews[key]) return MatugenPreviewService.previews[key];
                                 const def = Appearance.m3colors.m3surfaceContainerHigh;
                                 return [def, def, def];
                             }
@@ -175,7 +175,7 @@ ColumnLayout {
                     MaterialLoadingIndicator {
                         id: syncIcon
                         anchors.centerIn: parent
-                        visible: previewIterateTimer.running || previewMatugen.running
+                        visible: MatugenPreviewService.loading
                         implicitSize: 60 * Appearance.effectiveScale
                         loading: visible
                     }
@@ -200,13 +200,13 @@ ColumnLayout {
                     Repeater {
                         model: {
                             if (colorSettingsCol.showAllBasic)
-                                return root.basicColors
-                            const top10 = root.basicColors.slice(0, 10)
+                                return MatugenPreviewService.basicColors
+                            const top10 = MatugenPreviewService.basicColors.slice(0, 10)
                             const selectedFile = Config.ready && Config.options.appearance && Config.options.appearance.background ? Config.options.appearance.background.matugenThemeFile : null
                             if (selectedFile) {
-                                const idx = root.basicColors.findIndex(c => c.file === selectedFile)
+                                const idx = MatugenPreviewService.basicColors.findIndex(c => c.file === selectedFile)
                                 if (idx >= 10)
-                                    return root.basicColors.slice(0, 9).concat([root.basicColors[idx]])
+                                    return MatugenPreviewService.basicColors.slice(0, 9).concat([MatugenPreviewService.basicColors[idx]])
                             }
                             return top10
                         }

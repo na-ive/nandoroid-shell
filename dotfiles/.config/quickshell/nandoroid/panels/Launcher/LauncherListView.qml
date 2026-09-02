@@ -121,6 +121,24 @@ RippleButton {
             }
         }
 
+        // Color preview on right (for <color> / <bcolor>), justify right like WsAtAGlance
+        Row {
+            Layout.alignment: Qt.AlignVCenter
+            spacing: 4 * Appearance.effectiveScale
+            visible: !!(result && (result.isColor || result.isBasicColor) && result.colorPreview && result.colorPreview.length > 0)
+            Repeater {
+                model: (result && result.colorPreview) ? result.colorPreview.slice(0, 3) : []
+                delegate: Rectangle {
+                    width: 12 * Appearance.effectiveScale
+                    height: 12 * Appearance.effectiveScale
+                    radius: 6 * Appearance.effectiveScale
+                    color: modelData || Appearance.m3colors.m3surfaceVariant
+                    border.width: 1 * Appearance.effectiveScale
+                    border.color: Qt.rgba(0,0,0,0.08)
+                }
+            }
+        }
+
         MaterialSymbol {
             Layout.alignment: Qt.AlignVCenter
             text: "star"

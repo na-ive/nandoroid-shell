@@ -53,3 +53,4 @@ singleton DialogService DialogService.qml
 singleton ReminderService ReminderService.qml
 singleton AlarmService AlarmService.qml
 singleton SnackbarService SnackbarService.qml
+singleton MatugenPreviewService MatugenPreviewService.qml

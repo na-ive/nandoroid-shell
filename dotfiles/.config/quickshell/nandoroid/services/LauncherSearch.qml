@@ -192,16 +192,7 @@ Singleton {
         { name: "Record Fullscreen", subtitle: "Tool", id: "tool-record-full", icon: "fullscreen", isPlugin: true, emoji: "", execute: () => { root.closeAll(); General.delayedAction(300, () => RegionService.recordFullscreenWithSound()); } }
     ]
 
-    readonly property var matugenSchemes: [
-        { id: "scheme-content",     name: "Content" },
-        { id: "scheme-expressive",  name: "Expressive" },
-        { id: "scheme-fidelity",    name: "Fidelity" },
-        { id: "scheme-fruit-salad", name: "Fruit Salad" },
-        { id: "scheme-monochrome",  name: "Monochrome" },
-        { id: "scheme-neutral",     name: "Neutral" },
-        { id: "scheme-rainbow",     name: "Rainbow" },
-        { id: "scheme-tonal-spot",  name: "Tonal Spot" }
-    ]
+    readonly property var matugenSchemes: MatugenPreviewService.matugenSchemes
 
     // Model for listing an arbitrary folder's images (used by the "<wall <dir>" path)
     FolderListModel {
@@ -332,13 +323,28 @@ Singleton {
         return out;
     }
 
-    // Build candidate results for the "color ..." sub-command
+    // Build candidate results for the "color ..." sub-command (shared preview cache)
     function buildColorCommandResults(arg) {
         const out = [];
         const loweredArg = arg.toLowerCase();
         let matched = root.matugenSchemes;
         if (loweredArg !== "") {
-            matched = root.matugenSchemes.filter(s => s.name.toLowerCase().includes(loweredArg) || s.id.toLowerCase().includes(loweredArg));
+            // Use fuzzy for typo-tolerant
+            const scored = [];
+            for (const s of root.matugenSchemes) {
+                const score = root.bestFuzzyScore(loweredArg, [s.name, s.id]);
+                if (score >= 0) scored.push({ s, score });
+            }
+            scored.sort((a,b) => b.score - a.score || a.s.name.localeCompare(b.s.name));
+            matched = scored.map(x => x.s);
+            if (matched.length === 0) {
+                out.push({
+                    name: "No matching scheme",
+                    subtitle: 'Try "' + Config.options.search.settingsPrefix + 'color content" or "' + Config.options.search.settingsPrefix + 'color tonal spot"',
+                    id: "color-none", icon: "palette", isPlugin: true, emoji: "", execute: () => {}
+                });
+                return out;
+            }
         }
         if (matched.length === 0) {
             out.push({
@@ -350,11 +356,54 @@ Singleton {
         }
         for (const s of matched) {
             const isCurrent = Config.ready && Config.options.appearance.background.matugen && Config.options.appearance.background.matugenScheme === s.id;
+            const key = "desktop_" + s.id;
+            const preview = MatugenPreviewService.previews[key] || [];
             out.push({
                 name: s.name,
                 subtitle: (isCurrent ? "Current scheme · " : "") + s.id,
                 id: "color-" + s.id, icon: "palette", isPlugin: true, emoji: "",
+                isColor: true, colorPreview: preview,
                 execute: () => { Wallpapers.applyScheme(s.id); root.closeAll(); }
+            });
+        }
+        return out;
+    }
+
+    function buildBasicColorResults(arg) {
+        const out = [];
+        const lowered = arg.toLowerCase();
+        let list = MatugenPreviewService.basicColors;
+        if (lowered !== "") {
+            const scored = [];
+            for (const c of MatugenPreviewService.basicColors) {
+                const score = root.bestFuzzyScore(lowered, [c.name, c.file]);
+                if (score >= 0) scored.push({ c, score });
+            }
+            scored.sort((a,b) => b.score - a.score || a.c.name.localeCompare(b.c.name));
+            list = scored.map(x => x.c);
+            if (list.length === 0) {
+                out.push({
+                    name: "No matching basic color",
+                    subtitle: 'Try "' + Config.options.search.settingsPrefix + 'bcolor dracula"',
+                    id: "bcolor-none", icon: "palette", isPlugin: true, emoji: "", execute: () => {}
+                });
+                return out;
+            }
+        }
+        for (const c of list) {
+            const isCurrent = Config.ready && !Config.options.appearance.background.matugen && Config.options.appearance.background.matugenThemeFile === c.file;
+            out.push({
+                name: c.name,
+                subtitle: (isCurrent ? "Current · " : "") + c.file,
+                id: "bcolor-" + c.file, icon: "palette", isPlugin: true, emoji: "",
+                isBasicColor: true, colorPreview: c.colors,
+                execute: () => {
+                    Config.options.appearance.background.matugen = false;
+                    Config.options.appearance.background.matugenScheme = "";
+                    Config.options.appearance.background.matugenSource = "";
+                    Wallpapers.applyTheme(c.file);
+                    root.closeAll();
+                }
             });
         }
         return out;
@@ -415,6 +464,13 @@ Singleton {
         root.wallLimit = 30;
         if (Config.ready && Config.options.search && query.trim().startsWith(Config.options.search.filePrefix)) {
             fileSearchTimer.restart();
+        }
+        if (Config.ready && Config.options.search) {
+            const q = query.trim().toLowerCase();
+            const p = Config.options.search.settingsPrefix.toLowerCase();
+            if (q.startsWith(p + "color") || q.startsWith(p + "bcolor")) {
+                MatugenPreviewService.refreshPreviews();
+            }
         }
     }
 
@@ -1005,6 +1061,8 @@ Singleton {
                 results.push(...root.buildWallCommandResults(settingsQuery.slice(5).trim(), "desktop"));
             } else if (lowerSettingsQuery === "wall" || lowerSettingsQuery.startsWith("wall ")) {
                 results.push(...root.buildWallCommandResults(settingsQuery.slice(4).trim(), "desktop"));
+            } else if (lowerSettingsQuery === "bcolor" || lowerSettingsQuery.startsWith("bcolor ")) {
+                results.push(...root.buildBasicColorResults(settingsQuery.slice("bcolor".length).trim()));
             } else if (lowerSettingsQuery === "color" || lowerSettingsQuery.startsWith("color ")) {
                 results.push(...root.buildColorCommandResults(settingsQuery.slice("color".length).trim()));
             } else if (settingsQuery.length === 0) {
@@ -1016,6 +1074,9 @@ Singleton {
                 });
                 results.push({
                     name: I18nService.tr("Set Color Scheme"), subtitle: I18nService.tr('Type "%1color <scheme>"').replace("%1", Config.options.search.settingsPrefix), id: "color-hint", icon: "palette", isPlugin: true, emoji: "", keepOpen: true, execute: () => { root.query = Config.options.search.settingsPrefix + "color "; }
+                });
+                results.push({
+                    name: I18nService.tr("Set Basic Color"), subtitle: I18nService.tr('Type "%1bcolor <name>"').replace("%1", Config.options.search.settingsPrefix), id: "bcolor-hint", icon: "palette", isPlugin: true, emoji: "", keepOpen: true, execute: () => { root.query = Config.options.search.settingsPrefix + "bcolor "; }
                 });
                 const allSettings = SearchRegistry.getAllResults();
                 for (const res of allSettings) {
