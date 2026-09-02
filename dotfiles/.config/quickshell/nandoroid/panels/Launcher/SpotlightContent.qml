@@ -18,6 +18,7 @@ Rectangle {
     property bool jumpPending: false
     property string jumpSectionLabel: ""
     readonly property bool hasQuery: LauncherSearch.query !== ""
+    property bool cheatsheetOpen: false
     property alias emojiColumns: emojiContent.emojiColumns
     property alias emojiView: emojiContent.emojiView
 
@@ -76,6 +77,16 @@ Rectangle {
     }
     // Backup grid navigation in case focus isn't on the search field
     Keys.onPressed: (event) => {
+        if (event.key === Qt.Key_Slash) {
+            root.cheatsheetOpen = !root.cheatsheetOpen;
+            event.accepted = true;
+            return;
+        }
+        if (root.cheatsheetOpen && event.key === Qt.Key_Escape) {
+            root.cheatsheetOpen = false;
+            event.accepted = true;
+            return;
+        }
         const isEmoji = LauncherSearch.isEmojiMode;
         const isWall = LauncherSearch.isWallMode;
         if (!isEmoji && !isWall) return;
@@ -113,6 +124,13 @@ Rectangle {
         }
 
         target: LauncherSearch
+    }
+
+    Connections {
+        target: GlobalStates
+        function onSpotlightOpenChanged() {
+            if (!GlobalStates.spotlightOpen) root.cheatsheetOpen = false;
+        }
     }
 
     ColumnLayout {
@@ -306,6 +324,9 @@ Rectangle {
                     if (search.commandPrefix && q.startsWith(search.commandPrefix))
                         return I18nService.tr("Quick Commands");
 
+                    if (search.toolsPrefix && q.startsWith(search.toolsPrefix))
+                        return I18nService.tr("Quick Tools");
+
                     if (search.settingsPrefix && q.startsWith(search.settingsPrefix))
                         return I18nService.tr("Settings Search");
 
@@ -320,6 +341,39 @@ Rectangle {
             RowLayout {
                 spacing: 16 * Appearance.effectiveScale
                 opacity: 0.7
+
+                // Help / prefix cheatsheet trigger
+                RowLayout {
+                    Layout.alignment: Qt.AlignVCenter
+                    spacing: 6 * Appearance.effectiveScale
+
+                    StyledText {
+                        text: I18nService.tr("Help")
+                        font.pixelSize: Math.round(11 * Appearance.effectiveScale)
+                        color: Appearance.colors.colOnLayer1
+                    }
+
+                    Rectangle {
+                        Layout.preferredWidth: 20 * Appearance.effectiveScale
+                        Layout.preferredHeight: 20 * Appearance.effectiveScale
+                        radius: 4 * Appearance.effectiveScale
+                        color: root.cheatsheetOpen ? Appearance.m3colors.m3primary : Appearance.m3colors.m3surfaceVariant
+
+                        StyledText {
+                            anchors.centerIn: parent
+                            text: "/"
+                            font.pixelSize: Math.round(11 * Appearance.effectiveScale)
+                            font.weight: Font.DemiBold
+                            color: root.cheatsheetOpen ? Appearance.m3colors.m3onPrimary : Appearance.m3colors.m3onSurfaceVariant
+                        }
+
+                        MouseArea {
+                            anchors.fill: parent
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: root.cheatsheetOpen = !root.cheatsheetOpen
+                        }
+                    }
+                }
 
                 // Navigate
                 RowLayout {
@@ -368,13 +422,13 @@ Rectangle {
 
                 }
 
-                // Open
+                // Execute (generic: open app, copy clipboard, select wallpaper, etc.)
                 RowLayout {
                     Layout.alignment: Qt.AlignVCenter
                     spacing: 6 * Appearance.effectiveScale
 
                     StyledText {
-                        text: I18nService.tr("Open")
+                        text: I18nService.tr("Execute")
                         font.pixelSize: Math.round(11 * Appearance.effectiveScale)
                         color: Appearance.colors.colOnLayer1
                     }
@@ -404,6 +458,24 @@ Rectangle {
 
         }
 
+    }
+
+    DialogCheatsheet {
+        visible: root.cheatsheetOpen
+        onClosed: root.cheatsheetOpen = false
+        columns: 2
+        iconName: "search"
+        titleText: I18nService.tr("Search Prefixes")
+        shortcuts: [
+            { key: (Config.ready && Config.options.search) ? Config.options.search.webPrefix : "!", action: I18nService.tr("Web Search") },
+            { key: (Config.ready && Config.options.search) ? Config.options.search.mathPrefix : "=", action: I18nService.tr("Calculator") },
+            { key: (Config.ready && Config.options.search) ? Config.options.search.emojiPrefix : ":", action: I18nService.tr("Emoji Picker") },
+            { key: (Config.ready && Config.options.search) ? Config.options.search.clipboardPrefix : ";", action: I18nService.tr("Clipboard History") },
+            { key: (Config.ready && Config.options.search) ? Config.options.search.filePrefix : "?", action: I18nService.tr("File Search") },
+            { key: (Config.ready && Config.options.search) ? Config.options.search.commandPrefix : ">", action: I18nService.tr("Quick Commands") },
+            { key: (Config.ready && Config.options.search) ? Config.options.search.toolsPrefix : ".", action: I18nService.tr("Quick Tools") },
+            { key: (Config.ready && Config.options.search) ? Config.options.search.settingsPrefix : "<", action: I18nService.tr("Settings Search") }
+        ]
     }
 
     Behavior on width {

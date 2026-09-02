@@ -105,6 +105,20 @@ Rectangle {
 
             Keys.onPressed: (event) => {
                 if (!root.launcherContent) return;
+
+                // Cheatsheet toggle — handle before navigation so it works even with empty results
+                if (event.key === Qt.Key_Slash) {
+                    if (root.launcherContent.cheatsheetOpen !== undefined) {
+                        root.launcherContent.cheatsheetOpen = !root.launcherContent.cheatsheetOpen;
+                        event.accepted = true;
+                        return;
+                    }
+                }
+                if (root.launcherContent.cheatsheetOpen && event.key === Qt.Key_Escape) {
+                    root.launcherContent.cheatsheetOpen = false;
+                    event.accepted = true;
+                    return;
+                }
                 
                 const isEmojiGrid = LauncherSearch.isEmojiMode;
                 const isWallGrid = LauncherSearch.isWallMode;
