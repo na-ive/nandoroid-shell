@@ -39,7 +39,7 @@ Item {
         width: Math.max(280 * Appearance.effectiveScale, Math.min(parent.width - 32 * Appearance.effectiveScale, contentCol.implicitWidth + 48 * Appearance.effectiveScale))
         height: Math.min(parent.height - 32 * Appearance.effectiveScale, contentCol.implicitHeight + 48 * Appearance.effectiveScale)
         color: Appearance.m3colors.m3surfaceContainerHigh
-        radius: 28 * Appearance.effectiveScale
+        radius: Appearance.rounding.large
         
         // Prevent clicks on the dialog itself from closing it
         MouseArea {
@@ -147,7 +147,7 @@ Item {
                 Layout.alignment: Qt.AlignRight
                 implicitWidth: 92 * Appearance.effectiveScale
                 implicitHeight: 40 * Appearance.effectiveScale
-                buttonRadius: 20 * Appearance.effectiveScale
+                buttonRadius: Appearance.rounding.button
                 colBackground: "transparent"
                 colBackgroundHover: Appearance.colors.colLayer2Hover
                 onClicked: {
