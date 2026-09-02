@@ -410,6 +410,7 @@ FocusScope {
                 root.forceActiveFocus();
                 root.resetNav();
             } else {
+                root.cheatsheetOpen = false;
                 listview.keyboardSelected = false;
                 for (var i = 0; i < listview.count; i++) {
                     var it = listview.itemAtIndex(i);

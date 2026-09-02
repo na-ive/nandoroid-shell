@@ -320,6 +320,7 @@ Item {
                 root.resetNav();
             } else {
                 root.closeDetailPanels();
+                root.cheatsheetOpen = false;
                 navRing.visible = false;
                 GlobalStates.quickSettingsEditMode = false;
             }

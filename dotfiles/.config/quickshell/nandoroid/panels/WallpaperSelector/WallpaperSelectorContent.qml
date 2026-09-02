@@ -94,6 +94,15 @@ Item {
     onVisibleChanged: {
         if (visible) {
             gridComponent.focusGrid();
+        } else {
+            mainSelector.cheatsheetOpen = false;
+        }
+    }
+
+    Connections {
+        target: GlobalStates
+        function onWallpaperSelectorOpenChanged() {
+            if (!GlobalStates.wallpaperSelectorOpen) mainSelector.cheatsheetOpen = false;
         }
     }
     
