@@ -38,6 +38,109 @@ Singleton {
         GlobalStates.spotlightOpen = false;
     }
 
+    // ── Fuzzy helpers: typo-tolerant (fzy-style sequential + levenshtein ≤2) ──
+    // Returns -1 if no match, else score (higher = better). Handles typo ringan.
+    function levenshtein(a, b, maxDist) {
+        if (maxDist !== undefined && Math.abs(a.length - b.length) > maxDist) return maxDist + 1;
+        if (a.length === 0) return b.length;
+        if (b.length === 0) return a.length;
+        // Swap to keep `a` shorter for less memory
+        if (a.length > b.length) { const t = a; a = b; b = t; }
+        let prev = new Array(a.length + 1);
+        let curr = new Array(a.length + 1);
+        for (let i = 0; i <= a.length; i++) prev[i] = i;
+        for (let j = 1; j <= b.length; j++) {
+            curr[0] = j;
+            let minInRow = curr[0];
+            const bj = b.charCodeAt(j - 1);
+            for (let i = 1; i <= a.length; i++) {
+                const cost = a.charCodeAt(i - 1) === bj ? 0 : 1;
+                const del = prev[i] + 1;
+                const ins = curr[i - 1] + 1;
+                const sub = prev[i - 1] + cost;
+                let v = del < ins ? del : ins;
+                v = v < sub ? v : sub;
+                // Damerau transposition (adjacent swap)
+                if (j > 1 && i > 1 && a.charCodeAt(i - 1) === b.charCodeAt(j - 2) && a.charCodeAt(i - 2) === bj) {
+                    const tr = prev[i - 2] + 1;
+                    if (tr < v) v = tr;
+                }
+                curr[i] = v;
+                if (v < minInRow) minInRow = v;
+            }
+            if (maxDist !== undefined && minInRow > maxDist) return maxDist + 1;
+            const tmp = prev; prev = curr; curr = tmp;
+        }
+        return prev[a.length];
+    }
+
+    function fuzzyScore(query, target) {
+        if (!query || !target) return -1;
+        const q = query.toLowerCase();
+        const t = target.toLowerCase();
+        if (t.includes(q)) {
+            // Exact substring: bonus besar, apalagi di prefix
+            let s = 100 + q.length * 2;
+            if (t.startsWith(q)) s += 30;
+            else if (t.includes(" " + q)) s += 15;
+            // Penalti target panjang (biar yang pendek rank atas)
+            s -= Math.floor(t.length * 0.2);
+            return s;
+        }
+        // Fzy-style: karakter query harus muncul berurutan di target
+        let qi = 0, ti = 0, score = 0, consecutive = 0, firstMatch = -1;
+        while (qi < q.length && ti < t.length) {
+            if (q.charCodeAt(qi) === t.charCodeAt(ti)) {
+                if (firstMatch < 0) firstMatch = ti;
+                score += 10 + consecutive * 5;
+                if (ti > 0 && (t[ti - 1] === " " || t[ti - 1] === "/" || t[ti - 1] === "-" || t[ti - 1] === "_")) score += 8;
+                consecutive++;
+                qi++;
+            } else {
+                if (consecutive > 0) score -= 1;
+                consecutive = 0;
+            }
+            ti++;
+        }
+        if (qi === q.length) {
+            // Semua karakter ketemu berurutan
+            score -= firstMatch;
+            score -= Math.floor((t.length - q.length) * 0.5);
+            return score;
+        }
+        // Typo 1-2 huruf: levenshtein ≤2 (handle `blutooth`/`toggl`/`muit`)
+        const maxDist = q.length <= 4 ? 1 : 2;
+        // Cek per kata di target biar `enble` bisa match `enable` tanpa harus match full string
+        const words = t.split(/[\s\/\-_]+/);
+        for (let w = 0; w < words.length; w++) {
+            const wd = words[w];
+            if (Math.abs(wd.length - q.length) > maxDist) continue;
+            const d = root.levenshtein(q, wd, maxDist);
+            if (d <= maxDist) {
+                // Skor turun sesuai jarak
+                return 40 - d * 15 - Math.floor(wd.length * 0.3);
+            }
+        }
+        // Fallback: cek full target dengan jarak lebih longgar untuk query pendek
+        if (q.length >= 3 && t.length <= 30) {
+            const d2 = root.levenshtein(q, t, maxDist);
+            if (d2 <= maxDist) return 30 - d2 * 12;
+        }
+        return -1;
+    }
+
+    function bestFuzzyScore(query, haystacks) {
+        if (!query) return 100;
+        let best = -1;
+        for (let i = 0; i < haystacks.length; i++) {
+            const h = haystacks[i];
+            if (!h) continue;
+            const s = root.fuzzyScore(query, h);
+            if (s > best) best = s;
+        }
+        return best;
+    }
+
     readonly property var quickCommands: [
         { name: "Lock Screen", subtitle: "Session Action", id: "cmd-lock", icon: "lock", isPlugin: true, emoji: "", execute: () => { Session.lock(); root.closeAll(); } },
         { name: "Reboot System", subtitle: "Session Action", id: "cmd-reboot", icon: "restart_alt", isPlugin: true, emoji: "", execute: () => { Session.reboot(); root.closeAll(); } },
@@ -53,10 +156,10 @@ Singleton {
         { name: "Bluetooth Settings", subtitle: "Shell Interface", id: "cmd-bluetooth", icon: "bluetooth", isPlugin: true, emoji: "", execute: () => { GlobalStates.settingsPageIndex = 1; GlobalStates.settingsOpen = true; root.closeAll(); } },
         { name: "Network Settings", subtitle: "Shell Interface", id: "cmd-network", icon: "wifi", isPlugin: true, emoji: "", execute: () => { GlobalStates.settingsPageIndex = 0; GlobalStates.settingsOpen = true; root.closeAll(); } },
         { name: "Quick Actions", subtitle: "Tools Menu", id: "cmd-tools", icon: "construction", isPlugin: true, emoji: "", execute: () => { GlobalStates.quickActionsOpen = true; root.closeAll(); } },
-        { name: "Toggle Dark Mode", subtitle: "Appearance", id: "cmd-dark", icon: "dark_mode", isPlugin: true, emoji: "", execute: () => { Wallpapers.toggleDarkMode(); root.closeAll(); } },
-        { name: "Toggle Caffeine", subtitle: "System", id: "cmd-caffeine", icon: "coffee", isPlugin: true, emoji: "", execute: () => { Config.options.quickSettings.caffeineActive = !Config.options.quickSettings.caffeineActive; root.closeAll(); } },
-        { name: "Toggle Do Not Disturb", subtitle: "Notifications", id: "cmd-dnd", icon: "notifications_paused", isPlugin: true, emoji: "", execute: () => { Notifications.mode = Notifications.mode === 2 ? 0 : 2; root.closeAll(); } },
-        { name: "Toggle Night Light", subtitle: "Appearance", id: "cmd-nightlight", icon: "nightlight", isPlugin: true, emoji: "", execute: () => { Hyprsunset.toggle(); root.closeAll(); } },
+        { name: (Config.ready && Config.options.appearance.background.darkmode) ? "Disable Dark Mode" : "Enable Dark Mode", subtitle: "Appearance", id: "cmd-dark", icon: "dark_mode", isPlugin: true, emoji: "", keywords: ["dark mode","light mode","theme","appearance"], execute: () => { Wallpapers.toggleDarkMode(); root.closeAll(); } },
+        { name: (Config.ready && Config.options.quickSettings.caffeineActive) ? "Disable Keep Awake" : "Enable Keep Awake", subtitle: "System", id: "cmd-caffeine", icon: "coffee", isPlugin: true, emoji: "", keywords: ["keep awake","caffeine","prevent sleep","stay awake"], execute: () => { Config.options.quickSettings.caffeineActive = !Config.options.quickSettings.caffeineActive; root.closeAll(); } },
+        { name: Notifications.mode === 2 ? "Disable Do Not Disturb" : "Enable Do Not Disturb", subtitle: "Notifications", id: "cmd-dnd", icon: "notifications_paused", isPlugin: true, emoji: "", keywords: ["do not disturb","dnd","notifications","silent"], execute: () => { Notifications.mode = Notifications.mode === 2 ? 0 : 2; root.closeAll(); } },
+        { name: Hyprsunset.active ? "Disable Night Light" : "Enable Night Light", subtitle: "Appearance", id: "cmd-nightlight", icon: "nightlight", isPlugin: true, emoji: "", keywords: ["night light","night mode","hyprsunset","blue light"], execute: () => { Hyprsunset.toggle(); root.closeAll(); } },
         { name: "Set Volume...", subtitle: "Type a number (0-100)", id: "cmd-vol-hint", icon: "volume_up", isPlugin: true, emoji: "", execute: () => { root.query = Config.options.search.commandPrefix + "vol "; } },
         { name: "Set Brightness...", subtitle: "Type a number (0-100)", id: "cmd-bri-hint", icon: "light_mode", isPlugin: true, emoji: "", execute: () => { root.query = Config.options.search.commandPrefix + "bri "; } },
         { name: "Edit Config", subtitle: "Configuration File", id: "cmd-edit-config", icon: "edit_note", isPlugin: true, emoji: "", execute: () => { Quickshell.execDetached(["xdg-open", Directories.home.replace("file://", "") + "/.config/nandoroid/config.json"]); root.closeAll(); } },
@@ -64,18 +167,29 @@ Singleton {
         { name: "Clear Old Clipboard", subtitle: "Keep 100 newest", id: "cmd-clip-clear-old", icon: "mop", isPlugin: true, emoji: "", execute: () => { Quickshell.execDetached(["sh", "-c", "cliphist list | tail -n +101 | cliphist delete"]); root.closeAll(); } },
         { name: "Clear New Clipboard", subtitle: "Clear last 10 entries", id: "cmd-clip-clear-new", icon: "history", isPlugin: true, emoji: "", execute: () => { Quickshell.execDetached(["sh", "-c", "cliphist list | head -n 10 | cliphist delete"]); root.closeAll(); } },
         { name: "Restart Shell", subtitle: "Maintenance (Fast)", id: "cmd-shell-restart", icon: "refresh", isPlugin: true, emoji: "", execute: () => { Quickshell.execDetached([Directories.home.replace("file://", "") + "/.config/quickshell/nandoroid/scripts/restartshell.sh"]); root.closeAll(); } },
-        { name: "Restart Shell (Fix Tray)", subtitle: "Maintenance (Deep)", id: "cmd-shell-restart-fix", icon: "build", isPlugin: true, emoji: "", execute: () => { Quickshell.execDetached([Directories.home.replace("file://", "") + "/.config/quickshell/nandoroid/scripts/restart_fix.sh"]); root.closeAll(); } }
+        { name: "Restart Shell (Fix Tray)", subtitle: "Maintenance (Deep)", id: "cmd-shell-restart-fix", icon: "build", isPlugin: true, emoji: "", execute: () => { Quickshell.execDetached([Directories.home.replace("file://", "") + "/.config/quickshell/nandoroid/scripts/restart_fix.sh"]); root.closeAll(); } },
+        // ── Toggles (parity with QuickSettings) ──
+        { name: Network.wifiEnabled ? "Disable Wi-Fi" : "Enable Wi-Fi", subtitle: "Network", id: "cmd-wifi", icon: "wifi", isPlugin: true, emoji: "", keywords: ["wifi","wireless","enable wifi","disable wifi","turn on wifi","turn off wifi"], execute: () => { Network.toggleWifi(); root.closeAll(); } },
+        { name: BluetoothStatus.enabled ? "Disable Bluetooth" : "Enable Bluetooth", subtitle: "Network", id: "cmd-bluetooth-toggle", icon: "bluetooth", isPlugin: true, emoji: "", keywords: ["bluetooth","enable bluetooth","disable bluetooth","bt"], execute: () => { BluetoothStatus.toggle(); root.closeAll(); } },
+        { name: Network.warpConnected ? "Disconnect WARP VPN" : "Connect WARP VPN", subtitle: "Cloudflare WARP", id: "cmd-warp", icon: "cloud", isPlugin: true, emoji: "", available: Network.warpCLIInstalled, keywords: ["warp","vpn","cloudflare","warp vpn","cloudflare warp","connect warp","disconnect warp"], execute: () => { Network.toggleWarp(); root.closeAll(); } },
+        { name: Audio.muted ? "Unmute Audio Output" : "Mute Audio Output", subtitle: "Audio", id: "cmd-audio-output", icon: "volume_up", isPlugin: true, emoji: "", keywords: ["audio","mute audio","unmute audio","mute output","speaker","volume mute"], execute: () => { Audio.toggleMute(); root.closeAll(); } },
+        { name: Audio.microphoneMuted ? "Unmute Microphone" : "Mute Microphone", subtitle: "Audio", id: "cmd-audio-input", icon: "mic", isPlugin: true, emoji: "", keywords: ["microphone","mic","mute mic","unmute mic","mute microphone","audio input"], execute: () => { Audio.toggleMicMute(); root.closeAll(); } },
+        { name: "Switch Power Profile", subtitle: "System", id: "cmd-power-profile", icon: "bolt", isPlugin: true, emoji: "", keywords: ["power profile","performance","balanced","power saving","battery profile"], execute: () => { PowerProfileService.cycle(); root.closeAll(); } },
+        { name: GameMode.active ? "Disable Game Mode" : "Enable Game Mode", subtitle: "System", id: "cmd-gamemode", icon: "gamepad", isPlugin: true, emoji: "", keywords: ["game mode","gamemode","gaming"], execute: () => { GameMode.toggle(); root.closeAll(); } },
+        { name: EasyEffects.active ? "Disable EasyEffects" : "Enable EasyEffects", subtitle: "Audio", id: "cmd-easyeffects", icon: "graphic_eq", isPlugin: true, emoji: "", available: EasyEffects.available, keywords: ["easyeffects","easy effects","equalizer","audio effects"], execute: () => { EasyEffects.toggle(); root.closeAll(); } },
+        { name: ConservationMode.active ? "Disable Conservation Mode" : "Enable Conservation Mode", subtitle: "System", id: "cmd-conservation", icon: "battery_charging_80", isPlugin: true, emoji: "", available: ConservationMode.available, keywords: ["conservation","conservation mode","battery conservation","lenovo"], execute: () => { ConservationMode.toggle(); root.closeAll(); } },
+        { name: SongRec.running ? "Stop Music Recognition" : "Start Music Recognition", subtitle: "Audio", id: "cmd-musicrec", icon: "music_note", isPlugin: true, emoji: "", keywords: ["music recognition","songrec","shazam","identify music","recognize music"], execute: () => { SongRec.toggleRunning(); root.closeAll(); } }
     ]
 
     readonly property var quickTools: [
-        { name: "Screen Snip", subtitle: "Tool", id: "tool-snip", icon: "content_cut", isPlugin: true, emoji: "", execute: () => { RegionService.screenshot(); root.closeAll(); } },
-        { name: "Color Picker", subtitle: "Tool", id: "tool-picker", icon: "colorize", isPlugin: true, emoji: "", execute: () => { Quickshell.execDetached(["hyprpicker", "-a"]); root.closeAll(); } },
-        { name: "OCR", subtitle: "Tool", id: "tool-ocr", icon: "text_snippet", isPlugin: true, emoji: "", execute: () => { RegionService.ocr(); root.closeAll(); } },
-        { name: "QR Scanner", subtitle: "Tool", id: "tool-qr", icon: "qr_code_scanner", isPlugin: true, emoji: "", execute: () => { RegionService.qrcode(); root.closeAll(); } },
-        { name: "Lens Search", subtitle: "Tool", id: "tool-lens", icon: "image_search", isPlugin: true, emoji: "", execute: () => { RegionService.search(); root.closeAll(); } },
-        { name: "Screen Record", subtitle: "Tool", id: "tool-record", icon: "videocam", isPlugin: true, emoji: "", execute: () => { RegionService.record(); root.closeAll(); } },
-        { name: "Record w/ Sound", subtitle: "Tool", id: "tool-record-sound", icon: "mic", isPlugin: true, emoji: "", execute: () => { RegionService.recordWithSound(); root.closeAll(); } },
-        { name: "Record Fullscreen", subtitle: "Tool", id: "tool-record-full", icon: "fullscreen", isPlugin: true, emoji: "", execute: () => { RegionService.recordFullscreenWithSound(); root.closeAll(); } }
+        { name: "Screen Snip", subtitle: "Tool", id: "tool-snip", icon: "content_cut", isPlugin: true, emoji: "", execute: () => { root.closeAll(); General.delayedAction(300, () => RegionService.screenshot()); } },
+        { name: "Color Picker", subtitle: "Tool", id: "tool-picker", icon: "colorize", isPlugin: true, emoji: "", execute: () => { root.closeAll(); General.delayedAction(300, () => Quickshell.execDetached(["hyprpicker", "-a"])); } },
+        { name: "OCR", subtitle: "Tool", id: "tool-ocr", icon: "text_snippet", isPlugin: true, emoji: "", execute: () => { root.closeAll(); General.delayedAction(300, () => RegionService.ocr()); } },
+        { name: "QR Scanner", subtitle: "Tool", id: "tool-qr", icon: "qr_code_scanner", isPlugin: true, emoji: "", execute: () => { root.closeAll(); General.delayedAction(300, () => RegionService.qrcode()); } },
+        { name: "Lens Search", subtitle: "Tool", id: "tool-lens", icon: "image_search", isPlugin: true, emoji: "", execute: () => { root.closeAll(); General.delayedAction(300, () => RegionService.search()); } },
+        { name: "Screen Record", subtitle: "Tool", id: "tool-record", icon: "videocam", isPlugin: true, emoji: "", execute: () => { root.closeAll(); General.delayedAction(300, () => RegionService.record()); } },
+        { name: "Record w/ Sound", subtitle: "Tool", id: "tool-record-sound", icon: "mic", isPlugin: true, emoji: "", execute: () => { root.closeAll(); General.delayedAction(300, () => RegionService.recordWithSound()); } },
+        { name: "Record Fullscreen", subtitle: "Tool", id: "tool-record-full", icon: "fullscreen", isPlugin: true, emoji: "", execute: () => { root.closeAll(); General.delayedAction(300, () => RegionService.recordFullscreenWithSound()); } }
     ]
 
     readonly property var matugenSchemes: [
@@ -813,37 +927,65 @@ Singleton {
                 }
             }
 
-            // Search both commands and tools under the command prefix
+            // Search both commands and tools under the command prefix (fuzzy, typo-tolerant)
+            // Touch deps so results re-evaluates when install state or toggle state changes
+            const _warpAvail = Network.warpCLIInstalled;
+            const _warpConn = Network.warpConnected;
+            const _eeAvail = EasyEffects.available;
+            const _eeActive = EasyEffects.active;
+            const _consAvail = ConservationMode.available;
+            const _consActive = ConservationMode.active;
+            const _wifiEn = Network.wifiEnabled;
+            const _btEn = BluetoothStatus.enabled;
+            const _audioMuted = Audio.muted;
+            const _micMuted = Audio.microphoneMuted;
+            const _gameActive = GameMode.active;
+            const _songRunning = SongRec.running;
+            const _darkMode = Config.ready ? Config.options.appearance.background.darkmode : false;
+            const _caffeine = Config.ready ? Config.options.quickSettings.caffeineActive : false;
+            const _dndMode = Notifications.mode;
+            const _nightActive = Hyprsunset.active;
+            void _warpAvail; void _warpConn; void _eeAvail; void _eeActive; void _consAvail; void _consActive;
+            void _wifiEn; void _btEn; void _audioMuted; void _micMuted; void _gameActive; void _songRunning;
+            void _darkMode; void _caffeine; void _dndMode; void _nightActive;
+
             const allCommandsAndTools = root.quickCommands.concat(root.quickTools);
-            
-            for (const cmd of allCommandsAndTools) {
-                if (cmd.name.toLowerCase().includes(cmdQuery) || cmd.id.toLowerCase().includes(cmdQuery) || cmdQuery === "") {
+            if (cmdQuery === "") {
+                for (const cmd of allCommandsAndTools) {
+                    if (cmd.available === false) continue;
                     cmdResults.push(cmd);
                 }
+                cmdResults.sort((a, b) => a.name.localeCompare(b.name));
+            } else {
+                const scored = [];
+                for (const cmd of allCommandsAndTools) {
+                    if (cmd.available === false) continue;
+                    const haystacks = [cmd.name, cmd.subtitle, cmd.id];
+                    if (cmd.keywords) haystacks.push(...cmd.keywords);
+                    const score = root.bestFuzzyScore(cmdQuery, haystacks);
+                    if (score >= 0) scored.push({ cmd, score });
+                }
+                scored.sort((a, b) => b.score - a.score || a.cmd.name.localeCompare(b.cmd.name));
+                for (const s of scored) cmdResults.push(s.cmd);
             }
-            cmdResults.sort((a, b) => {
-                const aStarts = a.name.toLowerCase().startsWith(cmdQuery);
-                const bStarts = b.name.toLowerCase().startsWith(cmdQuery);
-                if (aStarts && !bStarts) return -1;
-                if (!aStarts && bStarts) return 1;
-                return a.name.localeCompare(b.name);
-            });
             results.push(...cmdResults);
         } else if (strippedQuery.startsWith(Config.options.search.toolsPrefix)) {
             const toolQuery = strippedQuery.slice(Config.options.search.toolsPrefix.length).toLowerCase().trim();
             const toolResults = [];
-            for (const tool of root.quickTools) {
-                if (tool.name.toLowerCase().includes(toolQuery) || tool.id.toLowerCase().includes(toolQuery) || toolQuery === "") {
-                    toolResults.push(tool);
+            if (toolQuery === "") {
+                for (const tool of root.quickTools) toolResults.push(tool);
+                toolResults.sort((a, b) => a.name.localeCompare(b.name));
+            } else {
+                const scored = [];
+                for (const tool of root.quickTools) {
+                    const haystacks = [tool.name, tool.subtitle, tool.id];
+                    if (tool.keywords) haystacks.push(...tool.keywords);
+                    const score = root.bestFuzzyScore(toolQuery, haystacks);
+                    if (score >= 0) scored.push({ tool, score });
                 }
+                scored.sort((a, b) => b.score - a.score || a.tool.name.localeCompare(b.tool.name));
+                for (const s of scored) toolResults.push(s.tool);
             }
-            toolResults.sort((a, b) => {
-                const aStarts = a.name.toLowerCase().startsWith(toolQuery);
-                const bStarts = b.name.toLowerCase().startsWith(toolQuery);
-                if (aStarts && !bStarts) return -1;
-                if (!aStarts && bStarts) return 1;
-                return a.name.localeCompare(b.name);
-            });
             results.push(...toolResults);
         } else if (strippedQuery.startsWith(Config.options.search.settingsPrefix)) {
             const settingsQuery = strippedQuery.slice(Config.options.search.settingsPrefix.length).trim();
@@ -925,29 +1067,27 @@ Singleton {
 
         if (!isPluginSearch) {
             const loweredQuery = strippedQuery.toLowerCase();
-            
-
-            const filteredApps = allApps.filter(app =>
-                app.name.toLowerCase().includes(loweredQuery) ||
-                app.id.toLowerCase().includes(loweredQuery)
-            ).sort((a, b) => {
-                const nameA = a.name.toLowerCase();
-                const nameB = b.name.toLowerCase();
-                const aStarts = nameA.startsWith(loweredQuery);
-                const bStarts = nameB.startsWith(loweredQuery);
-
-                if (aStarts && !bStarts) return -1;
-                if (!aStarts && bStarts) return 1;
-
-                if (Config.options.search.enableUsageTracking) {
-                    if (b.smartScore !== a.smartScore) return b.smartScore - a.smartScore;
+            if (loweredQuery === "") {
+                // No query: already handled above (allApps)
+            } else {
+                // Fuzzy, typo-tolerant for apps (still respects smartScore)
+                const scoredApps = [];
+                for (const app of allApps) {
+                    const haystacks = [app.name, app.id];
+                    const score = root.bestFuzzyScore(loweredQuery, haystacks);
+                    if (score >= 0) scoredApps.push({ app, score });
                 }
-                
-                return nameA.localeCompare(nameB);
-            });
-            
-
-            results.push(...filteredApps);
+                // If fuzzy finds nothing, fallback to empty (will later fallback to allApps via final return)
+                scoredApps.sort((a, b) => {
+                    if (b.score !== a.score) return b.score - a.score;
+                    if (Config.options.search.enableUsageTracking) {
+                        if (b.app.smartScore !== a.app.smartScore) return b.app.smartScore - a.app.smartScore;
+                    }
+                    return a.app.name.localeCompare(b.app.name);
+                });
+                const filteredApps = scoredApps.map(x => x.app);
+                results.push(...filteredApps);
+            }
         }
 
         return (results.length > 0 || strippedQuery === "") ? results : allApps;
