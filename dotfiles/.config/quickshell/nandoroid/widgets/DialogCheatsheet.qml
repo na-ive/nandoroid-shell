@@ -14,6 +14,11 @@ Item {
     z: 999 // Ensure it stays on top of panel content
 
     property var shortcuts: [] // Array of { key: "A", action: "Do something" }
+    // Customizable header — for prefix cheatsheet etc.
+    property string titleText: "Keyboard Shortcuts"
+    property string iconName: "keyboard"
+    // Layout mode: 1 = single column (legacy, default), 2 = two columns (compact, for prefixes)
+    property int columns: 1
     signal closed()
 
     // Transparent overlay to catch clicks outside the cheatsheet
@@ -22,7 +27,6 @@ Item {
         hoverEnabled: true
         acceptedButtons: Qt.AllButtons
         onClicked: {
-            root.visible = false;
             root.closed();
         }
         // Block scrolling from passing through
@@ -52,7 +56,7 @@ Item {
             MaterialSymbol {
                 Layout.alignment: Qt.AlignHCenter
                 Layout.bottomMargin: 16 * Appearance.effectiveScale
-                text: "keyboard"
+                text: root.iconName
                 iconSize: 24 * Appearance.effectiveScale
                 color: Appearance.m3colors.m3secondary
             }
@@ -61,7 +65,7 @@ Item {
             StyledText {
                 Layout.alignment: Qt.AlignHCenter
                 Layout.bottomMargin: 16 * Appearance.effectiveScale
-                text: "Keyboard Shortcuts"
+                text: root.titleText
                 font.pixelSize: Appearance.font.pixelSize.large
                 font.family: Appearance.font.family.title
                 font.weight: Font.DemiBold
@@ -71,7 +75,7 @@ Item {
             // Shortcuts List
             GridLayout {
                 Layout.fillWidth: true
-                columns: 2
+                columns: Math.max(1, root.columns)
                 columnSpacing: 24 * Appearance.effectiveScale
                 rowSpacing: 12 * Appearance.effectiveScale
 
@@ -79,7 +83,7 @@ Item {
                     model: root.shortcuts
 
                     delegate: RowLayout {
-                        Layout.columnSpan: 2
+                        Layout.columnSpan: 1
                         Layout.fillWidth: true
                         spacing: 16 * Appearance.effectiveScale
 
@@ -99,14 +103,12 @@ Item {
 
                                 delegate: Rectangle {
                                     required property string modelData
-                                    
+
                                     Layout.alignment: Qt.AlignVCenter
-                                    implicitWidth: keyText.implicitWidth + 16 * Appearance.effectiveScale
-                                    implicitHeight: keyText.implicitHeight + 8 * Appearance.effectiveScale
-                                    color: Appearance.m3colors.m3surfaceContainerHighest
-                                    radius: 6 * Appearance.effectiveScale
-                                    border.width: 1
-                                    border.color: Appearance.colors.colOutlineVariant
+                                    implicitWidth: Math.max(28 * Appearance.effectiveScale, keyText.implicitWidth + 16 * Appearance.effectiveScale)
+                                    implicitHeight: Math.max(24 * Appearance.effectiveScale, keyText.implicitHeight + 8 * Appearance.effectiveScale)
+                                    color: Appearance.m3colors.m3surfaceVariant
+                                    radius: 4 * Appearance.effectiveScale
 
                                     StyledText {
                                         id: keyText
@@ -114,7 +116,7 @@ Item {
                                         text: parent.modelData
                                         font.pixelSize: Appearance.font.pixelSize.smaller
                                         font.weight: Font.DemiBold
-                                        color: Appearance.m3colors.m3primary
+                                        color: Appearance.m3colors.m3onSurfaceVariant
                                     }
                                 }
                             }
@@ -143,22 +145,21 @@ Item {
             // Action Button
             RippleButton {
                 Layout.alignment: Qt.AlignRight
-                implicitWidth: closeText.implicitWidth + 32 * Appearance.effectiveScale
+                implicitWidth: 92 * Appearance.effectiveScale
                 implicitHeight: 40 * Appearance.effectiveScale
                 buttonRadius: 20 * Appearance.effectiveScale
                 colBackground: "transparent"
                 colBackgroundHover: Appearance.colors.colLayer2Hover
                 onClicked: {
-                    root.visible = false;
                     root.closed();
                 }
                 contentItem: StyledText {
-                    id: closeText
-                    anchors.centerIn: parent
                     text: "Close"
                     font.pixelSize: Appearance.font.pixelSize.small
                     font.weight: Font.DemiBold
                     color: Appearance.m3colors.m3primary
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
                 }
             }
         }
