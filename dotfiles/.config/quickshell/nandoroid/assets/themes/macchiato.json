@@ -41,11 +41,15 @@
   "error_container": "#72333d",
   "on_error": "#561d28",
   "on_error_container": "#ffd9dd",
-  "outline": "#f5a97f",
-  "outline_variant": "#eed49f",
+  "outline": "#6e738d",
+  "outline_variant": "#494d64",
   "shadow": "#000000",
   "scrim": "#000000",
   "inverse_surface": "#cad3f5",
   "inverse_on_surface": "#24273a",
-  "inverse_primary": "#f5a97f"
+  "inverse_primary": "#f5a97f",
+  "success": "#a6da95",
+  "on_success": "#24273a",
+  "success_container": "#354d2c",
+  "on_success_container": "#d3e8c5"
 }
