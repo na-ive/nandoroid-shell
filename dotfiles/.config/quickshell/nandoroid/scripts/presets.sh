@@ -175,11 +175,15 @@ fi
 case "$action" in
     --save)
         description="$3"
-        build_preset_json "$CONFIG_FILE" > "$PRESETS_DIR/${name}.json"
+        # Atomic write: build into tmp first, then rename, so watchers
+        # (inotify/FolderListModel/FileView) never see an empty/half-written file
+        tmp_file="$PRESETS_DIR/${name}.json.tmp"
+        build_preset_json "$CONFIG_FILE" > "$tmp_file" \
+            && mv "$tmp_file" "$PRESETS_DIR/${name}.json"
         if [ -n "$description" ]; then
             jq --arg desc "$description" '._presetMeta = {"description": $desc}' \
-                "$PRESETS_DIR/${name}.json" > "$PRESETS_DIR/${name}.json.tmp" \
-                && mv "$PRESETS_DIR/${name}.json.tmp" "$PRESETS_DIR/${name}.json"
+                "$PRESETS_DIR/${name}.json" > "$tmp_file" \
+                && mv "$tmp_file" "$PRESETS_DIR/${name}.json"
         fi
         ;;
     --remove)

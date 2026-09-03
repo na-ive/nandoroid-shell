@@ -193,15 +193,42 @@ ColumnLayout {
                         if (c !== undefined) presetWallpaper = c
                     }
 
-                    FileView {
-                        path: filePath
-                        onLoaded: {
-                            try {
-                                const data = JSON.parse(text())
-                                const wp = data?.appearance?.background?.wallpaperPath ?? ""
+                    Timer {
+                        id: wallpaperRetryTimer
+                        interval: 500
+                        repeat: false
+                        property int attempts: 0
+                        onTriggered: {
+                            if (card.presetWallpaper !== "" || attempts >= 6) return
+                            attempts += 1
+                            presetFileView.reload()
+                        }
+                    }
+
+                    function readPresetWallpaper() {
+                        try {
+                            const data = JSON.parse(presetFileView.text())
+                            const wp = data?.appearance?.background?.wallpaperPath ?? ""
+                            if (wp !== "") {
                                 presetWallpaper = wp
                                 prRoot.wallpaperCache[fileName] = wp
-                            } catch (e) {}
+                                return
+                            }
+                        } catch (e) {}
+                        // Empty or half-written file (save race) — retry shortly.
+                        // Capped so a preset genuinely without wallpaper doesn't poll forever.
+                        if (wallpaperRetryTimer.attempts < 6) wallpaperRetryTimer.restart()
+                    }
+
+                    FileView {
+                        id: presetFileView
+                        path: filePath
+                        // presets.sh writes via `jq … > file`: inotify fires on the
+                        // empty file first, so watch for the completed write too
+                        watchChanges: true
+                        onLoaded: card.readPresetWallpaper()
+                        onLoadFailed: {
+                            if (wallpaperRetryTimer.attempts < 6) wallpaperRetryTimer.restart()
                         }
                     }
 
