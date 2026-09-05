@@ -251,10 +251,21 @@ case "$action" in
         }
 
         if [ "$matugen_enabled" = "false" ] && [ -n "$theme_file" ] && [ "$theme_file" != "null" ] && [ "$theme_file" != '""' ]; then
-            # Cache the theme colors so lockscreen mirroring stays consistent
             theme_source="$SCRIPT_DIR/../assets/themes/$theme_file"
-            [ -f "$theme_source" ] && cp "$theme_source" "$COLOR_JSON"
             echo "$merged_json" > "${CONFIG_FILE}.tmp" && mv "${CONFIG_FILE}.tmp" "$CONFIG_FILE"
+            # Mirror Wallpapers.applyTheme: generate system-wide colors (GTK,
+            # kitty, hyprland, ...) from the theme's base color via matugen.
+            # matugenCustomColor holds the theme's first color (set by applyTheme
+            # and saved in the preset whitelist).
+            if [ -n "$custom_color" ] && [ "$custom_color" != "null" ] && [ "$custom_color" != '""' ]; then
+                custom_color_clean="${custom_color#\#}"
+                matugen -c ~/.config/matugen/config.toml -t "scheme-tonal-spot" -m "$mode" color hex "$custom_color_clean"
+            fi
+            # Let the theme file win for the material JSON (themeWriteProc
+            # equivalent), so the UI and lockscreen mirroring use the exact
+            # theme colors while the system templates keep matugen output.
+            # This also caches the theme colors so lockscreen mirroring stays consistent.
+            [ -f "$theme_source" ] && cp "$theme_source" "$COLOR_JSON"
             # Basic themes: desktop uses the theme file. Lockscreen follows the
             # Wallpapers.applyTheme behavior — derive from the lockscreen
             # wallpaper when it differs, otherwise reuse the theme colors.
