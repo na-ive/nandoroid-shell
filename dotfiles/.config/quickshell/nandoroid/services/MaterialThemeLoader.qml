@@ -71,6 +71,23 @@ Singleton {
         }
     }
 
+    // FileView doesn't re-emit `loaded` on path-only changes, so re-apply
+    // explicitly when switching the watched theme file.
+    onFilePathChanged: pathApplyTimer.restart()
+
+    Timer {
+        id: pathApplyTimer
+        interval: 100
+        repeat: false
+        running: false
+        onTriggered: {
+            const fileContent = themeFileView.text()
+            if (fileContent.trim() !== "") {
+                root.applyColors(fileContent)
+            }
+        }
+    }
+
     FileView {
         id: themeFileView
         path: Qt.resolvedUrl(root.filePath)
