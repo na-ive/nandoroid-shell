@@ -138,8 +138,9 @@ build_preset_json() {
             showWeather:          .lock.showWeather,
             weather:              .lock.weather,
             security:             .lock.security,
-            useSeparateWallpaper: .lock.useSeparateWallpaper
-            # excluded: wallpaperPath, launchOnStartup, useHyprlock (local/system config)
+            useSeparateWallpaper: .lock.useSeparateWallpaper,
+            wallpaperPath:        .lock.wallpaperPath
+            # excluded: launchOnStartup, useHyprlock (local/system config)
         },
         sounds:         .sounds,
         media:          .media,
@@ -254,9 +255,24 @@ case "$action" in
             theme_source="$SCRIPT_DIR/../assets/themes/$theme_file"
             [ -f "$theme_source" ] && cp "$theme_source" "$COLOR_JSON"
             echo "$merged_json" > "${CONFIG_FILE}.tmp" && mv "${CONFIG_FILE}.tmp" "$CONFIG_FILE"
-            # Basic themes apply to both desktop and lockscreen
+            # Basic themes: desktop uses the theme file. Lockscreen follows the
+            # Wallpapers.applyTheme behavior — derive from the lockscreen
+            # wallpaper when it differs, otherwise reuse the theme colors.
             if [ "$(echo "$merged_json" | jq -r '.lock.useSeparateWallpaper // false')" = "true" ]; then
-                cp "$COLOR_JSON" "$LOCK_COLOR_JSON"
+                lock_wallpaper=$(echo "$merged_json" | jq -r '.lock.wallpaperPath // ""')
+                lock_wallpaper="${lock_wallpaper#file://}"
+                desktop_wallpaper=$(echo "$merged_json" | jq -r '.appearance.background.wallpaperPath // ""')
+                desktop_wallpaper="${desktop_wallpaper#file://}"
+                if [ -n "$lock_wallpaper" ] && [ -f "$lock_wallpaper" ] && [ "$lock_wallpaper" != "$desktop_wallpaper" ]; then
+                    lock_json=$(matugen --dry-run -t "scheme-tonal-spot" -m "$mode" image "$lock_wallpaper" --source-color-index 0 -j hex --old-json-output 2>/dev/null)
+                    if [ -n "$lock_json" ]; then
+                        echo "$lock_json" | jq --arg mode "$mode" '.colors | with_entries(.value = (.value[$mode] // .value["default"]))' > "$LOCK_COLOR_JSON"
+                    else
+                        cp "$COLOR_JSON" "$LOCK_COLOR_JSON"
+                    fi
+                else
+                    cp "$COLOR_JSON" "$LOCK_COLOR_JSON"
+                fi
             fi
         elif [ "$matugen_enabled" = "false" ] && [ -n "$custom_color" ] && [ "$custom_color" != "null" ] && [ "$custom_color" != '""' ]; then
             custom_color_clean="${custom_color#\#}"
