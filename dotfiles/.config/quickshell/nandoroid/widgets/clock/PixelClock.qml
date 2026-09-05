@@ -57,10 +57,13 @@ Item {
     readonly property real tileH: root.isVertical ? root.height * 0.66 : root.height * 0.90
     readonly property real glyphSize: root.isVertical ? root.height * 0.66 : root.height * 0.85
 
-    readonly property real pos0X: root.isVertical ? root.width * 0.00 : root.width * 0.00
-    readonly property real pos1X: root.isVertical ? root.width * 0.30 : root.width * 0.15
-    readonly property real pos2X: root.isVertical ? root.width * 0.00 : root.width * 0.46
-    readonly property real pos3X: root.isVertical ? root.width * 0.30 : root.width * 0.60
+    // Horizontal row spans 4 tiles + colon gap = 0.90W, so start at 0.05W
+    // to center the content inside the item's bounding box (the lockscreen
+    // centers the whole item via NandoClock).
+    readonly property real pos0X: root.isVertical ? root.width * 0.00 : root.width * 0.05
+    readonly property real pos1X: root.isVertical ? root.width * 0.30 : root.width * 0.20
+    readonly property real pos2X: root.isVertical ? root.width * 0.00 : root.width * 0.51
+    readonly property real pos3X: root.isVertical ? root.width * 0.30 : root.width * 0.65
 
     readonly property real pos0Y: root.isVertical ? root.height * -0.04 : root.height * 0.05
     readonly property real pos1Y: root.isVertical ? root.height * -0.04 : root.height * 0.05
