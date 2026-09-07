@@ -62,9 +62,11 @@ Item {
     property int _hoveredIndex: -1
 
     Behavior on _tabIdx1 {
+        enabled: !GlobalStates.screenLocked
         NumberAnimation { duration: 100; easing.type: Easing.OutSine }
     }
     Behavior on _tabIdx2 {
+        enabled: !GlobalStates.screenLocked
         NumberAnimation { duration: 300; easing.type: Easing.OutSine }
     }
 
