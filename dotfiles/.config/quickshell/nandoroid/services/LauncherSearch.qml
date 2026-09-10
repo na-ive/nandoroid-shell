@@ -16,6 +16,8 @@ Singleton {
     property var usageData: ({})
     readonly property string clipboardThumbnailDir: "/tmp/nandoroid/clipboard"
 
+    property var _pendingDeleteRaws: []
+
     onClipboardHistoryChanged: {
         if (!clipboardHistory || clipboardHistory.length === 0) return;
         Quickshell.execDetached(["mkdir", "-p", root.clipboardThumbnailDir]);
@@ -29,8 +31,28 @@ Singleton {
 
     function deleteClipboardItem(item) {
         if (!item || !item.rawValue) return;
-        Quickshell.execDetached(["sh", "-c", "echo -n \"$1\" | cliphist delete", "sh", item.rawValue]);
-        Qt.callLater(() => { cliphistProc.running = true; });
+        const raw = item.rawValue;
+        if (root._pendingDeleteRaws.indexOf(raw) === -1) {
+            root._pendingDeleteRaws = root._pendingDeleteRaws.concat([raw]);
+        }
+        const filtered = root.clipboardHistory.filter(e => e.raw !== raw);
+        if (filtered.length !== root.clipboardHistory.length) {
+            root.clipboardHistory = filtered;
+        } else {
+            const id = item.id ? item.id.replace("clip-", "") : "";
+            if (id) {
+                const byId = root.clipboardHistory.filter(e => e.id !== id);
+                if (byId.length !== root.clipboardHistory.length) root.clipboardHistory = byId;
+            }
+        }
+        if (item.isImage) {
+            const imgId = item.id ? item.id.replace("clip-", "") : "";
+            if (imgId) Quickshell.execDetached(["rm", "-f", root.clipboardThumbnailDir + "/" + imgId + ".png"]);
+        }
+        Quickshell.execDetached(["sh", "-c", 'printf "%s" "$1" | cliphist delete', "sh", raw]);
+        deleteRefreshTimer.restart();
+        deleteRetryTimer.restart();
+        pendingClearTimer.restart();
     }
     
     function closeAll() {
@@ -480,15 +502,56 @@ Singleton {
         stdout: StdioCollector {
             onStreamFinished: {
                 const lines = this.text.split("\n").filter(l => l.trim().length > 0);
-                const newHistory = lines.slice(0, 50).map(line => {
+                const parsed = lines.slice(0, 50).map(line => {
                     const id = line.split("\t")[0];
                     const isImage = line.includes("[[ binary data");
                     return { id: id, raw: line, isImage: isImage };
                 });
-                
+                const unfiltered = parsed;
+                let newHistory = parsed;
+                if (root._pendingDeleteRaws.length > 0) {
+                    const pend = root._pendingDeleteRaws;
+                    newHistory = newHistory.filter(e => pend.indexOf(e.raw) === -1);
+                }
                 if (JSON.stringify(newHistory) !== JSON.stringify(root.clipboardHistory)) {
                     root.clipboardHistory = newHistory;
                 }
+                if (root._pendingDeleteRaws.length > 0) {
+                    const stillPending = root._pendingDeleteRaws.filter(raw => unfiltered.some(e => e.raw === raw));
+                    if (stillPending.length !== root._pendingDeleteRaws.length) {
+                        root._pendingDeleteRaws = stillPending;
+                    }
+                }
+            }
+        }
+    }
+
+    Timer {
+        id: deleteRefreshTimer
+        interval: 180
+        repeat: false
+        onTriggered: {
+            if (cliphistProc.running) { restart(); return; }
+            cliphistProc.running = true;
+        }
+    }
+    Timer {
+        id: deleteRetryTimer
+        interval: 700
+        repeat: false
+        onTriggered: {
+            if (cliphistProc.running) { restart(); return; }
+            cliphistProc.running = true;
+        }
+    }
+    Timer {
+        id: pendingClearTimer
+        interval: 2500
+        repeat: false
+        onTriggered: {
+            if (root._pendingDeleteRaws.length > 0) {
+                root._pendingDeleteRaws = [];
+                if (!cliphistProc.running) cliphistProc.running = true;
             }
         }
     }
@@ -498,7 +561,10 @@ Singleton {
         interval: 2500
         running: GlobalStates.launcherOpen || GlobalStates.spotlightOpen
         repeat: true
-        onTriggered: cliphistProc.running = true
+        onTriggered: {
+            if (deleteRefreshTimer.running || deleteRetryTimer.running) return;
+            cliphistProc.running = true;
+        }
     }
 
     FileView {

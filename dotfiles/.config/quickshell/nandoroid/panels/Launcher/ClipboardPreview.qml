@@ -20,14 +20,15 @@ Rectangle {
     clip: true
     
     property string fullTextContent: ""
+    property string _requestedId: ""
     
     Process {
         id: textDecoder
-        command: ["cliphist", "decode", root.selectedItem ? root.selectedItem.id.replace("clip-", "") : ""]
+        command: ["cliphist", "decode", root._requestedId]
         running: false
         stdout: StdioCollector {
             onStreamFinished: {
-                if (root.selectedItem && !root.selectedItem.isImage) {
+                if (root.selectedItem && !root.selectedItem.isImage && root._requestedId === root.selectedItem.id.replace("clip-", "")) {
                     root.fullTextContent = this.text;
                 }
             }
@@ -35,16 +36,18 @@ Rectangle {
     }
     
     onSelectedItemChanged: {
-        root.fullTextContent = "";
-        if (selectedItem && !selectedItem.isImage) {
-            // Need to wait slightly for the property to bind, or start immediately if Process updates command on the fly
-            Qt.callLater(() => {
+        if (!selectedItem || selectedItem.isImage) return;
+        const newId = selectedItem.id.replace("clip-", "");
+        if (newId === root._requestedId && root.fullTextContent !== "") return;
+        root._requestedId = newId;
+        textDecoder.running = false;
+        Qt.callLater(() => {
+            if (root.selectedItem && !root.selectedItem.isImage && root._requestedId === root.selectedItem.id.replace("clip-", "")) {
                 textDecoder.running = true;
-            });
-        }
+            }
+        });
     }
     
-    // Image Preview
     Image {
         id: imgPreview
         anchors.fill: parent
@@ -53,7 +56,7 @@ Rectangle {
         visible: !!(root.selectedItem && root.selectedItem.isImage)
         fillMode: Image.PreserveAspectFit
         asynchronous: true
-        cache: false
+        cache: true
     }
     
 

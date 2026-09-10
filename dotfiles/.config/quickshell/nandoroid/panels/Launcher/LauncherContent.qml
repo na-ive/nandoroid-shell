@@ -65,9 +65,10 @@ Rectangle {
             return ;
 
         if (root.hasQuery) {
-            if (isKeyboardNavigation)
-                pluginList.positionViewAtIndex(selectedIndex, ListView.Contain);
-
+            if (LauncherSearch._pendingDeleteRaws.length === 0) {
+                if (isKeyboardNavigation)
+                    pluginList.positionViewAtIndex(selectedIndex, ListView.Contain);
+            }
             if (pluginList.count > 0 && selectedIndex >= pluginList.count - 5)
                 Qt.callLater(() => {
                 return pluginList.loadMoreKeepingPosition();
@@ -95,7 +96,22 @@ Rectangle {
         function onQueryChanged() {
             root.selectedIndex = 0;
         }
-
+        function onClipboardHistoryChanged() {
+            if (!LauncherSearch.isClipboardMode) return;
+            if (!root.resultsProxy) return;
+            if (root.resultsProxy.length === 0) root.selectedIndex = 0;
+            else if (root.selectedIndex >= root.resultsProxy.length) root.selectedIndex = root.resultsProxy.length - 1;
+            if (LauncherSearch._pendingDeleteRaws.length > 0) {
+                const maxY = Math.max(0, pluginList.contentHeight - pluginList.height);
+                const targetY = Math.min(pluginList._stableY, maxY);
+                pluginList.contentY = targetY;
+                Qt.callLater(() => pluginList.contentY = targetY);
+            } else {
+                Qt.callLater(() => {
+                    if (pluginList.count > 0) pluginList.positionViewAtIndex(root.selectedIndex, ListView.Contain);
+                });
+            }
+        }
         target: LauncherSearch
     }
 
@@ -285,6 +301,10 @@ Rectangle {
                     id: pluginList
 
                     property real _savedY: -1
+                    property real _stableY: 0
+                    onContentYChanged: {
+                        if (LauncherSearch._pendingDeleteRaws.length === 0) _stableY = contentY;
+                    }
 
                     function loadMoreKeepingPosition() {
                         if (pluginList.contentY > 0)
@@ -312,13 +332,13 @@ Rectangle {
                     model: visible ? root.resultsProxy : []
                     currentIndex: root.selectedIndex
                     onCurrentIndexChanged: {
+                        if (LauncherSearch._pendingDeleteRaws.length > 0) return;
                         if (visible && currentIndex >= 0) {
                             positionViewAtIndex(currentIndex, ListView.Contain);
                             if (count > 0 && currentIndex >= count - 5)
                                 Qt.callLater(() => {
                                 return pluginList.loadMoreKeepingPosition();
                             });
-
                         }
                     }
                     onMovementEnded: {
