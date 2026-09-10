@@ -131,10 +131,20 @@ Singleton {
     }
 
     // Helper process to generate material colors
+    function thumbFor(path) {
+        const home = Directories.home.replace("file://", "");
+        const cacheDir = home + "/.cache/nandoroid/thumbnails";
+        let p = path; if (p.startsWith("file://")) p = p.substring(7);
+        let h = 5381; for (let i=0;i<p.length;i++) { h = ((h<<5)+h)+p.charCodeAt(i); h = h & 0x7FFFFFFF; }
+        const hash = h.toString(16).padStart(8,'0');
+        return cacheDir + "/" + hash + "@512.webp";
+    }
+
     Process {
         id: matugenProc
-        command: ["bash", "-c", `matugen -c ~/.config/matugen/config.toml -t "$1" -m "$2" image "$3" --source-color-index 0`, "matugen", scheme, (Config.options.appearance.background.darkmode ? "dark" : "light"), filePath]
+        command: ["bash", "-c", `thumb="$4"; src="$3"; [ -f "$thumb" ] && s="$thumb" || s="$src"; matugen -c ~/.config/matugen/config.toml -t "$1" -m "$2" image "$s" --source-color-index 0`, "matugen", scheme, (Config.options.appearance.background.darkmode ? "dark" : "light"), filePath, thumbPath]
         property string filePath
+        property string thumbPath: thumbFor(filePath)
         property string scheme: Config.options.appearance.background.matugenScheme || "scheme-tonal-spot"
         
         onRunningChanged: if (running) CavaService.stop(); else CavaService.start();
@@ -275,28 +285,36 @@ Singleton {
         }
     }
 
+    property string _pendingMatugenPath: ""
+
+    function runMatugen(path) {
+        const clean = path.toString().startsWith("file://") ? path.toString().substring(7) : path.toString()
+        if (clean === "") return
+        matugenProc.filePath = clean
+        matugenProc.running = true
+    }
+
     function select(path) {
         const cleanPath = path.toString().startsWith("file://") ? path.toString().substring(7) : path.toString()
         
-        // Stop any active live wallpaper backend so the static image takes over
         WallpaperEngineService.stop();
         MpvpaperService.stop();
         
         Config.options.appearance.background.wallpaperPath = "file://" + cleanPath
         
-        // Sync to lockscreen if separate wallpapers are disabled
         if (Config.options.lock && !Config.options.lock.useSeparateWallpaper) {
             Config.options.lock.wallpaperPath = "file://" + cleanPath
         }
 
         if (Config.options.appearance.background.matugen) {
-            matugenProc.filePath = cleanPath
-            matugenProc.running = true
+            if (Config.options.appearance.background.wallpaperTransition === "") runMatugen(cleanPath);
+            else _pendingMatugenPath = cleanPath;
         } else {
-            // Reset from custom accent to matugen-from-wallpaper
             Config.options.appearance.background.matugen = true
             Config.options.appearance.background.matugenCustomColor = ""
             Config.options.appearance.background.matugenThemeFile = ""
+            if (Config.options.appearance.background.wallpaperTransition === "") runMatugen(cleanPath);
+            else _pendingMatugenPath = cleanPath;
         }
     }
 

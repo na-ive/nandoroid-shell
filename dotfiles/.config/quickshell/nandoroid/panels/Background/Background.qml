@@ -73,6 +73,10 @@ Variants {
         property var shaderList: ["materialshape", "circlePit", "circleSelect", "magic", "Doom", "Peel", "transition", "pixelate", "stripes", "crt", "dissolve", "glitch", "ripple", "shatter"]
         property string currentShader: "pixelate"
         property real transitionProgress: 1.0
+        property bool useNextForEffect: false
+        readonly property int maxTextureSize: 8192
+        readonly property int textureWidth: Math.min(modelData.width, maxTextureSize)
+        readonly property int textureHeight: Math.min(modelData.height, maxTextureSize)
         property string wallpaperTransition: Config.ready && Config.options.appearance.background ? Config.options.appearance.background.wallpaperTransition : "random"
 
         // Picks the shader for this transition: fixed choice from settings, or a random one
@@ -83,46 +87,60 @@ Variants {
             return shaderList[Math.floor(Math.random() * shaderList.length)];
         }
 
+        function startTransition() {
+            previousWallpaper.layer.enabled = true;
+            wallpaper.layer.enabled = true;
+            nextWallpaper.layer.enabled = true;
+            bgRoot.useNextForEffect = true;
+            transitionProgress = 0.0;
+            transitionDelayTimer.start();
+        }
+
+        Timer {
+            id: transitionDelayTimer
+            interval: 16
+            repeat: false
+            onTriggered: transitionAnim.start()
+        }
+
         onCurrentPathChanged: {
             if (currentPath === "" || currentPath === undefined) return;
             
-            // Avoid transition on first load
             if (wallpaper.source.toString() === "") {
                 wallpaper.source = currentPath;
                 previousWallpaper.source = "";
+                nextWallpaper.source = "";
                 return;
             }
 
-            // Don't transition if paths are the same
             var effectivePrev = wallpaper.source.toString().replace("file://", "");
             if (effectivePrev === currentPath.replace("file://", "")) return;
 
-            // On lock with a live wallpaper active, always start the transition
-            // from the extracted live frame (what was actually on screen), never
-            // from the stale static wallpaper. If the target is the same frame,
-            // there is nothing to animate — just swap it in over the black guard.
             var fromSource = wallpaper.source;
             if (GlobalStates.screenLocked && liveActive && liveFallbackPath !== "") {
                 fromSource = liveFallbackPath;
                 if (fromSource.replace("file://", "") === currentPath.replace("file://", "")) {
                     previousWallpaper.source = "";
                     wallpaper.source = currentPath;
+                    nextWallpaper.source = "";
                     bgRoot.transitionProgress = 1.0;
                     return;
                 }
             }
 
-            // Assign previous source DIRECTLY (not via binding) so the image
-            // is available when the shader starts rendering on next frame
-            previousWallpaper.source = fromSource;
-            wallpaper.source = currentPath;
-
-            // Transition disabled in settings: swap instantly
             if (bgRoot.wallpaperTransition === "") {
                 previousWallpaper.source = "";
+                nextWallpaper.source = "";
+                wallpaper.source = currentPath;
                 bgRoot.transitionProgress = 1.0;
+                if (Wallpapers._pendingMatugenPath !== "") {
+                    const p = Wallpapers._pendingMatugenPath; Wallpapers._pendingMatugenPath = ""; Wallpapers.runMatugen(p);
+                }
                 return;
             }
+
+            previousWallpaper.source = fromSource;
+            nextWallpaper.source = currentPath;
 
             currentShader = pickShader();
 
@@ -130,8 +148,18 @@ Variants {
                 materialShapeTransition.pickRandomShape();
             }
 
-            transitionProgress = 0.0;
-            transitionAnim.restart();
+            if (nextWallpaper.status === Image.Ready) {
+                startTransition();
+            } else if (nextWallpaper.status === Image.Error) {
+                wallpaper.source = currentPath;
+                previousWallpaper.source = "";
+                nextWallpaper.source = "";
+                bgRoot.transitionProgress = 1.0;
+                bgRoot.useNextForEffect = false;
+                if (Wallpapers._pendingMatugenPath !== "") {
+                    const p = Wallpapers._pendingMatugenPath; Wallpapers._pendingMatugenPath = ""; Wallpapers.runMatugen(p);
+                }
+            }
         }
 
         NumberAnimation {
@@ -143,8 +171,16 @@ Variants {
             duration: 1200
             easing.type: Easing.InOutCubic
             onFinished: {
+                wallpaper.source = nextWallpaper.source;
                 previousWallpaper.source = "";
+                nextWallpaper.source = "";
+                bgRoot.useNextForEffect = false;
                 bgRoot.transitionProgress = 1.0;
+                if (Wallpapers._pendingMatugenPath !== "") {
+                    const p = Wallpapers._pendingMatugenPath;
+                    Wallpapers._pendingMatugenPath = "";
+                    Wallpapers.runMatugen(p);
+                }
             }
         }
 
@@ -164,6 +200,7 @@ Variants {
                 cache: true
                 smooth: true
                 asynchronous: false
+                sourceSize: Qt.size(bgRoot.textureWidth, bgRoot.textureHeight)
                 layer.enabled: true
             }
 
@@ -175,8 +212,35 @@ Variants {
                 cache: true
                 smooth: true
                 asynchronous: true
+                sourceSize: Qt.size(bgRoot.textureWidth, bgRoot.textureHeight)
                 layer.enabled: true
                 visible: bgRoot.transitionProgress >= 1.0
+            }
+
+            Image {
+                id: nextWallpaper
+                anchors.fill: parent
+                fillMode: Image.PreserveAspectCrop
+                cache: true
+                smooth: true
+                asynchronous: true
+                sourceSize: Qt.size(bgRoot.textureWidth, bgRoot.textureHeight)
+                layer.enabled: false
+                visible: false
+                onStatusChanged: {
+                    if (status === Image.Ready && source.toString() !== "" && bgRoot.transitionProgress === 1.0 && previousWallpaper.source.toString() !== "") {
+                        bgRoot.startTransition();
+                    } else if (status === Image.Error && source.toString() !== "") {
+                        wallpaper.source = source;
+                        previousWallpaper.source = "";
+                        nextWallpaper.source = "";
+                        bgRoot.transitionProgress = 1.0;
+                        bgRoot.useNextForEffect = false;
+                        if (Wallpapers._pendingMatugenPath !== "") {
+                            const p = Wallpapers._pendingMatugenPath; Wallpapers._pendingMatugenPath = ""; Wallpapers.runMatugen(p);
+                        }
+                    }
+                }
             }
             
             ShaderEffect {
@@ -184,9 +248,9 @@ Variants {
                 anchors.fill: parent
                 visible: bgRoot.transitionProgress < 1.0 && bgRoot.currentShader !== "materialshape"
                 property var fromImage: previousWallpaper
-                property var toImage: wallpaper
+                property var toImage: bgRoot.useNextForEffect ? nextWallpaper : wallpaper
                 property var source1: previousWallpaper
-                property var source2: wallpaper
+                property var source2: bgRoot.useNextForEffect ? nextWallpaper : wallpaper
                 property real time: 0.0
                 property real progress: bgRoot.transitionProgress
                 property real aspectX: width / height
@@ -206,7 +270,7 @@ Variants {
             MaterialShapeTransition {
                 id: materialShapeTransition
                 anchors.fill: parent
-                sourceItem: wallpaper
+                sourceItem: bgRoot.useNextForEffect ? nextWallpaper : wallpaper
                 active: bgRoot.currentShader === "materialshape"
                 progress: bgRoot.transitionProgress
             }
