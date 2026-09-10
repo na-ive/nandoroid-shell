@@ -21,6 +21,25 @@ Rectangle {
     
     property string fullTextContent: ""
     property string _requestedId: ""
+    readonly property bool isHexColor: {
+        if (!selectedItem || selectedItem.isImage) return false;
+        const s = (selectedItem.name || fullTextContent || "").trim();
+        return /^#?([0-9A-Fa-f]{3,4}|[0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})$/.test(s);
+    }
+    function formatHex(s) {
+        let c = s.trim();
+        if (/^[0-9A-Fa-f]{3,4}$|^[0-9A-Fa-f]{6}$|^[0-9A-Fa-f]{8}$/.test(c)) return "#" + c;
+        return c;
+    }
+    function hexContrast(hex) {
+        let c = hex.trim().replace("#", "");
+        if (c.length === 3) c = c[0]+c[0]+c[1]+c[1]+c[2]+c[2];
+        if (c.length === 4) c = c[0]+c[0]+c[1]+c[1]+c[2]+c[2];
+        if (c.length === 8) c = c.substring(0,6);
+        const r = parseInt(c.substring(0,2),16), g = parseInt(c.substring(2,4),16), b = parseInt(c.substring(4,6),16);
+        if (isNaN(r)||isNaN(g)||isNaN(b)) return Appearance.m3colors.m3onSurface;
+        return ((r*299+g*587+b*114)/1000 >= 128) ? "#000000" : "#ffffff";
+    }
     
     Process {
         id: textDecoder
@@ -58,14 +77,45 @@ Rectangle {
         asynchronous: true
         cache: true
     }
-    
 
-    // Text Preview
+    Rectangle {
+        anchors.fill: parent
+        anchors.margins: 8 * Appearance.effectiveScale
+        anchors.bottomMargin: 56 * Appearance.effectiveScale
+        radius: 8 * Appearance.effectiveScale
+        color: root.isHexColor ? root.formatHex((selectedItem ? selectedItem.name : "")) : "transparent"
+        border.width: 1
+        border.color: Qt.rgba(0,0,0,0.08)
+        visible: root.isHexColor
+        clip: true
+
+        ColumnLayout {
+            anchors.centerIn: parent
+            spacing: 6 * Appearance.effectiveScale
+            StyledText {
+                Layout.alignment: Qt.AlignHCenter
+                text: root.formatHex((selectedItem ? selectedItem.name : "")).toUpperCase()
+                font.pixelSize: Math.round(16 * Appearance.effectiveScale)
+                font.family: Appearance.font.family.monospace
+                font.weight: Font.Bold
+                color: root.hexContrast((selectedItem ? selectedItem.name : ""))
+            }
+            StyledText {
+                Layout.alignment: Qt.AlignHCenter
+                text: "HEX COLOR"
+                font.pixelSize: Math.round(9 * Appearance.effectiveScale)
+                color: root.hexContrast((selectedItem ? selectedItem.name : ""))
+                opacity: 0.7
+                font.letterSpacing: 1.2
+            }
+        }
+    }
+
     ScrollView {
         anchors.fill: parent
         anchors.margins: 16 * Appearance.effectiveScale
         anchors.bottomMargin: 48 * Appearance.effectiveScale // Make room for footer
-        visible: !!(root.selectedItem && !root.selectedItem.isImage)
+        visible: !!(root.selectedItem && !root.selectedItem.isImage && !root.isHexColor)
         clip: true
         
         TextArea {
