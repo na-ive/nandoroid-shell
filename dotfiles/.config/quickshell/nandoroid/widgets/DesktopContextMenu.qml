@@ -399,9 +399,10 @@ PanelWindow {
             }
         }
 
-        // Also block click-through on submenu background
+        // Also block click-through on submenu background - only when submenu actually shown
         MouseArea {
             anchors.fill: parent
+            enabled: submenuLoader.item !== null && root.openSubmenuComponent !== null
             acceptedButtons: Qt.LeftButton | Qt.RightButton
             onPressed: (mouse) => mouse.accepted = true
             // keep hover alive while over submenu chrome (behind ColumnLayout due to declaration order)
