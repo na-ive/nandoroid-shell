@@ -398,6 +398,15 @@ PanelWindow {
                 else submenuCloseTimer.restart()
             }
         }
+
+        // Also block click-through on submenu background
+        MouseArea {
+            anchors.fill: parent
+            acceptedButtons: Qt.LeftButton | Qt.RightButton
+            onPressed: (mouse) => mouse.accepted = true
+            // keep hover alive while over submenu chrome (behind ColumnLayout due to declaration order)
+            z: -1
+        }
         
         onLoaded: {
             item.opacity = 0
@@ -424,9 +433,37 @@ PanelWindow {
         }
     }
 
+    // Hover bridge over 12px gap between menu and submenu - prevents flicker when crossing
+    Item {
+        id: submenuHoverBridge
+        visible: root.openSubmenuComponent !== null && root.visible && submenuLoader.active && submenuLoader.item
+        x: {
+            let w = submenuLoader.item ? submenuLoader.item.width : (348 * Appearance.effectiveScale);
+            let rightPos = menuContainer.x + menuContainer.width + 12 * Appearance.effectiveScale;
+            if (rightPos + w + 12 * Appearance.effectiveScale <= root.screen.width) {
+                return menuContainer.x + menuContainer.width;
+            } else {
+                return submenuLoader.x + w;
+            }
+        }
+        y: submenuLoader.y
+        width: 12 * Appearance.effectiveScale
+        height: submenuLoader.height
+        HoverHandler {
+            // Only stop timer when over gap, don't restart on exit (submenuLoader/widgetsRow handle restart)
+            onHoveredChanged: if (hovered) submenuCloseTimer.stop()
+        }
+        // Don't let clicks in the gap close the menu via background MouseArea
+        MouseArea {
+            anchors.fill: parent
+            acceptedButtons: Qt.LeftButton | Qt.RightButton
+            onPressed: (mouse) => mouse.accepted = true
+        }
+    }
+
     Timer {
         id: submenuCloseTimer
-        interval: 150
+        interval: 220
         onTriggered: root.openSubmenuComponent = null
     }
 

@@ -21,6 +21,13 @@ Item {
         z: -1
     }
 
+    // Block click-through to PanelWindow background (parity with menuContainer/carouselContainer)
+    MouseArea {
+        anchors.fill: parent
+        acceptedButtons: Qt.LeftButton | Qt.RightButton
+        onPressed: (mouse) => mouse.accepted = true
+    }
+
     ColumnLayout {
         id: col
         anchors { 
