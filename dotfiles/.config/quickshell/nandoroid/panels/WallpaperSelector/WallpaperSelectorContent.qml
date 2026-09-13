@@ -78,6 +78,11 @@ Item {
                 gridComponent.searchSimilarCurrent();
             }
             event.accepted = true;
+        } else if (event.key === Qt.Key_R) {
+            if (!headerComponent.isSearchFocused && !mainSelector.wallhavenMode && !mainSelector.naiveMode && !mainSelector.liveMode) {
+                mainSelector.triggerRandomWallpaper();
+            }
+            event.accepted = true;
         } else if (event.key === Qt.Key_Tab || event.key === Qt.Key_Backtab) {
             if (!headerComponent.isSearchFocused) {
                 sidebarComponent.cycleTab(event.key === Qt.Key_Tab && !(event.modifiers & Qt.ShiftModifier));
@@ -410,6 +415,52 @@ Item {
         } else {
             WallpaperEngineService.searchQuery = searchFilter;
             WallpaperEngineService.fetch();
+        }
+    }
+
+    property bool _randIsLock: false
+
+    function triggerRandomWallpaper() {
+        if (mainSelector.wallhavenMode || mainSelector.naiveMode || mainSelector.liveMode) return;
+        if (mainSelector.lockSelectionDisabled) return;
+        const isLock = GlobalStates.wallpaperSelectorTarget === "lock";
+        if (mainSelector.favMode) {
+            if (isLock) {
+                const favs = Wallpapers.favorites.filter(p => {
+                    const s = p.toLowerCase();
+                    const isImg = s.endsWith(".jpg") || s.endsWith(".jpeg") || s.endsWith(".png") || s.endsWith(".webp") || s.endsWith(".avif");
+                    const isWE = s.includes("431960");
+                    return isImg && !isWE;
+                });
+                if (favs.length > 0) {
+                    const idx = Math.floor(Math.random() * favs.length);
+                    Wallpapers.selectForLockscreen(favs[idx]);
+                    mainSelector.close();
+                }
+            } else {
+                if (Wallpapers.selectRandomFavorite()) mainSelector.close();
+            }
+        } else if (Wallpapers.directory) {
+            var d = Wallpapers.directory.toString();
+            if (d.startsWith("file://")) d = d.substring(7);
+            mainSelector._randIsLock = isLock;
+            randProc.command = ["bash", "-c", `find "${d}" -maxdepth 1 -type f \\( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.webp" -o -iname "*.avif" \\) | shuf -n 1`];
+            randProc.running = true;
+        }
+    }
+
+    Process {
+        id: randProc
+        command: ["true"]
+        running: false
+        stdout: StdioCollector { id: randOut }
+        onExited: {
+            var result = randOut.text.trim();
+            if (result) {
+                if (mainSelector._randIsLock) Wallpapers.selectForLockscreen(result);
+                else Wallpapers.select(result);
+                mainSelector.close();
+            }
         }
     }
 
@@ -987,6 +1038,7 @@ Item {
             { key: "D", action: "Toggle Separate Lockscreen Wallpaper" },
             { key: "V", action: "Toggle Sort Mode" },
             { key: "F", action: "Toggle Favorite" },
+            { key: "R", action: "Random Wallpaper" },
             { key: "Z", action: "Switch Online/Live Provider" },
             { key: "A", action: "Download Only" },
             { key: "S", action: "Search Similar (Online)" }

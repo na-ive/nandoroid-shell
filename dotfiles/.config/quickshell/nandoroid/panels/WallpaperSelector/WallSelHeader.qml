@@ -233,31 +233,7 @@ import Quickshell.Io
                                 anchors.fill: parent
                                 buttonRadius: 24 * Appearance.effectiveScale
                                 colBackground: "transparent"
-                                onClicked: {
-                                    if (mainSelector.favMode) {
-                                        if (Wallpapers.selectRandomFavorite())
-                                            mainSelector.close();
-                                    } else if (Wallpapers.directory) {
-                                        var d = Wallpapers.directory.toString();
-                                        if (d.startsWith("file://")) d = d.substring(7);
-                                        randProc.command = ["bash", "-c", `find "${d}" -maxdepth 1 -type f \\( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.webp" -o -iname "*.avif" \\) | shuf -n 1`];
-                                        randProc.running = true;
-                                    }
-                                }
-    
-                                Process {
-                                    id: randProc
-                                    command: ["true"]
-                                    running: false
-                                    stdout: StdioCollector { id: randOut }
-                                    onExited: {
-                                        var result = randOut.text.trim();
-                                        if (result) {
-                                            Wallpapers.select(result);
-                                            mainSelector.close();
-                                        }
-                                    }
-                                }
+                                onClicked: mainSelector.triggerRandomWallpaper()
     
                                 MaterialShapeWrappedMaterialSymbol {
                                     anchors.centerIn: parent
