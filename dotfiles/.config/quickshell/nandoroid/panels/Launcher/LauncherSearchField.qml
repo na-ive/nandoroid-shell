@@ -106,8 +106,9 @@ Rectangle {
             Keys.onPressed: (event) => {
                 if (!root.launcherContent) return;
 
-                // Cheatsheet toggle — handle before navigation so it works even with empty results
+                // Cheatsheet toggle — only when input empty so "/" can be used for division (math)
                 if (event.key === Qt.Key_Slash) {
+                    if (input.text.trim().length !== 0) return;
                     if (root.launcherContent.cheatsheetOpen !== undefined) {
                         root.launcherContent.cheatsheetOpen = !root.launcherContent.cheatsheetOpen;
                         event.accepted = true;

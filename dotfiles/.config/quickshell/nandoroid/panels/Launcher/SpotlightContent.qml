@@ -78,6 +78,7 @@ Rectangle {
     // Backup grid navigation in case focus isn't on the search field
     Keys.onPressed: (event) => {
         if (event.key === Qt.Key_Slash) {
+            if (LauncherSearch.query.trim().length !== 0) return;
             root.cheatsheetOpen = !root.cheatsheetOpen;
             event.accepted = true;
             return;
