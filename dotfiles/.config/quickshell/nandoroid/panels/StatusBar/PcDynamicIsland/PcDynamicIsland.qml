@@ -1,0 +1,535 @@
+import QtQuick
+import QtQuick.Layouts
+import Quickshell
+import Quickshell.Hyprland
+import Quickshell.Wayland
+import Quickshell.Services.Mpris
+import Qt5Compat.GraphicalEffects
+import QtQuick.Controls
+import "../../../core"
+import "../../../core/functions" as Functions
+import "../../../services"
+import "../../../widgets"
+
+Item {
+    id: root
+    property bool mirrored: false
+    property alias pill: pill
+
+    readonly property real pillHeight: 32
+    readonly property real idleCollapsedWidth: 144
+    readonly property real sessionWidth: 164
+    property real idleTextContentWidth: 0
+    readonly property real idleWidth: Math.max(root.idleCollapsedWidth, root.idleTextContentWidth)
+    readonly property real mediaCollapsedWidth: 140
+    readonly property real mediaExpandedWidthCap: 220
+    property real mediaTextContentWidth: 0
+    property bool mediaTrackInfoVisible: mediaHoverHandler.hovered || mediaTrackChangeTimer.running
+    readonly property real mediaExpandedWidth: Math.min(root.mediaExpandedWidthCap, root.mediaTextContentWidth)
+    readonly property real mediaWidth: root.mediaTrackInfoVisible ? root.mediaExpandedWidth : root.mediaCollapsedWidth
+    readonly property real timerWidth: 130
+    readonly property real osdWidth: 132
+    readonly property real notificationWidth: 220
+    readonly property real batteryWidth: 170
+    readonly property real badgeSize: 32
+    readonly property real badgeSpacing: 6
+    readonly property bool isMaterial: Config.ready && Config.options.statusBar && Config.options.statusBar.moduleStyle === "m3"
+    readonly property string islandStyle: Config.ready && Config.options.statusBar ? (Config.options.statusBar.islandStyle ?? "pill") : "pill"
+    readonly property bool isWaterdrop: islandStyle === "waterdrop" && !isMaterial
+    property bool insideM3Card: false
+    property bool vertical: false
+
+    property string manualFocusId: ""
+    property string forcedCycleId: ""
+
+    property bool forceIdle: false
+
+    readonly property var displayedProvider: {
+        const alwaysWinActive = root.contentProviders.find(p => root.alwaysWinIds.includes(p.id) && p.active)
+        if (alwaysWinActive) return alwaysWinActive
+        if (root.forcedCycleId !== "") {
+            if (root.forcedCycleId === "idle") return null
+            const forced = root.contentProviders.find(p => p.id === root.forcedCycleId && p.active)
+            if (forced) return forced
+        }
+        return root.forceIdle ? null : root.activeProvider
+    }
+
+    onActiveProviderChanged: {
+        if (root.activeProvider && root.alwaysWinIds.includes(root.activeProvider.id)) {
+            root.forceIdle = false
+        }
+    }
+
+    readonly property MprisPlayer activePlayer: MprisController.activePlayer
+    readonly property bool hasMedia: root.activePlayer !== null
+        && ((root.activePlayer.trackTitle ?? "") !== "" || root.activePlayer.isPlaying)
+    readonly property var latestNotification: {
+        if (Notifications.popupList && Notifications.popupList.length > 0)
+            return Notifications.popupList[Notifications.popupList.length - 1]
+        return Notifications.activePopup
+    }
+    readonly property bool isRecording: ScreenRecord.active
+    property int recordingElapsedSeconds: ScreenRecord.seconds
+
+    function formatRecordingTime(s) {
+        return Math.floor(s / 60).toString().padStart(2, '0') + ":" + (s % 60).toString().padStart(2, '0')
+    }
+
+    // --- Battery alert (derived from Battery service) ---
+    property bool batteryAlertActive: false
+    property string batteryAlertKind: ""
+    readonly property int batteryAlertDuration: 4000
+
+    Timer {
+        id: batteryAlertTimer
+        interval: root.batteryAlertDuration
+        repeat: false
+        onTriggered: root.batteryAlertActive = false
+    }
+
+    Timer {
+        id: mediaTrackChangeTimer
+        interval: 3000
+        repeat: false
+    }
+
+    Connections {
+        target: root.activePlayer
+        function onTrackTitleChanged() { mediaTrackChangeTimer.restart() }
+        function onTrackArtistChanged() { mediaTrackChangeTimer.restart() }
+    }
+
+    function triggerBatteryAlert(kind) {
+        root.batteryAlertKind = kind
+        root.batteryAlertActive = true
+        batteryAlertTimer.restart()
+    }
+
+    Connections {
+        target: Battery
+        function onIsCriticalChanged() {
+            if (Battery.isCritical && !Battery.isCharging) root.triggerBatteryAlert("critical")
+        }
+        function onIsLowChanged() {
+            if (Battery.isLow && !Battery.isCritical && !Battery.isCharging) root.triggerBatteryAlert("low")
+        }
+        function onIsChargingChanged() {
+            if (Battery.isCharging) root.triggerBatteryAlert("charging")
+        }
+    }
+
+    function batteryStatusText() {
+        switch (root.batteryAlertKind) {
+            case "critical": return I18nService.tr("Critical Battery")
+            case "charging": return I18nService.tr("Charging")
+            default:         return I18nService.tr("Low Battery")
+        }
+    }
+
+    function batteryIcon() {
+        if (root.batteryAlertKind === "charging" || Battery.isCharging) return "battery_android_frame_bolt"
+        const pct = Battery.percentage
+        if (pct <= 0.1) return "battery_android_frame_alert"
+        if (pct <= 0.2) return "battery_android_frame_1"
+        if (pct <= 0.4) return "battery_android_frame_2"
+        if (pct <= 0.6) return "battery_android_frame_3"
+        if (pct <= 0.8) return "battery_android_frame_4"
+        if (pct < 1)    return "battery_android_frame_5"
+        return "battery_android_full"
+    }
+
+    function batteryAlertColor() {
+        return root.batteryAlertKind === "charging" ? Appearance.m3colors.m3success : Appearance.colors.colError
+    }
+
+    // --- Separate timer sessions — pause keeps DI visible for resume & switching ---
+    readonly property bool hasPomodoro: PomodoroService.isSessionRunning
+    readonly property bool _hasStopwatchSession: StopwatchService.active || StopwatchService.elapsedMs > 0
+    readonly property bool hasStopwatch: root._hasStopwatchSession
+    readonly property bool _hasTimerSession: {
+        if (TimerService.active || TimerService.overflowing) return true
+        if (TimerService.setSeconds <= 0) return false
+        return Math.abs(TimerService.remainingMs - TimerService.setSeconds * 1000) > 100
+    }
+    readonly property bool hasCountdown: root._hasTimerSession
+    // kept for legacy single-timer fallback
+    readonly property bool hasActiveTimer: root.hasPomodoro || root.hasStopwatch || root.hasCountdown
+    property string engagedTimerKind: {
+        if (root.hasPomodoro) return "pomodoro"
+        if (root.hasStopwatch) return "stopwatch"
+        if (root.hasCountdown) return "countdown"
+        return ""
+    }
+
+    function timerIcon() {
+        switch (root.engagedTimerKind) {
+            case "pomodoro":  return "coffee"
+            case "countdown": return "hourglass_top"
+            case "stopwatch": return "timer"
+            default:          return "timer"
+        }
+    }
+
+    function timerValueText() {
+        switch (root.engagedTimerKind) {
+            case "pomodoro":  return PomodoroService.timeString
+            case "countdown": return TimerService.timeString
+            case "stopwatch": return StopwatchService.timeString.split(".")[0]
+            default:          return ""
+        }
+    }
+
+    function timerRunning() {
+        switch (root.engagedTimerKind) {
+            case "pomodoro":  return PomodoroService.active
+            case "countdown": return TimerService.active
+            case "stopwatch": return StopwatchService.active
+            default:          return false
+        }
+    }
+
+    function toggleActiveTimer() {
+        switch (root.engagedTimerKind) {
+            case "pomodoro":  PomodoroService.active ? PomodoroService.pause() : PomodoroService.start(); break
+            case "countdown": TimerService.active ? TimerService.pause() : TimerService.start(); break
+            case "stopwatch": StopwatchService.active ? StopwatchService.pause() : StopwatchService.start(); break
+        }
+    }
+
+    function resetActiveTimer() {
+        switch (root.engagedTimerKind) {
+            case "pomodoro":  PomodoroService.reset(); break
+            case "countdown": TimerService.reset(); break
+            case "stopwatch": StopwatchService.reset(); break
+        }
+    }
+
+    // --- OSD bridging (via GlobalStates) ---
+    // GlobalStates.osdVolumeOpen / osdIndicatorType set by OSD.qml or direct volume/brightness changes
+    readonly property bool osdActive: GlobalStates.osdVolumeOpen ?? false
+
+    readonly property real pomodoroWidth: 150
+    readonly property real stopwatchWidth: 185
+    readonly property real countdownWidth: 165
+
+    readonly property var contentProviders: [
+        { id: "notification", active: root.latestNotification !== null, component: notificationComponent, width: root.notificationWidth },
+        { id: "battery",      active: root.batteryAlertActive,          component: batteryComponent,      width: root.batteryWidth },
+        { id: "recording",    active: root.isRecording,                 component: recordingComponent,    width: 140 },
+        { id: "pomodoro",     active: root.hasPomodoro,                 component: pomodoroComponent,     width: root.pomodoroWidth },
+        { id: "stopwatch",    active: root.hasStopwatch,                component: stopwatchComponent,    width: root.stopwatchWidth },
+        { id: "countdown",    active: root.hasCountdown,                component: countdownComponent,    width: root.countdownWidth },
+        // legacy aggregated timer (hidden, kept for icon fallback)
+        { id: "timer",        active: false,                            component: timerComponent,        width: root.timerWidth },
+        { id: "osd",          active: root.osdActive,                   component: osdComponent,          width: root.osdWidth },
+        { id: "media",        active: root.hasMedia,                    component: mediaComponent,        width: root.mediaWidth },
+        { id: "session",      active: GlobalStates.diSessionOpen,       component: sessionComponent,      width: root.sessionWidth },
+    ]
+
+    readonly property var alwaysWinIds: ["session", "notification", "battery", "osd"]
+
+    readonly property var activeOthers: root.contentProviders.filter(p => !root.alwaysWinIds.includes(p.id) && p.active)
+
+    readonly property var activeProvider: {
+        const forcedTop = root.contentProviders.find(p => root.alwaysWinIds.includes(p.id) && p.active)
+        if (forcedTop) return forcedTop
+        if (root.manualFocusId !== "") {
+            const forced = root.activeOthers.find(p => p.id === root.manualFocusId)
+            if (forced) return forced
+        }
+        return root.activeOthers[0] ?? null
+    }
+
+    readonly property var badgeProviders: {
+        if (root.alwaysWinIds.some(id => root.contentProviders.find(p => p.id === id)?.active)) return []
+        return root.activeOthers.filter(p => p.id !== root.activeProvider?.id)
+    }
+
+    function iconForProviderId(id) {
+        switch (id) {
+            case "media":     return "music_note"
+            case "recording": return "screen_record"
+            case "pomodoro":  return "coffee"
+            case "stopwatch": return "timer"
+            case "countdown": return "hourglass_top"
+            case "timer":     return root.timerIcon()
+            case "battery":   return root.batteryIcon()
+            case "osd":
+                switch (GlobalStates.osdIndicatorType) {
+                    case "brightness": return "light_mode"
+                    case "gamma":      return "wb_twilight"
+                    case "layout":     return "view_compact"
+                    case "microphone": return "mic"
+                    case "charging":   return "battery_charging_full"
+                    case "powerMode":  return "bolt"
+                    case "conservation": return "energy_savings_leaf"
+                    case "playerVolume": return "volume_up"
+                    default:           return "volume_up"
+                }
+            default: return "circle"
+        }
+    }
+
+    function osdText() {
+        switch (GlobalStates.osdIndicatorType) {
+            case "brightness": {
+                const mon = Brightness.getMonitorForScreen ? Brightness.getMonitorForScreen(Quickshell.screens.find(s => s.name === Hyprland.focusedMonitor?.name)) : null
+                return `${Math.round((mon?.brightness ?? 0.5) * 100)}`
+            }
+            case "gamma":      return `${Math.round((Hyprsunset.gamma ?? 50))}`
+            case "layout": {
+                const raw = GlobalStates.hyprlandLayout ?? HyprlandData.layout ?? "dwindle"
+                return raw.charAt(0).toUpperCase() + raw.slice(1)
+            }
+            case "microphone": return `${Math.round((Audio.source?.audio?.volume ?? 0) * 100)}`
+            case "charging":   return `${Math.round(Battery.percentage * 100)}%`
+            case "powerMode":  return PowerProfileService.currentProfile ?? ""
+            case "conservation": return ConservationMode.active ? I18nService.tr("On") : I18nService.tr("Off")
+            default:           return `${Math.round((Audio.sink?.audio?.volume ?? 0) * 100)}`
+        }
+    }
+
+    readonly property string activeContentId: root.displayedProvider?.id ?? "idle"
+
+    implicitHeight: insideM3Card ? pillHeight : 40 * Appearance.effectiveScale
+    implicitWidth: root.displayedProvider?.width ?? root.idleWidth
+
+    Behavior on implicitWidth {
+        NumberAnimation {
+            duration: 350
+            easing.type: Easing.BezierSpline
+            easing.bezierCurve: Appearance.animationCurves.expressiveDefaultSpatial
+        }
+    }
+
+    Rectangle {
+        id: pill
+        anchors.left: parent.left
+        y: root.isWaterdrop ? 0 : (root.insideM3Card ? 0 : (root.isMaterial ? 4 * Appearance.effectiveScale : 6 * Appearance.effectiveScale))
+        width: root.displayedProvider?.width ?? root.idleWidth
+        height: root.isWaterdrop ? 34 * Appearance.effectiveScale : ((root.isMaterial || root.insideM3Card) ? 32 * Appearance.effectiveScale : 28 * Appearance.effectiveScale)
+        color: "black"
+        radius: height / 2
+        clip: false
+        visible: !root.vertical
+
+        Behavior on y { NumberAnimation { duration: 400; easing.type: Easing.OutBack } }
+        Behavior on height { NumberAnimation { duration: 400; easing.type: Easing.OutBack } }
+        Behavior on width {
+            NumberAnimation {
+                duration: 350
+                easing.type: Easing.BezierSpline
+                easing.bezierCurve: Appearance.animationCurves.expressiveDefaultSpatial
+            }
+        }
+
+        // Waterdrop: square off top edge (attach to bar) — match DynamicIsland.qml:346
+        Rectangle {
+            anchors.left: parent.left; anchors.right: parent.right; anchors.top: parent.top
+            height: parent.radius
+            color: "black"
+            visible: root.isWaterdrop
+        }
+        RoundCorner {
+            anchors.right: parent.left; anchors.top: parent.top
+            implicitSize: parent.radius; color: "black"; corner: RoundCorner.CornerEnum.TopRight
+            visible: root.isWaterdrop; opacity: visible ? 1 : 0
+            Behavior on opacity { NumberAnimation { duration: 250 } }
+        }
+        RoundCorner {
+            anchors.left: parent.right; anchors.top: parent.top
+            implicitSize: parent.radius; color: "black"; corner: RoundCorner.CornerEnum.TopLeft
+            visible: root.isWaterdrop; opacity: visible ? 1 : 0
+            Behavior on opacity { NumberAnimation { duration: 250 } }
+        }
+
+        Behavior on width {
+            NumberAnimation { duration: 300; easing.type: Easing.OutQuint }
+        }
+
+        HoverHandler {
+            id: mediaHoverHandler
+            enabled: root.activeContentId === "media"
+        }
+
+        WheelHandler {
+            id: globalCycleWheelHandler
+            target: pill
+            acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
+            onWheel: (event) => {
+                const order = ["idle","media","recording","pomodoro","stopwatch","countdown"]
+                const activeOrder = order.filter(id => id === "idle" || root.contentProviders.find(p => p.id === id)?.active)
+                if (activeOrder.length <= 1) return
+                const curId = root.forcedCycleId !== "" ? root.forcedCycleId : root.activeContentId
+                let idx = activeOrder.indexOf(curId)
+                if (idx === -1) idx = 0
+                event.accepted = true
+                if (event.angleDelta.y > 0) idx = (idx - 1 + activeOrder.length) % activeOrder.length
+                else idx = (idx + 1) % activeOrder.length
+                root.forcedCycleId = activeOrder[idx]
+                root.manualFocusId = ""
+                root.forceIdle = false
+            }
+        }
+
+        WheelHandler {
+            id: idleToggleWheelHandler
+            target: pill
+            enabled: false
+            acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
+            property bool coolingDown: false
+            onWheel: (event) => {
+                if (coolingDown) return
+                coolingDown = true
+                idleToggleDebounceTimer.restart()
+                root.forceIdle = !root.forceIdle
+            }
+        }
+        readonly property bool wheelCooling: idleToggleWheelHandler.coolingDown
+
+        Timer {
+            id: idleToggleDebounceTimer
+            interval: 200
+            onTriggered: idleToggleWheelHandler.coolingDown = false
+        }
+
+        Loader {
+            id: contentLoader
+            anchors.fill: parent
+            sourceComponent: root.displayedProvider?.component ?? idleComponent
+            active: !root.vertical
+
+            onLoaded: {
+                if (root.displayedProvider?.id === "session" && item) {
+                    item.forceActiveFocus()
+                }
+            }
+        }
+
+        Component {
+            id: idleComponent
+            PcDiIdle { di: root }
+        }
+
+        Component {
+            id: mediaComponent
+            PcDiMedia { di: root }
+        }
+
+        Component {
+            id: osdComponent
+            PcDiOsd { di: root }
+        }
+
+        Component {
+            id: notificationComponent
+            PcDiNotifs { di: root }
+        }
+
+        Component {
+            id: timerComponent
+            PcDiTimers { di: root }
+        }
+
+        Component {
+            id: pomodoroComponent
+            PcDiTimers { di: root }
+        }
+        Component {
+            id: stopwatchComponent
+            PcDiStopwatch { di: root }
+        }
+        Component {
+            id: countdownComponent
+            PcDiTimer { di: root }
+        }
+
+        Component {
+            id: sessionComponent
+            PcDiSession { di: root }
+        }
+
+        Component {
+            id: recordingComponent
+            RowLayout {
+                anchors {
+                    fill: parent
+                    leftMargin: root.isMaterial ? 4 : 8
+                    rightMargin: 10
+                }
+                spacing: 6
+
+                Item {
+                    id: stopButton
+                    Layout.alignment: Qt.AlignVCenter
+                    implicitWidth: 16
+                    implicitHeight: 16
+
+                    MaterialSymbol {
+                        anchors.fill: parent
+                        text: "stop_circle"
+                        fill: 1
+                        iconSize: root.isMaterial ? 26 : 16
+                        color: Appearance.colors.colError
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: ScreenRecord.stop()
+                    }
+                }
+
+                Item { Layout.fillWidth: true }
+
+                StyledText {
+                    Layout.alignment: Qt.AlignVCenter
+                    text: root.formatRecordingTime(root.recordingElapsedSeconds)
+                    font.pixelSize: Appearance.font.pixelSize.small
+                    font.features: { "tnum": 1 }
+                    color: Appearance.colors.colNotchText
+                }
+            }
+        }
+
+        Component {
+            id: batteryComponent
+            RowLayout {
+                anchors {
+                    fill: parent
+                    leftMargin: 10
+                    rightMargin: 10
+                }
+                spacing: 6
+
+                StyledText {
+                    Layout.alignment: Qt.AlignVCenter
+                    text: root.batteryStatusText()
+                    font.pixelSize: Appearance.font.pixelSize.small
+                    font.weight: Font.DemiBold
+                    color: root.batteryAlertColor()
+                }
+
+                Item { Layout.fillWidth: true }
+
+                MaterialSymbol {
+                    Layout.alignment: Qt.AlignVCenter
+                    text: root.batteryIcon()
+                    fill: 1
+                    iconSize: 16
+                    color: root.batteryAlertColor()
+                }
+
+                StyledText {
+                    Layout.alignment: Qt.AlignVCenter
+                    text: `${Math.round(Battery.percentage * 100)}`
+                    font.pixelSize: Appearance.font.pixelSize.small
+                    font.features: { "tnum": 1 }
+                    color: root.batteryAlertColor()
+                }
+            }
+        }
+    }
+
+}

@@ -418,6 +418,10 @@ property JsonObject background: JsonObject {
                 property bool autoHide: false
                 property string trayStyle: "adaptive"
                 property bool showVolumeIndicator: true
+                property JsonObject pcIsland: JsonObject {
+                    property string visualizerStyle: "dots" // "dots", "wave", "none"
+                    property bool showMediaControls: false
+                }
             }
 
             // --- Quick Settings ---

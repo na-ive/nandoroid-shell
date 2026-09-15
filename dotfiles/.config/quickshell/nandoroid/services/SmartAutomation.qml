@@ -43,6 +43,33 @@ Singleton {
         }
     }
 
+    // --- Battery low/critical push notifications (for non-PcIsland or as persistent notif) ---
+    property string _lastBatteryNotif: ""
+    Connections {
+        target: Battery
+        function onIsCriticalChanged() {
+            if (Battery.isCritical && !Battery.isCharging) {
+                if (root._lastBatteryNotif !== "critical") {
+                    root._lastBatteryNotif = "critical"
+                    root.sendNotification("Critical Battery", `Battery at ${Math.round(Battery.percentage * 100)}% — plug in now`)
+                }
+            }
+        }
+        function onIsLowChanged() {
+            if (Battery.isLow && !Battery.isCritical && !Battery.isCharging) {
+                if (root._lastBatteryNotif !== "low") {
+                    root._lastBatteryNotif = "low"
+                    root.sendNotification("Low Battery", `Battery at ${Math.round(Battery.percentage * 100)}%`)
+                }
+            } else if (!Battery.isLow && !Battery.isCritical) {
+                root._lastBatteryNotif = ""
+            }
+        }
+        function onIsChargingChanged() {
+            if (Battery.isCharging) root._lastBatteryNotif = ""
+        }
+    }
+
     // --- Notifications only for Schedule DND ---
     onScheduleDndActiveChanged: {
         if (scheduleDndActive) {

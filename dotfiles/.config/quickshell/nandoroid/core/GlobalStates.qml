@@ -5,6 +5,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 import Quickshell.Hyprland
+import "../services"
 
 /**
  * Central state management for all NAnDoroid panels.
@@ -67,6 +68,7 @@ Singleton {
         timePickerOnCancelled = onCancelled || null
         timePickerOpen = true
     }
+    property int dashClockTab: 0
     property bool dockMenuOpen: false
     property bool desktopContextMenuOpen: false
     property bool mediaNotchOpen: false
@@ -75,6 +77,11 @@ Singleton {
     property var activeMediaNotchScreen: null
     property var activeTrayItem: null
     property var activeScreen: Quickshell.screens[0]
+    property bool diSessionOpen: false
+    property bool osdVolumeOpen: false
+    property string osdIndicatorType: "volume"
+    property list<real> visualizerPoints: CavaService.values
+
     property string wallpaperSelectorTarget: "desktop" // "desktop" or "lock"
 
     // Normalize any date string (YYYY-MM-DD, DD/MM/YYYY, MM/DD/YYYY, YYYY/MM/DD) to canonical YYYY-MM-DD.

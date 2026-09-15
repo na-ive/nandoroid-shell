@@ -1,4 +1,6 @@
 import QtQuick
+import QtQuick.Layouts
+import Quickshell.Services.Mpris
 import "../core"
 import "../services"
 
@@ -9,7 +11,13 @@ Item {
     property int smoothing: 3
     property color color: Appearance.colors.colPrimary
     property real opacityMultiplier: 0.25
-    property string style: "wave" // "wave" | "bars" — bars = terminal 2×, full rounded top, flat bottom
+    property string style: "wave" // "wave" | "bars" | "dots" — dots = pC 5-dot island
+    // pC dots props (used when style==="dots")
+    property int dotsBarCount: 5
+    property real dotsDotSize: 3 * Appearance.effectiveScale
+    property real dotsDotSpacing: 3 * Appearance.effectiveScale
+    property real dotsMaxBarHeight: 32 * Appearance.effectiveScale
+    readonly property bool _isPlaying: MprisController.activePlayer?.isPlaying ?? false
 
     // ── Wave style (original Canvas fill, full width) ──
     Loader {
@@ -63,6 +71,40 @@ Item {
 
                 ctx.fillStyle = Qt.rgba(color.r, color.g, color.b, opacityMultiplier)
                 ctx.fill()
+            }
+        }
+    }
+
+    // ── Dots style (pC island 5 dots) ──
+    Loader {
+        anchors.fill: parent
+        active: root.visible && root.style === "dots"
+        sourceComponent: Item {
+            id: dotsRoot
+            anchors.fill: parent
+            Row {
+                anchors.centerIn: parent
+                spacing: root.dotsDotSpacing
+                Repeater {
+                    model: root.dotsBarCount
+                    Rectangle {
+                        required property int index
+                        width: root.dotsDotSize
+                        property real pointValue: {
+                            if (!root._isPlaying || root.points.length === 0) return root.dotsDotSize
+                            const idx = Math.floor(index * root.points.length / root.dotsBarCount)
+                            const v = root.points[idx] ?? 0
+                            return Math.max(root.dotsDotSize, (v / root.maxVisualizerValue) * root.dotsMaxBarHeight)
+                        }
+                        height: pointValue
+                        radius: width / 2
+                        anchors.verticalCenter: parent.verticalCenter
+                        color: root.color
+                        opacity: root._isPlaying ? 0.85 : 0.3
+                        Behavior on height { NumberAnimation { duration: 80; easing.type: Easing.OutQuad } }
+                        Behavior on opacity { NumberAnimation { duration: 300 } }
+                    }
+                }
             }
         }
     }
