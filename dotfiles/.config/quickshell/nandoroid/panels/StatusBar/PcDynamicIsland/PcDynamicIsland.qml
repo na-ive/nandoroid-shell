@@ -297,7 +297,10 @@ Item {
             }
             case "microphone": return `${Math.round((Audio.source?.audio?.volume ?? 0) * 100)}`
             case "charging":   return `${Math.round(Battery.percentage * 100)}%`
-            case "powerMode":  return PowerProfileService.currentProfile ?? ""
+            case "powerMode": {
+                const prof = PowerProfileService.currentProfile ?? ""
+                return prof.charAt(0).toUpperCase() + prof.slice(1)
+            }
             case "conservation": return ConservationMode.active ? I18nService.tr("On") : I18nService.tr("Off")
             default:           return `${Math.round((Audio.sink?.audio?.volume ?? 0) * 100)}`
         }
