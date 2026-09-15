@@ -76,6 +76,8 @@ ColumnLayout {
         return { isConflict: isConflict, isOverflow: isOverflow, labelSuffix: label, tooltipText: tooltip };
     }
 
+    readonly property bool isPcIslandActive: Config.ready && Config.options.statusBar && Config.options.statusBar.centerModule === "pcIsland"
+
     property var allModules: [
         { id: "distroIcon", name: I18nService.tr("Distro Icon"), icon: "computer" },
         { id: "activeWindow", name: I18nService.tr("Active Window"), icon: "subtitles" },
@@ -84,7 +86,8 @@ ColumnLayout {
         { id: "networkSpeed", name: I18nService.tr("Network Speed"), icon: "network_check" },
         { id: "sysTray", name: I18nService.tr("System Tray"), icon: "inbox" },
         { id: "statusIconsGroup", name: I18nService.tr("Status Icons (WiFi/Volume)"), icon: "info" },
-        { id: "battery", name: I18nService.tr("Battery"), icon: "battery_full" }
+        { id: "battery", name: I18nService.tr("Battery"), icon: "battery_full" },
+        { id: "workspaceIndicator", name: I18nService.tr("Workspace Indicator"), icon: "view_module" }
     ]
 
     function getLeftModules() {
@@ -563,7 +566,7 @@ ColumnLayout {
 
                     // ── Text color mode (disabled when bg is active) ────────────
                     SegmentedWrapper {
-                        visible: !sbSettingsCol.parent.isM3Style
+                        visible: !sbSettingsCol.parent.isM3Style && !rootColumn.isPcIslandActive
                         Layout.fillWidth: true
                         implicitHeight: statusBarTextRow.implicitHeight + (24 * Appearance.effectiveScale)
                         orientation: Qt.Vertical
@@ -612,7 +615,7 @@ ColumnLayout {
                     // ── Use Gradient (disabled ONLY when background is ALWAYS active) ──────────────
                     SegmentedWrapper {
                         id: sbGradientCard
-                        visible: !sbSettingsCol.parent.isM3Style
+                        visible: !sbSettingsCol.parent.isM3Style && !rootColumn.isPcIslandActive
                         Layout.fillWidth: true
                         implicitHeight: statusBarGradientRow.implicitHeight + (24 * Appearance.effectiveScale)
                         orientation: Qt.Vertical
@@ -657,7 +660,7 @@ ColumnLayout {
     
                     // ── Background Style (None / Always / Adaptive) ────────────
                     SegmentedWrapper {
-                        visible: !sbSettingsCol.parent.isM3Style
+                        visible: !sbSettingsCol.parent.isM3Style && !rootColumn.isPcIslandActive
                         Layout.fillWidth: true
                         implicitHeight: statusBarBgRow.implicitHeight + (24 * Appearance.effectiveScale)
                         orientation: Qt.Vertical
@@ -707,7 +710,7 @@ ColumnLayout {
                         orientation: Qt.Vertical
                         maxRadius: 20 * Appearance.effectiveScale
                         color: Appearance.m3colors.m3surfaceContainerHigh
-                        visible: sbSettingsCol.parent.sbAnyBgStyle && !sbSettingsCol.parent.isM3Style && (Config.ready ? Config.options.statusBar?.layoutStyle !== "centered" : true)
+                        visible: sbSettingsCol.parent.sbAnyBgStyle && !sbSettingsCol.parent.isM3Style && !rootColumn.isPcIslandActive && (Config.ready ? Config.options.statusBar?.layoutStyle !== "centered" : true)
                         RowLayout {
                             id: sbCornerRow
                             anchors.fill: parent
@@ -740,7 +743,7 @@ ColumnLayout {
 
                     // ── Layout Style (Standard / Centered) ────────────
                     SegmentedWrapper {
-                        visible: !sbSettingsCol.parent.isM3Style
+                        visible: !sbSettingsCol.parent.isM3Style && !rootColumn.isPcIslandActive
                         Layout.fillWidth: true
                         implicitHeight: layoutStyleRow.implicitHeight + (24 * Appearance.effectiveScale)
                         orientation: Qt.Vertical
@@ -817,52 +820,60 @@ ColumnLayout {
                             spacing: 16 * Appearance.effectiveScale
                             MaterialSymbol { text: "view_agenda"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
                             StyledText { text: I18nService.tr("Center Module"); Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
-                            RowLayout {
-                                spacing: 2 * Appearance.effectiveScale
-                                Repeater {
-                                    model: [
-                                        { id: "clock", label: I18nService.tr("Clock") },
-                                        { id: "none",  label: I18nService.tr("None") }
-                                    ]
-                                    delegate: SegmentedButton {
-                                        required property var modelData
-                                        buttonText: modelData.label
-                                        isHighlighted: Config.ready && Config.options.statusBar
-                                            ? (Config.options.statusBar.centerModule ?? "clock") === modelData.id
-                                            : modelData.id === "clock"
-                                        colActive: Appearance.m3colors.m3primary
-                                        colActiveText: Appearance.m3colors.m3onPrimary
-                                        colInactive: Appearance.m3colors.m3surfaceContainerLow
-                                        onClicked: if (Config.ready && Config.options.statusBar) {
-                                            let currentCenter = Config.options.statusBar.centerModule ?? "clock";
-                                            let newCenter = modelData.id;
-                                            if (currentCenter === newCenter) return;
-                                            
-                                            let lefts = Array.from(Config.options.statusBar.leftModules || []);
-                                            let rights = Array.from(Config.options.statusBar.rightModules || []);
-                                            
-                                            if (newCenter === "clock") {
-                                                // Remove clock from left and right clusters if moving to center
-                                                lefts = lefts.filter(m => m !== "clock");
-                                                rights = rights.filter(m => m !== "clock");
-                                            } else if (newCenter === "none" && currentCenter === "clock") {
-                                                // Default to adding clock to right cluster if removed from center
-                                                if (!rights.includes("clock") && !lefts.includes("clock")) {
-                                                    if (rights.length < poolMaxModules) {
-                                                        rights.push("clock");
-                                                    } else if (lefts.length < poolMaxModules) {
-                                                        lefts.push("clock");
-                                                    }
-                                                }
+                    RowLayout {
+                        spacing: 2 * Appearance.effectiveScale
+                        Repeater {
+                            model: [
+                                { id: "clock", label: I18nService.tr("Clock") },
+                                { id: "pcIsland", label: I18nService.tr("pC's Island") },
+                                { id: "none",  label: I18nService.tr("None") }
+                            ]
+                            delegate: SegmentedButton {
+                                required property var modelData
+                                buttonText: modelData.label
+                                isHighlighted: Config.ready && Config.options.statusBar
+                                    ? (Config.options.statusBar.centerModule ?? "clock") === modelData.id
+                                    : modelData.id === "clock"
+                                colActive: Appearance.m3colors.m3primary
+                                colActiveText: Appearance.m3colors.m3onPrimary
+                                colInactive: Appearance.m3colors.m3surfaceContainerLow
+                                onClicked: if (Config.ready && Config.options.statusBar) {
+                                    let currentCenter = Config.options.statusBar.centerModule ?? "clock";
+                                    let newCenter = modelData.id;
+                                    if (currentCenter === newCenter) return;
+
+                                    let lefts = Array.from(Config.options.statusBar.leftModules || []);
+                                    let rights = Array.from(Config.options.statusBar.rightModules || []);
+
+                                    if (newCenter === "clock") {
+                                        lefts = lefts.filter(m => m !== "clock");
+                                        rights = rights.filter(m => m !== "clock");
+                                    } else if (newCenter === "pcIsland") {
+                                        // Ensure workspaceIndicator in left cluster by default (unified style)
+                                        if (!lefts.includes("workspaceIndicator") && !rights.includes("workspaceIndicator")) {
+                                            if (lefts.length < poolMaxModules) lefts.push("workspaceIndicator");
+                                            else if (rights.length < poolMaxModules) rights.push("workspaceIndicator");
+                                        }
+                                        // Remove clock from clusters when pcIsland takes center
+                                        lefts = lefts.filter(m => m !== "clock");
+                                        rights = rights.filter(m => m !== "clock");
+                                    } else if (newCenter === "none" && currentCenter === "clock") {
+                                        if (!rights.includes("clock") && !lefts.includes("clock")) {
+                                            if (rights.length < poolMaxModules) {
+                                                rights.push("clock");
+                                            } else if (lefts.length < poolMaxModules) {
+                                                lefts.push("clock");
                                             }
-                                            
-                                            Config.options.statusBar.leftModules = lefts;
-                                            Config.options.statusBar.rightModules = rights;
-                                            Config.options.statusBar.centerModule = newCenter;
                                         }
                                     }
+
+                                    Config.options.statusBar.leftModules = lefts;
+                                    Config.options.statusBar.rightModules = rights;
+                                    Config.options.statusBar.centerModule = newCenter;
                                 }
                             }
+                        }
+                    }
                         }
                     }
 
@@ -1217,6 +1228,7 @@ ColumnLayout {
 
                     // ── Notification Unread Attachment (Distro Icon vs Status Icons) ────────────
                     SegmentedWrapper {
+                        visible: !rootColumn.isPcIslandActive
                         Layout.fillWidth: true
                         implicitHeight: notifPositionRow.implicitHeight + (24 * Appearance.effectiveScale)
                         orientation: Qt.Vertical
@@ -1260,6 +1272,7 @@ ColumnLayout {
 
                     // ── Notification Counter Style ────────────
                     SegmentedWrapper {
+                        visible: !rootColumn.isPcIslandActive
                         Layout.fillWidth: true
                         implicitHeight: notifCounterStyleRow.implicitHeight + (24 * Appearance.effectiveScale)
                         orientation: Qt.Vertical
@@ -1427,7 +1440,7 @@ ColumnLayout {
                         orientation: Qt.Vertical
                         maxRadius: 20 * Appearance.effectiveScale
                         color: Appearance.m3colors.m3surfaceContainerHigh
-                        visible: Config.ready && Config.options.statusBar && Config.options.statusBar.layoutStyle === "centered" && !sbSettingsCol.parent.isM3Style
+                        visible: Config.ready && Config.options.statusBar && Config.options.statusBar.layoutStyle === "centered" && !sbSettingsCol.parent.isM3Style && !rootColumn.isPcIslandActive
                         RowLayout {
                             id: centeredWidthRow
                             anchors.fill: parent
@@ -1475,7 +1488,7 @@ ColumnLayout {
 
                     // ── Workspace Style (Shape) ──
                     SegmentedWrapper {
-                        visible: !sbSettingsCol.parent.isM3Style
+                        visible: !sbSettingsCol.parent.isM3Style && !rootColumn.isPcIslandActive
                         Layout.fillWidth: true
                         implicitHeight: wsStyleRow.implicitHeight + (24 * Appearance.effectiveScale)
                         orientation: Qt.Vertical
@@ -1602,6 +1615,79 @@ ColumnLayout {
                                             Config.options.statusBar.islandStyle = modelData.id
                                     }
                                 }
+                            }
+                        }
+                    }
+
+                    // ── pC Island: Visualizer Style ──
+                    SegmentedWrapper {
+                        visible: rootColumn.isPcIslandActive
+                        Layout.fillWidth: true
+                        implicitHeight: pcVisRow.implicitHeight + (24 * Appearance.effectiveScale)
+                        orientation: Qt.Vertical
+                        maxRadius: 20 * Appearance.effectiveScale
+                        color: Appearance.m3colors.m3surfaceContainerHigh
+                        RowLayout {
+                            id: pcVisRow
+                            anchors.fill: parent
+                            anchors {
+                                leftMargin: 16 * Appearance.effectiveScale
+                                rightMargin: 16 * Appearance.effectiveScale
+                                topMargin: 12 * Appearance.effectiveScale
+                                bottomMargin: 12 * Appearance.effectiveScale
+                            }
+                            spacing: 16 * Appearance.effectiveScale
+                            MaterialSymbol { text: "graphic_eq"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
+                            StyledText { text: I18nService.tr("pC Visualizer"); Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
+                            RowLayout {
+                                spacing: 2 * Appearance.effectiveScale
+                                Repeater {
+                                    model: [
+                                        { id: "dots", label: I18nService.tr("Dots") },
+                                        { id: "wave", label: I18nService.tr("Wave") },
+                                        { id: "none", label: I18nService.tr("None") }
+                                    ]
+                                    delegate: SegmentedButton {
+                                        required property var modelData
+                                        buttonText: modelData.label
+                                        isHighlighted: Config.ready && Config.options.statusBar && Config.options.statusBar.pcIsland
+                                            ? Config.options.statusBar.pcIsland.visualizerStyle === modelData.id
+                                            : modelData.id === "dots"
+                                        colActive: Appearance.m3colors.m3primary
+                                        colActiveText: Appearance.m3colors.m3onPrimary
+                                        colInactive: Appearance.m3colors.m3surfaceContainerLow
+                                        onClicked: if (Config.ready && Config.options.statusBar && Config.options.statusBar.pcIsland)
+                                            Config.options.statusBar.pcIsland.visualizerStyle = modelData.id
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // ── pC Island: Media Controls ──
+                    SegmentedWrapper {
+                        visible: rootColumn.isPcIslandActive
+                        Layout.fillWidth: true
+                        implicitHeight: pcMediaRow.implicitHeight + (24 * Appearance.effectiveScale)
+                        orientation: Qt.Vertical
+                        maxRadius: 20 * Appearance.effectiveScale
+                        color: Appearance.m3colors.m3surfaceContainerHigh
+                        RowLayout {
+                            id: pcMediaRow
+                            anchors.fill: parent
+                            anchors {
+                                leftMargin: 16 * Appearance.effectiveScale
+                                rightMargin: 16 * Appearance.effectiveScale
+                                topMargin: 12 * Appearance.effectiveScale
+                                bottomMargin: 12 * Appearance.effectiveScale
+                            }
+                            spacing: 16 * Appearance.effectiveScale
+                            MaterialSymbol { text: "play_circle"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
+                            StyledText { text: I18nService.tr("Media Buttons"); Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
+                            AndroidToggle {
+                                checked: Config.ready && Config.options.statusBar && Config.options.statusBar.pcIsland ? Config.options.statusBar.pcIsland.showMediaControls : false
+                                onToggled: if (Config.ready && Config.options.statusBar && Config.options.statusBar.pcIsland)
+                                    Config.options.statusBar.pcIsland.showMediaControls = !Config.options.statusBar.pcIsland.showMediaControls
                             }
                         }
                     }

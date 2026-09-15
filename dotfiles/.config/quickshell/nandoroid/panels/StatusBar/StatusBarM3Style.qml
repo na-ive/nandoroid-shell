@@ -2,6 +2,7 @@ import "../../core"
 import "../../core/functions" as Functions
 import "../../services"
 import "../../widgets"
+import "PcDynamicIsland" as PcDynamicIsland
 import QtQuick
 import QtQuick.Layouts
 import Qt5Compat.GraphicalEffects
@@ -15,6 +16,7 @@ Item {
     property int monitorIndex: 0
     readonly property HyprlandMonitor monitor: Hyprland.monitorFor(rootM3.QsWindow.window ? rootM3.QsWindow.window.screen : null)
 
+    readonly property bool isPcIsland: Config.ready && Config.options.statusBar && Config.options.statusBar.centerModule === "pcIsland"
     readonly property bool isCentered: false
     readonly property real centeredWidth: (Config.ready && Config.options.statusBar) ? Config.options.statusBar.centeredWidth * Appearance.effectiveScale : 1200 * Appearance.effectiveScale
     
@@ -161,8 +163,8 @@ Item {
         m3Color: Appearance.m3colors.m3primaryContainer
         m3ContentColor: Appearance.m3colors.m3onPrimaryContainer
 
-        readonly property bool isHost: (Config.ready && Config.options.notifications && (Config.options.notifications.hostModule ?? "distroIcon") === "distroIcon")
-        readonly property bool showNotif: isHost && (Config.ready && Config.options.notifications && Config.options.notifications.counterStyle !== "hidden") && Notifications.unread > 0
+        readonly property bool isHost: !rootM3.isPcIsland && (Config.ready && Config.options.notifications && (Config.options.notifications.hostModule ?? "distroIcon") === "distroIcon")
+        readonly property bool showNotif: !rootM3.isPcIsland && isHost && (Config.ready && Config.options.notifications && Config.options.notifications.counterStyle !== "hidden") && Notifications.unread > 0
 
         show: true
 
@@ -250,8 +252,8 @@ Item {
         m3Color: Appearance.m3colors.m3tertiaryContainer
         m3ContentColor: Appearance.m3colors.m3onTertiaryContainer
 
-        readonly property bool isHost: (Config.ready && Config.options.notifications && Config.options.notifications.hostModule === "statusIconsGroup")
-        readonly property bool showNotifBadge: isHost && (Config.options.notifications.counterStyle ?? "counter") !== "hidden" && Notifications.unread > 0
+        readonly property bool isHost: !rootM3.isPcIsland && (Config.ready && Config.options.notifications && Config.options.notifications.hostModule === "statusIconsGroup")
+        readonly property bool showNotifBadge: !rootM3.isPcIsland && isHost && (Config.options.notifications.counterStyle ?? "counter") !== "hidden" && Notifications.unread > 0
 
         // Unread Notification Badge Item (when hosted on Status Icons Group)
         Item {
@@ -415,6 +417,18 @@ Item {
         }
     }}
 
+    Component { id: m3WorkspaceIndicatorComponent; M3StatusWrapper {
+        Layout.alignment: Qt.AlignVCenter
+        show: true
+        m3Color: Appearance.m3colors.m3surfaceContainerHigh
+        m3ContentColor: Appearance.m3colors.m3onSurfaceVariant
+        WorkspaceIndicator {
+            Layout.alignment: Qt.AlignVCenter
+            monitor: rootM3.monitor
+            forcedStyle: "unified"
+        }
+    }}
+
     function getM3ModuleComponent(name) {
         switch (name) {
             case "distroIcon": return m3DistroIconComponent;
@@ -426,6 +440,7 @@ Item {
             case "battery": return m3BatteryComponent;
             case "statusIconsGroup": return m3StatusIconsGroupComponent;
             case "clock": return m3ClockComponent;
+            case "workspaceIndicator": return m3WorkspaceIndicatorComponent;
             default: return null;
         }
     }
@@ -549,12 +564,13 @@ Item {
         readonly property real timePillWidth: centerTimeWrapper.visible ? centerTimeWrapper.implicitWidth : 0
         readonly property real datePillWidth: centerDateWrapper.visible ? centerDateWrapper.implicitWidth : 0
         readonly property real sidePillWidth: Math.round(Math.max(timePillWidth, datePillWidth))
-        readonly property real islandWidth: Math.round(dynamicIsland.pill.width)
+        readonly property real islandWidth: rootM3.isPcIsland ? Math.round(pcIslandM3.implicitWidth) : Math.round(dynamicIsland.pill.width)
         
         height: Math.round(32 * Appearance.effectiveScale) + (padding * 2)
-        width: sidePillWidth > 0 ? ((sidePillWidth * 2) + islandWidth + (spacing * 2) + (padding * 2)) : (islandWidth + (padding * 2))
+        width: rootM3.isPcIsland ? (islandWidth + (padding * 2)) : (sidePillWidth > 0 ? ((sidePillWidth * 2) + islandWidth + (spacing * 2) + (padding * 2)) : (islandWidth + (padding * 2)))
         radius: height / 2
-        color: Appearance.m3colors.m3surfaceContainer
+        color: rootM3.isPcIsland ? "black" : Appearance.m3colors.m3surfaceContainer
+        border.width: rootM3.isPcIsland ? 0 : 0
 
         // Time Pill (Left)
         M3StatusWrapper {
@@ -577,15 +593,17 @@ Item {
             }
         }
 
-        // Island (Center)
+        // Island (Center) — PcIsland replaces DynamicIsland when active
         Item {
             id: islandHost
-            width: centerClusterCard.islandWidth
-            height: Math.round(dynamicIsland.pill.height)
+            width: rootM3.isPcIsland ? pcIslandM3.implicitWidth : centerClusterCard.islandWidth
+            height: rootM3.isPcIsland ? pcIslandM3.pill.height : Math.round(dynamicIsland.pill.height)
             anchors.centerIn: parent
+            visible: !rootM3.isPcIsland || true
 
             DynamicIsland {
                 id: dynamicIsland
+                visible: !rootM3.isPcIsland
                 forcedStyle: "m3"
                 anchors.centerIn: parent
                 monitor: rootM3.monitor
@@ -594,9 +612,16 @@ Item {
             }
             WorkspaceIndicator {
                 id: wsIndicator
+                visible: !rootM3.isPcIsland
                 anchors.centerIn: parent
                 monitor: rootM3.monitor
                 z: 10
+            }
+            PcDynamicIsland.PcDynamicIsland {
+                id: pcIslandM3
+                visible: rootM3.isPcIsland
+                insideM3Card: true
+                anchors.centerIn: parent
             }
         }
 

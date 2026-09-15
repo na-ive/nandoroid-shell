@@ -7,6 +7,7 @@ import "../../core"
 import "../../core/functions" as Functions
 import "../../services"
 import "../../widgets"
+import "PcDynamicIsland" as PcDynamicIsland
 
 /**
  * Status bar content layout with Android-style gradient.
@@ -19,6 +20,7 @@ Item {
     property int monitorIndex: 0
     readonly property HyprlandMonitor monitor: Hyprland.monitorFor(root.QsWindow.window ? root.QsWindow.window.screen : null)
 
+    readonly property bool isPcIsland: Config.ready && Config.options.statusBar && Config.options.statusBar.centerModule === "pcIsland"
     readonly property bool isCentered: (Config.ready && Config.options.statusBar) ? Config.options.statusBar.layoutStyle === "centered" : false
     readonly property real centeredWidth: (Config.ready && Config.options.statusBar) ? Config.options.statusBar.centeredWidth * Appearance.effectiveScale : 1200 * Appearance.effectiveScale
     
@@ -102,8 +104,8 @@ Item {
         spacing: 6 * Appearance.effectiveScale
         Layout.alignment: Qt.AlignVCenter
 
-        readonly property bool isHost: (Config.ready && Config.options.notifications && Config.options.notifications.hostModule === "statusIconsGroup")
-        readonly property bool showNotifBadge: isHost && (Config.options.notifications.counterStyle ?? "counter") !== "hidden" && Notifications.unread > 0
+        readonly property bool isHost: !root.isPcIsland && (Config.ready && Config.options.notifications && Config.options.notifications.hostModule === "statusIconsGroup")
+        readonly property bool showNotifBadge: !root.isPcIsland && isHost && (Config.options.notifications.counterStyle ?? "counter") !== "hidden" && Notifications.unread > 0
 
         // Unread Notification Badge Item (when hosted on Status Icons Group)
         Item {
@@ -208,13 +210,19 @@ Item {
         }
     }}
 
+    Component { id: workspaceIndicatorComponent; WorkspaceIndicator {
+        Layout.alignment: Qt.AlignVCenter
+        monitor: root.monitor
+        forcedStyle: "unified"
+    }}
+
     Component { id: distroIconComponent; Item {
         implicitWidth: Math.max(distroIconImg.width, 20 * Appearance.effectiveScale)
         implicitHeight: Math.max(distroIconImg.height, 20 * Appearance.effectiveScale)
         Layout.alignment: Qt.AlignVCenter
 
-        readonly property bool isHost: (Config.ready && Config.options.notifications && (Config.options.notifications.hostModule ?? "distroIcon") === "distroIcon")
-        readonly property bool showNotif: isHost && (Config.options.notifications.counterStyle ?? "counter") !== "hidden" && Notifications.unread > 0
+        readonly property bool isHost: !root.isPcIsland && (Config.ready && Config.options.notifications && (Config.options.notifications.hostModule ?? "distroIcon") === "distroIcon")
+        readonly property bool showNotif: !root.isPcIsland && isHost && (Config.options.notifications.counterStyle ?? "counter") !== "hidden" && Notifications.unread > 0
 
         CustomIcon {
             id: distroIconImg
@@ -296,6 +304,7 @@ Item {
             case "battery": return batteryComponent;
             case "statusIconsGroup": return statusIconsGroupComponent;
             case "clock": return clockComponent;
+            case "workspaceIndicator": return workspaceIndicatorComponent;
             default: return null;
         }
     }
@@ -423,8 +432,23 @@ Item {
     }
 
     // ── Center Cluster (Dynamic Island host) ──
+    // PcDynamicIsland takes over when centerModule === "pcIsland"
+    Item {
+        id: pcIslandHost
+        visible: root.isPcIsland
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.verticalCenter: parent.verticalCenter
+        implicitWidth: pcIsland.implicitWidth
+        implicitHeight: pcIsland.implicitHeight
+        PcDynamicIsland.PcDynamicIsland {
+            id: pcIsland
+            anchors.centerIn: parent
+        }
+    }
+
     DynamicIsland {
         id: dynamicIsland
+        visible: !root.isPcIsland
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: parent.top
         monitor: root.monitor
@@ -432,9 +456,9 @@ Item {
         indicatorStyle: wsIndicator.indicatorStyle
     }
 
-    // Time (Left of Notch)
+    // Time (Left of Notch) — hidden when PcIsland
     StyledText {
-        visible: Config.ready && Config.options.statusBar && Config.options.statusBar.centerModule === "clock"
+        visible: !root.isPcIsland && Config.ready && Config.options.statusBar && Config.options.statusBar.centerModule === "clock"
         anchors.verticalCenter: parent.verticalCenter
         x: dynamicIsland.x + dynamicIsland.pill.x - width - 16 * Appearance.effectiveScale
         font.family: Appearance.font.family.numbers
@@ -446,7 +470,7 @@ Item {
 
     // Date (Right of Notch)
     StyledText {
-        visible: Config.ready && Config.options.statusBar && Config.options.statusBar.centerModule === "clock"
+        visible: !root.isPcIsland && Config.ready && Config.options.statusBar && Config.options.statusBar.centerModule === "clock"
         anchors.verticalCenter: parent.verticalCenter
         x: dynamicIsland.x + dynamicIsland.pill.x + dynamicIsland.pill.width + 16 * Appearance.effectiveScale
         font.family: Appearance.font.family.numbers
@@ -456,12 +480,13 @@ Item {
         color: root.contentColor
     }
 
-    // --- Absolute Center Workspace Indicator ---
+    // --- Absolute Center Workspace Indicator (hide when PcIsland, use module instead) ---
     WorkspaceIndicator {
         id: wsIndicator
+        visible: !root.isPcIsland
         anchors.centerIn: parent
         monitor: root.monitor
-        z: 10 // Ensure it's above the island background
+        z: 10
         onHoveredChanged: (hovered) => {
             if (hovered) dynamicIsland.triggerMediaHover()
         }

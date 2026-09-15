@@ -30,8 +30,8 @@ Item {
 
     property string forcedStyle: ""
     readonly property string islandStyle: forcedStyle !== "" ? forcedStyle : (Config.options.statusBar && Config.options.statusBar.islandStyle !== undefined ? Config.options.statusBar.islandStyle : "pill")
-    readonly property bool isWaterdrop: islandStyle === "waterdrop"
     readonly property bool isM3: islandStyle === "m3"
+    readonly property bool isWaterdrop: islandStyle === "waterdrop" && !isM3
     property string indicatorStyle: "pill"
     
     TextMetrics {

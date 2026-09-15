@@ -29,7 +29,9 @@ Item {
     onWorkspacesShownChanged: updateOccupied()
     onStartWsIdChanged: updateOccupied()
 
-    readonly property string indicatorStyle: Config.options.workspaces?.indicatorStyle ?? "pill"
+    property string forcedStyle: ""
+    readonly property bool isPcIslandActive: Config.ready && Config.options.statusBar && Config.options.statusBar.centerModule === "pcIsland"
+    readonly property string indicatorStyle: forcedStyle !== "" ? forcedStyle : (isPcIslandActive ? "unified" : (Config.options.workspaces?.indicatorStyle ?? "pill"))
     readonly property string indicatorLabel: Config.options.workspaces?.indicatorLabel ?? "none"
 
     // Contiguous occupied groups — one rect per group, no overlap
@@ -128,13 +130,20 @@ Item {
         }
     }
 
-    WheelHandler {
-        onWheel: (event) => {
-            if (event.angleDelta.y > 0) {
+    // Block parent brightness/volume wheel when over indicator
+    MouseArea {
+        anchors.fill: parent
+        acceptedButtons: Qt.NoButton
+        hoverEnabled: true
+        propagateComposedEvents: false
+        onWheel: (wheel) => {
+            const delta = wheel.angleDelta.y
+            if (delta > 0) {
                 if (root.activeWsId > 1) Hyprland.dispatch(HyprlandCompat.dspWorkspace("r-1"))
-            } else if (event.angleDelta.y < 0) {
+            } else if (delta < 0) {
                 Hyprland.dispatch(HyprlandCompat.dspWorkspace("r+1"))
             }
+            wheel.accepted = true
         }
     }
 
