@@ -27,6 +27,23 @@ Item {
     property bool mediaTrackInfoVisible: mediaHoverHandler.hovered || mediaTrackChangeTimer.running
     readonly property real mediaExpandedWidth: Math.min(root.mediaExpandedWidthCap, root.mediaTextContentWidth)
     readonly property real mediaWidth: root.mediaTrackInfoVisible ? root.mediaExpandedWidth : root.mediaCollapsedWidth
+    // --- Timer / Pomodoro / Stopwatch: dynamic width like media (measured content, not hardcoded) ---
+    property real pomodoroTextContentWidth: 0
+    property real stopwatchTextContentWidth: 0
+    property real countdownTextContentWidth: 0
+    property bool timerControlsExpanded: timerHoverHandler.hovered
+    readonly property real pomodoroCollapsedWidth: 140
+    readonly property real pomodoroExpandedWidthCap: 220
+    readonly property real pomodoroExpandedWidth: Math.min(root.pomodoroExpandedWidthCap, Math.max(root.pomodoroCollapsedWidth, root.pomodoroTextContentWidth))
+    readonly property real pomodoroWidth: root.timerControlsExpanded && root.activeContentId === "pomodoro" ? root.pomodoroExpandedWidth : Math.max(root.pomodoroCollapsedWidth, Math.min(root.pomodoroExpandedWidth, root.pomodoroTextContentWidth))
+    readonly property real stopwatchCollapsedWidth: 150
+    readonly property real stopwatchExpandedWidthCap: 240
+    readonly property real stopwatchExpandedWidth: Math.min(root.stopwatchExpandedWidthCap, Math.max(root.stopwatchCollapsedWidth, root.stopwatchTextContentWidth))
+    readonly property real stopwatchWidth: root.timerControlsExpanded && root.activeContentId === "stopwatch" ? root.stopwatchExpandedWidth : Math.max(root.stopwatchCollapsedWidth, Math.min(root.stopwatchExpandedWidth, root.stopwatchTextContentWidth))
+    readonly property real countdownCollapsedWidth: 140
+    readonly property real countdownExpandedWidthCap: 220
+    readonly property real countdownExpandedWidth: Math.min(root.countdownExpandedWidthCap, Math.max(root.countdownCollapsedWidth, root.countdownTextContentWidth))
+    readonly property real countdownWidth: root.timerControlsExpanded && root.activeContentId === "countdown" ? root.countdownExpandedWidth : Math.max(root.countdownCollapsedWidth, Math.min(root.countdownExpandedWidth, root.countdownTextContentWidth))
     readonly property real timerWidth: 130
     readonly property real osdWidth: 132
     readonly property real notificationWidth: 220
@@ -209,10 +226,6 @@ Item {
     // GlobalStates.osdVolumeOpen / osdIndicatorType set by OSD.qml or direct volume/brightness changes
     readonly property bool osdActive: GlobalStates.osdVolumeOpen ?? false
 
-    readonly property real pomodoroWidth: 150
-    readonly property real stopwatchWidth: 185
-    readonly property real countdownWidth: 165
-
     readonly property var contentProviders: [
         { id: "notification", active: root.latestNotification !== null, component: notificationComponent, width: root.notificationWidth },
         { id: "battery",      active: root.batteryAlertActive,          component: batteryComponent,      width: root.batteryWidth },
@@ -351,6 +364,11 @@ Item {
         HoverHandler {
             id: mediaHoverHandler
             enabled: root.activeContentId === "media"
+        }
+
+        HoverHandler {
+            id: timerHoverHandler
+            enabled: root.activeContentId === "pomodoro" || root.activeContentId === "stopwatch" || root.activeContentId === "countdown" || root.activeContentId === "timer"
         }
 
         WheelHandler {
