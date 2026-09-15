@@ -17,9 +17,12 @@ import Quickshell.Hyprland
 Scope {
     id: scope
 
+    readonly property bool isPcIslandActive: Config.ready && Config.options.statusBar && Config.options.statusBar.centerModule === "pcIsland"
+    readonly property bool hasFullscreen: HyprlandData.fullscreenActive
+
     PanelWindow {
         id: popupWindow
-        visible: Notifications.popupList.length > 0 && !GlobalStates.screenLocked
+        visible: Notifications.popupList.length > 0 && !GlobalStates.screenLocked && !(scope.isPcIslandActive && !scope.hasFullscreen)
 
         WlrLayershell.namespace: "nandoroid:notificationPopup"
         WlrLayershell.layer: WlrLayer.Overlay

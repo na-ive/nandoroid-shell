@@ -13,6 +13,11 @@ Rectangle {
     clip: true
 
     property int currentTab: 0
+    onCurrentTabChanged: GlobalStates.dashClockTab = currentTab
+    Connections {
+        target: GlobalStates
+        function onDashClockTabChanged() { root.currentTab = GlobalStates.dashClockTab }
+    }
     readonly property var tabModel: [
         { name: I18nService.tr("Pomodoro"), icon: "av_timer" },
         { name: I18nService.tr("Stopwatch"), icon: "timer" },

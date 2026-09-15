@@ -38,10 +38,31 @@ Scope {
         { id: "microphone",     sourceUrl: "indicators/MicrophoneIndicator.qml" },
     ]
 
+    readonly property bool isPcIslandActive: Config.ready && Config.options.statusBar && Config.options.statusBar.centerModule === "pcIsland"
+    // Fullscreen detection: if any window on active workspace is fullscreen
+    readonly property bool hasFullscreen: {
+        if (!Hyprland.focusedMonitor || !Hyprland.focusedMonitor.activeWorkspace) return false
+        const wsId = Hyprland.focusedMonitor.activeWorkspace.id
+        return HyprlandData.windowList.some(w => w.workspace.id === wsId && w.fullscreen)
+    }
+
     function triggerOsd() {
         if (!root.ready) return;
+        // Bridge to PcIsland when bar visible, otherwise show floating OSD
+        if (root.isPcIslandActive && !root.hasFullscreen) {
+            GlobalStates.osdIndicatorType = root.currentIndicator
+            GlobalStates.osdVolumeOpen = true
+            pcIslandOsdTimer.restart()
+            return
+        }
         osdLoader.active = true;
         osdTimeout.restart();
+    }
+
+    Timer {
+        id: pcIslandOsdTimer
+        interval: (Config.options.osd && Config.options.osd.timeout) ? Config.options.osd.timeout : 2000
+        onTriggered: GlobalStates.osdVolumeOpen = false
     }
 
     Timer {
