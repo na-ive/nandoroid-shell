@@ -582,7 +582,7 @@ ColumnLayout {
             updateRoot.updateLog += updateErr.text.substring(updateRoot._errLen);
             updateRoot._errLen = updateErr.text.length;
             if (exitCode === 0) {
-                updateRoot.updateLog += "\n✓ " + I18nService.tr("Update successful — restarting shell…");
+                updateRoot.updateLog += "\n✓ " + I18nService.tr("Update successful. Restarting shell…");
                 updateRestartTimer.restart();
             } else {
                 updateRoot.updateLog += "\n✗ " + I18nService.tr("Update failed (exit %1). See the log above.").arg(exitCode);
@@ -679,7 +679,7 @@ ColumnLayout {
             if (updateRoot.localSha === "")
                 return I18nService.tr("Fetch the latest changes from the repository.");
             if (updateRoot.remoteSha === "")
-                return I18nService.tr("Remote unreachable — showing local state.");
+                            return I18nService.tr("Remote unreachable. Showing local state.");
             if (updateRoot.isDiverged)
                 return I18nService.tr("Diverged: %1 behind · %2 ahead").arg(updateRoot.behindCount).arg(updateRoot.aheadCount);
             if (updateRoot.hasUpdate) {
@@ -1032,7 +1032,7 @@ ColumnLayout {
                 spacing: 2 * Appearance.effectiveScale
                 StyledText {
                     Layout.fillWidth: true
-                    text: I18nService.tr("Dev mode — symlink detected")
+                    text: I18nService.tr("Dev mode: symlink detected")
                     font.weight: Font.DemiBold
                     color: Appearance.colors.colOnTertiaryContainer
                 }
@@ -1078,7 +1078,7 @@ ColumnLayout {
                 }
                 StyledText {
                     Layout.fillWidth: true
-                    text: updateRoot.updateRunning ? I18nService.tr("Updating… live output below") : (updateRoot.updateExitCode === 0 ? I18nService.tr("Update log") : I18nService.tr("Update log — failed"))
+                    text: updateRoot.updateRunning ? I18nService.tr("Updating. Live output below") : (updateRoot.updateExitCode === 0 ? I18nService.tr("Update log") : I18nService.tr("Update log: failed"))
                     font.pixelSize: Appearance.font.pixelSize.normal
                     font.weight: Font.Medium
                     color: Appearance.colors.colOnLayer1
@@ -1364,10 +1364,9 @@ ColumnLayout {
                             anchors.rightMargin: 12 * Appearance.effectiveScale
                             spacing: 12 * Appearance.effectiveScale
 
-                            Rectangle {
-                                implicitWidth: 40 * Appearance.effectiveScale
-                                implicitHeight: 40 * Appearance.effectiveScale
-                                radius: 20 * Appearance.effectiveScale
+                            MaterialShape {
+                                implicitSize: 40 * Appearance.effectiveScale
+                                shape: MaterialShape.Shape.Gem
                                 color: versionItem.isInstalled ? Appearance.colors.colPrimaryContainer : Appearance.colors.colSecondaryContainer
                                 MaterialSymbol {
                                     anchors.centerIn: parent

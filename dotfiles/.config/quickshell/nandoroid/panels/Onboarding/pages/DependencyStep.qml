@@ -23,9 +23,9 @@ ColumnLayout {
             font.weight: Font.DemiBold
             color: Appearance.colors.colOnLayer1
         }
-        
+
         StyledText {
-            text: I18nService.tr("Before we begin, let's make sure you have all the necessary components installed for NAnDoroid to function properly. You can scan and install missing dependencies here.")
+            text: I18nService.tr("Before we begin, let's make sure you have all necessary components installed. Same scanner as in Settings. Scan and install what is missing.")
             font.pixelSize: Appearance.font.pixelSize.small
             color: Appearance.colors.colSubtext
             wrapMode: Text.WordWrap
@@ -42,7 +42,7 @@ ColumnLayout {
         ColumnLayout {
             id: contentCol
             width: parent.width
-            
+
             AboutDependency {
                 Layout.fillWidth: true
             }
