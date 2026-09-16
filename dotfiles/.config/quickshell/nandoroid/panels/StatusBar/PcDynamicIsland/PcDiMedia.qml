@@ -41,6 +41,20 @@ Item {
             }
         }
 
+        // Full-island wave background (fills the whole pill, clipped by mediaMask).
+        // Same faint fill look as the source port (alpha ~0.15).
+        WaveVisualizer {
+            id: visualizerCanvas
+            anchors.fill: parent
+            points: GlobalStates.visualizerPoints
+            style: "wave"
+            maxVisualizerValue: 1000
+            smoothing: 2
+            color: Appearance.colors.colNotchText
+            opacityMultiplier: 0.15
+            visible: (Config.ready && Config.options.statusBar?.pcIsland ? Config.options.statusBar.pcIsland.visualizerStyle : "dots") === "wave"
+        }
+
         Rectangle {
             id: artMask
             width: di.isMaterial ? di.pillHeight : di.pillHeight - 8
@@ -102,8 +116,7 @@ Item {
                 leftMargin: 8
                 verticalCenter: parent.verticalCenter
                 right: mediaControlsRow.visible ? mediaControlsRow.left
-                    : (visualizerCanvas.visible ? visualizerCanvas.left
-                    : (islandVisualizer.visible ? islandVisualizer.left : parent.right))
+                    : (islandVisualizer.visible ? islandVisualizer.left : parent.right)
                 rightMargin: 8
             }
             spacing: di.isMaterial ? -2 : -4
@@ -141,31 +154,12 @@ Item {
                 + trackInfoColumn.widestLineWidth
                 + 12
                 + (mediaControlsRow.visible ? mediaControlsRow.implicitWidth
-                    : (visualizerCanvas.visible ? visualizerCanvas.width
-                    : (islandVisualizer.visible ? islandVisualizer.width : 0)))
+                    : (islandVisualizer.visible ? islandVisualizer.width : 0))
                 + (di.isMaterial ? 0 : 4)
                 + 10
 
             onComputedContentWidthChanged: di.mediaTextContentWidth = trackInfoColumn.computedContentWidth
             Component.onCompleted: di.mediaTextContentWidth = trackInfoColumn.computedContentWidth
-        }
-
-        WaveVisualizer {
-            id: visualizerCanvas
-            anchors {
-                right: mediaControlsRow.visible ? mediaControlsRow.left : parent.right
-                rightMargin: mediaControlsRow.visible ? 6 : 10
-                verticalCenter: parent.verticalCenter
-            }
-            width: di.isMaterial ? 60 : 50
-            height: di.isMaterial ? di.pillHeight * 1.5 : di.pillHeight * 0.85
-            points: GlobalStates.visualizerPoints
-            style: "wave"
-            maxVisualizerValue: 1000
-            smoothing: 2
-            color: Appearance.colors.colNotchText
-            opacityMultiplier: 0.85
-            visible: (Config.ready && Config.options.statusBar?.pcIsland ? Config.options.statusBar.pcIsland.visualizerStyle : "dots") === "wave"
         }
 
         WaveVisualizer {

@@ -1487,7 +1487,7 @@ ColumnLayout {
 
                     // ── Workspace Style (Shape) ──
                     SegmentedWrapper {
-                        visible: !sbSettingsCol.parent.isM3Style
+                        visible: !sbSettingsCol.parent.isM3Style && !rootColumn.isPcIslandActive
                         Layout.fillWidth: true
                         implicitHeight: wsStyleRow.implicitHeight + (24 * Appearance.effectiveScale)
                         orientation: Qt.Vertical
