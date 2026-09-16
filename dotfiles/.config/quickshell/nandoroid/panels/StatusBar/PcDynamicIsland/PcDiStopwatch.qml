@@ -63,14 +63,16 @@ Item {
             font.weight: Font.DemiBold
             font.family: Appearance.font.family.numbers
         }
-        // Lock digit width to the "00:00:00.00" maximum like DynamicIsland.qml
-        // so the pill does not shake as centiseconds tick
+        // Lock digit width to the current format maximum so the pill never
+        // shakes as centiseconds tick: "MM:SS.cc" under an hour (the common
+        // case — a full "HH:MM:SS.cc" lock would leave ~3 chars of slack),
+        // "HH:MM:SS.cc" once elapsed passes an hour.
         TextMetrics {
             id: maxTimeMetrics
             font.pixelSize: Appearance.font.pixelSize.smaller
             font.weight: Font.DemiBold
             font.family: Appearance.font.family.numbers
-            text: "00:00:00.00"
+            text: StopwatchService.elapsedMs >= 3600000 ? "00:00:00.00" : "00:00.00"
         }
         StyledText {
             id: subMetrics
