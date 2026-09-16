@@ -385,19 +385,25 @@ Item {
             NumberAnimation { duration: 300; easing.type: Easing.OutQuint }
         }
 
+        // NOTE: these stay always-enabled AND ungated on purpose. Gating
+        // `enabled` on activeContentId breaks the first hover when content
+        // switches while the cursor is already over the pill (Qt doesn't
+        // refresh `hovered` until the pointer moves again), and gating the
+        // derived bools on activeContentId creates a binding loop
+        // (widths -> contentProviders -> displayedProvider -> activeContentId
+        // -> widths) that freezes the pill at the old provider's width.
+        // No gating is needed: each width only applies while its own content
+        // is displayed.
         HoverHandler {
             id: mediaHoverHandler
-            enabled: root.activeContentId === "media"
         }
 
         HoverHandler {
             id: timerHoverHandler
-            enabled: root.activeContentId === "pomodoro" || root.activeContentId === "stopwatch" || root.activeContentId === "countdown" || root.activeContentId === "timer"
         }
 
         HoverHandler {
             id: idleHoverHandler
-            enabled: root.activeContentId === "idle"
         }
 
         WheelHandler {
