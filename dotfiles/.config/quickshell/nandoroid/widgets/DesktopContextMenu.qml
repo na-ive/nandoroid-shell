@@ -97,71 +97,6 @@ PanelWindow {
     }
 
     Rectangle {
-        id: carouselContainer
-        visible: root.activeConfigObject === null && !(Config.options?.appearance?.background?.liveWallpaperPath ?? "") && opacity > 0
-        
-        // Dynamically position above or below based on available space
-        property real preferredY: root.targetY - height - 8 * Appearance.effectiveScale
-        y: preferredY < 10 * Appearance.effectiveScale 
-            ? root.targetY + menuContainer.height + 8 * Appearance.effectiveScale
-            : preferredY
-        
-        // Align horizontally with menuContainer, centering if carousel is wider, but keep on screen
-        property real preferredX: root.targetX - (implicitWidth - menuContainer.width) / 2
-        x: Math.max(10 * Appearance.effectiveScale, Math.min(preferredX, root.screen.width - implicitWidth - 10 * Appearance.effectiveScale))
-            
-        implicitWidth: 348 * Appearance.effectiveScale
-        implicitHeight: 160 * Appearance.effectiveScale
-        radius: Appearance.rounding.extraLarge
-        color: Appearance.colors.colLayer0
-        
-        opacity: (root.visible && !root.isClosing) ? 0.98 : 0
-        scale: (root.visible && !root.isClosing) ? 1 : 0.95
-
-        Behavior on opacity {
-            NumberAnimation {
-                duration: root.currentAnimDuration
-                easing.bezierCurve: root.currentAnimEasing
-            }
-        }
-        
-        Behavior on scale {
-            NumberAnimation {
-                duration: root.currentAnimDuration
-                easing.bezierCurve: root.currentAnimEasing
-            }
-        }
-        
-        // Prevent clicks on the menu from closing it
-        MouseArea {
-            anchors.fill: parent
-            onPressed: (mouse) => mouse.accepted = true
-        }
-
-        StyledRectangularShadow {
-            target: carouselContainer
-            z: -1
-        }
-
-        Carousel {
-            id: wallpaperCarousel
-            anchors.fill: parent
-            anchors.margins: 10 * Appearance.effectiveScale
-            model: root.carouselModel
-            isOpen: root.visible
-            showFooter: true
-            onWallpaperSelected: (path) => {
-                root._pendingWallpaper = path
-                root.close()
-            }
-            onOpenMoreWallpapers: {
-                GlobalStates.wallpaperSelectorOpen = true
-                root.close()
-            }
-        }
-    }
-
-    Rectangle {
         id: menuContainer
         x: root.targetX
         y: root.targetY
@@ -202,7 +137,35 @@ PanelWindow {
             id: menuLayout
             anchors.fill: parent
             anchors.margins: 6 * Appearance.effectiveScale
-            spacing: 2 * Appearance.effectiveScale
+            spacing: 4 * Appearance.effectiveScale
+
+            // --- Wallpaper carousel (same card as menu, ala upstream end4) ---
+            Rectangle {
+                id: carouselWrapper
+                visible: root.activeConfigObject === null && !(Config.options?.appearance?.background?.liveWallpaperPath ?? "")
+                Layout.fillWidth: true
+                Layout.preferredHeight: 160 * Appearance.effectiveScale
+                radius: Appearance.rounding.extraLarge
+                color: Appearance.colors.colLayer0
+                clip: true
+
+                Carousel {
+                    id: wallpaperCarousel
+                    anchors.fill: parent
+                    anchors.margins: 10 * Appearance.effectiveScale
+                    model: root.carouselModel
+                    isOpen: root.visible
+                    showFooter: true
+                    onWallpaperSelected: (path) => {
+                        root._pendingWallpaper = path
+                        root.close()
+                    }
+                    onOpenMoreWallpapers: {
+                        GlobalStates.wallpaperSelectorOpen = true
+                        root.close()
+                    }
+                }
+            }
 
             // --- Widget Specific Items ---
             MenuItem {
