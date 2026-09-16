@@ -3,6 +3,7 @@ SysDateTime 1.0 SysDateTime.qml
 SysLanguage 1.0 SysLanguage.qml
 SysScreenshot 1.0 SysScreenshot.qml
 SysPerformance 1.0 SysPerformance.qml
+SysGameMode 1.0 SysGameMode.qml
 SysPower 1.0 SysPower.qml
 SysDisk 1.0 SysDisk.qml
 SysSystemInterface 1.0 SysSystemInterface.qml

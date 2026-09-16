@@ -18,10 +18,29 @@ Singleton {
 
     function toggle() {
         root.active = !root.active
-        // Synchronize with Do Not Disturb
-        Notifications.silent = root.active
-        
+        // Auto behaviors are user-configurable in Settings > System > Game Mode
+        const autoDnd = Config.ready ? (Config.options.gameModeState.autoDnd ?? true) : true;
+        const keepAwake = Config.ready ? (Config.options.gameModeState.keepAwake ?? true) : true;
+        const autoPerformance = Config.ready ? (Config.options.gameModeState.autoPerformance ?? true) : true;
+
         if (root.active) {
+            if (Config.ready) {
+                Config.options.gameModeState.prevSilent = Notifications.silent;
+                Config.options.gameModeState.prevCaffeine = Config.options.quickSettings.caffeineActive;
+                Config.options.gameModeState.prevPowerProfile = PowerProfileService.currentProfile;
+            }
+            // Synchronize with Do Not Disturb (optional)
+            if (autoDnd) {
+                Notifications.silent = true;
+            }
+            // Keep display awake (optional, via Caffeine idle inhibitor)
+            if (keepAwake && Config.ready) {
+                Config.options.quickSettings.caffeineActive = true;
+            }
+            // Switch to Performance power profile (optional)
+            if (autoPerformance) {
+                PowerProfileService.setProfile("performance");
+            }
             // --- 1. PAUSE LIVE WALLPAPER (keeps frozen frame, near-zero GPU) ---
             // Do NOT stop the process: the paused frame stays visible as a static
             // wallpaper, so there is no wallpaper transition and nothing to restore.
@@ -89,6 +108,21 @@ Singleton {
             }
 
         } else {
+            // Restore auto behaviors to pre-game-mode state
+            if (Config.ready) {
+                if (autoDnd) {
+                    Notifications.silent = Config.options.gameModeState.prevSilent ?? false;
+                }
+                if (keepAwake) {
+                    Config.options.quickSettings.caffeineActive = Config.options.gameModeState.prevCaffeine ?? false;
+                }
+                if (autoPerformance) {
+                    PowerProfileService.setProfile(Config.options.gameModeState.prevPowerProfile ?? "daily");
+                }
+            } else {
+                Notifications.silent = false;
+            }
+
             // --- 1. RESUME LIVE WALLPAPER ---
             // We only paused it on entry, so a simple resume brings it back.
             pauseEnforceTimer.stop();

@@ -1155,5 +1155,10 @@
     "Alarm deleted": "Alarm dihapus",
     "First Day of Week": "Hari Awal Pekan",
     "Notification Duration": "Durasi Notifikasi",
-    "Alarm %1 skipped (Game Mode active)": "Alarm %1 dilewatkan (Game Mode aktif)"
+    "Alarm %1 skipped (Game Mode active)": "Alarm %1 dilewatkan (Game Mode aktif)",
+    "Auto Do Not Disturb": "Otomatis Jangan Ganggu",
+    "Automatically enable Do Not Disturb when Game Mode turns on, and restore it afterwards.": "Otomatis aktifkan Jangan Ganggu saat Mode Game menyala, dan kembalikan setelahnya.",
+    "Prevent the display from sleeping while Game Mode is on, using Caffeine.": "Cegah layar tidur saat Mode Game aktif, menggunakan Caffeine.",
+    "Performance Mode": "Mode Performa",
+    "Automatically switch to the Performance power profile when Game Mode turns on, and restore it afterwards.": "Otomatis beralih ke profil daya Performa saat Mode Game menyala, dan kembalikan setelahnya."
 }

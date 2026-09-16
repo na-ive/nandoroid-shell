@@ -67,6 +67,7 @@ Item {
 { file: "panels/Settings/pages/System/SysLanguage.qml", pageIndex: 6 },
 { file: "panels/Settings/pages/System/SysScreenshot.qml", pageIndex: 6 },
             { file: "panels/Settings/pages/System/SysPerformance.qml", pageIndex: 6 },
+            { file: "panels/Settings/pages/System/SysGameMode.qml", pageIndex: 6 },
             { file: "panels/Settings/pages/System/SysPower.qml", pageIndex: 6 },
             { file: "panels/Settings/pages/System/SysDisk.qml", pageIndex: 6 },
             { file: "panels/Settings/pages/System/SysSystemInterface.qml", pageIndex: 6 },

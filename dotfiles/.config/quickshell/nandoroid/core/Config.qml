@@ -664,6 +664,12 @@ property JsonObject background: JsonObject {
             // --- Game Mode State ---
             property JsonObject gameModeState: JsonObject {
                 property string previousLayout: ""
+                property bool autoDnd: true
+                property bool keepAwake: true
+                property bool autoPerformance: true
+                property bool prevSilent: false
+                property bool prevCaffeine: false
+                property string prevPowerProfile: "daily"
             }
         }
     }

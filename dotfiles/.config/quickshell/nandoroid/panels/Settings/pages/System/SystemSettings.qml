@@ -61,6 +61,9 @@ Flickable {
         // ── Performance Monitoring ──
         SysPerformance { Layout.fillWidth: true }
 
+        // ── Game Mode ──
+        SysGameMode { Layout.fillWidth: true }
+
         // ── Power Management ──
         SysPower { Layout.fillWidth: true }
 

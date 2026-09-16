@@ -1155,5 +1155,10 @@
     "Alarm deleted": "Alarm deleted",
     "First Day of Week": "First Day of Week",
     "Notification Duration": "Notification Duration",
-    "Alarm %1 skipped (Game Mode active)": "Alarm %1 skipped (Game Mode active)"
+    "Alarm %1 skipped (Game Mode active)": "Alarm %1 skipped (Game Mode active)",
+    "Auto Do Not Disturb": "Auto Do Not Disturb",
+    "Automatically enable Do Not Disturb when Game Mode turns on, and restore it afterwards.": "Automatically enable Do Not Disturb when Game Mode turns on, and restore it afterwards.",
+    "Prevent the display from sleeping while Game Mode is on, using Caffeine.": "Prevent the display from sleeping while Game Mode is on, using Caffeine.",
+    "Performance Mode": "Performance Mode",
+    "Automatically switch to the Performance power profile when Game Mode turns on, and restore it afterwards.": "Automatically switch to the Performance power profile when Game Mode turns on, and restore it afterwards."
 }
