@@ -258,6 +258,23 @@ Item {
         return root.activeOthers[0] ?? null
     }
 
+    // --- New arrivals steal focus ---
+    // activeOthers is in static priority order, so without this a newcomer
+    // with lower priority (e.g. media while pomodoro runs) would never be
+    // shown. Detect newly activated ids and focus the latest one, clearing
+    // any wheel pin so the new item actually takes over.
+    readonly property var activeOtherIds: root.activeOthers.map(p => p.id)
+    property var prevActiveOtherIds: []
+    onActiveOtherIdsChanged: {
+        const prev = root.prevActiveOtherIds
+        const added = root.activeOtherIds.filter(id => !prev.includes(id))
+        root.prevActiveOtherIds = [...root.activeOtherIds]
+        if (added.length === 0) return
+        root.forcedCycleId = ""
+        root.forceIdle = false
+        root.manualFocusId = added[added.length - 1]
+    }
+
     readonly property var badgeProviders: {
         if (root.alwaysWinIds.some(id => root.contentProviders.find(p => p.id === id)?.active)) return []
         return root.activeOthers.filter(p => p.id !== root.activeProvider?.id)
