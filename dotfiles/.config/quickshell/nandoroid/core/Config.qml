@@ -581,6 +581,7 @@ property JsonObject background: JsonObject {
             // --- Media ---
             property JsonObject media: JsonObject {
                 property string priority: ""
+                property bool filterDuplicatePlayers: true
                 property bool showMediaCard: true
                 property bool enableMediaHover: true
                 property string notchMediaStyle: "mini" 

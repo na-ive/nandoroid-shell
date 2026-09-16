@@ -1160,5 +1160,7 @@
     "Automatically enable Do Not Disturb when Game Mode turns on, and restore it afterwards.": "Otomatis aktifkan Jangan Ganggu saat Mode Game menyala, dan kembalikan setelahnya.",
     "Prevent the display from sleeping while Game Mode is on, using Caffeine.": "Cegah layar tidur saat Mode Game aktif, menggunakan Caffeine.",
     "Performance Mode": "Mode Performa",
-    "Automatically switch to the Performance power profile when Game Mode turns on, and restore it afterwards.": "Otomatis beralih ke profil daya Performa saat Mode Game menyala, dan kembalikan setelahnya."
+    "Automatically switch to the Performance power profile when Game Mode turns on, and restore it afterwards.": "Otomatis beralih ke profil daya Performa saat Mode Game menyala, dan kembalikan setelahnya.",
+    "Filter Duplicate Players": "Saring Media Duplikat",
+    "Hide native browser players while Plasma browser integration is active, and merge duplicate entries.": "Sembunyikan media bawaan browser saat integrasi browser Plasma aktif, dan gabungkan entri duplikat."
 }

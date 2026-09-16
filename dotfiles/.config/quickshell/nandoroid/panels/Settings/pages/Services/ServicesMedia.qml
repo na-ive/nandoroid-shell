@@ -12,7 +12,10 @@ ColumnLayout {
     Layout.fillWidth: true
     spacing: 0
 
-    SearchHandler { searchString: "Media Controls" }
+    SearchHandler {
+        searchString: "Media Controls"
+        aliases: ["Duplicates", "Plasma Integration", "Browser Players", "Priority", "Hover"]
+    }
 
     ColumnLayout {
         Layout.fillWidth: true
@@ -89,6 +92,69 @@ ColumnLayout {
                     inputRadius: 24
                     text: (Config.ready && Config.options.media) ? Config.options.media.priority : ""
                     onEditingFinished: { if (Config.ready && Config.options.media) Config.options.media.priority = text; }
+                }
+            }
+        }
+
+        // Filter Duplicate Players (whole card clickable)
+        SegmentedWrapper {
+            id: dupFilterCard
+            Layout.fillWidth: true
+            implicitHeight: dupFilterRow.implicitHeight + (24 * Appearance.effectiveScale)
+            orientation: Qt.Vertical
+            maxRadius: 20 * Appearance.effectiveScale
+            color: Appearance.m3colors.m3surfaceContainerHigh
+
+            RippleButton {
+                anchors.fill: parent
+                colBackground: Appearance.m3colors.m3surfaceContainerHigh
+                colBackgroundHover: Appearance.m3colors.m3surfaceContainerHigh
+                buttonRadius: 0
+                topLeftRadius: dupFilterCard.rTopLeft
+                topRightRadius: dupFilterCard.rTopRight
+                bottomLeftRadius: dupFilterCard.rBottomLeft
+                bottomRightRadius: dupFilterCard.rBottomRight
+                onClicked: {
+                    if (Config.ready && Config.options.media) {
+                        Config.options.media.filterDuplicatePlayers = !Config.options.media.filterDuplicatePlayers;
+                    }
+                }
+
+                StyledToolTip {
+                    extraVisibleCondition: parent.hovered || parent.realHovered
+                    text: I18nService.tr("Hide native browser players while Plasma browser integration is active, and merge duplicate entries.")
+                }
+            }
+
+            RowLayout {
+                id: dupFilterRow
+                anchors.fill: parent
+                anchors {
+                    leftMargin: 16 * Appearance.effectiveScale
+                    rightMargin: 16 * Appearance.effectiveScale
+                    topMargin: 12 * Appearance.effectiveScale
+                    bottomMargin: 12 * Appearance.effectiveScale
+                }
+                spacing: 16 * Appearance.effectiveScale
+
+                MaterialSymbol {
+                    text: "filter_list"
+                    iconSize: 24 * Appearance.effectiveScale
+                    color: Appearance.colors.colPrimary
+                }
+                StyledText {
+                    text: I18nService.tr("Filter Duplicate Players")
+                    color: Appearance.colors.colOnLayer1
+                    Layout.fillWidth: true
+                }
+
+                AndroidToggle {
+                    checked: (Config.ready && Config.options.media && (Config.options.media.filterDuplicatePlayers ?? true))
+                    onToggled: {
+                        if (Config.ready && Config.options.media) {
+                            Config.options.media.filterDuplicatePlayers = !Config.options.media.filterDuplicatePlayers;
+                        }
+                    }
                 }
             }
         }

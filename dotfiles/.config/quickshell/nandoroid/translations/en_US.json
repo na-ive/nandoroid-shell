@@ -1160,5 +1160,7 @@
     "Automatically enable Do Not Disturb when Game Mode turns on, and restore it afterwards.": "Automatically enable Do Not Disturb when Game Mode turns on, and restore it afterwards.",
     "Prevent the display from sleeping while Game Mode is on, using Caffeine.": "Prevent the display from sleeping while Game Mode is on, using Caffeine.",
     "Performance Mode": "Performance Mode",
-    "Automatically switch to the Performance power profile when Game Mode turns on, and restore it afterwards.": "Automatically switch to the Performance power profile when Game Mode turns on, and restore it afterwards."
+    "Automatically switch to the Performance power profile when Game Mode turns on, and restore it afterwards.": "Automatically switch to the Performance power profile when Game Mode turns on, and restore it afterwards.",
+    "Filter Duplicate Players": "Filter Duplicate Players",
+    "Hide native browser players while Plasma browser integration is active, and merge duplicate entries.": "Hide native browser players while Plasma browser integration is active, and merge duplicate entries."
 }

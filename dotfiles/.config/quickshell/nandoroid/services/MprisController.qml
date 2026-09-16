@@ -15,7 +15,7 @@ import "../widgets"
  */
 Singleton {
     id: root
-    property MprisPlayer activePlayer: trackedPlayer ?? Mpris.players.values[0] ?? null
+    property MprisPlayer activePlayer: trackedPlayer ?? getValidPlayers()[0] ?? Mpris.players.values[0] ?? null
     property MprisPlayer trackedPlayer: null
     property bool isPlaying: activePlayer && activePlayer.isPlaying
     property bool canTogglePlaying: activePlayer?.canTogglePlaying ?? false
@@ -188,16 +188,33 @@ Singleton {
 
     function getValidPlayers() {
         if (!Mpris.players || !Mpris.players.values) return [];
+        const buses = Mpris.players.values.map(p => (p.dbusName || "").toLowerCase());
+        // Plasma browser integration present? Detect its live bus directly instead of
+        // relying solely on the host binary check (binary name varies, PATH race at
+        // startup). While it aggregates tabs, native browser buses are duplicates.
+        const integrationLive = buses.some(b => b.includes("plasma-browser-integration"));
+        const dropNativeBrowsers = integrationLive || root.hasPlasmaIntegration;
+        // User escape hatch: Settings > Services > Media > Filter Duplicate Players
+        const filterDupes = !Config.ready || (Config.options.media?.filterDuplicatePlayers ?? true);
+        // Native browser MPRIS buses, redundant while the integration bus is up
+        const browserPrefixes = [
+            "org.mpris.mediaplayer2.firefox", "org.mpris.mediaplayer2.zen", "org.mpris.mediaplayer2.floorp",
+            "org.mpris.mediaplayer2.chromium", "org.mpris.mediaplayer2.chrome", "org.mpris.mediaplayer2.google-chrome",
+            "org.mpris.mediaplayer2.brave", "org.mpris.mediaplayer2.vivaldi", "org.mpris.mediaplayer2.opera",
+            "org.mpris.mediaplayer2.edge", "org.mpris.mediaplayer2.msedge"
+        ];
         let valid = Mpris.players.values.filter(p => {
-            if (p.dbusName && p.dbusName.startsWith('org.mpris.MediaPlayer2.playerctld')) return false;
-            // Native browsers without integration or duplicates
-            if (root.hasPlasmaIntegration && p.dbusName && (p.dbusName.startsWith('org.mpris.MediaPlayer2.firefox') || p.dbusName.startsWith('org.mpris.MediaPlayer2.chromium') || p.dbusName.startsWith('org.mpris.MediaPlayer2.brave'))) return false;
+            const bus = (p.dbusName || "").toLowerCase();
+            if (bus.startsWith('org.mpris.mediaplayer2.playerctld')) return false;
+            // Escape hatch (Settings > Services > Media): show native browser buses as-is
+            if (filterDupes && dropNativeBrowsers && browserPrefixes.some(prefix => bus.startsWith(prefix))) return false;
             // Ghost buses from chromium/brave usually have entirely blank metadata
             if ((p.trackTitle || "") === "" && (p.trackArtist || "") === "" && (p.trackArtUrl || "") === "") return false;
             return true;
         });
 
-        // Deduplicate browser proxy buses (e.g. native brave vs plasma-browser-integration)
+        // Merge same-title proxy buses (e.g. native brave vs plasma-browser-integration)
+        if (!filterDupes) return valid;
         let unique = [];
         for (let i = 0; i < valid.length; i++) {
             let p = valid[i];
