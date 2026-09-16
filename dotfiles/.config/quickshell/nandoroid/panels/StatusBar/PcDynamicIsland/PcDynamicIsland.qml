@@ -39,15 +39,20 @@ Item {
     readonly property real pomodoroCollapsedWidth: 140
     readonly property real pomodoroExpandedWidthCap: 220
     readonly property real pomodoroExpandedWidth: Math.min(root.pomodoroExpandedWidthCap, Math.max(root.pomodoroCollapsedWidth, root.pomodoroTextContentWidth))
-    readonly property real pomodoroWidth: root.timerControlsExpanded && root.activeContentId === "pomodoro" ? root.pomodoroExpandedWidth : Math.max(root.pomodoroCollapsedWidth, Math.min(root.pomodoroExpandedWidth, root.pomodoroTextContentWidth))
+    // NOTE: no activeContentId guard here on purpose. It is redundant (each
+    // width only applies while its own content is displayed, and the two
+    // branches are mathematically identical when hovered) and it closes a
+    // binding loop (widths -> contentProviders -> displayedProvider ->
+    // activeContentId -> widths) that freezes the pill at the old width.
+    readonly property real pomodoroWidth: root.timerControlsExpanded ? root.pomodoroExpandedWidth : Math.max(root.pomodoroCollapsedWidth, Math.min(root.pomodoroExpandedWidth, root.pomodoroTextContentWidth))
     readonly property real stopwatchCollapsedWidth: 150
     readonly property real stopwatchExpandedWidthCap: 240
     readonly property real stopwatchExpandedWidth: Math.min(root.stopwatchExpandedWidthCap, Math.max(root.stopwatchCollapsedWidth, root.stopwatchTextContentWidth))
-    readonly property real stopwatchWidth: root.timerControlsExpanded && root.activeContentId === "stopwatch" ? root.stopwatchExpandedWidth : Math.max(root.stopwatchCollapsedWidth, Math.min(root.stopwatchExpandedWidth, root.stopwatchTextContentWidth))
+    readonly property real stopwatchWidth: root.timerControlsExpanded ? root.stopwatchExpandedWidth : Math.max(root.stopwatchCollapsedWidth, Math.min(root.stopwatchExpandedWidth, root.stopwatchTextContentWidth))
     readonly property real countdownCollapsedWidth: 140
     readonly property real countdownExpandedWidthCap: 220
     readonly property real countdownExpandedWidth: Math.min(root.countdownExpandedWidthCap, Math.max(root.countdownCollapsedWidth, root.countdownTextContentWidth))
-    readonly property real countdownWidth: root.timerControlsExpanded && root.activeContentId === "countdown" ? root.countdownExpandedWidth : Math.max(root.countdownCollapsedWidth, Math.min(root.countdownExpandedWidth, root.countdownTextContentWidth))
+    readonly property real countdownWidth: root.timerControlsExpanded ? root.countdownExpandedWidth : Math.max(root.countdownCollapsedWidth, Math.min(root.countdownExpandedWidth, root.countdownTextContentWidth))
     readonly property real timerWidth: 130
     readonly property real osdWidth: 132
     readonly property real notificationWidth: 220
@@ -64,6 +69,32 @@ Item {
     property string forcedCycleId: ""
 
     property bool forceIdle: false
+
+    // --- Deferred width reporting ---
+    // Content items must NEVER write their measured widths back synchronously
+    // (onCompleted / onChanged / Binding): the Loader instantiates them in the
+    // middle of the provider-switch evaluation cascade, so a synchronous write
+    // re-enters displayedProvider's evaluation ("Binding loop detected") and
+    // the corrective update gets dropped — the pill sticks at the old width
+    // until something (e.g. a manual rehover) forces a clean pass. Deferring
+    // one event loop keeps every report outside the cascade. The delay is
+    // invisible under the 350ms pill animation.
+    property var _pendingWidths: ({})
+    property bool _widthFlushQueued: false
+    function reportWidth(prop, value) {
+        _pendingWidths[prop] = value
+        if (root._widthFlushQueued) return
+        root._widthFlushQueued = true
+        Qt.callLater(flushReportedWidths)
+    }
+    function flushReportedWidths() {
+        root._widthFlushQueued = false
+        const pending = root._pendingWidths
+        root._pendingWidths = ({})
+        for (const k in pending) {
+            if (root[k] !== pending[k]) root[k] = pending[k]
+        }
+    }
 
     readonly property var displayedProvider: {
         const alwaysWinActive = root.contentProviders.find(p => root.alwaysWinIds.includes(p.id) && p.active)

@@ -215,10 +215,10 @@ Item {
         + (di.isMaterial ? 0 : 4)
         + 10
 
-    onComputedCollapsedWidthChanged: di.idleTextContentWidth = computedCollapsedWidth
-    onComputedExpandedWidthChanged: di.idleExpandedContentWidth = computedExpandedWidth
+    onComputedCollapsedWidthChanged: di.reportWidth("idleTextContentWidth", computedCollapsedWidth)
+    onComputedExpandedWidthChanged: di.reportWidth("idleExpandedContentWidth", computedExpandedWidth)
     Component.onCompleted: {
-        di.idleTextContentWidth = computedCollapsedWidth
-        di.idleExpandedContentWidth = computedExpandedWidth
+        di.reportWidth("idleTextContentWidth", computedCollapsedWidth)
+        di.reportWidth("idleExpandedContentWidth", computedExpandedWidth)
     }
 }

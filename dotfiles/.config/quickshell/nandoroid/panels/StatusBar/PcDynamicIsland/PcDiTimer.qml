@@ -118,8 +118,8 @@ Item {
                 + (di.isMaterial ? 0 : 4)
                 + 10
 
-            onComputedContentWidthChanged: di.countdownTextContentWidth = infoColumn.computedContentWidth
-            Component.onCompleted: di.countdownTextContentWidth = infoColumn.computedContentWidth
+            onComputedContentWidthChanged: di.reportWidth("countdownTextContentWidth", infoColumn.computedContentWidth)
+            Component.onCompleted: di.reportWidth("countdownTextContentWidth", infoColumn.computedContentWidth)
         }
 
         RowLayout {

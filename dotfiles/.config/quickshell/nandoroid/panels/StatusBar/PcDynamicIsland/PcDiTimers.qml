@@ -117,8 +117,8 @@ Item {
                 + (di.isMaterial ? 0 : 4)
                 + 10
 
-            onComputedContentWidthChanged: di.pomodoroTextContentWidth = infoColumn.computedContentWidth
-            Component.onCompleted: di.pomodoroTextContentWidth = infoColumn.computedContentWidth
+            onComputedContentWidthChanged: di.reportWidth("pomodoroTextContentWidth", infoColumn.computedContentWidth)
+            Component.onCompleted: di.reportWidth("pomodoroTextContentWidth", infoColumn.computedContentWidth)
         }
 
         RowLayout {

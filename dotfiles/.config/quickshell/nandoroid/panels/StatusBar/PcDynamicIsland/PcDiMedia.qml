@@ -158,8 +158,8 @@ Item {
                 + (di.isMaterial ? 0 : 4)
                 + 10
 
-            onComputedContentWidthChanged: di.mediaTextContentWidth = trackInfoColumn.computedContentWidth
-            Component.onCompleted: di.mediaTextContentWidth = trackInfoColumn.computedContentWidth
+            onComputedContentWidthChanged: di.reportWidth("mediaTextContentWidth", trackInfoColumn.computedContentWidth)
+            Component.onCompleted: di.reportWidth("mediaTextContentWidth", trackInfoColumn.computedContentWidth)
         }
 
         WaveVisualizer {

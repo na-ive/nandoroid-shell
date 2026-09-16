@@ -124,8 +124,8 @@ Item {
                 + (di.isMaterial ? 0 : 4)
                 + 10
 
-            onComputedContentWidthChanged: di.stopwatchTextContentWidth = infoColumn.computedContentWidth
-            Component.onCompleted: di.stopwatchTextContentWidth = infoColumn.computedContentWidth
+            onComputedContentWidthChanged: di.reportWidth("stopwatchTextContentWidth", infoColumn.computedContentWidth)
+            Component.onCompleted: di.reportWidth("stopwatchTextContentWidth", infoColumn.computedContentWidth)
         }
 
         RowLayout {
