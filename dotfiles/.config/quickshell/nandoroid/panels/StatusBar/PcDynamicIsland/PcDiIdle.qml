@@ -87,17 +87,6 @@ Item {
             }
 
             Revealer {
-                reveal: !diIdleRoot.systemIconsElsewhere
-                    && !Network.ethernet
-                    && (Network.wifiStatus === "disconnected" || Network.wifiStatus === "disabled")
-                MaterialSymbol {
-                    text: "wifi_off"
-                    iconSize: Appearance.font.pixelSize.normal
-                    color: Appearance.colors.colError
-                }
-            }
-
-            Revealer {
                 reveal: (Notifications.unread ?? 0) > 0
                 Item {
                     implicitWidth: notifRow.implicitWidth
