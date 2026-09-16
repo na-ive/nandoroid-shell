@@ -3,6 +3,33 @@
 # Nandoroid Shell Smart Installation Script
 set -e
 
+# Flags: --dry-run walks all prompts but only prints what WOULD change.
+DRY_RUN=0
+for arg in "$@"; do
+    case "$arg" in
+        -n|--dry-run) DRY_RUN=1 ;;
+    esac
+done
+
+# Wrapper: announce in dry-run mode, execute otherwise.
+run() {
+    if [[ "$DRY_RUN" == "1" ]]; then
+        substep "[dry-run] would run: $*"
+    else
+        "$@"
+    fi
+}
+
+# Append helper (plain >> cannot go through run() — the redirection would
+# still execute in dry-run mode).
+add_line() {
+    if [[ "$DRY_RUN" == "1" ]]; then
+        substep "[dry-run] would append to $1: $2"
+    else
+        printf '%s\n' "$2" >> "$1"
+    fi
+}
+
 # Reset terminal colors on exit or crash
 trap 'echo -ne "\033[0m"' EXIT
 
@@ -78,6 +105,10 @@ choice() {
 
 banner
 
+if [[ "$DRY_RUN" == "1" ]]; then
+    substep "${C_YELLOW}DRY-RUN MODE: answering prompts only, no changes will be made.${C_RST}"
+fi
+
 # 1. Installation path
 info "Installation path..."
 ask "Where to clone? (default: ~/.local/src/nandoroid)"
@@ -96,18 +127,24 @@ if [ -d "$INSTALL_DIR" ]; then
     if [[ "$UPDATE_CHOICE" =~ ^[Yy] ]]; then
         substep "Pulling latest changes..."
         cd "$INSTALL_DIR"
-        git pull origin main
+        run git pull origin main
         success "Repository updated."
     else
         success "Skipped."
     fi
 else
     info "Cloning repository..."
-    git clone https://github.com/na-ive/nandoroid-shell.git "$INSTALL_DIR"
+    run git clone https://github.com/na-ive/nandoroid-shell.git "$INSTALL_DIR"
     success "Repository cloned."
 fi
 
-cd "$INSTALL_DIR" || exit 1
+if ! cd "$INSTALL_DIR" 2>/dev/null; then
+    if [[ "$DRY_RUN" == "1" ]]; then
+        substep "${C_YELLOW}Target dir missing, staying put (repo-relative steps will show placeholders).${C_RST}"
+    else
+        exit 1
+    fi
+fi
 
 # 3. Dependencies
 info "Dependency installation..."
@@ -133,12 +170,16 @@ if [[ "$DEP_CHOICE" =~ ^[Yy] ]]; then
     # paru check
     if ! command -v paru >/dev/null 2>&1; then
         info "Installing paru (AUR helper)..."
-        sudo pacman -S --needed $CONFIRM_FLAG base-devel git < /dev/tty
-        git clone https://aur.archlinux.org/paru.git /tmp/paru
-        cd /tmp/paru
-        makepkg -si $CONFIRM_FLAG < /dev/tty
-        cd "$INSTALL_DIR"
-        rm -rf /tmp/paru
+        run sudo pacman -S --needed $CONFIRM_FLAG base-devel git
+        run git clone https://aur.archlinux.org/paru.git /tmp/paru
+        if [[ "$DRY_RUN" == "1" ]]; then
+            substep "[dry-run] would build paru in /tmp/paru."
+        else
+            cd /tmp/paru
+        fi
+        run makepkg -si $CONFIRM_FLAG
+        cd "$INSTALL_DIR" 2>/dev/null || [[ "$DRY_RUN" == "1" ]]
+        run rm -rf /tmp/paru
         success "paru installed."
     else
         substep "paru already available."
@@ -147,10 +188,10 @@ if [[ "$DEP_CHOICE" =~ ^[Yy] ]]; then
     # 3a. Core, Services, Utilities, and Theming
     info "Mandatory shell dependencies..."
     substep "Required for the shell and system to function."
-    ./scripts/install_deps.sh core "$CONFIRM_FLAG" < /dev/tty
-    ./scripts/install_deps.sh services "$CONFIRM_FLAG" < /dev/tty
-    ./scripts/install_deps.sh utilities "$CONFIRM_FLAG" < /dev/tty
-    ./scripts/install_deps.sh theming "$CONFIRM_FLAG" < /dev/tty
+    run ./scripts/install_deps.sh core "$CONFIRM_FLAG"
+    run ./scripts/install_deps.sh services "$CONFIRM_FLAG"
+    run ./scripts/install_deps.sh utilities "$CONFIRM_FLAG"
+    run ./scripts/install_deps.sh theming "$CONFIRM_FLAG"
     success "Mandatory dependencies installed."
 
     # 3b. KDE Material You Venv (Optional but recommended)
@@ -160,13 +201,13 @@ if [[ "$DEP_CHOICE" =~ ^[Yy] ]]; then
     if [[ "$VENV_CHOICE" =~ ^[Yy] ]]; then
         VENV_PATH="$HOME/.local/share/nandoroid/venv"
         substep "Creating venv in ${C_ACCENT}$VENV_PATH${C_RST}..."
-        mkdir -p "$(dirname "$VENV_PATH")"
-        python3 -m venv "$VENV_PATH"
+        run mkdir -p "$(dirname "$VENV_PATH")"
+        run python3 -m venv "$VENV_PATH"
         substep "Installing kde-material-you-colors..."
-        "$VENV_PATH/bin/pip" install --upgrade pip < /dev/tty
-        "$VENV_PATH/bin/pip" install "materialyoucolor<3.0.0" < /dev/tty
-        "$VENV_PATH/bin/pip" install kde-material-you-colors < /dev/tty
-        "$VENV_PATH/bin/pip" install pykakasi korean_romanizer < /dev/tty
+        run "$VENV_PATH/bin/pip" install --upgrade pip
+        run "$VENV_PATH/bin/pip" install "materialyoucolor<3.0.0"
+        run "$VENV_PATH/bin/pip" install kde-material-you-colors
+        run "$VENV_PATH/bin/pip" install pykakasi korean_romanizer
         success "KDE theming venv ready."
     else
         success "Skipped."
@@ -186,18 +227,18 @@ if [[ "$DEP_CHOICE" =~ ^[Yy] ]]; then
             substep "Cloning Google Sans Flex from GitHub..."
             FONT_SRC="/tmp/google-sans-flex"
             FONT_TARGET="$HOME/.local/share/fonts/nandoroid-google-sans-flex"
-            rm -rf "$FONT_SRC"
-            git clone --depth 1 https://github.com/end-4/google-sans-flex.git "$FONT_SRC"
-            mkdir -p "$FONT_TARGET"
-            cp -r "$FONT_SRC"/* "$FONT_TARGET"/
-            rm -rf "$FONT_SRC"
-            fc-cache -fv
+            run rm -rf "$FONT_SRC"
+            run git clone --depth 1 https://github.com/end-4/google-sans-flex.git "$FONT_SRC"
+            run mkdir -p "$FONT_TARGET"
+            run cp -r "$FONT_SRC"/* "$FONT_TARGET"/
+            run rm -rf "$FONT_SRC"
+            run fc-cache -fv
         else
             substep "Google Sans Flex already installed."
         fi
 
         # Official & AUR fonts
-        ./scripts/install_deps.sh fonts "$CONFIRM_FLAG" < /dev/tty
+        run ./scripts/install_deps.sh fonts "$CONFIRM_FLAG"
         success "All fonts installed."
     else
         success "Skipped."
@@ -211,7 +252,7 @@ if [[ "$DEP_CHOICE" =~ ^[Yy] ]]; then
     ask "Install optional tools? (y/N)"
     read -r TERM_CHOICE < /dev/tty
     if [[ "$TERM_CHOICE" =~ ^[Yy] ]]; then
-        ./scripts/install_deps.sh optional "$CONFIRM_FLAG" < /dev/tty
+        run ./scripts/install_deps.sh optional "$CONFIRM_FLAG"
         success "Optional tools installed."
     else
         success "Skipped."
@@ -228,7 +269,7 @@ choice "3" "Skip         ${C_DIM}(copy nothing)${C_RST}"
 ask "Copy scope? (1/2/3, default: 1)"
 read -r SCOPE_CHOICE < /dev/tty
 SCOPE_CHOICE="${SCOPE_CHOICE:-1}"
-mkdir -p "$HOME/.config"
+run mkdir -p "$HOME/.config"
 
 # Timestamped backup so user tweaks survive updates (e.g. edits directly
 # under ~/.config/quickshell/nandoroid would otherwise be silently lost).
@@ -236,9 +277,13 @@ backup_target() {
     local name="$1"
     if [ -e "$HOME/.config/$name" ]; then
         local dest="$HOME/.config/nandoroid/backups/$(date +%Y%m%d-%H%M%S)/$name"
-        mkdir -p "$(dirname "$dest")"
-        cp -r "$HOME/.config/$name" "$dest"
-        substep "Backed up existing ${C_ACCENT}$name${C_RST} to ${C_DIM}$dest${C_RST}"
+        if [[ "$DRY_RUN" == "1" ]]; then
+            substep "[dry-run] would back up ${C_ACCENT}$name${C_RST} to ${C_DIM}$dest${C_RST}"
+        else
+            mkdir -p "$(dirname "$dest")"
+            cp -r "$HOME/.config/$name" "$dest"
+            substep "Backed up existing ${C_ACCENT}$name${C_RST} to ${C_DIM}$dest${C_RST}"
+        fi
     fi
 }
 
@@ -281,22 +326,26 @@ for item in "${COPY_GLOB[@]}"; do
     fi
     
     backup_target "$item_name"
-    cp -r "$item" "$HOME/.config/"
+    run cp -r "$item" "$HOME/.config/"
 done
 success "Configuration files copied."
 fi
 
 # Ensure shell config directory exists
 substep "Setting up config directory..."
-mkdir -p "$HOME/.config/nandoroid"
+run mkdir -p "$HOME/.config/nandoroid"
 
 # 5. Nandoroid CLI Installation (Optional)
 info "Nandoroid CLI Installation..."
 ask "Install Nandoroid CLI for terminal control? (y/N)"
 read -r CLI_CHOICE < /dev/tty
 if [[ "$CLI_CHOICE" =~ ^[Yy] ]]; then
-    substep "Running CLI installer from GitHub..."
-    bash -c "$(curl -fsSL https://raw.githubusercontent.com/na-ive/nandoroid-cli/main/install.sh)"
+    if [[ "$DRY_RUN" == "1" ]]; then
+        substep "[dry-run] would install Nandoroid CLI from GitHub."
+    else
+        substep "Running CLI installer from GitHub..."
+        bash -c "$(curl -fsSL https://raw.githubusercontent.com/na-ive/nandoroid-cli/main/install.sh)"
+    fi
     success "Nandoroid CLI installed."
 else
     success "Skipped CLI installation."
@@ -313,44 +362,44 @@ if [[ "$INJECT_CHOICE" =~ ^[Yy] ]]; then
     INJECT=true
 
     # Kitty
-    mkdir -p "$HOME/.config/kitty"
-    touch "$HOME/.config/kitty/kitty.conf"
+    run mkdir -p "$HOME/.config/kitty"
+    run touch "$HOME/.config/kitty/kitty.conf"
     if ! grep -q "include current-theme.conf" "$HOME/.config/kitty/kitty.conf"; then
-        echo "" >> "$HOME/.config/kitty/kitty.conf"
-        echo "include current-theme.conf" >> "$HOME/.config/kitty/kitty.conf"
+        add_line "$HOME/.config/kitty/kitty.conf" ""
+        add_line "$HOME/.config/kitty/kitty.conf" "include current-theme.conf"
         substep "Injected kitty theme include."
     else
         substep "Kitty already injected."
     fi
 
     # Fish
-    mkdir -p "$HOME/.config/fish"
-    touch "$HOME/.config/fish/config.fish"
+    run mkdir -p "$HOME/.config/fish"
+    run touch "$HOME/.config/fish/config.fish"
     if ! grep -q "starship init fish" "$HOME/.config/fish/config.fish"; then
-        echo "" >> "$HOME/.config/fish/config.fish"
-        echo 'starship init fish | source' >> "$HOME/.config/fish/config.fish"
+        add_line "$HOME/.config/fish/config.fish" ""
+        add_line "$HOME/.config/fish/config.fish" 'starship init fish | source'
         substep "Injected starship prompt into fish."
     else
         substep "Fish already injected."
     fi
 
     # Hyprland
-    mkdir -p "$HOME/.config/hypr"
-    touch "$HOME/.config/hypr/hyprland.lua"
+    run mkdir -p "$HOME/.config/hypr"
+    run touch "$HOME/.config/hypr/hyprland.lua"
     if ! grep -q 'require("nandoroid/nandoroid")' "$HOME/.config/hypr/hyprland.lua"; then
-        echo "" >> "$HOME/.config/hypr/hyprland.lua"
-        echo 'require("nandoroid/nandoroid")' >> "$HOME/.config/hypr/hyprland.lua"
+        add_line "$HOME/.config/hypr/hyprland.lua" ""
+        add_line "$HOME/.config/hypr/hyprland.lua" 'require("nandoroid/nandoroid")'
         substep "Injected nandoroid config into hyprland."
     fi
-    
+
     if ! grep -q 'require("nandoroid/user_persistence")' "$HOME/.config/hypr/hyprland.lua"; then
-        echo 'require("nandoroid/user_persistence")' >> "$HOME/.config/hypr/hyprland.lua"
+        add_line "$HOME/.config/hypr/hyprland.lua" 'require("nandoroid/user_persistence")'
         substep "Injected user persistence config into hyprland."
     fi
 
     # Ensure persistence directory and file exist
-    mkdir -p "$HOME/.config/hypr/nandoroid"
-    touch "$HOME/.config/hypr/nandoroid/user_persistence.lua"
+    run mkdir -p "$HOME/.config/hypr/nandoroid"
+    run touch "$HOME/.config/hypr/nandoroid/user_persistence.lua"
 
     success "Injection complete."
 else
@@ -371,8 +420,11 @@ substep "Selected: ${C_ACCENT}${C_BOLD}$CHANNEL${C_RST}"
 
 # 8. Save State
 substep "Saving installation state..."
-mkdir -p "$HOME/.config/nandoroid"
+run mkdir -p "$HOME/.config/nandoroid"
 STATE_FILE="$HOME/.config/nandoroid/install_state.json"
+if [[ "$DRY_RUN" == "1" ]]; then
+    substep "[dry-run] would write $STATE_FILE"
+else
 cat > "$STATE_FILE" << EOF
 {
   "inject": $INJECT,
@@ -380,6 +432,7 @@ cat > "$STATE_FILE" << EOF
   "channel": "$CHANNEL"
 }
 EOF
+fi
 success "State saved."
 
 # Done
