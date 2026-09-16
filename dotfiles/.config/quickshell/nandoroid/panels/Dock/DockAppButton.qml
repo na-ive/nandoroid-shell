@@ -19,7 +19,9 @@ DockButton {
     property var appListRoot
     property int index: -1
     property int lastFocused: -1
-    property real iconSize: (Config.ready && Config.options.dock.monochromeIcons ? 24 : 32) * Appearance.effectiveScale
+    property real iconSize: (root.useIconShape ? 24 : 32) * Appearance.effectiveScale
+    // Shape bg only when themed AND a real shape is picked; tint stays on regardless.
+    readonly property bool useIconShape: Config.ready && Config.options.dock.monochromeIcons && (Config.options.search?.iconShape ?? "Circle") !== "None"
     
     property bool appIsActive: appToplevel && appToplevel.toplevels ? appToplevel.toplevels.some(t => t.activated) : false
     readonly property bool isSeparator: appToplevel && appToplevel.appId === "SEPARATOR"
@@ -41,7 +43,7 @@ DockButton {
         }
         MaterialShape {
             anchors.fill: parent; anchors.margins: 4 * Appearance.effectiveScale
-            visible: Config.ready && Config.options.dock.monochromeIcons
+            visible: root.useIconShape
             shapeString: Config.ready && Config.options.search ? Config.options.search.iconShape : "Circle"
             color: root.down ? Appearance.colors.colPrimary : Appearance.colors.colPrimaryContainer
             Behavior on color { animation: Appearance.animation.elementMoveFast.colorAnimation.createObject(this) }

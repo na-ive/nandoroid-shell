@@ -230,6 +230,7 @@ Scope {
 
                                         DockButton {
                                             id: overviewButton
+                                            readonly property bool useIconShape: Config.ready && Config.options.dock.monochromeIcons && (Config.options.search?.iconShape ?? "Circle") !== "None"
                                             visible: Config.ready && (Config.options.dock.showOverview ?? true)
                                             pointingHandCursor: true
                                             onClicked: GlobalStates.overviewOpen = !GlobalStates.overviewOpen
@@ -240,19 +241,20 @@ Scope {
                                             background: Item {
                                                 anchors.fill: parent
                                                 Rectangle { anchors.fill: parent; radius: Appearance.rounding.button; color: overviewButton.baseColor; visible: !(Config.ready && Config.options.dock.monochromeIcons) }
-                                                MaterialShape { anchors.fill: parent; anchors.margins: 4 * Appearance.effectiveScale; visible: Config.ready && Config.options.dock.monochromeIcons; shapeString: Config.ready && Config.options.search ? Config.options.search.iconShape : "Circle"; color: overviewButton.down ? Appearance.colors.colPrimary : Appearance.colors.colPrimaryContainer }
+                                                MaterialShape { anchors.fill: parent; anchors.margins: 4 * Appearance.effectiveScale; visible: overviewButton.useIconShape; shapeString: Config.ready && Config.options.search ? Config.options.search.iconShape : "Circle"; color: overviewButton.down ? Appearance.colors.colPrimary : Appearance.colors.colPrimaryContainer }
                                             }
                                             contentItem: Item {
                                                 anchors.fill: parent
                                                 scale: overviewButton.down ? 0.92 : (overviewButton.hovered ? 1.05 : 1.0)
                                                 Behavior on scale { NumberAnimation { duration: 150; easing.type: Easing.OutCubic } }
-                                                MaterialSymbol { id: overviewIcon; anchors.centerIn: parent; text: "grid_view"; iconSize: (Config.ready && Config.options.dock.monochromeIcons ? 22 : 26) * Appearance.effectiveScale; color: overviewButton.toggled ? Appearance.colors.colPrimary : Appearance.colors.colOnLayer0; visible: !(Config.ready && Config.options.dock.monochromeIcons) }
+                                                MaterialSymbol { id: overviewIcon; anchors.centerIn: parent; text: "grid_view"; iconSize: (overviewButton.useIconShape ? 22 : 26) * Appearance.effectiveScale; color: overviewButton.toggled ? Appearance.colors.colPrimary : Appearance.colors.colOnLayer0; visible: !(Config.ready && Config.options.dock.monochromeIcons) }
                                                 ColorOverlay { anchors.fill: overviewIcon; source: overviewIcon; color: Appearance.colors.colOnPrimaryContainer; visible: Config.ready && Config.options.dock.monochromeIcons }
                                             }
                                         }
 
                                         DockButton {
                                             id: launcherButton
+                                            readonly property bool useIconShape: Config.ready && Config.options.dock.monochromeIcons && (Config.options.search?.iconShape ?? "Circle") !== "None"
                                             visible: Config.ready && (Config.options.dock.showLauncher ?? true)
                                             pointingHandCursor: true
                                             onClicked: GlobalStates.launcherOpen = !GlobalStates.launcherOpen
@@ -267,13 +269,13 @@ Scope {
                                             background: Item {
                                                 anchors.fill: parent
                                                 Rectangle { anchors.fill: parent; radius: Appearance.rounding.button; color: launcherButton.baseColor; visible: !(Config.ready && Config.options.dock.monochromeIcons) }
-                                                MaterialShape { anchors.fill: parent; anchors.margins: 4 * Appearance.effectiveScale; visible: Config.ready && Config.options.dock.monochromeIcons; shapeString: Config.ready && Config.options.search ? Config.options.search.iconShape : "Circle"; color: launcherButton.down ? Appearance.colors.colPrimary : Appearance.colors.colPrimaryContainer }
+                                                MaterialShape { anchors.fill: parent; anchors.margins: 4 * Appearance.effectiveScale; visible: launcherButton.useIconShape; shapeString: Config.ready && Config.options.search ? Config.options.search.iconShape : "Circle"; color: launcherButton.down ? Appearance.colors.colPrimary : Appearance.colors.colPrimaryContainer }
                                             }
                                             contentItem: Item {
                                                 anchors.fill: parent
                                                 scale: launcherButton.down ? 0.92 : (launcherButton.hovered ? 1.05 : 1.0)
                                                 Behavior on scale { NumberAnimation { duration: 150; easing.type: Easing.OutCubic } }
-                                                MaterialSymbol { id: launcherIcon; anchors.centerIn: parent; text: "apps"; iconSize: (Config.ready && Config.options.dock.monochromeIcons ? 24 : 28) * Appearance.effectiveScale; color: launcherButton.toggled ? Appearance.colors.colPrimary : Appearance.colors.colOnLayer0; visible: !(Config.ready && Config.options.dock.monochromeIcons) }
+                                                MaterialSymbol { id: launcherIcon; anchors.centerIn: parent; text: "apps"; iconSize: (launcherButton.useIconShape ? 24 : 28) * Appearance.effectiveScale; color: launcherButton.toggled ? Appearance.colors.colPrimary : Appearance.colors.colOnLayer0; visible: !(Config.ready && Config.options.dock.monochromeIcons) }
                                                 ColorOverlay { anchors.fill: launcherIcon; source: launcherIcon; color: Appearance.colors.colOnPrimaryContainer; visible: Config.ready && Config.options.dock.monochromeIcons }
                                             }
                                         }

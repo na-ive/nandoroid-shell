@@ -15,6 +15,8 @@ RippleButton {
     
     // Whether this app is in the dock favorites (shares the same pinnedApps list).
     readonly property bool isFav: !!(result && !result.isPlugin) && TaskbarApps.pinVersion >= 0 && TaskbarApps.isPinned(result.id)
+    // No-shape mode: bg goes transparent (NOT invisible, children must keep rendering).
+    readonly property bool noShape: (Config.ready ? Config.options.search?.iconShape : "Square") === "None"
     
     width: parent ? parent.width : 0
     height: 48 * Appearance.effectiveScale
@@ -53,16 +55,16 @@ RippleButton {
                 id: iconBg
                 anchors.fill: parent
                 shapeString: Config.ready ? Config.options.search.iconShape : "Square"
-                color: (root.hovered || root.selected) ? Appearance.m3colors.m3primaryContainer : Appearance.m3colors.m3surfaceVariant
-                borderWidth: 1 * Appearance.effectiveScale
+                color: root.noShape ? "transparent" : ((root.hovered || root.selected) ? Appearance.m3colors.m3primaryContainer : Appearance.m3colors.m3surfaceVariant)
+                borderWidth: root.noShape ? 0 : 1 * Appearance.effectiveScale
                 borderColor: Qt.rgba(0, 0, 0, 0.1)
                 
                 IconImage {
                     id: iconImg
                     source: (result && !result.isPlugin) ? Quickshell.iconPath(result.icon || "application-x-executable", "image-missing") : ""
                     visible: result && !result.isPlugin && result.emoji === ""
-                    width: 18 * Appearance.effectiveScale
-                    height: 18 * Appearance.effectiveScale
+                    width: (root.noShape ? 24 : 18) * Appearance.effectiveScale
+                    height: (root.noShape ? 24 : 18) * Appearance.effectiveScale
                     anchors.centerIn: parent
                 }
 
@@ -70,24 +72,24 @@ RippleButton {
                     text: result.emoji || ""
                     visible: result && result.emoji !== ""
                     anchors.centerIn: parent
-                    font.pixelSize: Appearance.font.pixelSize.large
+                    font.pixelSize: root.noShape ? Math.round(24 * Appearance.effectiveScale) : Appearance.font.pixelSize.large
                 }
                 
                 MaterialSymbol {
                     text: (result && result.isPlugin) ? (result.icon || "extension") : ""
                     visible: result && result.isPlugin && result.emoji === "" && !result.isImage
-                    iconSize: 18 * Appearance.effectiveScale
+                    iconSize: (root.noShape ? 24 : 18) * Appearance.effectiveScale
                     anchors.centerIn: parent
                     color: (root.hovered || root.selected) ? Appearance.m3colors.m3onPrimaryContainer : Appearance.m3colors.m3onSurfaceVariant
                 }
+            }
 
-                ThumbnailImage {
-                    anchors.fill: parent
-                    sourcePath: (result && result.isImage) ? result.imagePath : ""
-                    visible: !!(result && result.isImage)
-                    fillMode: Image.PreserveAspectCrop
-                    clip: true
-                }
+            ThumbnailImage {
+                anchors.fill: iconBg
+                sourcePath: (result && result.isImage) ? result.imagePath : ""
+                visible: !!(result && result.isImage)
+                fillMode: Image.PreserveAspectCrop
+                clip: true
             }
         }
         ColumnLayout {
