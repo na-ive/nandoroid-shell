@@ -135,13 +135,15 @@ Item {
                 rightMargin: di.isMaterial ? 4 : 8
                 verticalCenter: parent.verticalCenter
             }
-            spacing: di.isMaterial ? -2 : -4
+            // Gaps live inside the fixed-width slots, not the layout, so
+            // zero-width slots can't shift play via spacing recount.
+            spacing: 0
 
             // Play stays first as a stable anchor, extras expand to the right
             // instead of pushing play to the left
             Item {
                 Layout.alignment: Qt.AlignVCenter
-                implicitWidth: 22
+                implicitWidth: di.isMaterial ? 20 : 18
                 implicitHeight: 22
                 MaterialSymbol {
                     anchors.centerIn: parent
@@ -162,7 +164,7 @@ Item {
             // stays in the layout at width 0 so there is no spacing jump.
             Item {
                 Layout.alignment: Qt.AlignVCenter
-                implicitWidth: root.isRunning ? 20 : 0
+                implicitWidth: root.isRunning ? (di.isMaterial ? 20 : 18) : 0
                 implicitHeight: 20
                 clip: true
                 Behavior on implicitWidth {
@@ -191,7 +193,7 @@ Item {
             // Pill-matched slot (same pattern as pomodoro).
             Item {
                 Layout.alignment: Qt.AlignVCenter
-                implicitWidth: root.showExtra ? 22 : 0
+                implicitWidth: root.showExtra ? (di.isMaterial ? 20 : 18) : 0
                 implicitHeight: 22
                 clip: true
                 Behavior on implicitWidth {

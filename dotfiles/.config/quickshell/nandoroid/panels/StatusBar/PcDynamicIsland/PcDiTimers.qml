@@ -128,11 +128,13 @@ Item {
                 rightMargin: di.isMaterial ? 4 : 8
                 verticalCenter: parent.verticalCenter
             }
-            spacing: di.isMaterial ? -2 : -4
+            // Gaps live inside the fixed-width slots, not the layout, so
+            // zero-width slots can't shift play via spacing recount.
+            spacing: 0
 
             Item {
                 Layout.alignment: Qt.AlignVCenter
-                implicitWidth: 22
+                implicitWidth: di.isMaterial ? 20 : 18
                 implicitHeight: 22
                 MaterialSymbol {
                     anchors.centerIn: parent
@@ -158,7 +160,7 @@ Item {
             // recount), so there is no discrete jump either.
             Item {
                 Layout.alignment: Qt.AlignVCenter
-                implicitWidth: root.showExtra ? 22 : 0
+                implicitWidth: root.showExtra ? (di.isMaterial ? 20 : 18) : 0
                 implicitHeight: 22
                 clip: true
                 Behavior on implicitWidth {
