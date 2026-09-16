@@ -151,6 +151,15 @@ info "Dependency installation..."
 ask "Install required dependencies? (y/N)"
 read -r DEP_CHOICE < /dev/tty
 if [[ "$DEP_CHOICE" =~ ^[Yy] ]]; then
+    # Nandoroid is Arch-based only; fail soft with a clear message instead of
+    # dying halfway through sudo pacman on other distros.
+    if ! command -v pacman >/dev/null 2>&1; then
+        substep "${C_YELLOW}pacman not found — nandoroid supports Arch-based systems only.${C_RST}"
+        substep "Skipping dependency installation; install packages manually."
+        DEP_CHOICE="n"
+    fi
+fi
+if [[ "$DEP_CHOICE" =~ ^[Yy] ]]; then
 
     # Confirm mode
     CONFIRM_FLAG=""
@@ -383,23 +392,34 @@ if [[ "$INJECT_CHOICE" =~ ^[Yy] ]]; then
         substep "Fish already injected."
     fi
 
-    # Hyprland
-    run mkdir -p "$HOME/.config/hypr"
-    run touch "$HOME/.config/hypr/hyprland.lua"
-    if ! grep -q 'require("nandoroid/nandoroid")' "$HOME/.config/hypr/hyprland.lua"; then
-        add_line "$HOME/.config/hypr/hyprland.lua" ""
-        add_line "$HOME/.config/hypr/hyprland.lua" 'require("nandoroid/nandoroid")'
-        substep "Injected nandoroid config into hyprland."
+    # Hyprland (needs hypr/nandoroid from step 4; in dry-run it would exist
+    # unless the user chose Copy: skip).
+    HYPR_MOD_PRESENT=false
+    if [ -d "$HOME/.config/hypr/nandoroid" ]; then
+        HYPR_MOD_PRESENT=true
+    elif [[ "$DRY_RUN" == "1" && "$SCOPE_CHOICE" != "3" ]]; then
+        HYPR_MOD_PRESENT=true
     fi
+    if [[ "$HYPR_MOD_PRESENT" == "true" ]]; then
+        run mkdir -p "$HOME/.config/hypr"
+        run touch "$HOME/.config/hypr/hyprland.lua"
+        if ! grep -q 'require("nandoroid/nandoroid")' "$HOME/.config/hypr/hyprland.lua"; then
+            add_line "$HOME/.config/hypr/hyprland.lua" ""
+            add_line "$HOME/.config/hypr/hyprland.lua" 'require("nandoroid/nandoroid")'
+            substep "Injected nandoroid config into hyprland."
+        fi
 
-    if ! grep -q 'require("nandoroid/user_persistence")' "$HOME/.config/hypr/hyprland.lua"; then
-        add_line "$HOME/.config/hypr/hyprland.lua" 'require("nandoroid/user_persistence")'
-        substep "Injected user persistence config into hyprland."
+        if ! grep -q 'require("nandoroid/user_persistence")' "$HOME/.config/hypr/hyprland.lua"; then
+            add_line "$HOME/.config/hypr/hyprland.lua" 'require("nandoroid/user_persistence")'
+            substep "Injected user persistence config into hyprland."
+        fi
+
+        # Ensure persistence directory and file exist
+        run mkdir -p "$HOME/.config/hypr/nandoroid"
+        run touch "$HOME/.config/hypr/nandoroid/user_persistence.lua"
+    else
+        substep "${C_YELLOW}Skipping hypr injection (hypr/nandoroid not installed).${C_RST}"
     fi
-
-    # Ensure persistence directory and file exist
-    run mkdir -p "$HOME/.config/hypr/nandoroid"
-    run touch "$HOME/.config/hypr/nandoroid/user_persistence.lua"
 
     success "Injection complete."
 else
