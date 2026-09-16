@@ -566,7 +566,7 @@ ColumnLayout {
 
                     // ── Text color mode (disabled when bg is active) ────────────
                     SegmentedWrapper {
-                        visible: !sbSettingsCol.parent.isM3Style && !rootColumn.isPcIslandActive
+                        visible: !sbSettingsCol.parent.isM3Style
                         Layout.fillWidth: true
                         implicitHeight: statusBarTextRow.implicitHeight + (24 * Appearance.effectiveScale)
                         orientation: Qt.Vertical
@@ -615,7 +615,7 @@ ColumnLayout {
                     // ── Use Gradient (disabled ONLY when background is ALWAYS active) ──────────────
                     SegmentedWrapper {
                         id: sbGradientCard
-                        visible: !sbSettingsCol.parent.isM3Style && !rootColumn.isPcIslandActive
+                        visible: !sbSettingsCol.parent.isM3Style
                         Layout.fillWidth: true
                         implicitHeight: statusBarGradientRow.implicitHeight + (24 * Appearance.effectiveScale)
                         orientation: Qt.Vertical
@@ -660,7 +660,7 @@ ColumnLayout {
     
                     // ── Background Style (None / Always / Adaptive) ────────────
                     SegmentedWrapper {
-                        visible: !sbSettingsCol.parent.isM3Style && !rootColumn.isPcIslandActive
+                        visible: !sbSettingsCol.parent.isM3Style
                         Layout.fillWidth: true
                         implicitHeight: statusBarBgRow.implicitHeight + (24 * Appearance.effectiveScale)
                         orientation: Qt.Vertical
@@ -710,7 +710,7 @@ ColumnLayout {
                         orientation: Qt.Vertical
                         maxRadius: 20 * Appearance.effectiveScale
                         color: Appearance.m3colors.m3surfaceContainerHigh
-                        visible: sbSettingsCol.parent.sbAnyBgStyle && !sbSettingsCol.parent.isM3Style && !rootColumn.isPcIslandActive && (Config.ready ? Config.options.statusBar?.layoutStyle !== "centered" : true)
+                        visible: sbSettingsCol.parent.sbAnyBgStyle && !sbSettingsCol.parent.isM3Style && (Config.ready ? Config.options.statusBar?.layoutStyle !== "centered" : true)
                         RowLayout {
                             id: sbCornerRow
                             anchors.fill: parent
@@ -743,7 +743,7 @@ ColumnLayout {
 
                     // ── Layout Style (Standard / Centered) ────────────
                     SegmentedWrapper {
-                        visible: !sbSettingsCol.parent.isM3Style && !rootColumn.isPcIslandActive
+                        visible: !sbSettingsCol.parent.isM3Style
                         Layout.fillWidth: true
                         implicitHeight: layoutStyleRow.implicitHeight + (24 * Appearance.effectiveScale)
                         orientation: Qt.Vertical
@@ -785,6 +785,43 @@ ColumnLayout {
                         }
                     }
 
+                    // ── Centered Width (right below the Standard/Centered switch) ──
+                    SegmentedWrapper {
+                        Layout.fillWidth: true
+                        implicitHeight: centeredWidthRow.implicitHeight + (24 * Appearance.effectiveScale)
+                        orientation: Qt.Vertical
+                        maxRadius: 20 * Appearance.effectiveScale
+                        color: Appearance.m3colors.m3surfaceContainerHigh
+                        visible: Config.ready && Config.options.statusBar && Config.options.statusBar.layoutStyle === "centered" && !sbSettingsCol.parent.isM3Style
+                        RowLayout {
+                            id: centeredWidthRow
+                            anchors.fill: parent
+                            anchors {
+                                leftMargin: 16 * Appearance.effectiveScale
+                                rightMargin: 16 * Appearance.effectiveScale
+                                topMargin: 12 * Appearance.effectiveScale
+                                bottomMargin: 12 * Appearance.effectiveScale
+                            }
+                            spacing: 16 * Appearance.effectiveScale
+
+                            MaterialSymbol { text: "width_full"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
+                            StyledText {
+                                text: I18nService.tr("Centered width")
+                                Layout.fillWidth: true
+                                color: Appearance.colors.colOnLayer1
+                            }
+
+                            StyledStepper {
+                                Layout.alignment: Qt.AlignVCenter
+                                from: 800; to: 2000; stepSize: 50
+                                decimals: 0
+                                suffix: "px"
+                                value: Config.ready && Config.options.statusBar ? (Config.options.statusBar.centeredWidth ?? 1200) : 1200
+                                onValueChanged: if (Config.ready && Config.options.statusBar)
+                                    Config.options.statusBar.centeredWidth = Math.round(value)
+                            }
+                        }
+                    }
 
                     } // End Layout & Appearance ColumnLayout
 
@@ -1433,44 +1470,6 @@ ColumnLayout {
                         }
                     }
 
-                    // ── Centered Width (only visible when centered is active) ──
-                    SegmentedWrapper {
-                        Layout.fillWidth: true
-                        implicitHeight: centeredWidthRow.implicitHeight + (24 * Appearance.effectiveScale)
-                        orientation: Qt.Vertical
-                        maxRadius: 20 * Appearance.effectiveScale
-                        color: Appearance.m3colors.m3surfaceContainerHigh
-                        visible: Config.ready && Config.options.statusBar && Config.options.statusBar.layoutStyle === "centered" && !sbSettingsCol.parent.isM3Style && !rootColumn.isPcIslandActive
-                        RowLayout {
-                            id: centeredWidthRow
-                            anchors.fill: parent
-                            anchors {
-                                leftMargin: 16 * Appearance.effectiveScale
-                                rightMargin: 16 * Appearance.effectiveScale
-                                topMargin: 12 * Appearance.effectiveScale
-                                bottomMargin: 12 * Appearance.effectiveScale
-                            }
-                            spacing: 16 * Appearance.effectiveScale
-
-                            MaterialSymbol { text: "width_full"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
-                            StyledText {
-                                text: I18nService.tr("Centered width")
-                                Layout.fillWidth: true
-                                color: Appearance.colors.colOnLayer1
-                            }
-
-                            StyledStepper {
-                                Layout.alignment: Qt.AlignVCenter
-                                from: 800; to: 2000; stepSize: 50
-                                decimals: 0
-                                suffix: "px"
-                                value: Config.ready && Config.options.statusBar ? (Config.options.statusBar.centeredWidth ?? 1200) : 1200
-                                onValueChanged: if (Config.ready && Config.options.statusBar)
-                                    Config.options.statusBar.centeredWidth = Math.round(value)
-                            }
-                        }
-                    }
-
                     } // End Modules Positioning ColumnLayout
 
                     // ── Modules Styling ──────────────────────────────────────
@@ -1488,7 +1487,7 @@ ColumnLayout {
 
                     // ── Workspace Style (Shape) ──
                     SegmentedWrapper {
-                        visible: !sbSettingsCol.parent.isM3Style && !rootColumn.isPcIslandActive
+                        visible: !sbSettingsCol.parent.isM3Style
                         Layout.fillWidth: true
                         implicitHeight: wsStyleRow.implicitHeight + (24 * Appearance.effectiveScale)
                         orientation: Qt.Vertical
