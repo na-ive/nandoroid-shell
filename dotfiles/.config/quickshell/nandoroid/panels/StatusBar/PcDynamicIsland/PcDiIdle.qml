@@ -10,6 +10,10 @@ Item {
     id: diIdleRoot
     required property Item di
     anchors.fill: parent
+    // NOTE: plain clip on purpose, no layer/OpacityMask around the row —
+    // rasterizing the whole row into a layer makes the clock text blurry
+    // while the pill width animates. Only the avatar itself is masked.
+    clip: true
 
     readonly property bool systemIconsElsewhere: {
         if (!Config.ready || !Config.options.statusBar) return false
@@ -17,6 +21,17 @@ Item {
         const right = Config.options.statusBar.rightModules ?? []
         return left.includes("statusIconsGroup") || right.includes("statusIconsGroup")
     }
+
+    // Hover state (driven by di.idleExpanded in PcDynamicIsland.qml,
+    // same pattern as media / timer controls).
+    readonly property bool showExtra: di.idleExpanded ?? false
+
+    readonly property string distroOrUptime: {
+        const descMode = Config.ready && Config.options.profile ? (Config.options.profile.descriptionText || "::distro::") : "::distro::"
+        if (descMode === "::uptime::") return I18nService.tr("Up ") + DateTime.uptime
+        return SystemInfo.distroName || "Linux"
+    }
+    readonly property string dateText: DateTime.currentDate
 
     Rectangle {
         id: avatarRect
@@ -52,6 +67,63 @@ Item {
                     visible = false
             }
         }
+    }
+
+    // Hidden metrics — measure the widest hover line so the pill
+    // width stays stable and never shakes on text change.
+    StyledText {
+        id: dateMetrics
+        visible: false
+        text: diIdleRoot.dateText
+        font.pixelSize: Appearance.font.pixelSize.smaller
+        font.weight: Font.DemiBold
+    }
+    StyledText {
+        id: subMetrics
+        visible: false
+        text: diIdleRoot.distroOrUptime
+        font.pixelSize: Appearance.font.pixelSize.smallest
+    }
+
+    ColumnLayout {
+        id: infoColumn
+        anchors {
+            left: avatarRect.right
+            leftMargin: 8
+            verticalCenter: parent.verticalCenter
+            right: rightSideRow.left
+            rightMargin: 8
+        }
+        spacing: di.isMaterial ? -2 : -4
+        opacity: diIdleRoot.showExtra ? 1 : 0
+        visible: opacity > 0
+
+        Behavior on opacity {
+            NumberAnimation { duration: 200; easing.type: Easing.OutCubic }
+        }
+
+        StyledText {
+            Layout.fillWidth: true
+            text: diIdleRoot.dateText
+            font.pixelSize: Appearance.font.pixelSize.smaller
+            font.weight: Font.DemiBold
+            color: Appearance.colors.colNotchText
+            elide: Text.ElideRight
+            wrapMode: Text.NoWrap
+            maximumLineCount: 1
+        }
+        StyledText {
+            Layout.fillWidth: true
+            text: diIdleRoot.distroOrUptime
+            font.pixelSize: Appearance.font.pixelSize.smallest
+            color: Appearance.colors.colNotchText
+            opacity: 0.7
+            elide: Text.ElideRight
+            wrapMode: Text.NoWrap
+            maximumLineCount: 1
+        }
+
+        readonly property real widestLineWidth: Math.max(dateMetrics.implicitWidth, subMetrics.implicitWidth)
     }
 
     RowLayout {
@@ -125,15 +197,28 @@ Item {
             font.features: { "tnum": 1 }
             color: Appearance.colors.colNotchText
         }
-
-        readonly property real computedIdleWidth: avatarRect.width
-            + (di.isMaterial ? 0 : 4)
-            + 10
-            + rightSideRow.implicitWidth
-            + 10
-
-        onComputedIdleWidthChanged: di.idleTextContentWidth = rightSideRow.computedIdleWidth
-        Component.onCompleted: di.idleTextContentWidth = rightSideRow.computedIdleWidth
     }
 
+    // Collapsed width: avatar + clock only (previous behavior).
+    readonly property real computedCollapsedWidth: avatarRect.width
+        + (di.isMaterial ? 0 : 4)
+        + 10
+        + rightSideRow.implicitWidth
+        + 10
+
+    // Expanded width: avatar + hover info + clock.
+    readonly property real computedExpandedWidth: avatarRect.width
+        + (di.isMaterial ? 8 : 12)
+        + infoColumn.widestLineWidth
+        + 12
+        + rightSideRow.implicitWidth
+        + (di.isMaterial ? 0 : 4)
+        + 10
+
+    onComputedCollapsedWidthChanged: di.idleTextContentWidth = computedCollapsedWidth
+    onComputedExpandedWidthChanged: di.idleExpandedContentWidth = computedExpandedWidth
+    Component.onCompleted: {
+        di.idleTextContentWidth = computedCollapsedWidth
+        di.idleExpandedContentWidth = computedExpandedWidth
+    }
 }

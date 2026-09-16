@@ -20,7 +20,11 @@ Item {
     readonly property real idleCollapsedWidth: 144
     readonly property real sessionWidth: 164
     property real idleTextContentWidth: 0
-    readonly property real idleWidth: Math.max(root.idleCollapsedWidth, root.idleTextContentWidth)
+    property real idleExpandedContentWidth: 0
+    property bool idleExpanded: idleHoverHandler.hovered
+    readonly property real idleExpandedWidthCap: 260
+    readonly property real idleExpandedWidth: Math.min(root.idleExpandedWidthCap, Math.max(root.idleCollapsedWidth, root.idleExpandedContentWidth))
+    readonly property real idleWidth: root.idleExpanded ? root.idleExpandedWidth : Math.max(root.idleCollapsedWidth, root.idleTextContentWidth)
     readonly property real mediaCollapsedWidth: 140
     readonly property real mediaExpandedWidthCap: 220
     property real mediaTextContentWidth: 0
@@ -372,6 +376,11 @@ Item {
         HoverHandler {
             id: timerHoverHandler
             enabled: root.activeContentId === "pomodoro" || root.activeContentId === "stopwatch" || root.activeContentId === "countdown" || root.activeContentId === "timer"
+        }
+
+        HoverHandler {
+            id: idleHoverHandler
+            enabled: root.activeContentId === "idle"
         }
 
         WheelHandler {
