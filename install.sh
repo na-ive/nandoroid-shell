@@ -222,10 +222,42 @@ fi
 
 # 4. Copy dotfiles
 info "Copying configuration files..."
-substep "Copying dotfiles to ~/.config..."
+choice "1" "All configs  ${C_DIM}(quickshell + hypr + matugen + starship)${C_RST}"
+choice "2" "Shell only   ${C_DIM}(quickshell/nandoroid, for power users)${C_RST}"
+choice "3" "Skip         ${C_DIM}(copy nothing)${C_RST}"
+ask "Copy scope? (1/2/3, default: 1)"
+read -r SCOPE_CHOICE < /dev/tty
+SCOPE_CHOICE="${SCOPE_CHOICE:-1}"
 mkdir -p "$HOME/.config"
 
-for item in dotfiles/.config/*; do
+# Timestamped backup so user tweaks survive updates (e.g. edits directly
+# under ~/.config/quickshell/nandoroid would otherwise be silently lost).
+backup_target() {
+    local name="$1"
+    if [ -e "$HOME/.config/$name" ]; then
+        local dest="$HOME/.config/nandoroid/backups/$(date +%Y%m%d-%H%M%S)/$name"
+        mkdir -p "$(dirname "$dest")"
+        cp -r "$HOME/.config/$name" "$dest"
+        substep "Backed up existing ${C_ACCENT}$name${C_RST} to ${C_DIM}$dest${C_RST}"
+    fi
+}
+
+COPY_GLOB=(dotfiles/.config/*)
+if [[ "$SCOPE_CHOICE" == "2" ]]; then
+    if [ -e "dotfiles/.config/quickshell" ]; then
+        COPY_GLOB=(dotfiles/.config/quickshell)
+    else
+        substep "${C_YELLOW}quickshell config not found in repo, nothing to copy.${C_RST}"
+        COPY_GLOB=()
+    fi
+elif [[ "$SCOPE_CHOICE" == "3" ]]; then
+    COPY_GLOB=()
+fi
+
+if [ ${#COPY_GLOB[@]} -eq 0 ]; then
+    success "Skipped."
+else
+for item in "${COPY_GLOB[@]}"; do
     item_name=$(basename "$item")
     
     if [[ "$item_name" == "matugen" ]] && [ -e "$HOME/.config/matugen" ]; then
@@ -248,14 +280,15 @@ for item in dotfiles/.config/*; do
         fi
     fi
     
+    backup_target "$item_name"
     cp -r "$item" "$HOME/.config/"
 done
+success "Configuration files copied."
+fi
 
 # Ensure shell config directory exists
 substep "Setting up config directory..."
 mkdir -p "$HOME/.config/nandoroid"
-
-success "Configuration files copied."
 
 # 5. Nandoroid CLI Installation (Optional)
 info "Nandoroid CLI Installation..."
