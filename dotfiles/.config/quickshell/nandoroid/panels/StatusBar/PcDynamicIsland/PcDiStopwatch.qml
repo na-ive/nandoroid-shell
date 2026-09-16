@@ -179,6 +179,7 @@ Item {
                 MaterialSymbol {
                     anchors.centerIn: parent
                     text: "flag"
+                    fill: 1
                     iconSize: di.isMaterial ? 18 : 14
                     color: Appearance.colors.colNotchText
                     opacity: parent.width > 10 ? 1 : 0

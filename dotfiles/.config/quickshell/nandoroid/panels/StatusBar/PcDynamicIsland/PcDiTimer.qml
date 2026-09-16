@@ -169,7 +169,8 @@ Item {
                 }
                 MaterialSymbol {
                     anchors.centerIn: parent
-                    text: "add"
+                    text: "exposure_plus_1"
+                    fill: 1
                     iconSize: di.isMaterial ? 18 : 14
                     color: Appearance.colors.colNotchText
                     opacity: parent.width > 10 ? 1 : 0
