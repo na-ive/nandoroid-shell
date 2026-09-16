@@ -31,6 +31,30 @@ if [ -z "$CHANNEL" ]; then
     CHANNEL="stable"
 fi
 
+# ── Dev symlink guard ─────────────────────────────────────────────
+# A dev checkout is symlinked (e.g. ~/.config/quickshell/nandoroid ->
+# ~/src/nandoroid/dotfiles/...). A normal "cp -r" update would replace
+# the symlink with a real directory and silently break the dev setup.
+# Abort early with a clear message; pass --force as 3rd arg to override.
+ALLOW_FORCE=false
+for arg in "$@"; do
+    [ "$arg" = "--force" ] && ALLOW_FORCE=true
+done
+
+SHELL_LINK="$HOME/.config/quickshell/nandoroid"
+if [ -L "$SHELL_LINK" ] && [ "$ALLOW_FORCE" = false ]; then
+    TARGET=$(readlink "$SHELL_LINK")
+    echo "✗ Dev setup detected: $SHELL_LINK is a symlink -> $TARGET"
+    echo "  Update aborted to protect your dev setup."
+    echo "  Your symlink was NOT touched."
+    echo ""
+    echo "  To update a dev checkout, pull manually:"
+    echo "    git -C \"$INSTALL_DIR\" pull   # or: git pull (inside $INSTALL_DIR)"
+    echo "  Or re-run with --force to override (not recommended):"
+    echo "    $0 $MODE $CHANNEL --force"
+    exit 1
+fi
+
 cd "$INSTALL_DIR" || exit 1
 
 echo "Fetching latest updates..."

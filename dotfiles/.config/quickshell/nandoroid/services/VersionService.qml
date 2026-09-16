@@ -36,16 +36,22 @@ Singleton {
             c=$(python3 -c "import json; print(json.load(open('$f')).get('channel','stable'))" 2>/dev/null)
             [ -z "$d" ] && { echo "up-to-date"; exit; }
             cd "$d" || { echo "up-to-date"; exit; }
+            # Direction-aware: only "behind" counts as an update. A checkout
+            # that is ahead (e.g. local dev commits) reports up-to-date.
             if [ "$c" = "stable" ]; then
                 git fetch --tags >/dev/null 2>&1 || { echo "up-to-date"; exit; }
                 LATEST=$(git describe --tags $(git rev-list --tags --max-count=1 2>/dev/null) 2>/dev/null)
                 [ -z "$LATEST" ] && { echo "up-to-date"; exit; }
                 TC=$(git rev-list -n 1 "$LATEST" 2>/dev/null)
-                [ -n "$TC" ] && [ "$(git rev-parse HEAD)" != "$TC" ] && echo "available" || echo "up-to-date"
+                [ -z "$TC" ] && { echo "up-to-date"; exit; }
+                BEHIND=$(git rev-list --count "HEAD..$TC" 2>/dev/null || echo 0)
+                [ "$BEHIND" -gt 0 ] 2>/dev/null && echo "available" || echo "up-to-date"
             else
                 git fetch origin main >/dev/null 2>&1 || { echo "up-to-date"; exit; }
                 REMOTE=$(git rev-parse origin/main 2>/dev/null)
-                [ -n "$REMOTE" ] && [ "$(git rev-parse HEAD)" != "$REMOTE" ] && echo "available" || echo "up-to-date"
+                [ -z "$REMOTE" ] && { echo "up-to-date"; exit; }
+                BEHIND=$(git rev-list --count "HEAD..$REMOTE" 2>/dev/null || echo 0)
+                [ "$BEHIND" -gt 0 ] 2>/dev/null && echo "available" || echo "up-to-date"
             fi
         `]
         stdout: StdioCollector { id: updOut }
