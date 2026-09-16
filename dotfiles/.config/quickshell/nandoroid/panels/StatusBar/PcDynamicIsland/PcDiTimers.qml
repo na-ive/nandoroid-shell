@@ -1,6 +1,5 @@
 import QtQuick
 import QtQuick.Layouts
-import Qt5Compat.GraphicalEffects
 import "../../../core"
 import "../../../services"
 import "../../../widgets"
@@ -16,20 +15,13 @@ Item {
     readonly property string subText: (isRunning ? modeText : modeText + " • " + I18nService.tr("Paused"))
     readonly property bool showExtra: di.timerControlsExpanded
 
-    Rectangle {
-        id: mask
+    Item {
+        id: content
         anchors.fill: parent
-        color: "transparent"
-        radius: height / 2
-
-        layer.enabled: true
-        layer.effect: OpacityMask {
-            maskSource: Rectangle {
-                width: mask.width
-                height: mask.height
-                radius: mask.radius
-            }
-        }
+        // NOTE: plain clip, no layer/OpacityMask — rasterizing the row into
+        // a layer makes text blurry and stalls expansion while the pill
+        // width animates (same fix as PcDiIdle).
+        clip: true
 
         Item {
             id: iconBox
