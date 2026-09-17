@@ -78,6 +78,30 @@ Item {
     readonly property real _tabMargin: 2 * Appearance.effectiveScale
     readonly property real _tabActiveSize: _tabDotSize - _tabMargin * 2
 
+    // Random material shapes for indicatorLabel === "none" (same pool as PasswordChars)
+    readonly property list<int> _noneShapePool: [
+        MaterialShape.Shape.Pill,
+        MaterialShape.Shape.Diamond,
+        MaterialShape.Shape.ClamShell,
+        MaterialShape.Shape.Pentagon,
+        MaterialShape.Shape.Cookie4Sided,
+        MaterialShape.Shape.SoftBurst,
+        MaterialShape.Shape.Flower,
+        MaterialShape.Shape.Puffy,
+        MaterialShape.Shape.Gem,
+        MaterialShape.Shape.Cookie9Sided
+    ]
+
+    // Deterministic pseudo-random per wsId — stable, tidak blink saat paging
+    function _shapeForWs(wsId) {
+        if (_noneShapePool.length === 0) return MaterialShape.Shape.Circle
+        return _noneShapePool[(wsId * 7 + 3) % _noneShapePool.length]
+    }
+
+    // Warna shape aktif mengikuti wrappernya:
+    // wrapper primary (darkmode) -> onPrimary, wrapper primaryContainer -> onPrimaryContainer
+    readonly property color _onWrapperColor: Appearance.m3colors.darkmode ? Appearance.colors.colOnPrimary : Appearance.colors.colOnPrimaryContainer
+
     implicitWidth: root.isSpecialActive ? specialOverlay.implicitWidth : pillRow.implicitWidth
     implicitHeight: pillRow.implicitHeight
 
@@ -185,12 +209,12 @@ Item {
                 implicitWidth: isPill
                     ? (showLabel
                         ? (isActive ? 28 : (isHovered ? 20 : 8))
-                        : (isActive ? 16 : 8)) * Appearance.effectiveScale
+                        : (isActive ? 26 : 8)) * Appearance.effectiveScale
                     : root._tabDotSize
                 implicitHeight: isPill
                     ? (showLabel
                         ? (isActive ? 18 : (isHovered ? 18 : 8))
-                        : 8) * Appearance.effectiveScale
+                        : (isActive ? 18 : 8)) * Appearance.effectiveScale
                     : root._tabDotSize
 
                 anchors.verticalCenter: parent.verticalCenter
@@ -225,19 +249,45 @@ Item {
                         }
                         font.pixelSize: Appearance.font.pixelSize.smallest
                         font.weight: isActive ? Font.DemiBold : Font.Normal
-                        color: isActive ? Appearance.colors.colNotchActive : Appearance.colors.colNotchSubtext
+                        color: isActive ? root._onWrapperColor : Appearance.colors.colNotchSubtext
                         opacity: isPill ? ((isActive || isHovered) ? 1 : 0) : 1
                     }
                 }
 
-                // ----- Unified: small dot fallback when no label -----
+                // ----- Unified: inactive dot when no label (active pakai MaterialShape) -----
                 Rectangle {
-                    visible: !isPill && !showLabel
+                    visible: !isPill && !showLabel && !isActive
                     anchors.centerIn: parent
-                    width: Math.round(root._tabDotSize * (isActive ? 0.45 : 0.25))
+                    width: Math.round(root._tabDotSize * 0.25)
                     height: width
                     radius: width / 2
-                    color: isActive ? Appearance.colors.colNotchActive : (isOccupied ? Appearance.colors.colNotchText : Appearance.colors.colNotchSubtext)
+                    color: isOccupied ? Appearance.colors.colNotchText : Appearance.colors.colNotchSubtext
+                }
+
+                // ----- Unified none: active random MaterialShape di atas sliding wrapper -----
+                MaterialShape {
+                    visible: !isPill && !showLabel && isActive
+                    anchors.centerIn: parent
+                    implicitSize: Math.round(12 * Appearance.effectiveScale)
+                    shape: root._shapeForWs(wsId)
+                    color: root._onWrapperColor
+                    scale: isActive ? 1 : 0.5
+                    opacity: isActive ? 1 : 0
+                    Behavior on scale { NumberAnimation { duration: 250; easing.type: Easing.OutBack; easing.overshoot: 2.0 } }
+                    Behavior on opacity { NumberAnimation { duration: 150 } }
+                }
+
+                // ----- Pill none: active random MaterialShape di atas pill wrapper -----
+                MaterialShape {
+                    visible: isPill && !showLabel && isActive
+                    anchors.centerIn: parent
+                    implicitSize: Math.round(12 * Appearance.effectiveScale)
+                    shape: root._shapeForWs(wsId)
+                    color: root._onWrapperColor
+                    scale: isActive ? 1 : 0.5
+                    opacity: isActive ? 1 : 0
+                    Behavior on scale { NumberAnimation { duration: 250; easing.type: Easing.OutBack; easing.overshoot: 2.0 } }
+                    Behavior on opacity { NumberAnimation { duration: 150 } }
                 }
 
                 Behavior on implicitWidth { NumberAnimation { duration: 250; easing.type: Easing.OutExpo } }
