@@ -1,0 +1,10 @@
+singleton OsdHelper OsdHelper.qml
+PcDiIdle PcDiIdle.qml
+PcDiMedia PcDiMedia.qml
+PcDiNotifs PcDiNotifs.qml
+PcDiOsd PcDiOsd.qml
+PcDiSession PcDiSession.qml
+PcDiStopwatch PcDiStopwatch.qml
+PcDiTimer PcDiTimer.qml
+PcDiTimers PcDiTimers.qml
+PcDynamicIsland PcDynamicIsland.qml

@@ -54,7 +54,7 @@ Item {
     readonly property real countdownExpandedWidth: Math.min(root.countdownExpandedWidthCap, Math.max(root.countdownCollapsedWidth, root.countdownTextContentWidth))
     readonly property real countdownWidth: root.timerControlsExpanded ? root.countdownExpandedWidth : Math.max(root.countdownCollapsedWidth, Math.min(root.countdownExpandedWidth, root.countdownTextContentWidth))
     readonly property real timerWidth: 130
-    readonly property real osdWidth: 132
+    readonly property real osdWidth: OsdHelper.pillWidth
     readonly property real notificationWidth: 220
     readonly property real batteryWidth: 170
     readonly property real badgeSize: 32
@@ -321,41 +321,13 @@ Item {
             case "timer":     return root.timerIcon()
             case "battery":   return root.batteryIcon()
             case "osd":
-                switch (GlobalStates.osdIndicatorType) {
-                    case "brightness": return "light_mode"
-                    case "gamma":      return "wb_twilight"
-                    case "layout":     return "view_compact"
-                    case "microphone": return "mic"
-                    case "charging":   return "battery_charging_full"
-                    case "powerMode":  return "bolt"
-                    case "conservation": return "energy_savings_leaf"
-                    case "playerVolume": return "volume_up"
-                    default:           return "volume_up"
-                }
+                return OsdHelper.osdIcon()
             default: return "circle"
         }
     }
 
     function osdText() {
-        switch (GlobalStates.osdIndicatorType) {
-            case "brightness": {
-                const mon = Brightness.getMonitorForScreen ? Brightness.getMonitorForScreen(Quickshell.screens.find(s => s.name === Hyprland.focusedMonitor?.name)) : null
-                return `${Math.round((mon?.brightness ?? 0.5) * 100)}`
-            }
-            case "gamma":      return `${Math.round((Hyprsunset.gamma ?? 50))}`
-            case "layout": {
-                const raw = GlobalStates.hyprlandLayout ?? HyprlandData.layout ?? "dwindle"
-                return raw.charAt(0).toUpperCase() + raw.slice(1)
-            }
-            case "microphone": return `${Math.round((Audio.source?.audio?.volume ?? 0) * 100)}`
-            case "charging":   return `${Math.round(Battery.percentage * 100)}%`
-            case "powerMode": {
-                const prof = PowerProfileService.currentProfile ?? ""
-                return prof.charAt(0).toUpperCase() + prof.slice(1)
-            }
-            case "conservation": return ConservationMode.active ? I18nService.tr("On") : I18nService.tr("Off")
-            default:           return `${Math.round((Audio.sink?.audio?.volume ?? 0) * 100)}`
-        }
+        return OsdHelper.osdText()
     }
 
     readonly property string activeContentId: root.displayedProvider?.id ?? "idle"

@@ -11,6 +11,7 @@ import Quickshell.Services.UPower
 import Qt5Compat.GraphicalEffects
 import "../NotificationCenter"
 import "../StatusBar"
+import "../StatusBar/PcDynamicIsland" as PcIsland
 import "../Alarm"
 
 /**
@@ -232,6 +233,9 @@ MouseArea {
         // 3. Center: Dynamic Island Wannabe (Locked Indicator)
         readonly property string islandStyle: Config.options.statusBar?.islandStyle ?? "pill"
         readonly property bool isWaterdrop: islandStyle === "waterdrop"
+        // PcIsland mode only: morph the Locked pill into the OSD pill.
+        readonly property bool isPcIslandActive: Config.ready && Config.options.statusBar?.centerModule === "pcIsland"
+        readonly property bool showLockOsd: isPcIslandActive && GlobalStates.osdVolumeOpen
 
         Rectangle {
             id: lockIndicatorPill
@@ -241,7 +245,7 @@ MouseArea {
             // Idle: y=6, height=28. Waterdrop: y=0, height=34.
             y: lockStatusBarContainer.isWaterdrop ? 0 : 6 * Appearance.effectiveScale
             height: lockStatusBarContainer.isWaterdrop ? 34 * Appearance.effectiveScale : 28 * Appearance.effectiveScale
-            width: lockedContent.implicitWidth + (24 * Appearance.effectiveScale)
+            width: lockStatusBarContainer.showLockOsd ? PcIsland.OsdHelper.pillWidth : lockedContent.implicitWidth + (24 * Appearance.effectiveScale)
             color: "black"
             radius: height / 2
 
@@ -268,11 +272,21 @@ MouseArea {
 
             Behavior on y { NumberAnimation { duration: 400; easing.type: Easing.OutBack } }
             Behavior on height { NumberAnimation { duration: 400; easing.type: Easing.OutBack } }
+            Behavior on width {
+                NumberAnimation {
+                    duration: 350
+                    easing.type: Easing.BezierSpline
+                    easing.bezierCurve: Appearance.animationCurves.expressiveDefaultSpatial
+                }
+            }
 
             RowLayout {
                 id: lockedContent
                 anchors.centerIn: parent
                 spacing: 6 * Appearance.effectiveScale
+                opacity: lockStatusBarContainer.showLockOsd ? 0 : 1
+                visible: opacity > 0
+                Behavior on opacity { NumberAnimation { duration: 250; easing.type: Easing.InOutQuad } }
                 MaterialSymbol {
                     text: "lock"
                     iconSize: 14 * Appearance.effectiveScale
@@ -283,6 +297,35 @@ MouseArea {
                     text: I18nService.tr("Locked")
                     font.pixelSize: Appearance.font.pixelSize.smaller
                     font.weight: Font.DemiBold
+                    color: Appearance.colors.colNotchText
+                }
+            }
+
+            RowLayout {
+                id: lockOsdContent
+                anchors.fill: parent
+                anchors.leftMargin: 4 * Appearance.effectiveScale
+                anchors.rightMargin: 10 * Appearance.effectiveScale
+                spacing: 6 * Appearance.effectiveScale
+                opacity: lockStatusBarContainer.showLockOsd ? 1 : 0
+                visible: opacity > 0
+                Behavior on opacity { NumberAnimation { duration: 250; easing.type: Easing.InOutQuad } }
+                MaterialShapeWrappedMaterialSymbol {
+                    Layout.alignment: Qt.AlignVCenter
+                    shape: MaterialShape.Shape.Cookie12Sided
+                    color: Appearance.colors.colPrimary
+                    colSymbol: Appearance.colors.colOnPrimary
+                    text: PcIsland.OsdHelper.osdIcon()
+                    iconSize: 16 * Appearance.effectiveScale
+                    fill: 1
+                    padding: 4
+                }
+                Item { Layout.fillWidth: true }
+                StyledText {
+                    Layout.alignment: Qt.AlignVCenter
+                    text: PcIsland.OsdHelper.osdText()
+                    font.pixelSize: Appearance.font.pixelSize.small
+                    font.features: { "tnum": 1 }
                     color: Appearance.colors.colNotchText
                 }
             }
@@ -602,13 +645,22 @@ MouseArea {
                 readonly property real padding: Math.round(4 * Appearance.effectiveScale)
 
                 height: Math.round(32 * Appearance.effectiveScale) + (padding * 2)
-                width: lockM3LockWrapper.implicitWidth + (padding * 2)
+                width: lockStatusBarContainer.showLockOsd ? PcIsland.OsdHelper.pillWidth + (padding * 2) : lockM3LockWrapper.implicitWidth + (padding * 2)
                 radius: height / 2
-                color: Appearance.lockM3colors.m3surfaceContainer
+                color: lockStatusBarContainer.isPcIslandActive ? "black" : Appearance.lockM3colors.m3surfaceContainer
+
+                Behavior on width {
+                    NumberAnimation {
+                        duration: 350
+                        easing.type: Easing.BezierSpline
+                        easing.bezierCurve: Appearance.animationCurves.expressiveDefaultSpatial
+                    }
+                }
 
                 M3StatusWrapper {
                     id: lockM3LockWrapper
                     anchors.centerIn: parent
+                    show: !lockStatusBarContainer.showLockOsd
                     m3Color: "black"
                     m3ContentColor: "white"
 
@@ -623,6 +675,36 @@ MouseArea {
                         font.pixelSize: Appearance.font.pixelSize.smaller
                         font.weight: Font.DemiBold
                         color: lockM3LockWrapper.contentColor
+                    }
+                }
+
+                RowLayout {
+                    id: lockM3OsdContent
+                    anchors.fill: parent
+                    anchors.leftMargin: lockM3CenterCluster.padding
+                    anchors.rightMargin: lockM3CenterCluster.padding + 10 * Appearance.effectiveScale
+                    spacing: 6 * Appearance.effectiveScale
+                    opacity: lockStatusBarContainer.showLockOsd ? 1 : 0
+                    visible: opacity > 0
+                    Behavior on opacity { NumberAnimation { duration: 250; easing.type: Easing.InOutQuad } }
+
+                    MaterialShapeWrappedMaterialSymbol {
+                        Layout.alignment: Qt.AlignVCenter
+                        shape: MaterialShape.Shape.Cookie12Sided
+                        color: Appearance.colors.colPrimary
+                        colSymbol: Appearance.colors.colOnPrimary
+                        text: PcIsland.OsdHelper.osdIcon()
+                        iconSize: 20 * Appearance.effectiveScale
+                        fill: 1
+                        padding: 4
+                    }
+                    Item { Layout.fillWidth: true }
+                    StyledText {
+                        Layout.alignment: Qt.AlignVCenter
+                        text: PcIsland.OsdHelper.osdText()
+                        font.pixelSize: Appearance.font.pixelSize.normal
+                        font.features: { "tnum": 1 }
+                        color: Appearance.colors.colNotchText
                     }
                 }
             }

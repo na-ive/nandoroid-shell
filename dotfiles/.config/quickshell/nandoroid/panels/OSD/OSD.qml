@@ -48,7 +48,8 @@ Scope {
 
     function triggerOsd() {
         if (!root.ready) return;
-        // Bridge to PcIsland when bar visible, otherwise show floating OSD
+        // Bridge to PcIsland when active, otherwise float. Bridging also
+        // covers lockscreen since the lock pill renders the island OSD.
         if (root.isPcIslandActive && !root.hasFullscreen) {
             GlobalStates.osdIndicatorType = root.currentIndicator
             GlobalStates.osdVolumeOpen = true
