@@ -18,7 +18,6 @@ Item {
 
     readonly property real pillHeight: 32
     readonly property real idleCollapsedWidth: 144
-    readonly property real sessionWidth: 164
     property real idleTextContentWidth: 0
     property real idleExpandedContentWidth: 0
     property bool idleExpanded: idleHoverHandler.hovered
@@ -272,10 +271,9 @@ Item {
         { id: "timer",        active: false,                            component: timerComponent,        width: root.timerWidth },
         { id: "osd",          active: root.osdActive,                   component: osdComponent,          width: root.osdWidth },
         { id: "media",        active: root.hasMedia,                    component: mediaComponent,        width: root.mediaWidth },
-        { id: "session",      active: GlobalStates.diSessionOpen,       component: sessionComponent,      width: root.sessionWidth },
     ]
 
-    readonly property var alwaysWinIds: ["session", "notification", "battery", "osd"]
+    readonly property var alwaysWinIds: ["notification", "battery", "osd"]
 
     readonly property var activeOthers: root.contentProviders.filter(p => !root.alwaysWinIds.includes(p.id) && p.active)
 
@@ -346,9 +344,9 @@ Item {
     Rectangle {
         id: pill
         anchors.left: parent.left
-        y: root.isWaterdrop ? 0 : (root.insideM3Card ? 0 : (root.isMaterial ? 4 * Appearance.effectiveScale : 6 * Appearance.effectiveScale))
+        y: root.isWaterdrop ? 0 : (root.insideM3Card ? 0 : 4 * Appearance.effectiveScale)
         width: root.displayedProvider?.width ?? root.idleWidth
-        height: root.isWaterdrop ? 34 * Appearance.effectiveScale : ((root.isMaterial || root.insideM3Card) ? 32 * Appearance.effectiveScale : 28 * Appearance.effectiveScale)
+        height: root.isWaterdrop ? 34 * Appearance.effectiveScale : 32 * Appearance.effectiveScale
         color: "black"
         radius: height / 2
         clip: false
@@ -455,12 +453,6 @@ Item {
             anchors.fill: parent
             sourceComponent: root.displayedProvider?.component ?? idleComponent
             active: !root.vertical
-
-            onLoaded: {
-                if (root.displayedProvider?.id === "session" && item) {
-                    item.forceActiveFocus()
-                }
-            }
         }
 
         Component {
@@ -499,11 +491,6 @@ Item {
         Component {
             id: countdownComponent
             PcDiTimer { di: root }
-        }
-
-        Component {
-            id: sessionComponent
-            PcDiSession { di: root }
         }
 
         Component {

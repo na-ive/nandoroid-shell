@@ -77,7 +77,6 @@ Singleton {
     property var activeMediaNotchScreen: null
     property var activeTrayItem: null
     property var activeScreen: Quickshell.screens[0]
-    property bool diSessionOpen: false
     property bool osdVolumeOpen: false
     property string osdIndicatorType: "volume"
     property list<real> visualizerPoints: CavaService.values

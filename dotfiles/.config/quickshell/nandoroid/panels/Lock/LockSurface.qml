@@ -242,9 +242,9 @@ MouseArea {
             visible: !lockStatusBarContainer.isM3
             anchors.horizontalCenter: parent.horizontalCenter
             
-            // Idle: y=6, height=28. Waterdrop: y=0, height=34.
-            y: lockStatusBarContainer.isWaterdrop ? 0 : 6 * Appearance.effectiveScale
-            height: lockStatusBarContainer.isWaterdrop ? 34 * Appearance.effectiveScale : 28 * Appearance.effectiveScale
+            // Matches the desktop PcIsland pill.
+            y: lockStatusBarContainer.isWaterdrop ? 0 : 4 * Appearance.effectiveScale
+            height: lockStatusBarContainer.isWaterdrop ? 34 * Appearance.effectiveScale : 32 * Appearance.effectiveScale
             width: lockStatusBarContainer.showLockOsd ? PcIsland.OsdHelper.pillWidth : lockedContent.implicitWidth + (24 * Appearance.effectiveScale)
             color: "black"
             radius: height / 2
@@ -316,7 +316,7 @@ MouseArea {
                     color: Appearance.colors.colPrimary
                     colSymbol: Appearance.colors.colOnPrimary
                     text: PcIsland.OsdHelper.osdIcon()
-                    iconSize: 16 * Appearance.effectiveScale
+                    iconSize: 14 * Appearance.effectiveScale
                     fill: 1
                     padding: 4
                 }

@@ -25,7 +25,7 @@ RowLayout {
         color: Appearance.colors.colPrimary
         colSymbol: Appearance.colors.colOnPrimary
         text: di.iconForProviderId("osd")
-        iconSize: di.isMaterial ? 20 : 16
+        iconSize: di.isMaterial ? 20 : 14
         fill: 1
         padding: 4
     }
