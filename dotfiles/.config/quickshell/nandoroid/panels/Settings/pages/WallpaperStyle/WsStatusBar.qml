@@ -1270,7 +1270,6 @@ ColumnLayout {
 
                     // ── Notification Unread Attachment (Distro Icon vs Status Icons) ────────────
                     SegmentedWrapper {
-                        visible: !rootColumn.isPcIslandActive
                         Layout.fillWidth: true
                         implicitHeight: notifPositionRow.implicitHeight + (24 * Appearance.effectiveScale)
                         orientation: Qt.Vertical
@@ -1314,7 +1313,6 @@ ColumnLayout {
 
                     // ── Notification Counter Style ────────────
                     SegmentedWrapper {
-                        visible: !rootColumn.isPcIslandActive
                         Layout.fillWidth: true
                         implicitHeight: notifCounterStyleRow.implicitHeight + (24 * Appearance.effectiveScale)
                         orientation: Qt.Vertical

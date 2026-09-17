@@ -163,8 +163,8 @@ Item {
         m3Color: Appearance.m3colors.m3primaryContainer
         m3ContentColor: Appearance.m3colors.m3onPrimaryContainer
 
-        readonly property bool isHost: !rootM3.isPcIsland && (Config.ready && Config.options.notifications && (Config.options.notifications.hostModule ?? "distroIcon") === "distroIcon")
-        readonly property bool showNotif: !rootM3.isPcIsland && isHost && (Config.ready && Config.options.notifications && Config.options.notifications.counterStyle !== "hidden") && Notifications.unread > 0
+        readonly property bool isHost: (Config.ready && Config.options.notifications && (Config.options.notifications.hostModule ?? "distroIcon") === "distroIcon")
+        readonly property bool showNotif: isHost && (Config.ready && Config.options.notifications && Config.options.notifications.counterStyle !== "hidden") && Notifications.unread > 0
 
         show: true
 
@@ -252,8 +252,8 @@ Item {
         m3Color: Appearance.m3colors.m3tertiaryContainer
         m3ContentColor: Appearance.m3colors.m3onTertiaryContainer
 
-        readonly property bool isHost: !rootM3.isPcIsland && (Config.ready && Config.options.notifications && Config.options.notifications.hostModule === "statusIconsGroup")
-        readonly property bool showNotifBadge: !rootM3.isPcIsland && isHost && (Config.options.notifications.counterStyle ?? "counter") !== "hidden" && Notifications.unread > 0
+        readonly property bool isHost: (Config.ready && Config.options.notifications && Config.options.notifications.hostModule === "statusIconsGroup")
+        readonly property bool showNotifBadge: isHost && (Config.options.notifications.counterStyle ?? "counter") !== "hidden" && Notifications.unread > 0
 
         // Unread Notification Badge Item (when hosted on Status Icons Group)
         Item {

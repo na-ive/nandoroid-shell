@@ -104,8 +104,8 @@ Item {
         spacing: 6 * Appearance.effectiveScale
         Layout.alignment: Qt.AlignVCenter
 
-        readonly property bool isHost: !root.isPcIsland && (Config.ready && Config.options.notifications && Config.options.notifications.hostModule === "statusIconsGroup")
-        readonly property bool showNotifBadge: !root.isPcIsland && isHost && (Config.options.notifications.counterStyle ?? "counter") !== "hidden" && Notifications.unread > 0
+        readonly property bool isHost: (Config.ready && Config.options.notifications && Config.options.notifications.hostModule === "statusIconsGroup")
+        readonly property bool showNotifBadge: isHost && (Config.options.notifications.counterStyle ?? "counter") !== "hidden" && Notifications.unread > 0
 
         // Unread Notification Badge Item (when hosted on Status Icons Group)
         Item {
@@ -221,8 +221,8 @@ Item {
         implicitHeight: Math.max(distroIconImg.height, 20 * Appearance.effectiveScale)
         Layout.alignment: Qt.AlignVCenter
 
-        readonly property bool isHost: !root.isPcIsland && (Config.ready && Config.options.notifications && (Config.options.notifications.hostModule ?? "distroIcon") === "distroIcon")
-        readonly property bool showNotif: !root.isPcIsland && isHost && (Config.options.notifications.counterStyle ?? "counter") !== "hidden" && Notifications.unread > 0
+        readonly property bool isHost: (Config.ready && Config.options.notifications && (Config.options.notifications.hostModule ?? "distroIcon") === "distroIcon")
+        readonly property bool showNotif: isHost && (Config.options.notifications.counterStyle ?? "counter") !== "hidden" && Notifications.unread > 0
 
         CustomIcon {
             id: distroIconImg

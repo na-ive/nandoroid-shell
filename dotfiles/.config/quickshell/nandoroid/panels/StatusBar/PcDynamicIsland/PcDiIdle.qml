@@ -157,36 +157,6 @@ Item {
                     color: Appearance.colors.colNotchText
                 }
             }
-
-            Revealer {
-                reveal: (Notifications.unread ?? 0) > 0
-                Item {
-                    implicitWidth: notifRow.implicitWidth
-                    implicitHeight: notifRow.implicitHeight
-
-                    RowLayout {
-                        id: notifRow
-                        spacing: 2
-                        MaterialSymbol {
-                            text: "notifications"
-                            iconSize: Appearance.font.pixelSize.normal
-                            color: Appearance.colors.colNotchText
-                        }
-                        StyledText {
-                            text: `${Notifications.unread}`
-                            font.pixelSize: Appearance.font.pixelSize.smallest
-                            font.features: { "tnum": 1 }
-                            color: Appearance.colors.colNotchText
-                        }
-                    }
-
-                    MouseArea {
-                        anchors.fill: parent
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: GlobalStates.notificationCenterOpen = !GlobalStates.notificationCenterOpen
-                    }
-                }
-            }
         }
 
         StyledText {
