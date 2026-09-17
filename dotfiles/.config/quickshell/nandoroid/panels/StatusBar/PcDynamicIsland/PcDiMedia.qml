@@ -61,7 +61,7 @@ Item {
             height: di.isMaterial ? di.pillHeight : di.pillHeight - 8
             anchors {
                 left: parent.left
-                leftMargin: di.isMaterial ? 0 : 4
+                leftMargin: 4
                 verticalCenter: parent.verticalCenter
             }
             radius: di.isMaterial ? Appearance.rounding.full : (Appearance.rounding.small ?? 8)
@@ -150,12 +150,12 @@ Item {
             readonly property real widestLineWidth: Math.max(trackTitleMetrics.implicitWidth, trackArtistMetrics.implicitWidth)
 
             readonly property real computedContentWidth: artMask.width
-                + (di.isMaterial ? 14 : 8)
+                + 8
                 + trackInfoColumn.widestLineWidth
                 + 12
                 + (mediaControlsRow.visible ? mediaControlsRow.implicitWidth
                     : (islandVisualizer.visible ? islandVisualizer.width : 0))
-                + (di.isMaterial ? 0 : 4)
+                + 4
                 + 10
 
             onComputedContentWidthChanged: di.reportWidth("mediaTextContentWidth", trackInfoColumn.computedContentWidth)
@@ -187,7 +187,7 @@ Item {
             id: mediaControlsRow
             anchors {
                 right: parent.right
-                rightMargin: di.isMaterial ? 4 : 8
+                rightMargin: 8
                 verticalCenter: parent.verticalCenter
             }
             spacing: di.isMaterial ? -2 : -4

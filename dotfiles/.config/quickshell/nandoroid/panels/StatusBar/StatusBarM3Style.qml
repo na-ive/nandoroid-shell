@@ -567,9 +567,9 @@ Item {
         readonly property real islandWidth: rootM3.isPcIsland ? Math.round(pcIslandM3.implicitWidth) : Math.round(dynamicIsland.pill.width)
         
         height: Math.round(32 * Appearance.effectiveScale) + (padding * 2)
-        width: rootM3.isPcIsland ? (islandWidth + (padding * 2)) : (sidePillWidth > 0 ? ((sidePillWidth * 2) + islandWidth + (spacing * 2) + (padding * 2)) : (islandWidth + (padding * 2)))
+        width: rootM3.isPcIsland ? islandWidth : (sidePillWidth > 0 ? ((sidePillWidth * 2) + islandWidth + (spacing * 2) + (padding * 2)) : (islandWidth + (padding * 2)))
         radius: height / 2
-        color: rootM3.isPcIsland ? "black" : Appearance.m3colors.m3surfaceContainer
+        color: rootM3.isPcIsland ? "transparent" : Appearance.m3colors.m3surfaceContainer
         border.width: rootM3.isPcIsland ? 0 : 0
 
         // Time Pill (Left)

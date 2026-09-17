@@ -330,7 +330,7 @@ Item {
 
     readonly property string activeContentId: root.displayedProvider?.id ?? "idle"
 
-    implicitHeight: insideM3Card ? pillHeight : 40 * Appearance.effectiveScale
+    implicitHeight: 40 * Appearance.effectiveScale
     implicitWidth: root.displayedProvider?.width ?? root.idleWidth
 
     Behavior on implicitWidth {
@@ -346,7 +346,7 @@ Item {
         anchors.left: parent.left
         y: root.isWaterdrop ? 0 : (root.insideM3Card ? 0 : 4 * Appearance.effectiveScale)
         width: root.displayedProvider?.width ?? root.idleWidth
-        height: root.isWaterdrop ? 34 * Appearance.effectiveScale : 32 * Appearance.effectiveScale
+        height: root.isWaterdrop ? 34 * Appearance.effectiveScale : (root.insideM3Card ? 40 * Appearance.effectiveScale : 32 * Appearance.effectiveScale)
         color: "black"
         radius: height / 2
         clip: false
@@ -498,7 +498,7 @@ Item {
             RowLayout {
                 anchors {
                     fill: parent
-                    leftMargin: root.isMaterial ? 4 : 8
+                    leftMargin: 8
                     rightMargin: 10
                 }
                 spacing: 6

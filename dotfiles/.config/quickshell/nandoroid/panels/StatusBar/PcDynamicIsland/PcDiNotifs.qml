@@ -18,7 +18,7 @@ Item {
         height: 20
         anchors {
             left: parent.left
-            leftMargin: di.isMaterial ? 4 : 12
+            leftMargin: 12
             verticalCenter: parent.verticalCenter
         }
         source: Quickshell.iconPath(notif?.appIcon ?? "", "notification-symbolic")
@@ -31,7 +31,7 @@ Item {
         id: notifMaterialIcon
         anchors {
             left: parent.left
-            leftMargin: di.isMaterial ? 0 : 4
+            leftMargin: 4
             verticalCenter: parent.verticalCenter
         }
         shape: MaterialShape.Shape.Cookie12Sided
@@ -48,7 +48,7 @@ Item {
         id: notifTextColumn
         anchors {
             left: notifIcon.right
-            leftMargin: di.isMaterial ? 14 : 2
+            leftMargin: di.isMaterial ? 8 : 2
             verticalCenter: parent.verticalCenter
             right: nowLabel.left
             rightMargin: 8

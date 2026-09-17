@@ -29,7 +29,7 @@ Item {
             height: di.isMaterial ? di.pillHeight : di.pillHeight - 8
             anchors {
                 left: parent.left
-                leftMargin: di.isMaterial ? 0 : 4
+                leftMargin: 4
                 verticalCenter: parent.verticalCenter
             }
 
@@ -110,11 +110,11 @@ Item {
 
             readonly property real widestLineWidth: Math.max(maxTimeMetrics.advanceWidth, subMetrics.implicitWidth)
             readonly property real computedContentWidth: iconBox.width
-                + (di.isMaterial ? 8 : 12)
+                + 12
                 + infoColumn.widestLineWidth
                 + 12
                 + controlsRow.implicitWidth
-                + (di.isMaterial ? 0 : 4)
+                + 4
                 + 10
 
             onComputedContentWidthChanged: di.reportWidth("pomodoroTextContentWidth", infoColumn.computedContentWidth)
@@ -125,7 +125,7 @@ Item {
             id: controlsRow
             anchors {
                 right: parent.right
-                rightMargin: di.isMaterial ? 4 : 8
+                rightMargin: 8
                 verticalCenter: parent.verticalCenter
             }
             // Gaps live inside the fixed-width slots, not the layout, so

@@ -39,7 +39,7 @@ Item {
         height: di.isMaterial ? di.pillHeight : di.pillHeight - 8
         anchors {
             left: parent.left
-            leftMargin: di.isMaterial ? 0 : 4
+            leftMargin: 4
             verticalCenter: parent.verticalCenter
         }
         radius: width / 2
@@ -201,18 +201,18 @@ Item {
 
     // Collapsed width: avatar + clock only (previous behavior).
     readonly property real computedCollapsedWidth: avatarRect.width
-        + (di.isMaterial ? 0 : 4)
+        + 4
         + 10
         + rightSideRow.implicitWidth
         + 10
 
     // Expanded width: avatar + hover info + clock.
     readonly property real computedExpandedWidth: avatarRect.width
-        + (di.isMaterial ? 8 : 12)
+        + 12
         + infoColumn.widestLineWidth
         + 12
         + rightSideRow.implicitWidth
-        + (di.isMaterial ? 0 : 4)
+        + 4
         + 10
 
     onComputedCollapsedWidthChanged: di.reportWidth("idleTextContentWidth", computedCollapsedWidth)

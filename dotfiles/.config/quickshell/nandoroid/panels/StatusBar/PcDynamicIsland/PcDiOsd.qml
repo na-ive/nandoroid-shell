@@ -11,7 +11,7 @@ RowLayout {
     required property Item di
     anchors {
         fill: parent
-        leftMargin: di.isMaterial ? 0 : 4
+        leftMargin: 4
         rightMargin: 10
     }
     spacing: 6

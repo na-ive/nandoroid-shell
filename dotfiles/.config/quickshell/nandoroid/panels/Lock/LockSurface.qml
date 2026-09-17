@@ -645,7 +645,7 @@ MouseArea {
                 readonly property real padding: Math.round(4 * Appearance.effectiveScale)
 
                 height: Math.round(32 * Appearance.effectiveScale) + (padding * 2)
-                width: lockStatusBarContainer.showLockOsd ? PcIsland.OsdHelper.pillWidth + (padding * 2) : lockM3LockWrapper.implicitWidth + (padding * 2)
+                width: lockStatusBarContainer.showLockOsd ? PcIsland.OsdHelper.pillWidth : lockM3LockWrapper.implicitWidth + (padding * 2)
                 radius: height / 2
                 color: lockStatusBarContainer.isPcIslandActive ? "black" : Appearance.lockM3colors.m3surfaceContainer
 
@@ -681,8 +681,8 @@ MouseArea {
                 RowLayout {
                     id: lockM3OsdContent
                     anchors.fill: parent
-                    anchors.leftMargin: lockM3CenterCluster.padding
-                    anchors.rightMargin: lockM3CenterCluster.padding + 10 * Appearance.effectiveScale
+                    anchors.leftMargin: 4 * Appearance.effectiveScale
+                    anchors.rightMargin: 10 * Appearance.effectiveScale
                     spacing: 6 * Appearance.effectiveScale
                     opacity: lockStatusBarContainer.showLockOsd ? 1 : 0
                     visible: opacity > 0
