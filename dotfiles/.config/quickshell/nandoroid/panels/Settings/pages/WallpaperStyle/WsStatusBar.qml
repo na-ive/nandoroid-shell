@@ -115,7 +115,7 @@ ColumnLayout {
     }
 
     function getAvailableForCluster() {
-        return allModules.filter(m => !isUsed(m.id));
+        return allModules.filter(m => !isUsed(m.id) && (m.id !== "workspaceIndicator" || isPcIslandActive));
     }
 
     function addToLeftCluster(moduleId) {
@@ -902,6 +902,11 @@ ColumnLayout {
                                                 lefts.push("clock");
                                             }
                                         }
+                                    }
+
+                                    if (newCenter !== "pcIsland") {
+                                        lefts = lefts.filter(m => m !== "workspaceIndicator");
+                                        rights = rights.filter(m => m !== "workspaceIndicator");
                                     }
 
                                     Config.options.statusBar.leftModules = lefts;
