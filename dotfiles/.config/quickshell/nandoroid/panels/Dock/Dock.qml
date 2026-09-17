@@ -219,6 +219,7 @@ Scope {
                                             onButtonHoverChanged: (button, appData, hovered) => {
                                                 if (hovered) {
                                                     dockApps.lastHoveredAppData = appData;
+                                                    dockPreview.cancelHide();
                                                     if (!hoverGuardTimer.running && dockWindow.reveal) {
                                                         dockPreview.show(button, appData);
                                                     }

@@ -1,115 +1,281 @@
-import QtQuick
-import QtQuick.Layouts
-import QtQuick.Controls
-import Quickshell
-import Quickshell.Wayland
 import "../../core"
 import "../../services"
 import "../../widgets"
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Layouts
+import Quickshell
+import Quickshell.Wayland
+import Quickshell.Widgets
 
-
-/**
- * DockPreview.qml
- * A stable, scrollable, and live-updating window preview for the dock.
- * Updated: Supports single-window preview for better information display.
- */
 PopupWindow {
     id: root
-    visible: false
-    
+
     property string appId: ""
     property Item targetButton: null
-    property var parentWindow: null 
+    property var parentWindow: null
     readonly property bool hovered: popupHoverHandler.hovered
-    
-    property var _lockedRect: Qt.rect(0, 0, 0, 0)
+    property bool shown: false
+    readonly property int threshold: Config.ready ? (Config.options.dock.previewThreshold ?? 3) : 3
+    readonly property var liveToplevels: {
+        if (!appId)
+            return [];
 
+        const canonical = appId.toLowerCase();
+        return Array.from(ToplevelManager.toplevels.values).filter((t) => {
+            return (t.appId && TaskbarApps.normalizeAppId(t.appId) === canonical);
+        });
+    }
+    readonly property bool useRich: liveToplevels.length > 0 && liveToplevels.length < threshold
+
+    function close() {
+        if (!shown && !visible)
+            return ;
+
+        shown = false;
+    }
+
+    function show(button, appData) {
+        if (!appData || appData.toplevels.length === 0) {
+            close();
+            return ;
+        }
+        hideTimer.stop();
+        targetButton = button;
+        appId = appData.appId;
+        root.shown = true;
+    }
+
+    function requestHide() {
+        if (!popupHoverHandler.hovered)
+            hideTimer.restart();
+
+    }
+
+    function cancelHide() {
+        hideTimer.stop();
+    }
+
+    visible: shown || previewContainer.opacity > 0.01
     color: "transparent"
-    implicitWidth: 240 * Appearance.effectiveScale
-    implicitHeight: 400 * Appearance.effectiveScale
+    implicitWidth: previewContainer.width + 24 * Appearance.effectiveScale
+    implicitHeight: previewContainer.height + 24 * Appearance.effectiveScale
+    onLiveToplevelsChanged: {
+        if (shown && liveToplevels.length === 0)
+            root.close();
+
+    }
 
     anchor {
         window: parentWindow
-        rect: root._lockedRect
+        rect.x: {
+            if (!targetButton)
+                return 0;
+
+            const _ = targetButton.x + targetButton.y + targetButton.width + targetButton.height;
+            return targetButton.mapToItem(null, targetButton.width / 2, 0).x;
+        }
+        rect.y: {
+            if (!targetButton)
+                return 0;
+
+            const _ = targetButton.x + targetButton.y + targetButton.width + targetButton.height;
+            return targetButton.mapToItem(null, 0, 4 * Appearance.effectiveScale).y;
+        }
         edges: Edges.Top
         gravity: Edges.Top
     }
 
-    readonly property var liveToplevels: {
-        if (!appId) return [];
-        const canonical = appId.toLowerCase();
-        // Normalize each window's appId to its canonical desktop entry id so the
-        // preview matches windows whose appId differs from the dock entry
-        // (e.g. spotify window appId "spotify" under pinned "spotify-adblock").
-        return Array.from(ToplevelManager.toplevels.values).filter(t =>
-            (t.appId && TaskbarApps.normalizeAppId(t.appId) === canonical)
-        );
-    }
-
-    // Auto-close when no more windows (0 windows)
-    onLiveToplevelsChanged: {
-        if (visible && liveToplevels.length === 0) {
-            root.close();
-        }
-    }
-
-    function close() {
-        if (!visible) return;
-        visible = false;
-        targetButton = null;
-        appId = "";
-    }
-
     Rectangle {
         id: previewContainer
-        width: 210 * Appearance.effectiveScale
-        implicitHeight: Math.min(300 * Appearance.effectiveScale, previewListView.contentHeight + 12 * Appearance.effectiveScale)
-        height: implicitHeight
-        
+
+        width: useRich ? (richRow.implicitWidth + 12 * Appearance.effectiveScale) : 210 * Appearance.effectiveScale
+        height: useRich ? (richRow.implicitHeight + 12 * Appearance.effectiveScale) : Math.min(300 * Appearance.effectiveScale, previewListView.contentHeight + 12 * Appearance.effectiveScale)
         anchors.bottom: parent.bottom
         anchors.horizontalCenter: parent.horizontalCenter
-        
         radius: Appearance.rounding.normal
         color: Appearance.colors.colLayer0
-        
-        opacity: root.visible ? 0.98 : 0
-        scale: root.visible ? 1 : 0.95
-        
-        Behavior on height { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
-        Behavior on opacity { NumberAnimation { duration: 150; easing.type: Easing.OutCubic } }
-        Behavior on scale { NumberAnimation { duration: 150; easing.type: Easing.OutBack } }
+        opacity: root.shown ? 0.98 : 0
+        scale: root.shown ? 1 : 0.9
+        transformOrigin: Item.Bottom
 
         HoverHandler {
             id: popupHoverHandler
+
             onHoveredChanged: {
-                if (hovered) hideTimer.stop();
-                else root.requestHide();
+                if (hovered)
+                    hideTimer.stop();
+                else
+                    root.requestHide();
             }
         }
 
         StyledRectangularShadow {
             target: parent
+            opacity: previewContainer.opacity
             z: -1
+        }
+
+        RowLayout {
+            id: richRow
+
+            visible: root.useRich
+            anchors.fill: parent
+            anchors.margins: 6 * Appearance.effectiveScale
+            spacing: 8 * Appearance.effectiveScale
+
+            Repeater {
+                model: root.useRich ? root.liveToplevels : []
+
+                delegate: Rectangle {
+                    id: card
+
+                    required property var modelData
+
+                    Layout.preferredWidth: 200 * Appearance.effectiveScale
+                    Layout.preferredHeight: 152 * Appearance.effectiveScale
+                    Layout.fillWidth: false
+                    radius: Appearance.rounding.small
+                    color: Appearance.colors.colLayer1
+                    border.width: modelData.activated ? 2 * Appearance.effectiveScale : 0
+                    border.color: Appearance.colors.colPrimary
+
+                    MouseArea {
+                        id: cardHover
+
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        acceptedButtons: Qt.LeftButton | Qt.MiddleButton
+                        onClicked: (mouse) => {
+                            if (mouse.button === Qt.MiddleButton) {
+                                modelData.close();
+                            } else {
+                                modelData.activate();
+                                root.close();
+                            }
+                        }
+                    }
+
+                    Rectangle {
+                        anchors.fill: parent
+                        radius: parent.radius
+                        color: Appearance.m3colors.m3primary
+                        opacity: cardHover.containsMouse ? 0.1 : 0
+
+                        Behavior on opacity {
+                            animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(this)
+                        }
+
+                    }
+
+                    ColumnLayout {
+                        anchors.fill: parent
+                        anchors.margins: 4 * Appearance.effectiveScale
+                        spacing: 4 * Appearance.effectiveScale
+
+                        ClippingRectangle {
+                            Layout.fillWidth: true
+                            Layout.preferredHeight: 112 * Appearance.effectiveScale
+                            radius: Appearance.rounding.verysmall
+                            color: Appearance.colors.colLayer2
+
+                            ScreencopyView {
+                                id: thumb
+
+                                anchors.fill: parent
+                                captureSource: root.visible ? modelData : null
+                                live: root.visible
+                                paintCursor: true
+                                constraintSize: Qt.size(480, 270)
+                                opacity: hasContent ? 1 : 0
+
+                                Behavior on opacity {
+                                    animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(this)
+                                }
+
+                            }
+
+                            MaterialSymbol {
+                                anchors.centerIn: parent
+                                visible: !thumb.hasContent
+                                text: "web_asset"
+                                iconSize: 32 * Appearance.effectiveScale
+                                color: Appearance.colors.colOnLayer1
+                            }
+
+                        }
+
+                        RowLayout {
+                            Layout.fillWidth: true
+                            Layout.preferredHeight: 28 * Appearance.effectiveScale
+                            spacing: 4 * Appearance.effectiveScale
+
+                            StyledText {
+                                text: modelData.title || I18nService.tr("Window")
+                                font.pixelSize: Appearance.font.pixelSize.small
+                                color: Appearance.colors.colOnLayer0
+                                elide: Text.ElideRight
+                                Layout.fillWidth: true
+                                Layout.alignment: Qt.AlignVCenter
+                            }
+
+                            RippleButton {
+                                id: cardClose
+
+                                Layout.preferredWidth: 28 * Appearance.effectiveScale
+                                Layout.preferredHeight: 28 * Appearance.effectiveScale
+                                Layout.alignment: Qt.AlignVCenter
+                                padding: 0
+                                buttonRadius: Appearance.rounding.verysmall
+                                colBackground: hovered ? Appearance.colors.colErrorContainer : "transparent"
+                                onClicked: modelData.close()
+
+                                contentItem: Item {
+                                    MaterialSymbol {
+                                        anchors.centerIn: parent
+                                        text: "close"
+                                        iconSize: 16 * Appearance.effectiveScale
+                                        color: parent.parent.hovered ? Appearance.colors.colOnErrorContainer : Appearance.colors.colOnLayer0
+                                    }
+
+                                }
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            }
+
         }
 
         StyledListView {
             id: previewListView
+
+            visible: !root.useRich
             anchors.fill: parent
             anchors.margins: 6 * Appearance.effectiveScale
-            spacing: 2 * Appearance.effectiveScale
+            spacing: 8 * Appearance.effectiveScale
             clip: true
             interactive: contentHeight > height
-            model: root.liveToplevels
-            
+            model: root.useRich ? [] : root.liveToplevels
+
             delegate: Rectangle {
+                required property var modelData
+
                 width: ListView.view.width
                 height: 36 * Appearance.effectiveScale
-                color: (itemMouseArea.containsMouse || closeBtn.hovered) ? Qt.alpha(Appearance.m3colors.m3primary, 0.12) : "transparent"
+                color: Appearance.colors.colLayer1
                 radius: Appearance.rounding.small
-                Behavior on color { animation: Appearance.animation.elementMoveFast.colorAnimation.createObject(this) }
+                border.width: modelData.activated ? 1 * Appearance.effectiveScale : 0
+                border.color: Appearance.colors.colPrimary
 
                 MouseArea {
                     id: itemMouseArea
+
                     anchors.fill: parent
                     hoverEnabled: true
                     onClicked: {
@@ -118,8 +284,23 @@ PopupWindow {
                     }
                 }
 
+                Rectangle {
+                    anchors.fill: parent
+                    radius: parent.radius
+                    color: Appearance.m3colors.m3primary
+                    opacity: (itemMouseArea.containsMouse || closeBtn.hovered) ? 0.12 : 0
+
+                    Behavior on opacity {
+                        animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(this)
+                    }
+
+                }
+
                 RowLayout {
-                    anchors.fill: parent; anchors.leftMargin: 10 * Appearance.effectiveScale; anchors.rightMargin: 6 * Appearance.effectiveScale; spacing: 8 * Appearance.effectiveScale
+                    anchors.fill: parent
+                    anchors.leftMargin: 10 * Appearance.effectiveScale
+                    anchors.rightMargin: 6 * Appearance.effectiveScale
+                    spacing: 8 * Appearance.effectiveScale
 
                     StyledText {
                         text: modelData.title || I18nService.tr("Window")
@@ -132,7 +313,9 @@ PopupWindow {
 
                     RippleButton {
                         id: closeBtn
-                        Layout.preferredWidth: 28 * Appearance.effectiveScale; Layout.preferredHeight: 28 * Appearance.effectiveScale
+
+                        Layout.preferredWidth: 28 * Appearance.effectiveScale
+                        Layout.preferredHeight: 28 * Appearance.effectiveScale
                         Layout.alignment: Qt.AlignVCenter
                         padding: 0
                         buttonRadius: Appearance.rounding.verysmall
@@ -142,42 +325,36 @@ PopupWindow {
                         contentItem: Item {
                             MaterialSymbol {
                                 anchors.centerIn: parent
-                                text: "close"; iconSize: 16 * Appearance.effectiveScale
+                                text: "close"
+                                iconSize: 16 * Appearance.effectiveScale
                                 color: parent.parent.hovered ? Appearance.colors.colOnErrorContainer : Appearance.colors.colOnLayer0
                             }
+
                         }
+
                     }
+
                 }
+
             }
+
         }
+
+        Behavior on opacity {
+            animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(this)
+        }
+
+        Behavior on scale {
+            animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(this)
+        }
+
     }
 
     Timer {
         id: hideTimer
-        interval: 250 
+
+        interval: 150
         onTriggered: root.close()
     }
 
-    function show(button, appData) {
-        // Change: Allow showing if there is at least 1 window
-        if (!appData || appData.toplevels.length === 0) {
-            close();
-            return;
-        }
-        
-        hideTimer.stop();
-        targetButton = button;
-        appId = appData.appId;
-        
-        const pos = targetButton.mapToItem(null, targetButton.width / 2, 4 * Appearance.effectiveScale);
-        root._lockedRect = Qt.rect(pos.x, pos.y, 0, 0);
-        
-        root.visible = true;
-    }
-
-    function requestHide() {
-        if (!popupHoverHandler.hovered) {
-            hideTimer.restart();
-        }
-    }
 }

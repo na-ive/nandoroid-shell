@@ -466,6 +466,7 @@ property JsonObject background: JsonObject {
                 property real scale: 1.0
                 property bool showLauncher: true
                 property bool showOverview: true
+                property int previewThreshold: 3
             }
 
             // --- Power Profile ---

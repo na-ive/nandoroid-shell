@@ -302,6 +302,41 @@ ColumnLayout {
                 }
             }
 
+            // ── Window Preview Threshold ──────────────
+            SegmentedWrapper {
+                id: previewCard
+                Layout.fillWidth: true
+                implicitHeight: previewRow.implicitHeight + (24 * Appearance.effectiveScale)
+                orientation: Qt.Vertical
+                maxRadius: 20 * Appearance.effectiveScale
+                color: Appearance.m3colors.m3surfaceContainerHigh
+                enabled: Config.ready && Config.options.dock && Config.options.dock.enable
+                opacity: enabled ? 1 : 0.5
+                RowLayout {
+                    id: previewRow
+                    anchors.fill: parent
+                    anchors {
+                        leftMargin: 16 * Appearance.effectiveScale
+                        rightMargin: 16 * Appearance.effectiveScale
+                        topMargin: 12 * Appearance.effectiveScale
+                        bottomMargin: 12 * Appearance.effectiveScale
+                    }
+                    spacing: 16 * Appearance.effectiveScale
+
+                    MaterialSymbol { text: "preview"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
+                    StyledText { text: I18nService.tr("Preview List From"); Layout.fillWidth: true; color: Appearance.colors.colOnLayer1; elide: Text.ElideRight }
+
+                    StyledStepper {
+                        Layout.alignment: Qt.AlignVCenter
+                        from: 2; to: 6; stepSize: 1
+                        displayFactor: 1
+                        decimals: 0
+                        value: Config.ready && Config.options.dock ? (Config.options.dock.previewThreshold ?? 3) : 3
+                        onValueChanged: if (Config.ready && Config.options.dock) Config.options.dock.previewThreshold = value
+                    }
+                }
+            }
+
             // ── Show App Launcher ──────────────
             SegmentedWrapper {
                 id: launcherCard
