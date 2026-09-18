@@ -51,9 +51,8 @@ ColumnLayout {
             // Style
             SegmentedWrapper {
                 Layout.fillWidth: true
-                implicitHeight: overviewStyleRow.implicitHeight + (24 * Appearance.effectiveScale)
+                implicitHeight: Math.max(64 * Appearance.effectiveScale, overviewStyleRow.implicitHeight)
                 orientation: Qt.Vertical
-                maxRadius: 20 * Appearance.effectiveScale
                 color: Appearance.m3colors.m3surfaceContainerHigh
 
                 RowLayout {
@@ -62,8 +61,6 @@ ColumnLayout {
                     anchors {
                         leftMargin: 16 * Appearance.effectiveScale
                         rightMargin: 16 * Appearance.effectiveScale
-                        topMargin: 12 * Appearance.effectiveScale
-                        bottomMargin: 12 * Appearance.effectiveScale
                     }
                     spacing: 16 * Appearance.effectiveScale
                     MaterialSymbol { text: "style"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
@@ -87,9 +84,8 @@ ColumnLayout {
             // Rows
             SegmentedWrapper {
                 Layout.fillWidth: true
-                implicitHeight: overviewRowsRow.implicitHeight + (24 * Appearance.effectiveScale)
+                implicitHeight: Math.max(64 * Appearance.effectiveScale, overviewRowsRow.implicitHeight)
                 orientation: Qt.Vertical
-                maxRadius: 20 * Appearance.effectiveScale
                 color: Appearance.m3colors.m3surfaceContainerHigh
 
                 RowLayout {
@@ -98,8 +94,6 @@ ColumnLayout {
                     anchors {
                         leftMargin: 16 * Appearance.effectiveScale
                         rightMargin: 16 * Appearance.effectiveScale
-                        topMargin: 12 * Appearance.effectiveScale
-                        bottomMargin: 12 * Appearance.effectiveScale
                     }
                     spacing: 16 * Appearance.effectiveScale
 
@@ -123,9 +117,8 @@ ColumnLayout {
             // Columns
             SegmentedWrapper {
                 Layout.fillWidth: true
-                implicitHeight: overviewColsRow.implicitHeight + (24 * Appearance.effectiveScale)
+                implicitHeight: Math.max(64 * Appearance.effectiveScale, overviewColsRow.implicitHeight)
                 orientation: Qt.Vertical
-                maxRadius: 20 * Appearance.effectiveScale
                 color: Appearance.m3colors.m3surfaceContainerHigh
 
                 RowLayout {
@@ -134,8 +127,6 @@ ColumnLayout {
                     anchors {
                         leftMargin: 16 * Appearance.effectiveScale
                         rightMargin: 16 * Appearance.effectiveScale
-                        topMargin: 12 * Appearance.effectiveScale
-                        bottomMargin: 12 * Appearance.effectiveScale
                     }
                     spacing: 16 * Appearance.effectiveScale
 
@@ -159,9 +150,8 @@ ColumnLayout {
             // Scale
             SegmentedWrapper {
                 Layout.fillWidth: true
-                implicitHeight: overviewScaleRow.implicitHeight + (24 * Appearance.effectiveScale)
+                implicitHeight: Math.max(64 * Appearance.effectiveScale, overviewScaleRow.implicitHeight)
                 orientation: Qt.Vertical
-                maxRadius: 20 * Appearance.effectiveScale
                 color: Appearance.m3colors.m3surfaceContainerHigh
 
                 RowLayout {
@@ -170,8 +160,6 @@ ColumnLayout {
                     anchors {
                         leftMargin: 16 * Appearance.effectiveScale
                         rightMargin: 16 * Appearance.effectiveScale
-                        topMargin: 12 * Appearance.effectiveScale
-                        bottomMargin: 12 * Appearance.effectiveScale
                     }
                     spacing: 16 * Appearance.effectiveScale
 
@@ -205,9 +193,8 @@ ColumnLayout {
             // Workspace Spacing
             SegmentedWrapper {
                 Layout.fillWidth: true
-                implicitHeight: overviewSpacingRow.implicitHeight + (24 * Appearance.effectiveScale)
+                implicitHeight: Math.max(64 * Appearance.effectiveScale, overviewSpacingRow.implicitHeight)
                 orientation: Qt.Vertical
-                maxRadius: 20 * Appearance.effectiveScale
                 color: Appearance.m3colors.m3surfaceContainerHigh
 
                 RowLayout {
@@ -216,8 +203,6 @@ ColumnLayout {
                     anchors {
                         leftMargin: 16 * Appearance.effectiveScale
                         rightMargin: 16 * Appearance.effectiveScale
-                        topMargin: 12 * Appearance.effectiveScale
-                        bottomMargin: 12 * Appearance.effectiveScale
                     }
                     spacing: 16 * Appearance.effectiveScale
 

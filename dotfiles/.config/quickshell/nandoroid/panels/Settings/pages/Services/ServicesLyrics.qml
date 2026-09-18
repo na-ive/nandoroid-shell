@@ -42,9 +42,8 @@ ColumnLayout {
         SegmentedWrapper {
             id: fontFamilyCard
             Layout.fillWidth: true
-            implicitHeight: fontFamilyRow.implicitHeight + (24 * Appearance.effectiveScale)
+            implicitHeight: Math.max(64 * Appearance.effectiveScale, fontFamilyRow.implicitHeight)
             orientation: Qt.Vertical
-            maxRadius: 20 * Appearance.effectiveScale
             color: Appearance.m3colors.m3surfaceContainerHigh
 
             RippleButton {
@@ -79,8 +78,6 @@ ColumnLayout {
                 anchors {
                     leftMargin: 16 * Appearance.effectiveScale
                     rightMargin: 16 * Appearance.effectiveScale
-                    topMargin: 12 * Appearance.effectiveScale
-                    bottomMargin: 12 * Appearance.effectiveScale
                 }
                 spacing: 16 * Appearance.effectiveScale
 
@@ -110,9 +107,8 @@ ColumnLayout {
         // Base Font Size
         SegmentedWrapper {
             Layout.fillWidth: true
-            implicitHeight: fontSizeRow.implicitHeight + (24 * Appearance.effectiveScale)
+            implicitHeight: Math.max(64 * Appearance.effectiveScale, fontSizeRow.implicitHeight)
             orientation: Qt.Vertical
-            maxRadius: 20 * Appearance.effectiveScale
             color: Appearance.m3colors.m3surfaceContainerHigh
 
             RowLayout {
@@ -121,8 +117,6 @@ ColumnLayout {
                 anchors {
                     leftMargin: 16 * Appearance.effectiveScale
                     rightMargin: 16 * Appearance.effectiveScale
-                    topMargin: 12 * Appearance.effectiveScale
-                    bottomMargin: 12 * Appearance.effectiveScale
                 }
                 spacing: 16 * Appearance.effectiveScale
 
@@ -146,9 +140,8 @@ ColumnLayout {
         // Context Lines
         SegmentedWrapper {
             Layout.fillWidth: true
-            implicitHeight: contextLinesRow.implicitHeight + (24 * Appearance.effectiveScale)
+            implicitHeight: Math.max(64 * Appearance.effectiveScale, contextLinesRow.implicitHeight)
             orientation: Qt.Vertical
-            maxRadius: 20 * Appearance.effectiveScale
             color: Appearance.m3colors.m3surfaceContainerHigh
 
             RowLayout {
@@ -157,8 +150,6 @@ ColumnLayout {
                 anchors {
                     leftMargin: 16 * Appearance.effectiveScale
                     rightMargin: 16 * Appearance.effectiveScale
-                    topMargin: 12 * Appearance.effectiveScale
-                    bottomMargin: 12 * Appearance.effectiveScale
                 }
                 spacing: 16 * Appearance.effectiveScale
 

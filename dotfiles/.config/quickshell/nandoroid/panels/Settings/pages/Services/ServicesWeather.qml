@@ -42,11 +42,9 @@ ColumnLayout {
         SegmentedWrapper {
             id: weatherEnableCard
             Layout.fillWidth: true
-            implicitHeight: weatherEnableRow.implicitHeight + (24 * Appearance.effectiveScale)
+            implicitHeight: Math.max(64 * Appearance.effectiveScale, weatherEnableRow.implicitHeight)
             orientation: Qt.Vertical
             color: Appearance.m3colors.m3surfaceContainerHigh
-            smallRadius: 8 * Appearance.effectiveScale
-            fullRadius: 20 * Appearance.effectiveScale
 
             RippleButton {
                 anchors.fill: parent
@@ -75,8 +73,6 @@ ColumnLayout {
                 anchors {
                     leftMargin: 16 * Appearance.effectiveScale
                     rightMargin: 16 * Appearance.effectiveScale
-                    topMargin: 12 * Appearance.effectiveScale
-                    bottomMargin: 12 * Appearance.effectiveScale
                 }
                 spacing: 16 * Appearance.effectiveScale
 
@@ -106,11 +102,9 @@ ColumnLayout {
         SegmentedWrapper {
             id: providerCard
             Layout.fillWidth: true
-            implicitHeight: weatherProviderRow.implicitHeight + (24 * Appearance.effectiveScale)
+            implicitHeight: Math.max(64 * Appearance.effectiveScale, weatherProviderRow.implicitHeight)
             orientation: Qt.Vertical
             color: Appearance.m3colors.m3surfaceContainerHigh
-            smallRadius: 8 * Appearance.effectiveScale
-            fullRadius: 20 * Appearance.effectiveScale
 
             enabled: Config.ready && Config.options.weather && Config.options.weather.enable
             opacity: enabled ? 1.0 : 0.5
@@ -134,8 +128,6 @@ ColumnLayout {
                 anchors {
                     leftMargin: 16 * Appearance.effectiveScale
                     rightMargin: 16 * Appearance.effectiveScale
-                    topMargin: 12 * Appearance.effectiveScale
-                    bottomMargin: 12 * Appearance.effectiveScale
                 }
                 spacing: 16 * Appearance.effectiveScale
 
@@ -185,11 +177,9 @@ ColumnLayout {
         SegmentedWrapper {
             id: locationCard
             Layout.fillWidth: true
-            implicitHeight: locationRow.implicitHeight + (24 * Appearance.effectiveScale)
+            implicitHeight: Math.max(64 * Appearance.effectiveScale, locationRow.implicitHeight)
             orientation: Qt.Vertical
             color: Appearance.m3colors.m3surfaceContainerHigh
-            smallRadius: 8 * Appearance.effectiveScale
-            fullRadius: 20 * Appearance.effectiveScale
 
             enabled: Config.ready && Config.options.weather && Config.options.weather.enable
             opacity: enabled ? 1.0 : 0.5
@@ -213,8 +203,6 @@ ColumnLayout {
                 anchors {
                     leftMargin: 16 * Appearance.effectiveScale
                     rightMargin: 16 * Appearance.effectiveScale
-                    topMargin: 12 * Appearance.effectiveScale
-                    bottomMargin: 12 * Appearance.effectiveScale
                 }
                 spacing: 16 * Appearance.effectiveScale
 
@@ -264,11 +252,9 @@ ColumnLayout {
         SegmentedWrapper {
             id: cityCard
             Layout.fillWidth: true
-            implicitHeight: cityRow.implicitHeight + (24 * Appearance.effectiveScale)
+            implicitHeight: Math.max(64 * Appearance.effectiveScale, cityRow.implicitHeight)
             orientation: Qt.Vertical
             color: Appearance.m3colors.m3surfaceContainerHigh
-            smallRadius: 8 * Appearance.effectiveScale
-            fullRadius: 20 * Appearance.effectiveScale
 
             visible: Config.ready && Config.options.weather && Config.options.weather.enable && !Config.options.weather.autoLocation
 
@@ -295,8 +281,6 @@ ColumnLayout {
                 anchors {
                     leftMargin: 16 * Appearance.effectiveScale
                     rightMargin: 16 * Appearance.effectiveScale
-                    topMargin: 12 * Appearance.effectiveScale
-                    bottomMargin: 12 * Appearance.effectiveScale
                 }
                 spacing: 16 * Appearance.effectiveScale
 
@@ -328,11 +312,9 @@ ColumnLayout {
         SegmentedWrapper {
             id: dailyForecastCard
             Layout.fillWidth: true
-            implicitHeight: weatherDailyRow.implicitHeight + (24 * Appearance.effectiveScale)
+            implicitHeight: Math.max(64 * Appearance.effectiveScale, weatherDailyRow.implicitHeight)
             orientation: Qt.Vertical
             color: Appearance.m3colors.m3surfaceContainerHigh
-            smallRadius: 8 * Appearance.effectiveScale
-            fullRadius: 20 * Appearance.effectiveScale
 
             enabled: Config.ready && Config.options.weather && Config.options.weather.enable
             opacity: enabled ? 1.0 : 0.5
@@ -365,8 +347,6 @@ ColumnLayout {
                 anchors {
                     leftMargin: 16 * Appearance.effectiveScale
                     rightMargin: 16 * Appearance.effectiveScale
-                    topMargin: 12 * Appearance.effectiveScale
-                    bottomMargin: 12 * Appearance.effectiveScale
                 }
                 spacing: 16 * Appearance.effectiveScale
 
@@ -396,11 +376,9 @@ ColumnLayout {
         SegmentedWrapper {
             id: unitCard
             Layout.fillWidth: true
-            implicitHeight: weatherUnitRow.implicitHeight + (24 * Appearance.effectiveScale)
+            implicitHeight: Math.max(64 * Appearance.effectiveScale, weatherUnitRow.implicitHeight)
             orientation: Qt.Vertical
             color: Appearance.m3colors.m3surfaceContainerHigh
-            smallRadius: 8 * Appearance.effectiveScale
-            fullRadius: 20 * Appearance.effectiveScale
 
             enabled: Config.ready && Config.options.weather && Config.options.weather.enable
             opacity: enabled ? 1.0 : 0.5
@@ -424,8 +402,6 @@ ColumnLayout {
                 anchors {
                     leftMargin: 16 * Appearance.effectiveScale
                     rightMargin: 16 * Appearance.effectiveScale
-                    topMargin: 12 * Appearance.effectiveScale
-                    bottomMargin: 12 * Appearance.effectiveScale
                 }
                 spacing: 16 * Appearance.effectiveScale
 
@@ -475,11 +451,9 @@ ColumnLayout {
         SegmentedWrapper {
             id: intervalCard
             Layout.fillWidth: true
-            implicitHeight: intervalRow.implicitHeight + (24 * Appearance.effectiveScale)
+            implicitHeight: Math.max(64 * Appearance.effectiveScale, intervalRow.implicitHeight)
             orientation: Qt.Vertical
             color: Appearance.m3colors.m3surfaceContainerHigh
-            smallRadius: 8 * Appearance.effectiveScale
-            fullRadius: 20 * Appearance.effectiveScale
 
             enabled: Config.ready && Config.options.weather && Config.options.weather.enable
             opacity: enabled ? 1.0 : 0.5
@@ -522,8 +496,6 @@ ColumnLayout {
                 anchors {
                     leftMargin: 16 * Appearance.effectiveScale
                     rightMargin: 16 * Appearance.effectiveScale
-                    topMargin: 12 * Appearance.effectiveScale
-                    bottomMargin: 12 * Appearance.effectiveScale
                 }
                 spacing: 16 * Appearance.effectiveScale
 

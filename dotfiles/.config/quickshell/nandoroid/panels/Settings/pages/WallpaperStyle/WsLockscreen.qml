@@ -59,9 +59,8 @@ ColumnLayout {
                     SegmentedWrapper {
                         id: showWeatherCard
                         Layout.fillWidth: true
-                        implicitHeight: showWeatherRow.implicitHeight + (24 * Appearance.effectiveScale)
+                        implicitHeight: Math.max(64 * Appearance.effectiveScale, showWeatherRow.implicitHeight)
                         orientation: Qt.Vertical
-                        maxRadius: 20 * Appearance.effectiveScale
                         color: Appearance.m3colors.m3surfaceContainerHigh
 
                         RippleButton {
@@ -82,8 +81,6 @@ ColumnLayout {
                             anchors {
                                 leftMargin: 16 * Appearance.effectiveScale
                                 rightMargin: 16 * Appearance.effectiveScale
-                                topMargin: 12 * Appearance.effectiveScale
-                                bottomMargin: 12 * Appearance.effectiveScale
                             }
                             spacing: 16 * Appearance.effectiveScale
                             MaterialSymbol { text: "cloud"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
@@ -99,9 +96,8 @@ ColumnLayout {
                     SegmentedWrapper {
                         Layout.fillWidth: true
                         visible: Config.ready && (Config.options.lock?.showWeather ?? true)
-                        implicitHeight: weatherTextRow.implicitHeight + (24 * Appearance.effectiveScale)
+                        implicitHeight: Math.max(64 * Appearance.effectiveScale, weatherTextRow.implicitHeight)
                         orientation: Qt.Vertical
-                        maxRadius: 20 * Appearance.effectiveScale
                         color: Appearance.m3colors.m3surfaceContainerHigh
                         RowLayout {
                             id: weatherTextRow
@@ -109,8 +105,6 @@ ColumnLayout {
                             anchors {
                                 leftMargin: 16 * Appearance.effectiveScale
                                 rightMargin: 16 * Appearance.effectiveScale
-                                topMargin: 12 * Appearance.effectiveScale
-                                bottomMargin: 12 * Appearance.effectiveScale
                             }
                             spacing: 16 * Appearance.effectiveScale
                             MaterialSymbol { text: "palette"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
@@ -144,9 +138,8 @@ ColumnLayout {
                     SegmentedWrapper {
                         id: showMediaCard
                         Layout.fillWidth: true
-                        implicitHeight: showMediaRow.implicitHeight + (24 * Appearance.effectiveScale)
+                        implicitHeight: Math.max(64 * Appearance.effectiveScale, showMediaRow.implicitHeight)
                         orientation: Qt.Vertical
-                        maxRadius: 20 * Appearance.effectiveScale
                         color: Appearance.m3colors.m3surfaceContainerHigh
 
                         RippleButton {
@@ -167,8 +160,6 @@ ColumnLayout {
                             anchors {
                                 leftMargin: 16 * Appearance.effectiveScale
                                 rightMargin: 16 * Appearance.effectiveScale
-                                topMargin: 12 * Appearance.effectiveScale
-                                bottomMargin: 12 * Appearance.effectiveScale
                             }
                             spacing: 16 * Appearance.effectiveScale
                             MaterialSymbol { text: "movie"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }

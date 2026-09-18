@@ -37,6 +37,10 @@ SegmentedWrapper {
     implicitWidth: contentRow.implicitWidth + leftPadding + rightPadding
     implicitHeight: 40 * Appearance.effectiveScale
 
+    // Opt out of SegmentedWrapper's uniform card minHeight.
+    // This is a compact button, not a full Settings card.
+    minHeight: 0
+
     M3IconButton {
         id: button
         anchors.fill: parent

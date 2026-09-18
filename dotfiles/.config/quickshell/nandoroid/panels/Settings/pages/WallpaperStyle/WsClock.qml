@@ -187,7 +187,7 @@ ColumnLayout {
             Layout.fillWidth: true
             visible: rootClock.dedicatedIsLock || (Config.ready && !Config.options.appearance.clock.useSameStyle)
             Layout.preferredHeight: 48 * Appearance.effectiveScale
-            buttonRadius: 16 * Appearance.effectiveScale
+            buttonRadius: 24 * Appearance.effectiveScale
             colBackground: Appearance.m3colors.m3surfaceContainerHigh
             onClicked: clockStyleSection.showAdvanced = !clockStyleSection.showAdvanced
             
@@ -951,10 +951,9 @@ ColumnLayout {
             SegmentedWrapper {
                 id: syncStylesCard
                 Layout.fillWidth: true
-                implicitHeight: syncStylesRow.implicitHeight + (24 * Appearance.effectiveScale)
+                implicitHeight: Math.max(64 * Appearance.effectiveScale, syncStylesRow.implicitHeight)
                 color: Appearance.m3colors.m3surfaceContainerHigh
                 orientation: Qt.Vertical
-                maxRadius: 20 * Appearance.effectiveScale
 
                 RippleButton {
                     anchors.fill: parent
@@ -975,8 +974,6 @@ ColumnLayout {
                     anchors {
                         leftMargin: 16 * Appearance.effectiveScale
                         rightMargin: 16 * Appearance.effectiveScale
-                        topMargin: 12 * Appearance.effectiveScale
-                        bottomMargin: 12 * Appearance.effectiveScale
                     }
                     spacing: 16 * Appearance.effectiveScale
                     MaterialSymbol { text: "sync"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }

@@ -42,11 +42,9 @@ ColumnLayout {
         SegmentedWrapper {
             id: autoSaveCard
             Layout.fillWidth: true
-            implicitHeight: autoSaveRow.implicitHeight + (24 * Appearance.effectiveScale)
+            implicitHeight: Math.max(64 * Appearance.effectiveScale, autoSaveRow.implicitHeight)
             orientation: Qt.Vertical
             color: Appearance.m3colors.m3surfaceContainerHigh
-            smallRadius: 8 * Appearance.effectiveScale
-            fullRadius: 20 * Appearance.effectiveScale
 
             RippleButton {
                 anchors.fill: parent
@@ -75,8 +73,6 @@ ColumnLayout {
                 anchors {
                     leftMargin: 16 * Appearance.effectiveScale
                     rightMargin: 16 * Appearance.effectiveScale
-                    topMargin: 12 * Appearance.effectiveScale
-                    bottomMargin: 12 * Appearance.effectiveScale
                 }
                 spacing: 16 * Appearance.effectiveScale
 
@@ -106,11 +102,9 @@ ColumnLayout {
         SegmentedWrapper {
             id: autoCopyCard
             Layout.fillWidth: true
-            implicitHeight: autoCopyRow.implicitHeight + (24 * Appearance.effectiveScale)
+            implicitHeight: Math.max(64 * Appearance.effectiveScale, autoCopyRow.implicitHeight)
             orientation: Qt.Vertical
             color: Appearance.m3colors.m3surfaceContainerHigh
-            smallRadius: 8 * Appearance.effectiveScale
-            fullRadius: 20 * Appearance.effectiveScale
 
             RippleButton {
                 anchors.fill: parent
@@ -139,8 +133,6 @@ ColumnLayout {
                 anchors {
                     leftMargin: 16 * Appearance.effectiveScale
                     rightMargin: 16 * Appearance.effectiveScale
-                    topMargin: 12 * Appearance.effectiveScale
-                    bottomMargin: 12 * Appearance.effectiveScale
                 }
                 spacing: 16 * Appearance.effectiveScale
 
@@ -170,11 +162,9 @@ ColumnLayout {
         SegmentedWrapper {
             id: previewCard
             Layout.fillWidth: true
-            implicitHeight: previewRow.implicitHeight + (24 * Appearance.effectiveScale)
+            implicitHeight: Math.max(64 * Appearance.effectiveScale, previewRow.implicitHeight)
             orientation: Qt.Vertical
             color: Appearance.m3colors.m3surfaceContainerHigh
-            smallRadius: 8 * Appearance.effectiveScale
-            fullRadius: 20 * Appearance.effectiveScale
 
             RippleButton {
                 anchors.fill: parent
@@ -203,8 +193,6 @@ ColumnLayout {
                 anchors {
                     leftMargin: 16 * Appearance.effectiveScale
                     rightMargin: 16 * Appearance.effectiveScale
-                    topMargin: 12 * Appearance.effectiveScale
-                    bottomMargin: 12 * Appearance.effectiveScale
                 }
                 spacing: 16 * Appearance.effectiveScale
 
@@ -234,11 +222,9 @@ ColumnLayout {
         SegmentedWrapper {
             id: sattyCard
             Layout.fillWidth: true
-            implicitHeight: sattyRow.implicitHeight + (24 * Appearance.effectiveScale)
+            implicitHeight: Math.max(64 * Appearance.effectiveScale, sattyRow.implicitHeight)
             orientation: Qt.Vertical
             color: Appearance.m3colors.m3surfaceContainerHigh
-            smallRadius: 8 * Appearance.effectiveScale
-            fullRadius: 20 * Appearance.effectiveScale
 
             RippleButton {
                 anchors.fill: parent
@@ -267,8 +253,6 @@ ColumnLayout {
                 anchors {
                     leftMargin: 16 * Appearance.effectiveScale
                     rightMargin: 16 * Appearance.effectiveScale
-                    topMargin: 12 * Appearance.effectiveScale
-                    bottomMargin: 12 * Appearance.effectiveScale
                 }
                 spacing: 16 * Appearance.effectiveScale
 
@@ -298,11 +282,9 @@ ColumnLayout {
         SegmentedWrapper {
             id: pathCard
             Layout.fillWidth: true
-            implicitHeight: pathRow.implicitHeight + (24 * Appearance.effectiveScale)
+            implicitHeight: Math.max(64 * Appearance.effectiveScale, pathRow.implicitHeight)
             orientation: Qt.Vertical
             color: Appearance.m3colors.m3surfaceContainerHigh
-            smallRadius: 8 * Appearance.effectiveScale
-            fullRadius: 20 * Appearance.effectiveScale
 
             RippleButton {
                 anchors.fill: parent
@@ -322,8 +304,6 @@ ColumnLayout {
                 anchors {
                     leftMargin: 16 * Appearance.effectiveScale
                     rightMargin: 16 * Appearance.effectiveScale
-                    topMargin: 12 * Appearance.effectiveScale
-                    bottomMargin: 12 * Appearance.effectiveScale
                 }
                 spacing: 16 * Appearance.effectiveScale
 
@@ -357,11 +337,9 @@ ColumnLayout {
         SegmentedWrapper {
             id: recordPathCard
             Layout.fillWidth: true
-            implicitHeight: recordPathRow.implicitHeight + (24 * Appearance.effectiveScale)
+            implicitHeight: Math.max(64 * Appearance.effectiveScale, recordPathRow.implicitHeight)
             orientation: Qt.Vertical
             color: Appearance.m3colors.m3surfaceContainerHigh
-            smallRadius: 8 * Appearance.effectiveScale
-            fullRadius: 20 * Appearance.effectiveScale
 
             RippleButton {
                 anchors.fill: parent
@@ -381,8 +359,6 @@ ColumnLayout {
                 anchors {
                     leftMargin: 16 * Appearance.effectiveScale
                     rightMargin: 16 * Appearance.effectiveScale
-                    topMargin: 12 * Appearance.effectiveScale
-                    bottomMargin: 12 * Appearance.effectiveScale
                 }
                 spacing: 16 * Appearance.effectiveScale
 

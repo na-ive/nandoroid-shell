@@ -43,11 +43,9 @@ ColumnLayout {
         SegmentedWrapper {
             id: netSpeedCard
             Layout.fillWidth: true
-            implicitHeight: netSpeedRow.implicitHeight + (24 * Appearance.effectiveScale)
+            implicitHeight: Math.max(64 * Appearance.effectiveScale, netSpeedRow.implicitHeight)
             orientation: Qt.Vertical
             color: Appearance.m3colors.m3surfaceContainerHigh
-            smallRadius: 8 * Appearance.effectiveScale
-            fullRadius: 20 * Appearance.effectiveScale
 
             RippleButton {
                 anchors.fill: parent
@@ -76,8 +74,6 @@ ColumnLayout {
                 anchors {
                     leftMargin: 16 * Appearance.effectiveScale
                     rightMargin: 16 * Appearance.effectiveScale
-                    topMargin: 12 * Appearance.effectiveScale
-                    bottomMargin: 12 * Appearance.effectiveScale
                 }
                 spacing: 16 * Appearance.effectiveScale
 
@@ -107,11 +103,9 @@ ColumnLayout {
         SegmentedWrapper {
             id: netUnitCard
             Layout.fillWidth: true
-            implicitHeight: netUnitRow.implicitHeight + (24 * Appearance.effectiveScale)
+            implicitHeight: Math.max(64 * Appearance.effectiveScale, netUnitRow.implicitHeight)
             orientation: Qt.Vertical
             color: Appearance.m3colors.m3surfaceContainerHigh
-            smallRadius: 8 * Appearance.effectiveScale
-            fullRadius: 20 * Appearance.effectiveScale
 
             opacity: (Config.ready && Config.options.bar && Config.options.bar.show_network_speed) ? 1.0 : 0.4
             enabled: (Config.ready && Config.options.bar && Config.options.bar.show_network_speed)
@@ -135,8 +129,6 @@ ColumnLayout {
                 anchors {
                     leftMargin: 16 * Appearance.effectiveScale
                     rightMargin: 16 * Appearance.effectiveScale
-                    topMargin: 12 * Appearance.effectiveScale
-                    bottomMargin: 12 * Appearance.effectiveScale
                 }
                 spacing: 16 * Appearance.effectiveScale
 
@@ -183,11 +175,9 @@ ColumnLayout {
         SegmentedWrapper {
             id: netIntervalCard
             Layout.fillWidth: true
-            implicitHeight: netIntervalRow.implicitHeight + (24 * Appearance.effectiveScale)
+            implicitHeight: Math.max(64 * Appearance.effectiveScale, netIntervalRow.implicitHeight)
             orientation: Qt.Vertical
             color: Appearance.m3colors.m3surfaceContainerHigh
-            smallRadius: 8 * Appearance.effectiveScale
-            fullRadius: 20 * Appearance.effectiveScale
 
             opacity: (Config.ready && Config.options.bar && Config.options.bar.show_network_speed) ? 1.0 : 0.4
             enabled: (Config.ready && Config.options.bar && Config.options.bar.show_network_speed)
@@ -211,8 +201,6 @@ ColumnLayout {
                 anchors {
                     leftMargin: 16 * Appearance.effectiveScale
                     rightMargin: 16 * Appearance.effectiveScale
-                    topMargin: 12 * Appearance.effectiveScale
-                    bottomMargin: 12 * Appearance.effectiveScale
                 }
                 spacing: 16 * Appearance.effectiveScale
 

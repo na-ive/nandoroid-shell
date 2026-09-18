@@ -40,11 +40,9 @@ ColumnLayout {
         SegmentedWrapper {
             id: autoDndCard
             Layout.fillWidth: true
-            implicitHeight: autoDndRow.implicitHeight + (24 * Appearance.effectiveScale)
+            implicitHeight: Math.max(64 * Appearance.effectiveScale, autoDndRow.implicitHeight)
             orientation: Qt.Vertical
             color: Appearance.m3colors.m3surfaceContainerHigh
-            smallRadius: 8 * Appearance.effectiveScale
-            fullRadius: 20 * Appearance.effectiveScale
 
             RippleButton {
                 anchors.fill: parent
@@ -69,8 +67,6 @@ ColumnLayout {
                 anchors {
                     leftMargin: 16 * Appearance.effectiveScale
                     rightMargin: 16 * Appearance.effectiveScale
-                    topMargin: 12 * Appearance.effectiveScale
-                    bottomMargin: 12 * Appearance.effectiveScale
                 }
                 spacing: 16 * Appearance.effectiveScale
 
@@ -96,11 +92,9 @@ ColumnLayout {
         SegmentedWrapper {
             id: keepAwakeCard
             Layout.fillWidth: true
-            implicitHeight: keepAwakeRow.implicitHeight + (24 * Appearance.effectiveScale)
+            implicitHeight: Math.max(64 * Appearance.effectiveScale, keepAwakeRow.implicitHeight)
             orientation: Qt.Vertical
             color: Appearance.m3colors.m3surfaceContainerHigh
-            smallRadius: 8 * Appearance.effectiveScale
-            fullRadius: 20 * Appearance.effectiveScale
 
             RippleButton {
                 anchors.fill: parent
@@ -125,8 +119,6 @@ ColumnLayout {
                 anchors {
                     leftMargin: 16 * Appearance.effectiveScale
                     rightMargin: 16 * Appearance.effectiveScale
-                    topMargin: 12 * Appearance.effectiveScale
-                    bottomMargin: 12 * Appearance.effectiveScale
                 }
                 spacing: 16 * Appearance.effectiveScale
 
@@ -152,11 +144,9 @@ ColumnLayout {
         SegmentedWrapper {
             id: performanceCard
             Layout.fillWidth: true
-            implicitHeight: performanceRow.implicitHeight + (24 * Appearance.effectiveScale)
+            implicitHeight: Math.max(64 * Appearance.effectiveScale, performanceRow.implicitHeight)
             orientation: Qt.Vertical
             color: Appearance.m3colors.m3surfaceContainerHigh
-            smallRadius: 8 * Appearance.effectiveScale
-            fullRadius: 20 * Appearance.effectiveScale
 
             RippleButton {
                 anchors.fill: parent
@@ -181,8 +171,6 @@ ColumnLayout {
                 anchors {
                     leftMargin: 16 * Appearance.effectiveScale
                     rightMargin: 16 * Appearance.effectiveScale
-                    topMargin: 12 * Appearance.effectiveScale
-                    bottomMargin: 12 * Appearance.effectiveScale
                 }
                 spacing: 16 * Appearance.effectiveScale
 

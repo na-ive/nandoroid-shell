@@ -26,8 +26,7 @@ ColumnLayout {
         SegmentedWrapper {
             id: darkModeCard
             Layout.fillWidth: true
-            implicitHeight: themeToggleRow.implicitHeight + (24 * Appearance.effectiveScale)
-            maxRadius: 20 * Appearance.effectiveScale
+            implicitHeight: Math.max(64 * Appearance.effectiveScale, themeToggleRow.implicitHeight)
             color: Appearance.m3colors.m3surfaceContainerHigh
 
             RippleButton {
@@ -48,8 +47,6 @@ ColumnLayout {
                 anchors {
                     leftMargin: 16 * Appearance.effectiveScale
                     rightMargin: 16 * Appearance.effectiveScale
-                    topMargin: 12 * Appearance.effectiveScale
-                    bottomMargin: 12 * Appearance.effectiveScale
                 }
                 spacing: 16 * Appearance.effectiveScale
 
@@ -229,7 +226,7 @@ ColumnLayout {
                 RippleButton {
                     Layout.fillWidth: true
                     Layout.preferredHeight: 48 * Appearance.effectiveScale
-                    buttonRadius: 16 * Appearance.effectiveScale
+                    buttonRadius: 24 * Appearance.effectiveScale
                     colBackground: Appearance.m3colors.m3surfaceContainerHigh
                     onClicked: colorSettingsCol.showAllBasic = !colorSettingsCol.showAllBasic
                     

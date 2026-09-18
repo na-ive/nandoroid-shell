@@ -69,9 +69,8 @@ ColumnLayout {
             SegmentedWrapper {
                 id: greetingCard
                 Layout.fillWidth: true
-                implicitHeight: greetingRow.implicitHeight + (24 * Appearance.effectiveScale)
+                implicitHeight: Math.max(64 * Appearance.effectiveScale, greetingRow.implicitHeight)
                 orientation: Qt.Vertical
-                maxRadius: 20 * Appearance.effectiveScale
                 color: Appearance.m3colors.m3surfaceContainerHigh
 
                 RippleButton {
@@ -92,8 +91,6 @@ ColumnLayout {
                     anchors {
                         leftMargin: 16 * Appearance.effectiveScale
                         rightMargin: 16 * Appearance.effectiveScale
-                        topMargin: 12 * Appearance.effectiveScale
-                        bottomMargin: 12 * Appearance.effectiveScale
                     }
                     spacing: 16 * Appearance.effectiveScale
                     MaterialSymbol { text: "waving_hand"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
@@ -106,9 +103,8 @@ ColumnLayout {
             SegmentedWrapper {
                 id: dateCard
                 Layout.fillWidth: true
-                implicitHeight: dateShowRow.implicitHeight + (24 * Appearance.effectiveScale)
+                implicitHeight: Math.max(64 * Appearance.effectiveScale, dateShowRow.implicitHeight)
                 orientation: Qt.Vertical
-                maxRadius: 20 * Appearance.effectiveScale
                 color: Appearance.m3colors.m3surfaceContainerHigh
 
                 RippleButton {
@@ -129,8 +125,6 @@ ColumnLayout {
                     anchors {
                         leftMargin: 16 * Appearance.effectiveScale
                         rightMargin: 16 * Appearance.effectiveScale
-                        topMargin: 12 * Appearance.effectiveScale
-                        bottomMargin: 12 * Appearance.effectiveScale
                     }
                     spacing: 16 * Appearance.effectiveScale
                     MaterialSymbol { text: "calendar_month"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
@@ -143,9 +137,8 @@ ColumnLayout {
             SegmentedWrapper {
                 id: quoteCard
                 Layout.fillWidth: true
-                implicitHeight: quoteShowRow.implicitHeight + (24 * Appearance.effectiveScale)
+                implicitHeight: Math.max(64 * Appearance.effectiveScale, quoteShowRow.implicitHeight)
                 orientation: Qt.Vertical
-                maxRadius: 20 * Appearance.effectiveScale
                 color: Appearance.m3colors.m3surfaceContainerHigh
 
                 RippleButton {
@@ -166,8 +159,6 @@ ColumnLayout {
                     anchors {
                         leftMargin: 16 * Appearance.effectiveScale
                         rightMargin: 16 * Appearance.effectiveScale
-                        topMargin: 12 * Appearance.effectiveScale
-                        bottomMargin: 12 * Appearance.effectiveScale
                     }
                     spacing: 16 * Appearance.effectiveScale
                     MaterialSymbol { text: "format_quote"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
@@ -179,9 +170,8 @@ ColumnLayout {
             // Alignment
             SegmentedWrapper {
                 Layout.fillWidth: true
-                implicitHeight: alignmentRow.implicitHeight + (24 * Appearance.effectiveScale)
+                implicitHeight: Math.max(64 * Appearance.effectiveScale, alignmentRow.implicitHeight)
                 orientation: Qt.Vertical
-                maxRadius: 20 * Appearance.effectiveScale
                 color: Appearance.m3colors.m3surfaceContainerHigh
                 RowLayout {
                     id: alignmentRow
@@ -189,8 +179,6 @@ ColumnLayout {
                     anchors {
                         leftMargin: 16 * Appearance.effectiveScale
                         rightMargin: 16 * Appearance.effectiveScale
-                        topMargin: 12 * Appearance.effectiveScale
-                        bottomMargin: 12 * Appearance.effectiveScale
                     }
                     spacing: 16 * Appearance.effectiveScale
                     MaterialSymbol { text: "format_align_left"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
@@ -236,9 +224,8 @@ ColumnLayout {
             SegmentedWrapper {
                 id: fontFamilyCard
                 Layout.fillWidth: true
-                implicitHeight: fontRow.implicitHeight + (24 * Appearance.effectiveScale)
+                implicitHeight: Math.max(64 * Appearance.effectiveScale, fontRow.implicitHeight)
                 orientation: Qt.Vertical
-                maxRadius: 20 * Appearance.effectiveScale
                 color: Appearance.m3colors.m3surfaceContainerHigh
 
                 RippleButton {
@@ -273,8 +260,6 @@ ColumnLayout {
                     anchors {
                         leftMargin: 16 * Appearance.effectiveScale
                         rightMargin: 16 * Appearance.effectiveScale
-                        topMargin: 12 * Appearance.effectiveScale
-                        bottomMargin: 12 * Appearance.effectiveScale
                     }
                     spacing: 16 * Appearance.effectiveScale
 
@@ -305,9 +290,8 @@ ColumnLayout {
             // Font Size
             SegmentedWrapper {
                 Layout.fillWidth: true
-                implicitHeight: fontSizeRow.implicitHeight + (24 * Appearance.effectiveScale)
+                implicitHeight: Math.max(64 * Appearance.effectiveScale, fontSizeRow.implicitHeight)
                 orientation: Qt.Vertical
-                maxRadius: 20 * Appearance.effectiveScale
                 color: Appearance.m3colors.m3surfaceContainerHigh
                 RowLayout {
                     id: fontSizeRow
@@ -315,8 +299,6 @@ ColumnLayout {
                     anchors {
                         leftMargin: 16 * Appearance.effectiveScale
                         rightMargin: 16 * Appearance.effectiveScale
-                        topMargin: 12 * Appearance.effectiveScale
-                        bottomMargin: 12 * Appearance.effectiveScale
                     }
                     spacing: 16 * Appearance.effectiveScale
 
@@ -339,9 +321,8 @@ ColumnLayout {
             // Greeting Color
             SegmentedWrapper {
                 Layout.fillWidth: true
-                implicitHeight: greetingColorRow.implicitHeight + (24 * Appearance.effectiveScale)
+                implicitHeight: Math.max(64 * Appearance.effectiveScale, greetingColorRow.implicitHeight)
                 orientation: Qt.Vertical
-                maxRadius: 20 * Appearance.effectiveScale
                 color: Appearance.m3colors.m3surfaceContainerHigh
                 RowLayout {
                     id: greetingColorRow
@@ -349,8 +330,6 @@ ColumnLayout {
                     anchors {
                         leftMargin: 16 * Appearance.effectiveScale
                         rightMargin: 16 * Appearance.effectiveScale
-                        topMargin: 12 * Appearance.effectiveScale
-                        bottomMargin: 12 * Appearance.effectiveScale
                     }
                     spacing: 16 * Appearance.effectiveScale
 
@@ -378,9 +357,8 @@ ColumnLayout {
             // Date Color
             SegmentedWrapper {
                 Layout.fillWidth: true
-                implicitHeight: dateColorRow.implicitHeight + (24 * Appearance.effectiveScale)
+                implicitHeight: Math.max(64 * Appearance.effectiveScale, dateColorRow.implicitHeight)
                 orientation: Qt.Vertical
-                maxRadius: 20 * Appearance.effectiveScale
                 color: Appearance.m3colors.m3surfaceContainerHigh
                 RowLayout {
                     id: dateColorRow
@@ -388,8 +366,6 @@ ColumnLayout {
                     anchors {
                         leftMargin: 16 * Appearance.effectiveScale
                         rightMargin: 16 * Appearance.effectiveScale
-                        topMargin: 12 * Appearance.effectiveScale
-                        bottomMargin: 12 * Appearance.effectiveScale
                     }
                     spacing: 16 * Appearance.effectiveScale
 
@@ -417,9 +393,8 @@ ColumnLayout {
             // Quote Color
             SegmentedWrapper {
                 Layout.fillWidth: true
-                implicitHeight: quoteColorRow.implicitHeight + (24 * Appearance.effectiveScale)
+                implicitHeight: Math.max(64 * Appearance.effectiveScale, quoteColorRow.implicitHeight)
                 orientation: Qt.Vertical
-                maxRadius: 20 * Appearance.effectiveScale
                 color: Appearance.m3colors.m3surfaceContainerHigh
                 RowLayout {
                     id: quoteColorRow
@@ -427,8 +402,6 @@ ColumnLayout {
                     anchors {
                         leftMargin: 16 * Appearance.effectiveScale
                         rightMargin: 16 * Appearance.effectiveScale
-                        topMargin: 12 * Appearance.effectiveScale
-                        bottomMargin: 12 * Appearance.effectiveScale
                     }
                     spacing: 16 * Appearance.effectiveScale
 

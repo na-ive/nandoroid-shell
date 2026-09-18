@@ -48,9 +48,8 @@ ColumnLayout {
     
                     SegmentedWrapper {
                         Layout.fillWidth: true
-                        implicitHeight: screenCornerToggleRow.implicitHeight + (24 * Appearance.effectiveScale)
+                        implicitHeight: Math.max(64 * Appearance.effectiveScale, screenCornerToggleRow.implicitHeight)
                         orientation: Qt.Vertical
-                        maxRadius: 20 * Appearance.effectiveScale
                         color: Appearance.m3colors.m3surfaceContainerHigh
                         RowLayout {
                             id: screenCornerToggleRow
@@ -58,8 +57,6 @@ ColumnLayout {
                             anchors {
                                 leftMargin: 16 * Appearance.effectiveScale
                                 rightMargin: 16 * Appearance.effectiveScale
-                                topMargin: 12 * Appearance.effectiveScale
-                                bottomMargin: 12 * Appearance.effectiveScale
                             }
                             spacing: 16 * Appearance.effectiveScale
                             MaterialSymbol { text: "rounded_corner"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
@@ -89,9 +86,8 @@ ColumnLayout {
     
                     SegmentedWrapper {
                         Layout.fillWidth: true
-                        implicitHeight: screenCornerRadRow.implicitHeight + (24 * Appearance.effectiveScale)
+                        implicitHeight: Math.max(64 * Appearance.effectiveScale, screenCornerRadRow.implicitHeight)
                         orientation: Qt.Vertical
-                        maxRadius: 20 * Appearance.effectiveScale
                         color: Appearance.m3colors.m3surfaceContainerHigh
                         visible: Config.ready && (Config.options.appearance.screenCorners ? Config.options.appearance.screenCorners.mode : 1) > 0
                         RowLayout {
@@ -100,8 +96,6 @@ ColumnLayout {
                             anchors {
                                 leftMargin: 16 * Appearance.effectiveScale
                                 rightMargin: 16 * Appearance.effectiveScale
-                                topMargin: 12 * Appearance.effectiveScale
-                                bottomMargin: 12 * Appearance.effectiveScale
                             }
                             spacing: 16 * Appearance.effectiveScale
                             

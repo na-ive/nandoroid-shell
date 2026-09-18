@@ -42,9 +42,8 @@ ColumnLayout {
         SegmentedWrapper {
             id: powerEnableCard
             Layout.fillWidth: true
-            implicitHeight: powerEnableRow.implicitHeight + (24 * Appearance.effectiveScale)
+            implicitHeight: Math.max(64 * Appearance.effectiveScale, powerEnableRow.implicitHeight)
             orientation: Qt.Vertical
-            maxRadius: 20 * Appearance.effectiveScale
             color: Appearance.m3colors.m3surfaceContainerHigh
 
             RippleButton {
@@ -75,8 +74,6 @@ ColumnLayout {
                 anchors {
                     leftMargin: 16 * Appearance.effectiveScale
                     rightMargin: 16 * Appearance.effectiveScale
-                    topMargin: 12 * Appearance.effectiveScale
-                    bottomMargin: 12 * Appearance.effectiveScale
                 }
                 spacing: 16 * Appearance.effectiveScale
 
@@ -106,9 +103,8 @@ ColumnLayout {
         SegmentedWrapper {
             id: powerPathCard
             Layout.fillWidth: true
-            implicitHeight: powerPathRow.implicitHeight + (24 * Appearance.effectiveScale)
+            implicitHeight: Math.max(64 * Appearance.effectiveScale, powerPathRow.implicitHeight)
             orientation: Qt.Vertical
-            maxRadius: 20 * Appearance.effectiveScale
             color: Appearance.m3colors.m3surfaceContainerHigh
 
             enabled: (Config.ready && Config.options.powerProfile && Config.options.powerProfile.enabled)
@@ -139,8 +135,6 @@ ColumnLayout {
                 anchors {
                     leftMargin: 16 * Appearance.effectiveScale
                     rightMargin: 16 * Appearance.effectiveScale
-                    topMargin: 12 * Appearance.effectiveScale
-                    bottomMargin: 12 * Appearance.effectiveScale
                 }
                 spacing: 16 * Appearance.effectiveScale
 

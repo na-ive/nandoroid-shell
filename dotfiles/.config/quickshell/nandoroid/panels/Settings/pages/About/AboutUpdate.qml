@@ -1006,7 +1006,7 @@ ColumnLayout {
 
     Rectangle {
         Layout.fillWidth: true
-        implicitHeight: devBannerRow.implicitHeight + (24 * Appearance.effectiveScale)
+        implicitHeight: Math.max(64 * Appearance.effectiveScale, devBannerRow.implicitHeight)
         radius: 20 * Appearance.effectiveScale
         color: Appearance.colors.colTertiaryContainer
         visible: updateRoot.isDevSymlink && installState.install_dir !== ""
@@ -1017,8 +1017,6 @@ ColumnLayout {
             anchors {
                 leftMargin: 16 * Appearance.effectiveScale
                 rightMargin: 16 * Appearance.effectiveScale
-                topMargin: 12 * Appearance.effectiveScale
-                bottomMargin: 12 * Appearance.effectiveScale
             }
             spacing: 12 * Appearance.effectiveScale
 

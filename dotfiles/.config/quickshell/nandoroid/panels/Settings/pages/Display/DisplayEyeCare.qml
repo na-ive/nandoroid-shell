@@ -33,11 +33,9 @@ ColumnLayout {
     SegmentedWrapper {
         id: nightCard
         Layout.fillWidth: true
-        implicitHeight: nightRow.implicitHeight + (24 * Appearance.effectiveScale)
+        implicitHeight: Math.max(64 * Appearance.effectiveScale, nightRow.implicitHeight)
         orientation: Qt.Vertical
         color: Appearance.m3colors.m3surfaceContainerHigh
-        smallRadius: 8 * Appearance.effectiveScale
-        fullRadius: 20 * Appearance.effectiveScale
 
         RippleButton {
             id: nightClickArea
@@ -63,8 +61,6 @@ ColumnLayout {
             anchors {
                 leftMargin: 16 * Appearance.effectiveScale
                 rightMargin: 16 * Appearance.effectiveScale
-                topMargin: 12 * Appearance.effectiveScale
-                bottomMargin: 12 * Appearance.effectiveScale
             }
             spacing: 16 * Appearance.effectiveScale
 
@@ -90,11 +86,9 @@ ColumnLayout {
     // Color Temperature
     SegmentedWrapper {
         Layout.fillWidth: true
-        implicitHeight: colorTempRow.implicitHeight + (24 * Appearance.effectiveScale)
+        implicitHeight: Math.max(64 * Appearance.effectiveScale, colorTempRow.implicitHeight)
         orientation: Qt.Vertical
         color: Appearance.m3colors.m3surfaceContainerHigh
-        smallRadius: 8 * Appearance.effectiveScale
-        fullRadius: 20 * Appearance.effectiveScale
 
         opacity: Hyprsunset.active ? 1.0 : 0.4
         enabled: Hyprsunset.active
@@ -117,8 +111,6 @@ ColumnLayout {
             anchors {
                 leftMargin: 16 * Appearance.effectiveScale
                 rightMargin: 16 * Appearance.effectiveScale
-                topMargin: 12 * Appearance.effectiveScale
-                bottomMargin: 12 * Appearance.effectiveScale
             }
             spacing: 16 * Appearance.effectiveScale
 

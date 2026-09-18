@@ -42,10 +42,9 @@ ColumnLayout {
         SegmentedWrapper {
             id: privacyCard
             Layout.fillWidth: true
-            implicitHeight: privRow.implicitHeight + (24 * Appearance.effectiveScale)
+            implicitHeight: Math.max(64 * Appearance.effectiveScale, privRow.implicitHeight)
             orientation: Qt.Vertical
             color: Appearance.m3colors.m3surfaceContainerHigh
-            maxRadius: 20 * Appearance.effectiveScale
 
             RippleButton {
                 anchors.fill: parent
@@ -74,8 +73,6 @@ ColumnLayout {
                 anchors {
                     leftMargin: 16 * Appearance.effectiveScale
                     rightMargin: 16 * Appearance.effectiveScale
-                    topMargin: 12 * Appearance.effectiveScale
-                    bottomMargin: 12 * Appearance.effectiveScale
                 }
                 spacing: 16 * Appearance.effectiveScale
 
@@ -105,10 +102,9 @@ ColumnLayout {
         SegmentedWrapper {
             id: snappingCard
             Layout.fillWidth: true
-            implicitHeight: snapRow.implicitHeight + (24 * Appearance.effectiveScale)
+            implicitHeight: Math.max(64 * Appearance.effectiveScale, snapRow.implicitHeight)
             orientation: Qt.Vertical
             color: Appearance.m3colors.m3surfaceContainerHigh
-            maxRadius: 20 * Appearance.effectiveScale
 
             RippleButton {
                 anchors.fill: parent
@@ -137,8 +133,6 @@ ColumnLayout {
                 anchors {
                     leftMargin: 16 * Appearance.effectiveScale
                     rightMargin: 16 * Appearance.effectiveScale
-                    topMargin: 12 * Appearance.effectiveScale
-                    bottomMargin: 12 * Appearance.effectiveScale
                 }
                 spacing: 16 * Appearance.effectiveScale
 
@@ -168,10 +162,9 @@ ColumnLayout {
         SegmentedWrapper {
             id: interactionsCard
             Layout.fillWidth: true
-            implicitHeight: desktopRow.implicitHeight + (24 * Appearance.effectiveScale)
+            implicitHeight: Math.max(64 * Appearance.effectiveScale, desktopRow.implicitHeight)
             orientation: Qt.Vertical
             color: Appearance.m3colors.m3surfaceContainerHigh
-            maxRadius: 20 * Appearance.effectiveScale
 
             RippleButton {
                 anchors.fill: parent
@@ -200,8 +193,6 @@ ColumnLayout {
                 anchors {
                     leftMargin: 16 * Appearance.effectiveScale
                     rightMargin: 16 * Appearance.effectiveScale
-                    topMargin: 12 * Appearance.effectiveScale
-                    bottomMargin: 12 * Appearance.effectiveScale
                 }
                 spacing: 16 * Appearance.effectiveScale
 
@@ -231,9 +222,8 @@ ColumnLayout {
         // Notification Popup Duration
         SegmentedWrapper {
             Layout.fillWidth: true
-            implicitHeight: notifRow.implicitHeight + (24 * Appearance.effectiveScale)
+            implicitHeight: Math.max(64 * Appearance.effectiveScale, notifRow.implicitHeight)
             orientation: Qt.Vertical
-            maxRadius: 20 * Appearance.effectiveScale
             color: Appearance.m3colors.m3surfaceContainerHigh
 
             RowLayout {
@@ -242,8 +232,6 @@ ColumnLayout {
                 anchors {
                     leftMargin: 16 * Appearance.effectiveScale
                     rightMargin: 16 * Appearance.effectiveScale
-                    topMargin: 12 * Appearance.effectiveScale
-                    bottomMargin: 12 * Appearance.effectiveScale
                 }
                 spacing: 16 * Appearance.effectiveScale
 

@@ -50,10 +50,8 @@ ColumnLayout {
                     required property var modelData
                     required property int index
                     Layout.fillWidth: true
-                    implicitHeight: diskRow.implicitHeight + (24 * Appearance.effectiveScale)
+                    implicitHeight: Math.max(64 * Appearance.effectiveScale, diskRow.implicitHeight)
                     orientation: Qt.Vertical
-                    smallRadius: 8 * Appearance.effectiveScale
-                    fullRadius: 20 * Appearance.effectiveScale
                     color: Appearance.m3colors.m3surfaceContainerHigh
 
                     // Manual rounding for joined list
@@ -67,8 +65,6 @@ ColumnLayout {
                         anchors {
                             leftMargin: 16 * Appearance.effectiveScale
                             rightMargin: 12 * Appearance.effectiveScale
-                            topMargin: 12 * Appearance.effectiveScale
-                            bottomMargin: 12 * Appearance.effectiveScale
                         }
                         spacing: 16 * Appearance.effectiveScale
 

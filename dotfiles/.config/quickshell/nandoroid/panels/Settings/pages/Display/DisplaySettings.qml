@@ -413,11 +413,9 @@ Item {
                 // Arrangement Presets
                 SegmentedWrapper {
                     Layout.fillWidth: true
-                    implicitHeight: arrangeRow.implicitHeight + (24 * Appearance.effectiveScale)
+                    implicitHeight: Math.max(64 * Appearance.effectiveScale, arrangeRow.implicitHeight)
                     orientation: Qt.Vertical
                     color: Appearance.m3colors.m3surfaceContainerHigh
-                    smallRadius: 8 * Appearance.effectiveScale
-                    fullRadius: 20 * Appearance.effectiveScale
 
                     MouseArea {
                         id: arrangeHoverArea
@@ -437,8 +435,6 @@ Item {
                         anchors {
                             leftMargin: 16 * Appearance.effectiveScale
                             rightMargin: 16 * Appearance.effectiveScale
-                            topMargin: 12 * Appearance.effectiveScale
-                            bottomMargin: 12 * Appearance.effectiveScale
                         }
                         spacing: 16 * Appearance.effectiveScale
 
@@ -465,7 +461,7 @@ Item {
                                 delegate: SegmentedButton {
                                     required property var modelData
                                     Layout.preferredWidth: 48 * Appearance.effectiveScale
-                                    Layout.fillHeight: true
+                                    Layout.alignment: Qt.AlignVCenter
                                     colActive: Appearance.colors.colPrimary
                                     colInactive: Appearance.m3colors.m3surfaceContainerLow
                                     isHighlighted: false
@@ -506,11 +502,9 @@ Item {
                 SegmentedWrapper {
                     id: mirrorCard
                     Layout.fillWidth: true
-                    implicitHeight: mirrorRow.implicitHeight + (24 * Appearance.effectiveScale)
+                    implicitHeight: Math.max(64 * Appearance.effectiveScale, mirrorRow.implicitHeight)
                     orientation: Qt.Vertical
                     color: Appearance.m3colors.m3surfaceContainerHigh
-                    smallRadius: 8 * Appearance.effectiveScale
-                    fullRadius: 20 * Appearance.effectiveScale
 
                     RippleButton {
                         id: mirrorClickArea
@@ -536,8 +530,6 @@ Item {
                         anchors {
                             leftMargin: 16 * Appearance.effectiveScale
                             rightMargin: 16 * Appearance.effectiveScale
-                            topMargin: 12 * Appearance.effectiveScale
-                            bottomMargin: 12 * Appearance.effectiveScale
                         }
                         spacing: 16 * Appearance.effectiveScale
 
@@ -563,11 +555,9 @@ Item {
                 SegmentedWrapper {
                     id: primaryCard
                     Layout.fillWidth: true
-                    implicitHeight: primaryRow.implicitHeight + (24 * Appearance.effectiveScale)
+                    implicitHeight: Math.max(64 * Appearance.effectiveScale, primaryRow.implicitHeight)
                     orientation: Qt.Vertical
                     color: Appearance.m3colors.m3surfaceContainerHigh
-                    smallRadius: 8 * Appearance.effectiveScale
-                    fullRadius: 20 * Appearance.effectiveScale
 
                     MouseArea {
                         id: primaryHoverArea
@@ -587,8 +577,6 @@ Item {
                         anchors {
                             leftMargin: 16 * Appearance.effectiveScale
                             rightMargin: 16 * Appearance.effectiveScale
-                            topMargin: 12 * Appearance.effectiveScale
-                            bottomMargin: 12 * Appearance.effectiveScale
                         }
                         spacing: 16 * Appearance.effectiveScale
 
@@ -695,11 +683,9 @@ Item {
                 SegmentedWrapper {
                     id: resCard
                     Layout.fillWidth: true
-                    implicitHeight: resRow.implicitHeight + (24 * Appearance.effectiveScale)
+                    implicitHeight: Math.max(64 * Appearance.effectiveScale, resRow.implicitHeight)
                     orientation: Qt.Vertical
                     color: Appearance.m3colors.m3surfaceContainerHigh
-                    smallRadius: 8 * Appearance.effectiveScale
-                    fullRadius: 20 * Appearance.effectiveScale
 
                     RippleButton {
                         id: resClickArea
@@ -743,8 +729,6 @@ Item {
                         anchors {
                             leftMargin: 16 * Appearance.effectiveScale
                             rightMargin: 16 * Appearance.effectiveScale
-                            topMargin: 12 * Appearance.effectiveScale
-                            bottomMargin: 12 * Appearance.effectiveScale
                         }
                         spacing: 16 * Appearance.effectiveScale
 
@@ -793,11 +777,9 @@ Item {
                 // Scaling
                 SegmentedWrapper {
                     Layout.fillWidth: true
-                    implicitHeight: scaleRow.implicitHeight + (24 * Appearance.effectiveScale)
+                    implicitHeight: Math.max(64 * Appearance.effectiveScale, scaleRow.implicitHeight)
                     orientation: Qt.Vertical
                     color: Appearance.m3colors.m3surfaceContainerHigh
-                    smallRadius: 8 * Appearance.effectiveScale
-                    fullRadius: 20 * Appearance.effectiveScale
 
                     MouseArea {
                         id: scaleHoverArea
@@ -817,8 +799,6 @@ Item {
                         anchors {
                             leftMargin: 16 * Appearance.effectiveScale
                             rightMargin: 16 * Appearance.effectiveScale
-                            topMargin: 12 * Appearance.effectiveScale
-                            bottomMargin: 12 * Appearance.effectiveScale
                         }
                         spacing: 16 * Appearance.effectiveScale
 
@@ -846,7 +826,7 @@ Item {
                                         if (sj && sj.scale !== undefined) return Math.abs(sj.scale - modelData) < 0.01;
                                         return Math.abs(parseFloat(root.currentMonitor.scale || 1.0) - modelData) < 0.01;
                                     }
-                                    Layout.fillHeight: true
+                                    Layout.alignment: Qt.AlignVCenter
                                     leftPadding: 16 * Appearance.effectiveScale
                                     rightPadding: 16 * Appearance.effectiveScale
                                     colActive: Appearance.m3colors.m3primary
@@ -863,11 +843,9 @@ Item {
                 // Orientation
                 SegmentedWrapper {
                     Layout.fillWidth: true
-                    implicitHeight: orientRow.implicitHeight + (24 * Appearance.effectiveScale)
+                    implicitHeight: Math.max(64 * Appearance.effectiveScale, orientRow.implicitHeight)
                     orientation: Qt.Vertical
                     color: Appearance.m3colors.m3surfaceContainerHigh
-                    smallRadius: 8 * Appearance.effectiveScale
-                    fullRadius: 20 * Appearance.effectiveScale
 
                     MouseArea {
                         id: orientHoverArea
@@ -887,8 +865,6 @@ Item {
                         anchors {
                             leftMargin: 16 * Appearance.effectiveScale
                             rightMargin: 16 * Appearance.effectiveScale
-                            topMargin: 12 * Appearance.effectiveScale
-                            bottomMargin: 12 * Appearance.effectiveScale
                         }
                         spacing: 16 * Appearance.effectiveScale
 
@@ -921,7 +897,7 @@ Item {
                                         if (sj && sj.transform !== undefined) return sj.transform === modelData.value;
                                         return (root.currentMonitor.transform || 0) === modelData.value;
                                     }
-                                    Layout.fillHeight: true
+                                    Layout.alignment: Qt.AlignVCenter
                                     leftPadding: 16 * Appearance.effectiveScale
                                     rightPadding: 16 * Appearance.effectiveScale
                                     colActive: Appearance.m3colors.m3primary
@@ -938,11 +914,9 @@ Item {
                 // Brightness
                 SegmentedWrapper {
                     Layout.fillWidth: true
-                    implicitHeight: brightRow.implicitHeight + (24 * Appearance.effectiveScale)
+                    implicitHeight: Math.max(64 * Appearance.effectiveScale, brightRow.implicitHeight)
                     orientation: Qt.Vertical
                     color: Appearance.m3colors.m3surfaceContainerHigh
-                    smallRadius: 8 * Appearance.effectiveScale
-                    fullRadius: 20 * Appearance.effectiveScale
 
                     RowLayout {
                         id: brightRow
@@ -950,8 +924,6 @@ Item {
                         anchors {
                             leftMargin: 16 * Appearance.effectiveScale
                             rightMargin: 16 * Appearance.effectiveScale
-                            topMargin: 12 * Appearance.effectiveScale
-                            bottomMargin: 12 * Appearance.effectiveScale
                         }
                         spacing: 16 * Appearance.effectiveScale
 
@@ -1011,11 +983,9 @@ Item {
                 SegmentedWrapper {
                     id: autoScaleCard
                     Layout.fillWidth: true
-                    implicitHeight: autoScaleRow.implicitHeight + (24 * Appearance.effectiveScale)
+                    implicitHeight: Math.max(64 * Appearance.effectiveScale, autoScaleRow.implicitHeight)
                     orientation: Qt.Vertical
                     color: Appearance.m3colors.m3surfaceContainerHigh
-                    smallRadius: 8 * Appearance.effectiveScale
-                    fullRadius: 20 * Appearance.effectiveScale
 
                     RippleButton {
                         id: autoScaleClickArea
@@ -1045,8 +1015,6 @@ Item {
                         anchors {
                             leftMargin: 16 * Appearance.effectiveScale
                             rightMargin: 16 * Appearance.effectiveScale
-                            topMargin: 12 * Appearance.effectiveScale
-                            bottomMargin: 12 * Appearance.effectiveScale
                         }
                         spacing: 16 * Appearance.effectiveScale
 
@@ -1075,11 +1043,9 @@ Item {
                 // Manual Scale Stepper (Separated)
                 SegmentedWrapper {
                     Layout.fillWidth: true
-                    implicitHeight: manualScaleRow.implicitHeight + (24 * Appearance.effectiveScale)
+                    implicitHeight: Math.max(64 * Appearance.effectiveScale, manualScaleRow.implicitHeight)
                     orientation: Qt.Vertical
                     color: Appearance.m3colors.m3surfaceContainerHigh
-                    smallRadius: 8 * Appearance.effectiveScale
-                    fullRadius: 20 * Appearance.effectiveScale
 
                     enabled: Config.ready && Config.options.appearance ? !Config.options.appearance.autoScale : false
                     opacity: enabled ? 1 : 0.5
@@ -1103,8 +1069,6 @@ Item {
                         anchors {
                             leftMargin: 16 * Appearance.effectiveScale
                             rightMargin: 16 * Appearance.effectiveScale
-                            topMargin: 12 * Appearance.effectiveScale
-                            bottomMargin: 12 * Appearance.effectiveScale
                         }
                         spacing: 16 * Appearance.effectiveScale
 

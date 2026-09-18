@@ -87,9 +87,8 @@ ColumnLayout {
     SegmentedWrapper {
         id: themeCard
         Layout.fillWidth: true
-        implicitHeight: themeRow.implicitHeight + (24 * Appearance.effectiveScale)
+        implicitHeight: Math.max(64 * Appearance.effectiveScale, themeRow.implicitHeight)
         orientation: Qt.Vertical
-        maxRadius: 20 * Appearance.effectiveScale
         color: Appearance.m3colors.m3surfaceContainerHigh
 
         // Card-wide click toggles the dropdown (same pattern as SysLanguage)
@@ -130,8 +129,6 @@ ColumnLayout {
             anchors {
                 leftMargin: 16 * Appearance.effectiveScale
                 rightMargin: 16 * Appearance.effectiveScale
-                topMargin: 12 * Appearance.effectiveScale
-                bottomMargin: 12 * Appearance.effectiveScale
             }
             spacing: 16 * Appearance.effectiveScale
 
@@ -162,9 +159,8 @@ ColumnLayout {
     // ── Notification Sound Card ──
     SegmentedWrapper {
         Layout.fillWidth: true
-        implicitHeight: notifRow.implicitHeight + (24 * Appearance.effectiveScale)
+        implicitHeight: Math.max(64 * Appearance.effectiveScale, notifRow.implicitHeight)
         orientation: Qt.Vertical
-        maxRadius: 20 * Appearance.effectiveScale
         color: Appearance.m3colors.m3surfaceContainerHigh
 
         RowLayout {
@@ -173,8 +169,6 @@ ColumnLayout {
             anchors {
                 leftMargin: 16 * Appearance.effectiveScale
                 rightMargin: 16 * Appearance.effectiveScale
-                topMargin: 12 * Appearance.effectiveScale
-                bottomMargin: 12 * Appearance.effectiveScale
             }
             spacing: 16 * Appearance.effectiveScale
 
@@ -303,9 +297,8 @@ ColumnLayout {
             readonly property string kind: modelData.kind
             readonly property string soundPath: (Config.ready && Config.options.sounds) ? Config.options.sounds[kind] : ""
             Layout.fillWidth: true
-            implicitHeight: soundRow.implicitHeight + (24 * Appearance.effectiveScale)
+            implicitHeight: Math.max(64 * Appearance.effectiveScale, soundRow.implicitHeight)
             orientation: Qt.Vertical
-            maxRadius: 20 * Appearance.effectiveScale
             color: Appearance.m3colors.m3surfaceContainerHigh
 
             RowLayout {
@@ -314,8 +307,6 @@ ColumnLayout {
                 anchors {
                     leftMargin: 16 * Appearance.effectiveScale
                     rightMargin: 16 * Appearance.effectiveScale
-                    topMargin: 12 * Appearance.effectiveScale
-                    bottomMargin: 12 * Appearance.effectiveScale
                 }
                 spacing: 16 * Appearance.effectiveScale
 

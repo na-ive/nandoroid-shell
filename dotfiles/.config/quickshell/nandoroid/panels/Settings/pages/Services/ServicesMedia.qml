@@ -42,9 +42,8 @@ ColumnLayout {
         SegmentedWrapper {
             id: priorityCard
             Layout.fillWidth: true
-            implicitHeight: mediaRow.implicitHeight + (24 * Appearance.effectiveScale)
+            implicitHeight: Math.max(64 * Appearance.effectiveScale, mediaRow.implicitHeight)
             orientation: Qt.Vertical
-            maxRadius: 20 * Appearance.effectiveScale
             color: Appearance.m3colors.m3surfaceContainerHigh
 
             RippleButton {
@@ -70,8 +69,6 @@ ColumnLayout {
                 anchors {
                     leftMargin: 16 * Appearance.effectiveScale
                     rightMargin: 16 * Appearance.effectiveScale
-                    topMargin: 12 * Appearance.effectiveScale
-                    bottomMargin: 12 * Appearance.effectiveScale
                 }
                 spacing: 16 * Appearance.effectiveScale
 
@@ -100,9 +97,8 @@ ColumnLayout {
         SegmentedWrapper {
             id: dupFilterCard
             Layout.fillWidth: true
-            implicitHeight: dupFilterRow.implicitHeight + (24 * Appearance.effectiveScale)
+            implicitHeight: Math.max(64 * Appearance.effectiveScale, dupFilterRow.implicitHeight)
             orientation: Qt.Vertical
-            maxRadius: 20 * Appearance.effectiveScale
             color: Appearance.m3colors.m3surfaceContainerHigh
 
             RippleButton {
@@ -132,8 +128,6 @@ ColumnLayout {
                 anchors {
                     leftMargin: 16 * Appearance.effectiveScale
                     rightMargin: 16 * Appearance.effectiveScale
-                    topMargin: 12 * Appearance.effectiveScale
-                    bottomMargin: 12 * Appearance.effectiveScale
                 }
                 spacing: 16 * Appearance.effectiveScale
 
@@ -163,9 +157,8 @@ ColumnLayout {
         SegmentedWrapper {
             id: islandHoverCard
             Layout.fillWidth: true
-            implicitHeight: dynamicIslandHoverRow.implicitHeight + (24 * Appearance.effectiveScale)
+            implicitHeight: Math.max(64 * Appearance.effectiveScale, dynamicIslandHoverRow.implicitHeight)
             orientation: Qt.Vertical
-            maxRadius: 20 * Appearance.effectiveScale
             color: Appearance.m3colors.m3surfaceContainerHigh
 
             RippleButton {
@@ -195,8 +188,6 @@ ColumnLayout {
                 anchors {
                     leftMargin: 16 * Appearance.effectiveScale
                     rightMargin: 16 * Appearance.effectiveScale
-                    topMargin: 12 * Appearance.effectiveScale
-                    bottomMargin: 12 * Appearance.effectiveScale
                 }
                 spacing: 16 * Appearance.effectiveScale
 
@@ -226,9 +217,8 @@ ColumnLayout {
         SegmentedWrapper {
             id: notchStyleCard
             Layout.fillWidth: true
-            implicitHeight: notchMediaStyleRow.implicitHeight + (24 * Appearance.effectiveScale)
+            implicitHeight: Math.max(64 * Appearance.effectiveScale, notchMediaStyleRow.implicitHeight)
             orientation: Qt.Vertical
-            maxRadius: 20 * Appearance.effectiveScale
             color: Appearance.m3colors.m3surfaceContainerHigh
             visible: Config.ready && Config.options.media && Config.options.media.enableMediaHover
 
@@ -250,8 +240,6 @@ ColumnLayout {
                 anchors {
                     leftMargin: 16 * Appearance.effectiveScale
                     rightMargin: 16 * Appearance.effectiveScale
-                    topMargin: 12 * Appearance.effectiveScale
-                    bottomMargin: 12 * Appearance.effectiveScale
                 }
                 spacing: 16 * Appearance.effectiveScale
 

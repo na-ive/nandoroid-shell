@@ -48,9 +48,8 @@ ColumnLayout {
             SegmentedWrapper {
                 id: desktopCavaCard
                 Layout.fillWidth: true
-                implicitHeight: desktopCavaRow.implicitHeight + (24 * Appearance.effectiveScale)
+                implicitHeight: Math.max(64 * Appearance.effectiveScale, desktopCavaRow.implicitHeight)
                 orientation: Qt.Vertical
-                maxRadius: 20 * Appearance.effectiveScale
                 color: Appearance.m3colors.m3surfaceContainerHigh
 
                 RippleButton {
@@ -71,8 +70,6 @@ ColumnLayout {
                     anchors {
                         leftMargin: 16 * Appearance.effectiveScale
                         rightMargin: 16 * Appearance.effectiveScale
-                        topMargin: 12 * Appearance.effectiveScale
-                        bottomMargin: 12 * Appearance.effectiveScale
                     }
                     spacing: 16 * Appearance.effectiveScale
                     MaterialSymbol { text: "desktop_windows"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
@@ -88,9 +85,8 @@ ColumnLayout {
             SegmentedWrapper {
                 Layout.fillWidth: true
                 visible: Config.ready && Config.options.appearance.background.showCava
-                implicitHeight: desktopOpacityRow.implicitHeight + (24 * Appearance.effectiveScale)
+                implicitHeight: Math.max(64 * Appearance.effectiveScale, desktopOpacityRow.implicitHeight)
                 orientation: Qt.Vertical
-                maxRadius: 20 * Appearance.effectiveScale
                 color: Appearance.m3colors.m3surfaceContainerHigh
                 RowLayout {
                     id: desktopOpacityRow
@@ -98,8 +94,6 @@ ColumnLayout {
                     anchors {
                         leftMargin: 16 * Appearance.effectiveScale
                         rightMargin: 16 * Appearance.effectiveScale
-                        topMargin: 12 * Appearance.effectiveScale
-                        bottomMargin: 12 * Appearance.effectiveScale
                     }
                     spacing: 16 * Appearance.effectiveScale
 
@@ -121,9 +115,8 @@ ColumnLayout {
             SegmentedWrapper {
                 Layout.fillWidth: true
                 visible: Config.ready && Config.options.appearance.background.showCava
-                implicitHeight: desktopStyleRow.implicitHeight + (24 * Appearance.effectiveScale)
+                implicitHeight: Math.max(64 * Appearance.effectiveScale, desktopStyleRow.implicitHeight)
                 orientation: Qt.Vertical
-                maxRadius: 20 * Appearance.effectiveScale
                 color: Appearance.m3colors.m3surfaceContainerHigh
                 RowLayout {
                     id: desktopStyleRow
@@ -131,8 +124,6 @@ ColumnLayout {
                     anchors {
                         leftMargin: 16 * Appearance.effectiveScale
                         rightMargin: 16 * Appearance.effectiveScale
-                        topMargin: 12 * Appearance.effectiveScale
-                        bottomMargin: 12 * Appearance.effectiveScale
                     }
                     spacing: 16 * Appearance.effectiveScale
                     MaterialSymbol { text: "auto_awesome_mosaic"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
@@ -163,9 +154,8 @@ ColumnLayout {
             SegmentedWrapper {
                 id: lockCavaCard
                 Layout.fillWidth: true
-                implicitHeight: lockCavaRow.implicitHeight + (24 * Appearance.effectiveScale)
+                implicitHeight: Math.max(64 * Appearance.effectiveScale, lockCavaRow.implicitHeight)
                 orientation: Qt.Vertical
-                maxRadius: 20 * Appearance.effectiveScale
                 color: Appearance.m3colors.m3surfaceContainerHigh
 
                 RippleButton {
@@ -186,8 +176,6 @@ ColumnLayout {
                     anchors {
                         leftMargin: 16 * Appearance.effectiveScale
                         rightMargin: 16 * Appearance.effectiveScale
-                        topMargin: 12 * Appearance.effectiveScale
-                        bottomMargin: 12 * Appearance.effectiveScale
                     }
                     spacing: 16 * Appearance.effectiveScale
                     MaterialSymbol { text: "lock"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
@@ -203,9 +191,8 @@ ColumnLayout {
             SegmentedWrapper {
                 Layout.fillWidth: true
                 visible: Config.ready && Config.options.lock.showCava
-                implicitHeight: lockOpacityRow.implicitHeight + (24 * Appearance.effectiveScale)
+                implicitHeight: Math.max(64 * Appearance.effectiveScale, lockOpacityRow.implicitHeight)
                 orientation: Qt.Vertical
-                maxRadius: 20 * Appearance.effectiveScale
                 color: Appearance.m3colors.m3surfaceContainerHigh
                 RowLayout {
                     id: lockOpacityRow
@@ -213,8 +200,6 @@ ColumnLayout {
                     anchors {
                         leftMargin: 16 * Appearance.effectiveScale
                         rightMargin: 16 * Appearance.effectiveScale
-                        topMargin: 12 * Appearance.effectiveScale
-                        bottomMargin: 12 * Appearance.effectiveScale
                     }
                     spacing: 16 * Appearance.effectiveScale
 
@@ -236,9 +221,8 @@ ColumnLayout {
             SegmentedWrapper {
                 Layout.fillWidth: true
                 visible: Config.ready && Config.options.lock.showCava
-                implicitHeight: lockStyleRow.implicitHeight + (24 * Appearance.effectiveScale)
+                implicitHeight: Math.max(64 * Appearance.effectiveScale, lockStyleRow.implicitHeight)
                 orientation: Qt.Vertical
-                maxRadius: 20 * Appearance.effectiveScale
                 color: Appearance.m3colors.m3surfaceContainerHigh
                 RowLayout {
                     id: lockStyleRow
@@ -246,8 +230,6 @@ ColumnLayout {
                     anchors {
                         leftMargin: 16 * Appearance.effectiveScale
                         rightMargin: 16 * Appearance.effectiveScale
-                        topMargin: 12 * Appearance.effectiveScale
-                        bottomMargin: 12 * Appearance.effectiveScale
                     }
                     spacing: 16 * Appearance.effectiveScale
                     MaterialSymbol { text: "auto_awesome_mosaic"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }

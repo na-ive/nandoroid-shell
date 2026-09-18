@@ -110,7 +110,7 @@ ColumnLayout {
                 RippleButton {
                     Layout.fillWidth: true
                     Layout.preferredHeight: 48 * Appearance.effectiveScale
-                    buttonRadius: 16 * Appearance.effectiveScale
+                    buttonRadius: 24 * Appearance.effectiveScale
                     colBackground: Appearance.m3colors.m3surfaceContainerHigh
                     onClicked: launcherIconsSection.showAllShapes = !launcherIconsSection.showAllShapes
                     

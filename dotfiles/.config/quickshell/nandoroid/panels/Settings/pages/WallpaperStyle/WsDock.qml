@@ -50,9 +50,8 @@ ColumnLayout {
             SegmentedWrapper {
                 id: enableCard
                 Layout.fillWidth: true
-                implicitHeight: enableRow.implicitHeight + (24 * Appearance.effectiveScale)
+                implicitHeight: Math.max(64 * Appearance.effectiveScale, enableRow.implicitHeight)
                 orientation: Qt.Vertical
-                maxRadius: 20 * Appearance.effectiveScale
                 color: Appearance.m3colors.m3surfaceContainerHigh
 
                 RippleButton {
@@ -74,8 +73,6 @@ ColumnLayout {
                     anchors {
                         leftMargin: 16 * Appearance.effectiveScale
                         rightMargin: 16 * Appearance.effectiveScale
-                        topMargin: 12 * Appearance.effectiveScale
-                        bottomMargin: 12 * Appearance.effectiveScale
                     }
                     spacing: 16 * Appearance.effectiveScale
                     MaterialSymbol { text: "visibility"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
@@ -92,9 +89,8 @@ ColumnLayout {
             SegmentedWrapper {
                 id: showDesktopCard
                 Layout.fillWidth: true
-                implicitHeight: showDesktopRow.implicitHeight + (24 * Appearance.effectiveScale)
+                implicitHeight: Math.max(64 * Appearance.effectiveScale, showDesktopRow.implicitHeight)
                 orientation: Qt.Vertical
-                maxRadius: 20 * Appearance.effectiveScale
                 color: Appearance.m3colors.m3surfaceContainerHigh
                 enabled: Config.ready && Config.options.dock && Config.options.dock.enable
                 opacity: enabled ? 1 : 0.5
@@ -117,8 +113,6 @@ ColumnLayout {
                     anchors {
                         leftMargin: 16 * Appearance.effectiveScale
                         rightMargin: 16 * Appearance.effectiveScale
-                        topMargin: 12 * Appearance.effectiveScale
-                        bottomMargin: 12 * Appearance.effectiveScale
                     }
                     spacing: 16 * Appearance.effectiveScale
                     MaterialSymbol { text: "desktop_windows"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
@@ -142,9 +136,8 @@ ColumnLayout {
             // ── Auto Hide Mode ──────────────
             SegmentedWrapper {
                 Layout.fillWidth: true
-                implicitHeight: autoHideRow.implicitHeight + (24 * Appearance.effectiveScale)
+                implicitHeight: Math.max(64 * Appearance.effectiveScale, autoHideRow.implicitHeight)
                 orientation: Qt.Vertical
-                maxRadius: 20 * Appearance.effectiveScale
                 color: Appearance.m3colors.m3surfaceContainerHigh
                 enabled: Config.ready && Config.options.dock && Config.options.dock.enable
                 opacity: enabled ? 1 : 0.5
@@ -154,8 +147,6 @@ ColumnLayout {
                     anchors {
                         leftMargin: 16 * Appearance.effectiveScale
                         rightMargin: 16 * Appearance.effectiveScale
-                        topMargin: 12 * Appearance.effectiveScale
-                        bottomMargin: 12 * Appearance.effectiveScale
                     }
                     spacing: 16 * Appearance.effectiveScale
                     MaterialSymbol { text: "visibility_off"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
@@ -189,9 +180,8 @@ ColumnLayout {
             // ── Background Style ──────────────
             SegmentedWrapper {
                 Layout.fillWidth: true
-                implicitHeight: bgStyleRow.implicitHeight + (24 * Appearance.effectiveScale)
+                implicitHeight: Math.max(64 * Appearance.effectiveScale, bgStyleRow.implicitHeight)
                 orientation: Qt.Vertical
-                maxRadius: 20 * Appearance.effectiveScale
                 color: Appearance.m3colors.m3surfaceContainerHigh
                 enabled: Config.ready && Config.options.dock && Config.options.dock.enable
                 opacity: enabled ? 1 : 0.5
@@ -201,8 +191,6 @@ ColumnLayout {
                     anchors {
                         leftMargin: 16 * Appearance.effectiveScale
                         rightMargin: 16 * Appearance.effectiveScale
-                        topMargin: 12 * Appearance.effectiveScale
-                        bottomMargin: 12 * Appearance.effectiveScale
                     }
                     spacing: 16 * Appearance.effectiveScale
                     MaterialSymbol { text: "layers"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
@@ -227,9 +215,8 @@ ColumnLayout {
             SegmentedWrapper {
                 id: monoCard
                 Layout.fillWidth: true
-                implicitHeight: monoRow.implicitHeight + (24 * Appearance.effectiveScale)
+                implicitHeight: Math.max(64 * Appearance.effectiveScale, monoRow.implicitHeight)
                 orientation: Qt.Vertical
-                maxRadius: 20 * Appearance.effectiveScale
                 color: Appearance.m3colors.m3surfaceContainerHigh
                 enabled: Config.ready && Config.options.dock && Config.options.dock.enable
                 opacity: enabled ? 1 : 0.5
@@ -253,8 +240,6 @@ ColumnLayout {
                     anchors {
                         leftMargin: 16 * Appearance.effectiveScale
                         rightMargin: 16 * Appearance.effectiveScale
-                        topMargin: 12 * Appearance.effectiveScale
-                        bottomMargin: 12 * Appearance.effectiveScale
                     }
                     spacing: 16 * Appearance.effectiveScale
                     MaterialSymbol { text: "palette"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
@@ -270,9 +255,8 @@ ColumnLayout {
             // ── Dock Scale ──────────────
             SegmentedWrapper {
                 Layout.fillWidth: true
-                implicitHeight: scaleRow.implicitHeight + (24 * Appearance.effectiveScale)
+                implicitHeight: Math.max(64 * Appearance.effectiveScale, scaleRow.implicitHeight)
                 orientation: Qt.Vertical
-                maxRadius: 20 * Appearance.effectiveScale
                 color: Appearance.m3colors.m3surfaceContainerHigh
                 enabled: Config.ready && Config.options.dock && Config.options.dock.enable
                 opacity: enabled ? 1 : 0.5
@@ -282,8 +266,6 @@ ColumnLayout {
                     anchors {
                         leftMargin: 16 * Appearance.effectiveScale
                         rightMargin: 16 * Appearance.effectiveScale
-                        topMargin: 12 * Appearance.effectiveScale
-                        bottomMargin: 12 * Appearance.effectiveScale
                     }
                     spacing: 16 * Appearance.effectiveScale
 
@@ -306,9 +288,8 @@ ColumnLayout {
             SegmentedWrapper {
                 id: previewCard
                 Layout.fillWidth: true
-                implicitHeight: previewRow.implicitHeight + (24 * Appearance.effectiveScale)
+                implicitHeight: Math.max(64 * Appearance.effectiveScale, previewRow.implicitHeight)
                 orientation: Qt.Vertical
-                maxRadius: 20 * Appearance.effectiveScale
                 color: Appearance.m3colors.m3surfaceContainerHigh
                 enabled: Config.ready && Config.options.dock && Config.options.dock.enable
                 opacity: enabled ? 1 : 0.5
@@ -318,8 +299,6 @@ ColumnLayout {
                     anchors {
                         leftMargin: 16 * Appearance.effectiveScale
                         rightMargin: 16 * Appearance.effectiveScale
-                        topMargin: 12 * Appearance.effectiveScale
-                        bottomMargin: 12 * Appearance.effectiveScale
                     }
                     spacing: 16 * Appearance.effectiveScale
 
@@ -341,9 +320,8 @@ ColumnLayout {
             SegmentedWrapper {
                 id: launcherCard
                 Layout.fillWidth: true
-                implicitHeight: launcherRow.implicitHeight + (24 * Appearance.effectiveScale)
+                implicitHeight: Math.max(64 * Appearance.effectiveScale, launcherRow.implicitHeight)
                 orientation: Qt.Vertical
-                maxRadius: 20 * Appearance.effectiveScale
                 color: Appearance.m3colors.m3surfaceContainerHigh
                 enabled: Config.ready && Config.options.dock && Config.options.dock.enable
                 opacity: enabled ? 1 : 0.5
@@ -367,8 +345,6 @@ ColumnLayout {
                     anchors {
                         leftMargin: 16 * Appearance.effectiveScale
                         rightMargin: 16 * Appearance.effectiveScale
-                        topMargin: 12 * Appearance.effectiveScale
-                        bottomMargin: 12 * Appearance.effectiveScale
                     }
                     spacing: 16 * Appearance.effectiveScale
                     MaterialSymbol { text: "widgets"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
@@ -385,9 +361,8 @@ ColumnLayout {
             SegmentedWrapper {
                 id: overviewCard
                 Layout.fillWidth: true
-                implicitHeight: overviewRow.implicitHeight + (24 * Appearance.effectiveScale)
+                implicitHeight: Math.max(64 * Appearance.effectiveScale, overviewRow.implicitHeight)
                 orientation: Qt.Vertical
-                maxRadius: 20 * Appearance.effectiveScale
                 color: Appearance.m3colors.m3surfaceContainerHigh
                 enabled: Config.ready && Config.options.dock && Config.options.dock.enable
                 opacity: enabled ? 1 : 0.5
@@ -411,8 +386,6 @@ ColumnLayout {
                     anchors {
                         leftMargin: 16 * Appearance.effectiveScale
                         rightMargin: 16 * Appearance.effectiveScale
-                        topMargin: 12 * Appearance.effectiveScale
-                        bottomMargin: 12 * Appearance.effectiveScale
                     }
                     spacing: 16 * Appearance.effectiveScale
                     MaterialSymbol { text: "grid_view"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }

@@ -58,9 +58,8 @@ ColumnLayout {
             SegmentedWrapper {
                 id: showNcMediaCard
                 Layout.fillWidth: true
-                implicitHeight: showNcMediaRow.implicitHeight + (24 * Appearance.effectiveScale)
+                implicitHeight: Math.max(64 * Appearance.effectiveScale, showNcMediaRow.implicitHeight)
                 orientation: Qt.Vertical
-                maxRadius: 20 * Appearance.effectiveScale
                 color: Appearance.m3colors.m3surfaceContainerHigh
 
                 RippleButton {
@@ -82,8 +81,6 @@ ColumnLayout {
                     anchors {
                         leftMargin: 16 * Appearance.effectiveScale
                         rightMargin: 16 * Appearance.effectiveScale
-                        topMargin: 12 * Appearance.effectiveScale
-                        bottomMargin: 12 * Appearance.effectiveScale
                     }
                     spacing: 16 * Appearance.effectiveScale
                     MaterialSymbol { text: "music_note"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
@@ -99,9 +96,8 @@ ColumnLayout {
             SegmentedWrapper {
                 id: showNcWeatherCard
                 Layout.fillWidth: true
-                implicitHeight: showNcWeatherRow.implicitHeight + (24 * Appearance.effectiveScale)
+                implicitHeight: Math.max(64 * Appearance.effectiveScale, showNcWeatherRow.implicitHeight)
                 orientation: Qt.Vertical
-                maxRadius: 20 * Appearance.effectiveScale
                 color: Appearance.m3colors.m3surfaceContainerHigh
                 opacity: weatherColumn.weatherServiceOn ? 1.0 : 0.5
 
@@ -124,8 +120,6 @@ ColumnLayout {
                     anchors {
                         leftMargin: 16 * Appearance.effectiveScale
                         rightMargin: 16 * Appearance.effectiveScale
-                        topMargin: 12 * Appearance.effectiveScale
-                        bottomMargin: 12 * Appearance.effectiveScale
                     }
                     spacing: 16 * Appearance.effectiveScale
 
@@ -181,9 +175,8 @@ ColumnLayout {
             SegmentedWrapper {
                 id: showQsPerfCard
                 Layout.fillWidth: true
-                implicitHeight: showQsPerfRow.implicitHeight + (24 * Appearance.effectiveScale)
+                implicitHeight: Math.max(64 * Appearance.effectiveScale, showQsPerfRow.implicitHeight)
                 orientation: Qt.Vertical
-                maxRadius: 20 * Appearance.effectiveScale
                 color: Appearance.m3colors.m3surfaceContainerHigh
 
                 RippleButton {
@@ -205,8 +198,6 @@ ColumnLayout {
                     anchors {
                         leftMargin: 16 * Appearance.effectiveScale
                         rightMargin: 16 * Appearance.effectiveScale
-                        topMargin: 12 * Appearance.effectiveScale
-                        bottomMargin: 12 * Appearance.effectiveScale
                     }
                     spacing: 16 * Appearance.effectiveScale
                     MaterialSymbol { text: "monitoring"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
@@ -222,9 +213,8 @@ ColumnLayout {
             SegmentedWrapper {
                 id: showQsBannerCard
                 Layout.fillWidth: true
-                implicitHeight: showQsBannerRow.implicitHeight + (24 * Appearance.effectiveScale)
+                implicitHeight: Math.max(64 * Appearance.effectiveScale, showQsBannerRow.implicitHeight)
                 orientation: Qt.Vertical
-                maxRadius: 20 * Appearance.effectiveScale
                 color: Appearance.m3colors.m3surfaceContainerHigh
 
                 RippleButton {
@@ -246,8 +236,6 @@ ColumnLayout {
                     anchors {
                         leftMargin: 16 * Appearance.effectiveScale
                         rightMargin: 16 * Appearance.effectiveScale
-                        topMargin: 12 * Appearance.effectiveScale
-                        bottomMargin: 12 * Appearance.effectiveScale
                     }
                     spacing: 16 * Appearance.effectiveScale
                     MaterialSymbol { text: "panorama"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }

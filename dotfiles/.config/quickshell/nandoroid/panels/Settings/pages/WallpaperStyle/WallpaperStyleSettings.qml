@@ -86,7 +86,7 @@ Flickable {
         // ── Wallpaper Style Options Group ──
         ColumnLayout {
             Layout.fillWidth: true
-            spacing: 4 * Appearance.effectiveScale // Tight gap like in Clock section
+            spacing: 12 * Appearance.effectiveScale // Loose between separate features (like About nav); tight 4 stays inside each unit
 
             // ── Wallpaper Auto-Cycle ──
             WsWallpaperCycle {
@@ -104,9 +104,8 @@ Flickable {
             SegmentedWrapper {
                 id: syncCard
                 Layout.fillWidth: true
-                implicitHeight: syncToggleRow.implicitHeight + (24 * Appearance.effectiveScale)
+                implicitHeight: Math.max(64 * Appearance.effectiveScale, syncToggleRow.implicitHeight)
                 orientation: Qt.Vertical
-                maxRadius: 20 * Appearance.effectiveScale
                 color: Appearance.m3colors.m3surfaceContainerHigh
 
                 RippleButton {
@@ -141,8 +140,6 @@ Flickable {
                     anchors {
                         leftMargin: 16 * Appearance.effectiveScale
                         rightMargin: 16 * Appearance.effectiveScale
-                        topMargin: 12 * Appearance.effectiveScale
-                        bottomMargin: 12 * Appearance.effectiveScale
                     }
                     spacing: 16 * Appearance.effectiveScale
 

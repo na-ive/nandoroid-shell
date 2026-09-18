@@ -30,10 +30,31 @@ Item {
     property bool hasShadow: false
     property var maxRadius: undefined
     property real fullRadius: maxRadius !== undefined ? maxRadius : (implicitHeight > 0 ? implicitHeight / 2 : 20 * Appearance.effectiveScale)
+    property real groupRadius: 20 * Appearance.effectiveScale // Tidy outer radius for grouped (non-standalone) cards
     property real smallRadius: 8 * Appearance.effectiveScale // M3 Connected Button Group inner radius for Size M
     
     implicitWidth: 40 * Appearance.effectiveScale
     implicitHeight: 40 * Appearance.effectiveScale
+
+    // ── Uniform card height ──
+    // Settings single-line cards all target 64 (combo 48 + comfortable gaps):
+    // each card uses `implicitHeight: Math.max(64, <row>.implicitHeight)`
+    // and its RowLayout fills the card with horizontal margins only, so the
+    // content auto-centers vertically. Controls keep their original sizes.
+    // Multi-row cards (ColumnLayout content) keep `row + 24` and only get
+    // this minimum as a backstop. Override per-instance with
+    // `minHeight: 0` to opt out (e.g. SegmentedButton) or
+    // `minHeight: <custom>` for special cards.
+    // NOTE: instances with explicit `Layout.preferredHeight` (e.g.
+    // NotificationCenter, DesktopContextMenu) keep winning over this default,
+    // and usages positioned with anchors (e.g. NotificationGroup) ignore
+    // Layout attached properties entirely.
+    property real minHeight: 64 * Appearance.effectiveScale
+    // NOTE: only preferredHeight is set (no minimumHeight) so that instances
+    // with an explicit smaller `Layout.preferredHeight` (e.g. NotificationCenter
+    // 40px pills, DesktopContextMenu 52px items) keep their size. Usages
+    // positioned with anchors (e.g. NotificationGroup) ignore Layout entirely.
+    Layout.preferredHeight: minHeight > 0 ? Math.max(minHeight, implicitHeight) : implicitHeight
     
     // ── Auto-Detection Logic ──
     property bool isFirst: forceFirst !== undefined ? forceFirst : _autoIsFirst
@@ -118,25 +139,29 @@ Item {
     }
     
     // ── Radius Logic ──
+    // Standalone singles → fullRadius (pill when maxRadius unset).
+    // Grouped boundary corners → outerRadius (tidy 20, or explicit maxRadius).
+    // Connected inner corners → smallRadius.
+    readonly property real outerRadius: maxRadius !== undefined ? maxRadius : groupRadius
     readonly property real rTopLeft: {
         if ((active && pillOnActive) || isStandalone || forcePill) return fullRadius;
-        if (orientation === Qt.Horizontal) return isFirst ? fullRadius : smallRadius;
-        return isFirst ? fullRadius : smallRadius;
+        if (orientation === Qt.Horizontal) return isFirst ? outerRadius : smallRadius;
+        return isFirst ? outerRadius : smallRadius;
     }
     readonly property real rTopRight: {
         if ((active && pillOnActive) || isStandalone || forcePill) return fullRadius;
-        if (orientation === Qt.Horizontal) return isLast ? fullRadius : smallRadius;
-        return isFirst ? fullRadius : smallRadius;
+        if (orientation === Qt.Horizontal) return isLast ? outerRadius : smallRadius;
+        return isFirst ? outerRadius : smallRadius;
     }
     readonly property real rBottomLeft: {
         if ((active && pillOnActive) || isStandalone || forcePill) return fullRadius;
-        if (orientation === Qt.Horizontal) return isFirst ? fullRadius : smallRadius;
-        return isLast ? fullRadius : smallRadius;
+        if (orientation === Qt.Horizontal) return isFirst ? outerRadius : smallRadius;
+        return isLast ? outerRadius : smallRadius;
     }
     readonly property real rBottomRight: {
         if ((active && pillOnActive) || isStandalone || forcePill) return fullRadius;
-        if (orientation === Qt.Horizontal) return isLast ? fullRadius : smallRadius;
-        return isLast ? fullRadius : smallRadius;
+        if (orientation === Qt.Horizontal) return isLast ? outerRadius : smallRadius;
+        return isLast ? outerRadius : smallRadius;
     }
 
     // Mask Source declared as a sibling to ensure stable rendering and antialiasing

@@ -37,9 +37,8 @@ ColumnLayout {
     SegmentedWrapper {
         id: cycleCard
         Layout.fillWidth: true
-        implicitHeight: cycleMainRow.implicitHeight + (24 * Appearance.effectiveScale)
+        implicitHeight: Math.max(64 * Appearance.effectiveScale, cycleMainRow.implicitHeight)
         orientation: Qt.Vertical
-        maxRadius: 20 * Appearance.effectiveScale
         pillOnActive: false
         color: Appearance.m3colors.m3surfaceContainerHigh
         active: Config.ready && Config.options.appearance.background.autoCycleEnabled
@@ -63,8 +62,6 @@ ColumnLayout {
             anchors {
                 leftMargin: 16 * Appearance.effectiveScale
                 rightMargin: 16 * Appearance.effectiveScale
-                topMargin: 12 * Appearance.effectiveScale
-                bottomMargin: 12 * Appearance.effectiveScale
             }
             spacing: 16 * Appearance.effectiveScale
 
@@ -89,9 +86,8 @@ ColumnLayout {
     // ── Expanded Cycle Settings ────
     SegmentedWrapper {
         Layout.fillWidth: true
-        implicitHeight: intervalRow.implicitHeight + (24 * Appearance.effectiveScale)
+        implicitHeight: Math.max(64 * Appearance.effectiveScale, intervalRow.implicitHeight)
         orientation: Qt.Vertical
-        maxRadius: 20 * Appearance.effectiveScale
         color: Appearance.m3colors.m3surfaceContainerHigh
         visible: Config.ready && Config.options.appearance.background.autoCycleEnabled
         RowLayout {
@@ -100,8 +96,6 @@ ColumnLayout {
             anchors {
                 leftMargin: 16 * Appearance.effectiveScale
                 rightMargin: 16 * Appearance.effectiveScale
-                topMargin: 12 * Appearance.effectiveScale
-                bottomMargin: 12 * Appearance.effectiveScale
             }
             spacing: 16 * Appearance.effectiveScale
 
@@ -125,9 +119,8 @@ ColumnLayout {
 
     SegmentedWrapper {
         Layout.fillWidth: true
-        implicitHeight: directoryRow.implicitHeight + (24 * Appearance.effectiveScale)
+        implicitHeight: Math.max(64 * Appearance.effectiveScale, directoryRow.implicitHeight)
         orientation: Qt.Vertical
-        maxRadius: 20 * Appearance.effectiveScale
         color: Appearance.m3colors.m3surfaceContainerHigh
         visible: Config.ready && Config.options.appearance.background.autoCycleEnabled
         RowLayout {
@@ -136,8 +129,6 @@ ColumnLayout {
             anchors {
                 leftMargin: 16 * Appearance.effectiveScale
                 rightMargin: 16 * Appearance.effectiveScale
-                topMargin: 12 * Appearance.effectiveScale
-                bottomMargin: 12 * Appearance.effectiveScale
             }
             spacing: 16 * Appearance.effectiveScale
             MaterialSymbol { text: "folder_open"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }

@@ -37,9 +37,8 @@ ColumnLayout {
     // Time Format Card
     SegmentedWrapper {
         Layout.fillWidth: true
-        implicitHeight: timeRow.implicitHeight + (24 * Appearance.effectiveScale)
+        implicitHeight: Math.max(64 * Appearance.effectiveScale, timeRow.implicitHeight)
         orientation: Qt.Vertical
-        maxRadius: 20 * Appearance.effectiveScale
         color: Appearance.m3colors.m3surfaceContainerHigh
 
         RowLayout {
@@ -48,8 +47,6 @@ ColumnLayout {
             anchors {
                 leftMargin: 16 * Appearance.effectiveScale
                 rightMargin: 16 * Appearance.effectiveScale
-                topMargin: 12 * Appearance.effectiveScale
-                bottomMargin: 12 * Appearance.effectiveScale
             }
             spacing: 16 * Appearance.effectiveScale
 
@@ -72,7 +69,7 @@ ColumnLayout {
                     delegate: SegmentedButton {
                         required property var modelData
                         isHighlighted: Config.ready && Config.options.time ? Config.options.time.timeStyle === modelData.value : false
-                        Layout.fillHeight: true
+                        Layout.alignment: Qt.AlignVCenter
 
                         buttonText: modelData.label
                         leftPadding: 16 * Appearance.effectiveScale
@@ -92,9 +89,8 @@ ColumnLayout {
     // Date Format Card
     SegmentedWrapper {
         Layout.fillWidth: true
-        implicitHeight: dateRow.implicitHeight + (24 * Appearance.effectiveScale)
+        implicitHeight: Math.max(64 * Appearance.effectiveScale, dateRow.implicitHeight)
         orientation: Qt.Vertical
-        maxRadius: 20 * Appearance.effectiveScale
         color: Appearance.m3colors.m3surfaceContainerHigh
 
         RowLayout {
@@ -103,8 +99,6 @@ ColumnLayout {
             anchors {
                 leftMargin: 16 * Appearance.effectiveScale
                 rightMargin: 16 * Appearance.effectiveScale
-                topMargin: 12 * Appearance.effectiveScale
-                bottomMargin: 12 * Appearance.effectiveScale
             }
             spacing: 16 * Appearance.effectiveScale
 
@@ -127,7 +121,7 @@ ColumnLayout {
                     delegate: SegmentedButton {
                         required property var modelData
                         isHighlighted: Config.ready && Config.options.time ? Config.options.time.dateStyle === modelData.value : false
-                        Layout.fillHeight: true
+                        Layout.alignment: Qt.AlignVCenter
 
                         buttonText: modelData.label
                         leftPadding: 16 * Appearance.effectiveScale
@@ -147,9 +141,8 @@ ColumnLayout {
     // First Day of Week Card
     SegmentedWrapper {
         Layout.fillWidth: true
-        implicitHeight: weekRow.implicitHeight + (24 * Appearance.effectiveScale)
+        implicitHeight: Math.max(64 * Appearance.effectiveScale, weekRow.implicitHeight)
         orientation: Qt.Vertical
-        maxRadius: 20 * Appearance.effectiveScale
         color: Appearance.m3colors.m3surfaceContainerHigh
 
         RowLayout {
@@ -158,8 +151,6 @@ ColumnLayout {
             anchors {
                 leftMargin: 16 * Appearance.effectiveScale
                 rightMargin: 16 * Appearance.effectiveScale
-                topMargin: 12 * Appearance.effectiveScale
-                bottomMargin: 12 * Appearance.effectiveScale
             }
             spacing: 16 * Appearance.effectiveScale
 
@@ -182,7 +173,7 @@ ColumnLayout {
                     delegate: SegmentedButton {
                         required property var modelData
                         isHighlighted: Config.ready && Config.options.time ? Config.options.time.firstDayOfWeek === modelData.value : false
-                        Layout.fillHeight: true
+                        Layout.alignment: Qt.AlignVCenter
 
                         buttonText: modelData.label
                         leftPadding: 16 * Appearance.effectiveScale

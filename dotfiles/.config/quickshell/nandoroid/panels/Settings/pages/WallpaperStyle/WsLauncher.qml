@@ -56,9 +56,8 @@ ColumnLayout {
             SegmentedWrapper {
                 id: groupingCard
                 Layout.fillWidth: true
-                implicitHeight: groupingRow.implicitHeight + (24 * Appearance.effectiveScale)
+                implicitHeight: Math.max(64 * Appearance.effectiveScale, groupingRow.implicitHeight)
                 orientation: Qt.Vertical
-                maxRadius: 20 * Appearance.effectiveScale
                 color: Appearance.m3colors.m3surfaceContainerHigh
 
                 RippleButton {
@@ -80,8 +79,6 @@ ColumnLayout {
                     anchors {
                         leftMargin: 16 * Appearance.effectiveScale
                         rightMargin: 16 * Appearance.effectiveScale
-                        topMargin: 12 * Appearance.effectiveScale
-                        bottomMargin: 12 * Appearance.effectiveScale
                     }
                     spacing: 16 * Appearance.effectiveScale
                     MaterialSymbol { text: "category"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
@@ -181,7 +178,7 @@ ColumnLayout {
                 RippleButton {
                     Layout.fillWidth: true
                     Layout.preferredHeight: 48 * Appearance.effectiveScale
-                    buttonRadius: 16 * Appearance.effectiveScale
+                    buttonRadius: 24 * Appearance.effectiveScale
                     colBackground: Appearance.m3colors.m3surfaceContainerHigh
                     onClicked: launcherIconsSection.showAllShapes = !launcherIconsSection.showAllShapes
                     

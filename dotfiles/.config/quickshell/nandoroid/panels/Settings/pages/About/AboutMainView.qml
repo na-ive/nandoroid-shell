@@ -55,8 +55,8 @@ ColumnLayout {
 
                 RippleButton {
                     Layout.fillWidth: true
-                    Layout.preferredHeight: 52 * Appearance.effectiveScale
-                    buttonRadius: 16 * Appearance.effectiveScale
+                    Layout.preferredHeight: 64 * Appearance.effectiveScale
+                    buttonRadius: 32 * Appearance.effectiveScale
                     colBackground: Appearance.m3colors.m3surfaceContainerHigh
                     onClicked: pushView( "update")
                     
@@ -96,8 +96,8 @@ ColumnLayout {
 
                 RippleButton {
                     Layout.fillWidth: true
-                    Layout.preferredHeight: 52 * Appearance.effectiveScale
-                    buttonRadius: 16 * Appearance.effectiveScale
+                    Layout.preferredHeight: 64 * Appearance.effectiveScale
+                    buttonRadius: 32 * Appearance.effectiveScale
                     colBackground: Appearance.m3colors.m3surfaceContainerHigh
                     onClicked: pushView( "dependency")
                     
@@ -248,9 +248,8 @@ ColumnLayout {
                     SegmentedWrapper {
                         id: onboardingLinkWrapper
                         Layout.fillWidth: true
-                        implicitHeight: onboardLinkRow.implicitHeight + (24 * Appearance.effectiveScale)
+                        implicitHeight: Math.max(64 * Appearance.effectiveScale, onboardLinkRow.implicitHeight)
                         orientation: Qt.Vertical
-                        maxRadius: 20 * Appearance.effectiveScale
                         color: Appearance.m3colors.m3surfaceContainerHigh
 
                         RippleButton {
@@ -278,8 +277,6 @@ ColumnLayout {
                                 anchors {
                                     leftMargin: 16 * Appearance.effectiveScale
                                     rightMargin: 16 * Appearance.effectiveScale
-                                    topMargin: 12 * Appearance.effectiveScale
-                                    bottomMargin: 12 * Appearance.effectiveScale
                                 }
                                 spacing: 16 * Appearance.effectiveScale
 
@@ -305,9 +302,8 @@ ColumnLayout {
                     SegmentedWrapper {
                         id: ipcLinkWrapper
                         Layout.fillWidth: true
-                        implicitHeight: ipcLinkRow.implicitHeight + (24 * Appearance.effectiveScale)
+                        implicitHeight: Math.max(64 * Appearance.effectiveScale, ipcLinkRow.implicitHeight)
                         orientation: Qt.Vertical
-                        maxRadius: 20 * Appearance.effectiveScale
                         color: Appearance.m3colors.m3surfaceContainerHigh
 
                         RippleButton {
@@ -336,8 +332,6 @@ ColumnLayout {
                                 anchors {
                                     leftMargin: 16 * Appearance.effectiveScale
                                     rightMargin: 16 * Appearance.effectiveScale
-                                    topMargin: 12 * Appearance.effectiveScale
-                                    bottomMargin: 12 * Appearance.effectiveScale
                                 }
                                 spacing: 16 * Appearance.effectiveScale
 
@@ -363,9 +357,8 @@ ColumnLayout {
                     SegmentedWrapper {
                         id: sourceLinkWrapper
                         Layout.fillWidth: true
-                        implicitHeight: sourceLinkRow.implicitHeight + (24 * Appearance.effectiveScale)
+                        implicitHeight: Math.max(64 * Appearance.effectiveScale, sourceLinkRow.implicitHeight)
                         orientation: Qt.Vertical
-                        maxRadius: 20 * Appearance.effectiveScale
                         color: Appearance.m3colors.m3surfaceContainerHigh
 
                         RippleButton {
@@ -385,8 +378,6 @@ ColumnLayout {
                                 anchors {
                                     leftMargin: 16 * Appearance.effectiveScale
                                     rightMargin: 16 * Appearance.effectiveScale
-                                    topMargin: 12 * Appearance.effectiveScale
-                                    bottomMargin: 12 * Appearance.effectiveScale
                                 }
                                 spacing: 16 * Appearance.effectiveScale
 
@@ -412,9 +403,8 @@ ColumnLayout {
                     SegmentedWrapper {
                         id: creditsLinkWrapper
                         Layout.fillWidth: true
-                        implicitHeight: creditsLinkRow.implicitHeight + (24 * Appearance.effectiveScale)
+                        implicitHeight: Math.max(64 * Appearance.effectiveScale, creditsLinkRow.implicitHeight)
                         orientation: Qt.Vertical
-                        maxRadius: 20 * Appearance.effectiveScale
                         color: Appearance.m3colors.m3surfaceContainerHigh
 
                         RippleButton {
@@ -439,8 +429,6 @@ ColumnLayout {
                                 anchors {
                                     leftMargin: 16 * Appearance.effectiveScale
                                     rightMargin: 16 * Appearance.effectiveScale
-                                    topMargin: 12 * Appearance.effectiveScale
-                                    bottomMargin: 12 * Appearance.effectiveScale
                                 }
                                 spacing: 16 * Appearance.effectiveScale
 
