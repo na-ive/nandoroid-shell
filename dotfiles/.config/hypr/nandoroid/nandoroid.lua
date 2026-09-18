@@ -104,6 +104,10 @@ hl.layer_rule({ match = { namespace = "quickshell:recordingMarker" }, blur = 0 }
 hl.layer_rule({ match = { namespace = "quickshell:spotlight" }, blur = 0 })
 hl.layer_rule({ match = { namespace = "quickshell:launcher" }, blur = 0 })
 
+-- No blur on fullscreen layers (backdrop blur would recompute every frame)
+hl.layer_rule({ match = { namespace = "quickshell:background" }, blur = 0 })
+hl.layer_rule({ match = { namespace = "quickshell:desktop-widgets" }, blur = 0 })
+
 -- NAnDoroid Panels (Native Floating)
 hl.window_rule({ match = { title = "^(Settings)$" },       float = 1, center = 1, border_size = 0 })
 hl.window_rule({ match = { title = "^(System Monitor)$" },  float = 1, center = 1, border_size = 0 })

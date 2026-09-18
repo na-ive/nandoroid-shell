@@ -29,3 +29,7 @@ hl.window_rule({ match = { title = "^(Welcome to NAnDoroid)$" }, float = 1, cent
 -- NAnDoroid Layer Surfaces (no blur: blurred content bleeds color while fading)
 hl.layer_rule({ match = { namespace = "quickshell:spotlight" }, blur = 0 })
 hl.layer_rule({ match = { namespace = "quickshell:launcher" }, blur = 0 })
+
+-- NAnDoroid Fullscreen Layers (no blur: backdrop blur would recompute every frame)
+hl.layer_rule({ match = { namespace = "quickshell:background" }, blur = 0 })
+hl.layer_rule({ match = { namespace = "quickshell:desktop-widgets" }, blur = 0 })
