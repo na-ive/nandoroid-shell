@@ -146,6 +146,127 @@ ColumnLayout {
                             colInactive: Appearance.m3colors.m3surfaceContainerLow
                             onClicked: if (Config.ready) Config.options.appearance.background.cavaStyle = "bars"
                         }
+                        SegmentedButton {
+                            buttonText: I18nService.tr("Mirror")
+                            isHighlighted: Config.ready && (Config.options.appearance.background.cavaStyle ?? "wave") === "mirror"
+                            colActive: Appearance.m3colors.m3primary
+                            colActiveText: Appearance.m3colors.m3onPrimary
+                            colInactive: Appearance.m3colors.m3surfaceContainerLow
+                            onClicked: if (Config.ready) Config.options.appearance.background.cavaStyle = "mirror"
+                        }
+                        SegmentedButton {
+                            buttonText: I18nService.tr("Aurora")
+                            isHighlighted: Config.ready && (Config.options.appearance.background.cavaStyle ?? "wave") === "aurora"
+                            colActive: Appearance.m3colors.m3primary
+                            colActiveText: Appearance.m3colors.m3onPrimary
+                            colInactive: Appearance.m3colors.m3surfaceContainerLow
+                            onClicked: if (Config.ready) Config.options.appearance.background.cavaStyle = "aurora"
+                        }
+                        SegmentedButton {
+                            buttonText: I18nService.tr("Dots")
+                            isHighlighted: Config.ready && (Config.options.appearance.background.cavaStyle ?? "wave") === "dots"
+                            colActive: Appearance.m3colors.m3primary
+                            colActiveText: Appearance.m3colors.m3onPrimary
+                            colInactive: Appearance.m3colors.m3surfaceContainerLow
+                            onClicked: if (Config.ready) Config.options.appearance.background.cavaStyle = "dots"
+                        }
+                    }
+                }
+            }
+
+            // --- Desktop Colors (shader styles only) ---
+            SegmentedWrapper {
+                Layout.fillWidth: true
+                visible: Config.ready && Config.options.appearance.background.showCava && ["mirror", "aurora", "dots"].includes(Config.options.appearance.background.cavaStyle ?? "wave")
+                implicitHeight: Math.max(64 * Appearance.effectiveScale, desktopColorsRow.implicitHeight)
+                orientation: Qt.Vertical
+                color: Appearance.m3colors.m3surfaceContainerHigh
+                RowLayout {
+                    id: desktopColorsRow
+                    anchors.fill: parent
+                    anchors {
+                        leftMargin: 16 * Appearance.effectiveScale
+                        rightMargin: 16 * Appearance.effectiveScale
+                    }
+                    spacing: 16 * Appearance.effectiveScale
+                    MaterialSymbol { text: "palette"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
+                    StyledText { text: I18nService.tr("Desktop colors"); Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
+                    Row {
+                        spacing: 2 * Appearance.effectiveScale
+                        SegmentedButton {
+                            buttonText: I18nService.tr("Theme")
+                            isHighlighted: Config.ready && (Config.options.appearance.background.cavaColorSource ?? "theme") === "theme"
+                            colActive: Appearance.m3colors.m3primary
+                            colActiveText: Appearance.m3colors.m3onPrimary
+                            colInactive: Appearance.m3colors.m3surfaceContainerLow
+                            onClicked: if (Config.ready) Config.options.appearance.background.cavaColorSource = "theme"
+                        }
+                        SegmentedButton {
+                            buttonText: I18nService.tr("Cover")
+                            isHighlighted: Config.ready && (Config.options.appearance.background.cavaColorSource ?? "theme") === "cover"
+                            colActive: Appearance.m3colors.m3primary
+                            colActiveText: Appearance.m3colors.m3onPrimary
+                            colInactive: Appearance.m3colors.m3surfaceContainerLow
+                            onClicked: if (Config.ready) Config.options.appearance.background.cavaColorSource = "cover"
+                        }
+                    }
+                }
+            }
+
+            // --- Desktop Sensitivity (shader styles only) ---
+            SegmentedWrapper {
+                Layout.fillWidth: true
+                visible: Config.ready && Config.options.appearance.background.showCava && ["mirror", "aurora", "dots"].includes(Config.options.appearance.background.cavaStyle ?? "wave")
+                implicitHeight: Math.max(64 * Appearance.effectiveScale, desktopSensRow.implicitHeight)
+                orientation: Qt.Vertical
+                color: Appearance.m3colors.m3surfaceContainerHigh
+                RowLayout {
+                    id: desktopSensRow
+                    anchors.fill: parent
+                    anchors {
+                        leftMargin: 16 * Appearance.effectiveScale
+                        rightMargin: 16 * Appearance.effectiveScale
+                    }
+                    spacing: 16 * Appearance.effectiveScale
+                    MaterialSymbol { text: "tune"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
+                    StyledText { text: I18nService.tr("Desktop sensitivity"); Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
+                    StyledStepper {
+                        Layout.alignment: Qt.AlignVCenter
+                        from: 0.5; to: 3.0; stepSize: 0.05
+                        displayFactor: 100
+                        decimals: 0
+                        suffix: "%"
+                        value: Config.options.appearance.background.cavaSensitivity ?? 1
+                        onValueChanged: Config.options.appearance.background.cavaSensitivity = value
+                    }
+                }
+            }
+
+            // --- Desktop Height (shader styles only) ---
+            SegmentedWrapper {
+                Layout.fillWidth: true
+                visible: Config.ready && Config.options.appearance.background.showCava && ["mirror", "aurora", "dots"].includes(Config.options.appearance.background.cavaStyle ?? "wave")
+                implicitHeight: Math.max(64 * Appearance.effectiveScale, desktopHeightRow.implicitHeight)
+                orientation: Qt.Vertical
+                color: Appearance.m3colors.m3surfaceContainerHigh
+                RowLayout {
+                    id: desktopHeightRow
+                    anchors.fill: parent
+                    anchors {
+                        leftMargin: 16 * Appearance.effectiveScale
+                        rightMargin: 16 * Appearance.effectiveScale
+                    }
+                    spacing: 16 * Appearance.effectiveScale
+                    MaterialSymbol { text: "height"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
+                    StyledText { text: I18nService.tr("Desktop height"); Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
+                    StyledStepper {
+                        Layout.alignment: Qt.AlignVCenter
+                        from: 120; to: 600; stepSize: 10
+                        displayFactor: 1
+                        decimals: 0
+                        suffix: "px"
+                        value: Config.options.appearance.background.cavaHeight ?? 260
+                        onValueChanged: Config.options.appearance.background.cavaHeight = value
                     }
                 }
             }
@@ -252,6 +373,127 @@ ColumnLayout {
                             colInactive: Appearance.m3colors.m3surfaceContainerLow
                             onClicked: if (Config.ready) Config.options.lock.cavaStyle = "bars"
                         }
+                        SegmentedButton {
+                            buttonText: I18nService.tr("Mirror")
+                            isHighlighted: Config.ready && (Config.options.lock.cavaStyle ?? "wave") === "mirror"
+                            colActive: Appearance.m3colors.m3primary
+                            colActiveText: Appearance.m3colors.m3onPrimary
+                            colInactive: Appearance.m3colors.m3surfaceContainerLow
+                            onClicked: if (Config.ready) Config.options.lock.cavaStyle = "mirror"
+                        }
+                        SegmentedButton {
+                            buttonText: I18nService.tr("Aurora")
+                            isHighlighted: Config.ready && (Config.options.lock.cavaStyle ?? "wave") === "aurora"
+                            colActive: Appearance.m3colors.m3primary
+                            colActiveText: Appearance.m3colors.m3onPrimary
+                            colInactive: Appearance.m3colors.m3surfaceContainerLow
+                            onClicked: if (Config.ready) Config.options.lock.cavaStyle = "aurora"
+                        }
+                        SegmentedButton {
+                            buttonText: I18nService.tr("Dots")
+                            isHighlighted: Config.ready && (Config.options.lock.cavaStyle ?? "wave") === "dots"
+                            colActive: Appearance.m3colors.m3primary
+                            colActiveText: Appearance.m3colors.m3onPrimary
+                            colInactive: Appearance.m3colors.m3surfaceContainerLow
+                            onClicked: if (Config.ready) Config.options.lock.cavaStyle = "dots"
+                        }
+                    }
+                }
+            }
+
+            // --- Lockscreen Colors (shader styles only) ---
+            SegmentedWrapper {
+                Layout.fillWidth: true
+                visible: Config.ready && Config.options.lock.showCava && ["mirror", "aurora", "dots"].includes(Config.options.lock.cavaStyle ?? "wave")
+                implicitHeight: Math.max(64 * Appearance.effectiveScale, lockColorsRow.implicitHeight)
+                orientation: Qt.Vertical
+                color: Appearance.m3colors.m3surfaceContainerHigh
+                RowLayout {
+                    id: lockColorsRow
+                    anchors.fill: parent
+                    anchors {
+                        leftMargin: 16 * Appearance.effectiveScale
+                        rightMargin: 16 * Appearance.effectiveScale
+                    }
+                    spacing: 16 * Appearance.effectiveScale
+                    MaterialSymbol { text: "palette"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
+                    StyledText { text: I18nService.tr("Lock screen colors"); Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
+                    Row {
+                        spacing: 2 * Appearance.effectiveScale
+                        SegmentedButton {
+                            buttonText: I18nService.tr("Theme")
+                            isHighlighted: Config.ready && (Config.options.lock.cavaColorSource ?? "theme") === "theme"
+                            colActive: Appearance.m3colors.m3primary
+                            colActiveText: Appearance.m3colors.m3onPrimary
+                            colInactive: Appearance.m3colors.m3surfaceContainerLow
+                            onClicked: if (Config.ready) Config.options.lock.cavaColorSource = "theme"
+                        }
+                        SegmentedButton {
+                            buttonText: I18nService.tr("Cover")
+                            isHighlighted: Config.ready && (Config.options.lock.cavaColorSource ?? "theme") === "cover"
+                            colActive: Appearance.m3colors.m3primary
+                            colActiveText: Appearance.m3colors.m3onPrimary
+                            colInactive: Appearance.m3colors.m3surfaceContainerLow
+                            onClicked: if (Config.ready) Config.options.lock.cavaColorSource = "cover"
+                        }
+                    }
+                }
+            }
+
+            // --- Lockscreen Sensitivity (shader styles only) ---
+            SegmentedWrapper {
+                Layout.fillWidth: true
+                visible: Config.ready && Config.options.lock.showCava && ["mirror", "aurora", "dots"].includes(Config.options.lock.cavaStyle ?? "wave")
+                implicitHeight: Math.max(64 * Appearance.effectiveScale, lockSensRow.implicitHeight)
+                orientation: Qt.Vertical
+                color: Appearance.m3colors.m3surfaceContainerHigh
+                RowLayout {
+                    id: lockSensRow
+                    anchors.fill: parent
+                    anchors {
+                        leftMargin: 16 * Appearance.effectiveScale
+                        rightMargin: 16 * Appearance.effectiveScale
+                    }
+                    spacing: 16 * Appearance.effectiveScale
+                    MaterialSymbol { text: "tune"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
+                    StyledText { text: I18nService.tr("Lock screen sensitivity"); Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
+                    StyledStepper {
+                        Layout.alignment: Qt.AlignVCenter
+                        from: 0.5; to: 3.0; stepSize: 0.05
+                        displayFactor: 100
+                        decimals: 0
+                        suffix: "%"
+                        value: Config.options.lock.cavaSensitivity ?? 1
+                        onValueChanged: Config.options.lock.cavaSensitivity = value
+                    }
+                }
+            }
+
+            // --- Lockscreen Height (shader styles only) ---
+            SegmentedWrapper {
+                Layout.fillWidth: true
+                visible: Config.ready && Config.options.lock.showCava && ["mirror", "aurora", "dots"].includes(Config.options.lock.cavaStyle ?? "wave")
+                implicitHeight: Math.max(64 * Appearance.effectiveScale, lockHeightRow.implicitHeight)
+                orientation: Qt.Vertical
+                color: Appearance.m3colors.m3surfaceContainerHigh
+                RowLayout {
+                    id: lockHeightRow
+                    anchors.fill: parent
+                    anchors {
+                        leftMargin: 16 * Appearance.effectiveScale
+                        rightMargin: 16 * Appearance.effectiveScale
+                    }
+                    spacing: 16 * Appearance.effectiveScale
+                    MaterialSymbol { text: "height"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
+                    StyledText { text: I18nService.tr("Lock screen height"); Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
+                    StyledStepper {
+                        Layout.alignment: Qt.AlignVCenter
+                        from: 120; to: 600; stepSize: 10
+                        displayFactor: 1
+                        decimals: 0
+                        suffix: "px"
+                        value: Config.options.lock.cavaHeight ?? 260
+                        onValueChanged: Config.options.lock.cavaHeight = value
                     }
                 }
             }

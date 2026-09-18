@@ -10,7 +10,7 @@ Singleton {
     id: root
 
     property list<int> values: []
-    property int barCount: Config.ready ? Config.options.appearance.background.cavaBars : 32
+    property int barCount: Config.ready ? Config.options.appearance.background.cavaBars : 50
     property bool _internalRestart: true
     property int refCount: 0
     property bool cavaAvailable: false
@@ -61,10 +61,10 @@ Singleton {
     function updateCavaConfig() {
         const config = `
 [general]
-framerate=30
+mode=waves
+framerate=60
 bars=${root.barCount}
 autosens=1
-sensitivity=75
 
 [output]
 method=raw
@@ -74,11 +74,7 @@ channels=mono
 mono_option=average
 
 [smoothing]
-noise_reduction=35
-integral=80
-gravity=100
-ignore=0
-monstercat=1
+noise_reduction=20
 `;
         cavaConfigWriter.setText(config);
     }

@@ -148,8 +148,11 @@ property JsonObject background: JsonObject {
                 property list<string> customFolders: []
                 property bool showCava: false
                 property real cavaOpacity: 0.15
-                property int cavaBars: 128
-                property string cavaStyle: "wave" // "wave" | "bars"
+                property int cavaBars: 50
+                property string cavaStyle: "wave" // "wave" | "bars" | "mirror" | "aurora" | "dots"
+                property real cavaSensitivity: 1 // shader styles only (0.5 - 3.0)
+                property int cavaHeight: 260 // shader styles only (120 - 600)
+                property string cavaColorSource: "theme" // "theme" | "cover"
                 property bool showGrid: false
                 property int gridSpacing: 12
                 property bool showSnapLines: true
@@ -553,7 +556,10 @@ property JsonObject background: JsonObject {
                 property bool useSeparateWallpaper: false
                 property bool showCava: true
                 property real cavaOpacity: 0.15
-                property string cavaStyle: "wave" // "wave" | "bars"
+                property string cavaStyle: "wave" // "wave" | "bars" | "mirror" | "aurora" | "dots"
+                property real cavaSensitivity: 1 // shader styles only (0.5 - 3.0)
+                property int cavaHeight: 260 // shader styles only (120 - 600)
+                property string cavaColorSource: "theme" // "theme" | "cover"
                 property bool showMediaCard: true
                 property bool showWeather: true
                 property JsonObject weather: JsonObject { property string textColorMode: "adaptive" }

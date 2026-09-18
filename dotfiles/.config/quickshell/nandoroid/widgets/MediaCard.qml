@@ -1,6 +1,7 @@
 import "../core"
 import "../services"
 import "."
+import "./visualizer"
 import "../core/functions" as Functions
 import QtQuick
 import QtQuick.Layouts
@@ -109,12 +110,11 @@ Rectangle {
             }
         }
 
-        // --- Wave Visualizer Overlay ---
-        WaveVisualizer {
+        WaveView {
             anchors.fill: parent
             anchors.topMargin: parent.height * 0.4
             color: MprisController.dynPrimary
-            opacityMultiplier: 0.2
+            alpha: 0.2
             visible: root.shouldVisualize
         }
     }

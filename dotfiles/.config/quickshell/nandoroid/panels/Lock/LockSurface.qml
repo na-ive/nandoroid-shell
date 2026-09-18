@@ -1,6 +1,7 @@
 pragma ComponentBehavior: Bound
 import "../../core"
 import "../../widgets"
+import "../../widgets/visualizer"
 import "../../services"
 import "../../core/functions" as Functions
 import QtQuick
@@ -93,15 +94,25 @@ MouseArea {
         if (_cavaActive) CavaService.refCount--;
     }
 
-    WaveVisualizer {
+    DesktopVisualizer {
         id: lockWave
         anchors.bottom: parent.bottom
         anchors.left: parent.left
         anchors.right: parent.right
-        height: parent.height * 0.6
+        height: {
+            if (!Config.ready) return parent.height * 0.6;
+            const s = Config.options.lock.cavaStyle ?? "wave";
+            if (["mirror", "aurora", "dots"].includes(s)) return Config.options.lock.cavaHeight ?? 260;
+            if (s === "bars") return 240;
+            return parent.height * 0.6;
+        }
         z: -1 // Behind Jam and Password input
         style: Config.ready ? (Config.options.lock.cavaStyle ?? "wave") : "wave"
-        color: Appearance.lockM3colors.m3primary
+        sensitivity: Config.ready ? (Config.options.lock.cavaSensitivity ?? 1) : 1
+        bandHeight: Config.ready ? (Config.options.lock.cavaHeight ?? 260) : 260
+        colorSource: Config.ready ? (Config.options.lock.cavaColorSource ?? "theme") : "theme"
+        isLockscreen: true
+        baseColor: Appearance.lockM3colors.m3primary
         opacityMultiplier: (Config.ready && Config.options.lock) ? Config.options.lock.cavaOpacity : 0.15
         opacity: root.shouldVisualize ? root.islandOpacity : 0
         visible: opacity > 0

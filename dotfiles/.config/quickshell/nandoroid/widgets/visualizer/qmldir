@@ -1,0 +1,4 @@
+VisualizerEngine VisualizerEngine.qml
+VisualizerShader VisualizerShader.qml
+DesktopVisualizer DesktopVisualizer.qml
+WaveView WaveView.qml

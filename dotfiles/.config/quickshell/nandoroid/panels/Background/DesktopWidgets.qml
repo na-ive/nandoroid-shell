@@ -3,6 +3,7 @@ pragma ComponentBehavior: Bound
 import "../../core"
 import "../../services"
 import "../../widgets"
+import "../../widgets/visualizer"
 import "../../widgets/widgetCanvas"
 import QtQuick
 import Quickshell
@@ -187,15 +188,24 @@ Variants {
             onReleased: { isDragging = false; }
         }
 
-        WaveVisualizer {
+        DesktopVisualizer {
             id: desktopWave
             anchors.bottom: parent.bottom
             anchors.left: parent.left
             anchors.right: parent.right
-            height: parent.height * 0.4
+            height: {
+                if (!Config.ready) return parent.height * 0.4;
+                const s = Config.options.appearance.background.cavaStyle ?? "wave";
+                if (["mirror", "aurora", "dots"].includes(s)) return Config.options.appearance.background.cavaHeight ?? 260;
+                if (s === "bars") return 240;
+                return parent.height * 0.4;
+            }
             z: 5
             style: Config.ready ? (Config.options.appearance.background.cavaStyle ?? "wave") : "wave"
-            color: Appearance.m3colors.m3primary
+            sensitivity: Config.ready ? (Config.options.appearance.background.cavaSensitivity ?? 1) : 1
+            bandHeight: Config.ready ? (Config.options.appearance.background.cavaHeight ?? 260) : 260
+            colorSource: Config.ready ? (Config.options.appearance.background.cavaColorSource ?? "theme") : "theme"
+            baseColor: Appearance.m3colors.m3primary
             opacityMultiplier: Config.options.appearance.background.cavaOpacity
             opacity: widgetRoot._showVisualizer ? 1.0 : 0
             visible: opacity > 0
