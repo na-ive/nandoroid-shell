@@ -25,3 +25,7 @@ hl.window_rule({ match = { title = "^([Pp]icture[-\\s]?[Ii]n[-\\s]?[Pp]icture)(.
 hl.window_rule({ match = { title = "^(Settings)$" },       float = 1, center = 1, border_size = 0 })
 hl.window_rule({ match = { title = "^(System Monitor)$" },  float = 1, center = 1, border_size = 0 })
 hl.window_rule({ match = { title = "^(Welcome to NAnDoroid)$" }, float = 1, center = 1, border_size = 0 })
+
+-- NAnDoroid Layer Surfaces (no blur: blurred content bleeds color while fading)
+hl.layer_rule({ match = { namespace = "quickshell:spotlight" }, blur = 0 })
+hl.layer_rule({ match = { namespace = "quickshell:launcher" }, blur = 0 })

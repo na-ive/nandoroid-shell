@@ -82,24 +82,27 @@ hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd(nandoroid .. " brightness decre
 -- ─────────────────────────────────────────────────────────────────────────────
 --  Layer Rules
 -- ─────────────────────────────────────────────────────────────────────────────
-hl.config({
-    layerrule = {
-        "blur, quickshell:.*",
-        "ignore_alpha 0.79, quickshell:.*",
-        "blur, notifications",
-        "ignore_alpha 0.69, notifications",
-        "blur, launcher",
-        "ignore_alpha 0.5, launcher",
-        "no_anim, overview",
-        "blur, session",
-        
-        -- Instantly show region tools
-        "no_anim, quickshell:regionSelector",
-        "blur off, quickshell:regionSelector",
-        "no_anim, quickshell:recordingMarker",
-        "blur off, quickshell:recordingMarker"
-    }
-})
+-- ─────────────────────────────────────────────────────────────────────────────
+--  Layer Rules (hl.layer_rule helper — same API as the rest of this config)
+-- ─────────────────────────────────────────────────────────────────────────────
+hl.layer_rule({ match = { namespace = "quickshell:.*" }, blur = 1 })
+hl.layer_rule({ match = { namespace = "quickshell:.*" }, ignore_alpha = 0.79 })
+hl.layer_rule({ match = { namespace = "notifications" }, blur = 1 })
+hl.layer_rule({ match = { namespace = "notifications" }, ignore_alpha = 0.69 })
+hl.layer_rule({ match = { namespace = "launcher" }, blur = 1 })
+hl.layer_rule({ match = { namespace = "launcher" }, ignore_alpha = 0.5 })
+hl.layer_rule({ match = { namespace = "overview" }, no_anim = 1 })
+hl.layer_rule({ match = { namespace = "session" }, blur = 1 })
+
+-- Instantly show region tools
+hl.layer_rule({ match = { namespace = "quickshell:regionSelector" }, no_anim = 1 })
+hl.layer_rule({ match = { namespace = "quickshell:regionSelector" }, blur = 0 })
+hl.layer_rule({ match = { namespace = "quickshell:recordingMarker" }, no_anim = 1 })
+hl.layer_rule({ match = { namespace = "quickshell:recordingMarker" }, blur = 0 })
+
+-- No blur on fading launchers (blurred content bleeds color mid-fade)
+hl.layer_rule({ match = { namespace = "quickshell:spotlight" }, blur = 0 })
+hl.layer_rule({ match = { namespace = "quickshell:launcher" }, blur = 0 })
 
 -- NAnDoroid Panels (Native Floating)
 hl.window_rule({ match = { title = "^(Settings)$" },       float = 1, center = 1, border_size = 0 })
