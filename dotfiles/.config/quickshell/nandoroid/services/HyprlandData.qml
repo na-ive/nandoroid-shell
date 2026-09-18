@@ -175,25 +175,30 @@ Singleton {
             // Ignore high-frequency / irrelevant events
             if (["openlayer", "closelayer", "screencast", "mousemove", "power"].includes(name)) return;
             
-            if (name === "workspace" || name === "focusedmon") {
+            if (name === "workspace" || name === "workspacev2" || name === "focusedmon" || name === "focusedmonv2" || name === "moveworkspace" || name === "moveworkspacev2") {
                 workspaceUpdateTimer.restart();
                 activeWinUpdateTimer.restart();
+                monitorUpdateTimer.restart();
             } else if (name === "activewindow" || name === "activewindowv2") {
                 activeWinUpdateTimer.restart();
-            } else if (["openwindow", "closewindow", "movewindow", "windowtitle", "fullscreen", "changefloatingmode"].includes(name)) {
+            } else if (["openwindow", "closewindow", "movewindow", "movewindowv2", "windowtitle", "fullscreen", "changefloatingmode"].includes(name)) {
                 windowUpdateTimer.restart();
             } else if (name === "monitoradded" || name === "monitorremoved") {
                 monitorUpdateTimer.restart();
             } else if (name === "activelayout") {
-                // Just refresh data without heavy window listing if possible
                 workspaceUpdateTimer.restart();
             } else if (name === "activespecial" || name === "activespecialv2") {
                 var parts = event.data.split(',');
                 var monName = name === "activespecial" ? parts[1] : parts[2];
                 var specialName = name === "activespecial" ? parts[0] : parts[1];
-                var temp = Object.assign({}, root.monitorSpecialWorkspace);
-                temp[monName] = specialName.replace("special:", "").trim();
-                root.monitorSpecialWorkspace = temp;
+                if (!monName) {
+                    monitorUpdateTimer.restart();
+                } else {
+                    var temp = Object.assign({}, root.monitorSpecialWorkspace);
+                    temp[monName] = (specialName ? specialName.replace("special:", "") : "").trim();
+                    root.monitorSpecialWorkspace = temp;
+                    monitorUpdateTimer.restart();
+                }
             } else {
                 // Fallback for other events
                 refreshTimer.restart();

@@ -20,8 +20,12 @@ Item {
     property HyprlandMonitor monitor
     readonly property int workspacesShown: Config.options.workspaces?.max_shown ?? 5
     readonly property int activeWsId: monitor?.activeWorkspace?.id ?? 1
-    property string activeSpecialName: ""
-    property bool isSpecialActive: activeSpecialName !== ""
+    readonly property string activeSpecialName: {
+        if (!monitor || !monitor.name) return "";
+        var v = HyprlandData.monitorSpecialWorkspace[monitor.name];
+        return (v !== undefined && v !== null) ? String(v) : "";
+    }
+    readonly property bool isSpecialActive: activeSpecialName !== ""
 
     readonly property int startWsId: Math.floor((activeWsId - 1) / workspacesShown) * workspacesShown + 1
 
@@ -119,23 +123,6 @@ Item {
     Connections {
         target: Hyprland
         function onFocusedWorkspaceChanged() { root.updateOccupied() }
-        function onRawEvent(event) {
-            if (event.name === "activespecial") {
-                let parts = event.data.split(',');
-                let name = parts[0];
-                let monName = parts[1];
-                if (monName === monitor.name) {
-                    root.activeSpecialName = name.replace("special:", "");
-                }
-            } else if (event.name === "activespecialv2") {
-                let parts = event.data.split(',');
-                let name = parts[1];
-                let monName = parts[2];
-                if (monName === monitor.name) {
-                    root.activeSpecialName = name.replace("special:", "");
-                }
-            }
-        }
     }
 
     function updateOccupied() {
@@ -407,27 +394,12 @@ Item {
         MouseArea {
             anchors.fill: parent
             cursorShape: Qt.PointingHandCursor
-            onClicked: Hyprland.dispatch("togglespecialworkspace " + root.activeSpecialName)
-        }
-    }
-
-    Process {
-        command: ["hyprctl", "monitors", "-j"]
-        running: true
-        stdout: StdioCollector {
-            id: initialSpecialCollector
-            onStreamFinished: {
-                try {
-                    let monitors = JSON.parse(initialSpecialCollector.text);
-                    for (let i = 0; i < monitors.length; i++) {
-                        if (monitors[i].name === monitor.name) {
-                            if (monitors[i].specialWorkspace && monitors[i].specialWorkspace.name !== "") {
-                                root.activeSpecialName = monitors[i].specialWorkspace.name.replace("special:", "");
-                            }
-                            break;
-                        }
-                    }
-                } catch (e) {}
+            enabled: root.isSpecialActive
+            onClicked: {
+                if (root.activeSpecialName !== "")
+                    Hyprland.dispatch(HyprlandCompat.dspToggleSpecial(root.activeSpecialName));
+                else
+                    Hyprland.dispatch(HyprlandCompat.dspToggleSpecial());
             }
         }
     }
