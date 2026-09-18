@@ -13,6 +13,7 @@ Item {
     anchors.fill: parent
 
     readonly property bool _cavaNeeded: {
+        if (GameMode.active) return false
         const style = Config.ready && Config.options.statusBar?.pcIsland ? Config.options.statusBar.pcIsland.visualizerStyle : "dots"
         return style !== "none" && (di.activePlayer?.isPlaying ?? false)
     }
@@ -52,7 +53,7 @@ Item {
             smoothing: 2
             color: Appearance.colors.colNotchText
             opacityMultiplier: 0.15
-            visible: (Config.ready && Config.options.statusBar?.pcIsland ? Config.options.statusBar.pcIsland.visualizerStyle : "dots") === "wave"
+            visible: (Config.ready && Config.options.statusBar?.pcIsland ? Config.options.statusBar.pcIsland.visualizerStyle : "dots") === "wave" && !GameMode.active
         }
 
         Rectangle {
@@ -181,6 +182,7 @@ Item {
             opacityMultiplier: 0.85
             visible: !(Config.ready && Config.options.statusBar?.pcIsland ? Config.options.statusBar.pcIsland.showMediaControls : false)
                 && (Config.ready && Config.options.statusBar?.pcIsland ? Config.options.statusBar.pcIsland.visualizerStyle : "dots") === "dots"
+                && !GameMode.active
         }
 
         RowLayout {
