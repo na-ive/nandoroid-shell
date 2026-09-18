@@ -87,6 +87,7 @@ ColumnLayout {
                                 id: mainCombo
                                 bgRadius: height / 2
                                 Layout.fillWidth: true
+                                colBackground: Appearance.m3colors.m3surfaceContainerHigh
                                 text: Config.options.appearance.fonts.main
                                 model: SystemFonts.all
                                 onAccepted: (val) => Config.options.appearance.fonts.main = val
@@ -103,6 +104,7 @@ ColumnLayout {
                                 id: titleCombo
                                 bgRadius: height / 2
                                 Layout.fillWidth: true
+                                colBackground: Appearance.m3colors.m3surfaceContainerHigh
                                 text: Config.options.appearance.fonts.title
                                 model: SystemFonts.all
                                 onAccepted: (val) => Config.options.appearance.fonts.title = val
@@ -119,6 +121,7 @@ ColumnLayout {
                                 id: numbersCombo
                                 bgRadius: height / 2
                                 Layout.fillWidth: true
+                                colBackground: Appearance.m3colors.m3surfaceContainerHigh
                                 text: Config.options.appearance.fonts.numbers
                                 model: SystemFonts.all
                                 onAccepted: (val) => Config.options.appearance.fonts.numbers = val
@@ -135,6 +138,7 @@ ColumnLayout {
                                 id: monoCombo
                                 bgRadius: height / 2
                                 Layout.fillWidth: true
+                                colBackground: Appearance.m3colors.m3surfaceContainerHigh
                                 text: Config.options.appearance.fonts.monospace
                                 model: SystemFonts.mono
                                 onAccepted: (val) => Config.options.appearance.fonts.monospace = val
