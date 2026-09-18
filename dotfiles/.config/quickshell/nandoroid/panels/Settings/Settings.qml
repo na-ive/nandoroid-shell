@@ -334,7 +334,7 @@ Scope {
                         readonly property bool shouldShow: subSidebar.hasSections && settingsWindow.width >= 850 * Appearance.effectiveScale
 
                         Layout.fillHeight: true
-                        implicitWidth: shouldShow ? (1 + 12 + 160 + 12) * Appearance.effectiveScale : 0
+                        implicitWidth: shouldShow ? (1 + 12 + 192 + 12) * Appearance.effectiveScale : 0
                         clip: true
 
                         Rectangle {
@@ -359,7 +359,7 @@ Scope {
                             anchors.leftMargin: 12 * Appearance.effectiveScale
                             anchors.top: parent.top
                             anchors.bottom: parent.bottom
-                            width: 160 * Appearance.effectiveScale
+                            width: 192 * Appearance.effectiveScale
                             
                             // Let SubSidebar handle sections from SearchRegistry
                             pageIndex: GlobalStates.settingsPageIndex

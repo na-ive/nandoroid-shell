@@ -118,8 +118,8 @@ Rectangle {
 
                 RowLayout {
                     anchors.fill: parent
-                    anchors.leftMargin: 16 * Appearance.effectiveScale
-                    anchors.rightMargin: 16 * Appearance.effectiveScale
+                    anchors.leftMargin: 12 * Appearance.effectiveScale
+                    anchors.rightMargin: 12 * Appearance.effectiveScale
                     
                     StyledText {
                         Layout.fillWidth: true
