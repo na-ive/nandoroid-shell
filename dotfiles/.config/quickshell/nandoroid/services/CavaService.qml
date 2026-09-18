@@ -79,8 +79,19 @@ noise_reduction=20
         cavaConfigWriter.setText(config);
     }
 
+    function migrateLegacyBars() {
+        if (!Config.ready) return;
+        const v = Config.options.appearance.background.cavaBars;
+        if (v === 32 || v === 128) Config.options.appearance.background.cavaBars = 50;
+    }
+
+    Connections {
+        target: Config
+        function onReadyChanged() { root.migrateLegacyBars(); }
+    }
+
     Component.onCompleted: {
-        // Initial cleanup and setup
+        root.migrateLegacyBars();
         root.updateCavaConfig();
         
         // Wait for system audio to stabilize
