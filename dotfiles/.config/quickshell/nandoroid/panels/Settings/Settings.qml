@@ -2,6 +2,7 @@ import "../../core"
 import "../../core/functions" as Functions
 import "../../services"
 import "../../widgets"
+import "pages/Network"
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
@@ -88,6 +89,8 @@ Scope {
                 if (!GlobalStates.settingsOpen) {
                     GlobalStates.settingsPageIndex = 0;
                     GlobalStates.settingsBluetoothPairMode = false;
+                    GlobalStates.closeNetworkDetails();
+                    GlobalStates.closeNetworkPassword();
                     SearchRegistry.currentSearch = ""; // Clear active search to allow re-triggering the same query next time
                     searchInput.text = ""; // Reset search text
                     searchInput.hasNoResults = false;
@@ -442,6 +445,15 @@ Scope {
                                 }
                             }
                         }
+                    }
+
+                    // "Network details" island, next to the page card.
+                    NetworkDetailsSidebar {
+                        id: netDetailsCard
+                        Layout.fillHeight: true
+                        Layout.leftMargin: netDetailsCard.width > 1 ? 12 * Appearance.effectiveScale : 0
+                        network: GlobalStates.networkDetailsTarget
+                        onClosed: GlobalStates.closeNetworkDetails()
                     }
                 }
             }

@@ -50,6 +50,32 @@ Singleton {
     property bool systemMonitorOpen: false
     property bool regionSelectorOpen: false
     property bool addNetworkDialogOpen: false
+    // WiFi password prompt (fullscreen Polkit-style overlay, opened from Settings → Network)
+    property bool networkPasswordDialogOpen: false
+    property var networkPasswordTarget: null
+    property bool networkPasswordEditMode: false
+    function openNetworkPassword(accessPoint) {
+        networkPasswordTarget = accessPoint;
+        networkPasswordDialogOpen = true;
+    }
+    function closeNetworkPassword() {
+        networkPasswordDialogOpen = false;
+        networkPasswordTarget = null;
+        networkPasswordEditMode = false;
+    }
+    function openNetworkPasswordEdit(accessPoint) {
+        networkPasswordTarget = accessPoint;
+        networkPasswordEditMode = true;
+        networkPasswordDialogOpen = true;
+    }
+    // "Network details" island next to the Settings page card.
+    property var networkDetailsTarget: null
+    function openNetworkDetails(accessPoint) {
+        networkDetailsTarget = accessPoint;
+    }
+    function closeNetworkDetails() {
+        networkDetailsTarget = null;
+    }
     property bool overviewOpen: false
     property bool datePickerOpen: false
     property string datePickerCurrentDate: ""

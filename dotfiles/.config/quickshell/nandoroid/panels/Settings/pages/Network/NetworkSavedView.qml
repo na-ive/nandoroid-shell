@@ -7,6 +7,7 @@ import QtQuick.Layouts
 import QtQuick.Controls
 import Quickshell
 
+                // Tap = details only; arrow button = Forget / Share actions.
                 ColumnLayout {
                     id: savedViewCol
                     Layout.fillWidth: true
@@ -25,7 +26,7 @@ import Quickshell
                         Layout.preferredHeight: savedRepeaterCol.implicitHeight + 32 * Appearance.effectiveScale
                         radius: 20 * Appearance.effectiveScale
                         color: Appearance.colors.colLayer1
-                        
+
                         ColumnLayout {
                             id: savedRepeaterCol
                             anchors.fill: parent
@@ -45,7 +46,7 @@ import Quickshell
                                         implicitHeight: 64 * Appearance.effectiveScale
                                         buttonRadius: 16 * Appearance.effectiveScale
                                         colBackground: savedItem.expanded ? Appearance.colors.colLayer1Hover : "transparent"
-                                        onClicked: savedItem.expanded = !savedItem.expanded
+                                        onClicked: root.openSavedDetails(modelData)
 
                                         // Header rounding overlay for expansion joint
                                         Rectangle {
@@ -54,7 +55,7 @@ import Quickshell
                                             color: parent.colBackground
                                             z: -1
                                             radius: 16 * Appearance.effectiveScale
-                                            
+
                                             // Make bottom square
                                             Rectangle {
                                                 anchors.bottom: parent.bottom
@@ -84,12 +85,22 @@ import Quickshell
                                                 elide: Text.ElideRight
                                             }
 
-                                            MaterialSymbol {
-                                                text: "keyboard_arrow_down"
-                                                iconSize: 20 * Appearance.effectiveScale
-                                                color: Appearance.colors.colSubtext
-                                                rotation: savedItem.expanded ? 180 : 0
-                                                Behavior on rotation { NumberAnimation { duration: 200 } }
+                                            // Inner button only expands actions (consumes the tap)
+                                            RippleButton {
+                                                implicitWidth: 32 * Appearance.effectiveScale
+                                                implicitHeight: 32 * Appearance.effectiveScale
+                                                buttonRadius: 16 * Appearance.effectiveScale
+                                                colBackground: "transparent"
+                                                onClicked: savedItem.expanded = !savedItem.expanded
+                                                contentItem: MaterialSymbol {
+                                                    horizontalAlignment: Text.AlignHCenter
+                                                    verticalAlignment: Text.AlignVCenter
+                                                    text: "keyboard_arrow_down"
+                                                    iconSize: 20 * Appearance.effectiveScale
+                                                    color: Appearance.colors.colSubtext
+                                                    rotation: savedItem.expanded ? 180 : 0
+                                                    Behavior on rotation { NumberAnimation { duration: 200 } }
+                                                }
                                             }
                                         }
                                     }
@@ -101,7 +112,7 @@ import Quickshell
                                         clip: true
                                         color: Appearance.colors.colLayer2
                                         radius: 16 * Appearance.effectiveScale
-                                        
+
                                         // Merge with header by making top square
                                         Rectangle {
                                             width: parent.width
@@ -129,9 +140,11 @@ import Quickshell
                                                     color: Appearance.colors.colPrimary
                                                     font.weight: Font.DemiBold
                                                     Layout.alignment: Qt.AlignVCenter
+                                                    Layout.fillWidth: true
+                                                    wrapMode: Text.WrapAnywhere
                                                 }
 
-                                                Item { Layout.fillWidth: true }
+                                                Item { Layout.fillWidth: true; visible: savedPassLabel.text.length === 0 }
 
                                                 RippleButton {
                                                     buttonText: I18nService.tr("Forget")
@@ -175,4 +188,3 @@ import Quickshell
                         }
                     }
                 } // End savedViewCol
-

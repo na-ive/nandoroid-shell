@@ -157,6 +157,7 @@ ShellRoot {
     DatePickerPanel {}
     TimePickerPanel {}
     AddNetworkPanel {}
+    NetworkPasswordPanel {}
 
     IpcHandler {
         target: "launcher"

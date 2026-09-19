@@ -17,7 +17,12 @@ Singleton {
     property var wiredConnections: []
 
     property bool wifiEnabled: false
-    onWifiEnabledChanged: if (wifiEnabled) update()
+    onWifiEnabledChanged: {
+        if (wifiEnabled) {
+            update();
+            wifiDeviceProc.exec(wifiDeviceProc.command);
+        }
+    }
     
     // WARP VPN properties
     property bool warpConnected: false
@@ -146,11 +151,81 @@ Singleton {
         passwordRecoveryProc.exec(["pkexec", "nmcli", "-s", "-g", "802-11-wireless-security.psk", "connection", "show", ssid]);
     }
 
+    // Update the stored PSK of a saved network (edit dialog).
+    function updateConnectionPassword(ssid, password, reconnect) {
+        pendingReconnectSsid = reconnect ? ssid : "";
+        modifyPskProc.exec(["nmcli", "connection", "modify", "id", ssid, "802-11-wireless-security.psk", password]);
+    }
+
+    property string pendingReconnectSsid: ""
+    Process {
+        id: modifyPskProc
+        onExited: {
+            if (root.pendingReconnectSsid !== "") {
+                savedUpProc.exec(["nmcli", "connection", "up", "id", root.pendingReconnectSsid]);
+                root.pendingReconnectSsid = "";
+            }
+            root.update();
+        }
+    }
+
     function toggleWiredConnection(uuid, active) {
         if (active) {
             wiredDownProc.exec(["nmcli", "connection", "down", uuid]);
         } else {
             wiredUpProc.exec(["nmcli", "connection", "up", uuid]);
+        }
+    }
+
+    function connectSavedNetwork(ssid) {
+        savedUpProc.exec(["nmcli", "connection", "up", "id", ssid]);
+    }
+
+    Process { id: savedUpProc; onExited: root.update() }
+
+    property string wifiDevice: ""
+    property var wifiDetails: ({})
+
+    // Live info comes from the device, not the stored profile (empty on DHCP).
+    // NOTE: every field must be valid — one unknown field fails the whole query.
+    function fetchWifiDetails() {
+        if (root.wifiDevice === "") {
+            wifiDeviceProc.exec(wifiDeviceProc.command);
+            return;
+        }
+        wifiDetailsProc.exec(["nmcli", "-t", "-f", "IP4.ADDRESS,IP4.GATEWAY,IP4.DNS,GENERAL.HWADDR", "device", "show", root.wifiDevice]);
+    }
+
+    Process {
+        id: wifiDeviceProc
+        command: ["sh", "-c", `nmcli -t -f DEVICE,TYPE,STATE d | awk -F: '{if ($2=="wifi") {if (first=="") first=$1; if ($3=="connected") {print $1; found=1; exit}}} END {if (!found && first!="") print first}'`]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                const dev = text.trim().split("\n")[0] || "";
+                root.wifiDevice = dev;
+                if (dev !== "") {
+                    wifiDetailsProc.exec(["nmcli", "-t", "-f", "IP4.ADDRESS,IP4.GATEWAY,IP4.DNS,GENERAL.HWADDR", "device", "show", dev]);
+                } else {
+                    root.wifiDetails = {};
+                }
+            }
+        }
+    }
+
+    Process {
+        id: wifiDetailsProc
+        stdout: StdioCollector {
+            onStreamFinished: {
+                const lines = text.trim().split("\n");
+                const details = {};
+                lines.forEach(line => {
+                    const idx = line.indexOf(":");
+                    if (idx !== -1) {
+                        details[line.substring(0, idx).toLowerCase()] = line.substring(idx + 1);
+                    }
+                });
+                root.wifiDetails = details;
+            }
         }
     }
 
@@ -338,25 +413,28 @@ Singleton {
 
     Process {
         id: updateSavedConnections
-        command: ["nmcli", "-t", "-f", "NAME,TYPE,AUTOCONNECT-PRIORITY,UUID,DEVICE", "connection", "show"]
+        command: ["nmcli", "-t", "-f", "NAME,TYPE,AUTOCONNECT,AUTOCONNECT-PRIORITY,UUID,DEVICE", "connection", "show"]
         stdout: StdioCollector {
             onStreamFinished: {
                 const lines = text.trim().split("\n");
                 const names = [];
                 const wired = [];
                 const priorities = {};
+                const autoconn = {};
                 lines.forEach(line => {
                     const parts = line.split(":");
                     if (parts.length >= 2) {
                         const name = parts[0];
                         const type = parts[1];
-                        const priority = parts[2] ? parseInt(parts[2]) : 0;
-                        const uuid = parts[3];
-                        const device = parts[4];
+                        const ac = parts[2];
+                        const priority = parts[3] ? parseInt(parts[3]) : 0;
+                        const uuid = parts[4];
+                        const device = parts[5];
 
                         if (type === "802-11-wireless") {
                             names.push(name);
                             priorities[name] = priority;
+                            autoconn[name] = (ac !== "no");
                         } else if (type === "802-3-ethernet") {
                             wired.push({
                                 name: name,
@@ -371,15 +449,18 @@ Singleton {
                 });
                 root.savedConnections = names;
                 root.savedPriorities = priorities;
+                root.savedAutoConnect = autoconn;
                 root.wiredConnections = wired;
             }
         }
     }
 
     property var savedPriorities: ({})
+    property var savedAutoConnect: ({})
 
     Component.onCompleted: {
         update()
+        wifiDeviceProc.exec(wifiDeviceProc.command);
         // Initial check; warpMonitor starts automatically after detection.
         warpInitProc.running = true
     }
