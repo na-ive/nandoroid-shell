@@ -10,6 +10,8 @@ import Qt5Compat.GraphicalEffects
 /**
  * Secondary sidebar for the Settings panel.
  * Displays sections for the active settings page automatically from SearchRegistry.
+ * Rendered as a rounded island card (colLayer1), mirroring NetworkDetailsSidebar,
+ * so no divider line is needed between it and the main sidebar.
  */
 Rectangle {
     id: root
@@ -18,7 +20,8 @@ Rectangle {
     property var sections: []
     // Only show if there are sections (more than 1 to be useful)
     property bool hasSections: false
-    color: "transparent"
+    color: Appearance.colors.colLayer1
+    radius: 28 * Appearance.effectiveScale
     clip: true
     
     // Width animation and layout visibility is now handled by subSidebarWrapper in Settings.qml
@@ -86,6 +89,10 @@ Rectangle {
 
     Flickable {
         anchors.fill: parent
+        anchors.leftMargin: 8 * Appearance.effectiveScale
+        anchors.rightMargin: 8 * Appearance.effectiveScale
+        anchors.topMargin: 8 * Appearance.effectiveScale
+        anchors.bottomMargin: 8 * Appearance.effectiveScale
         contentHeight: mainLayout.implicitHeight + 24 * Appearance.effectiveScale
         clip: true
         visible: root.visible
@@ -94,7 +101,6 @@ Rectangle {
         ColumnLayout {
             id: mainLayout
             width: parent.width
-            anchors.margins: 12 * Appearance.effectiveScale
             spacing: 4 * Appearance.effectiveScale
 
         Repeater {
@@ -105,7 +111,7 @@ Rectangle {
                 implicitHeight: 40 * Appearance.effectiveScale // Tighter M3 drawer list item height
                 buttonRadius: 20 * Appearance.effectiveScale // Half of 40 for full capsule
                 colBackground: "transparent"
-                colBackgroundHover: Appearance.colors.colLayer0Hover
+                colBackgroundHover: Appearance.colors.colLayer1Hover
                 
                 onClicked: {
                     // Return to the page's root view first (e.g. About sub-pages),
@@ -126,7 +132,7 @@ Rectangle {
                         text: modelData.matchedString
                         font.pixelSize: Appearance.font.pixelSize.small
                         font.weight: Font.Normal
-                        color: Appearance.colors.colOnLayer0
+                        color: Appearance.colors.colOnLayer1
                         elide: Text.ElideRight
                     }
                 }

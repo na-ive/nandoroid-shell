@@ -337,29 +337,17 @@ Scope {
                         readonly property bool shouldShow: subSidebar.hasSections && settingsWindow.width >= 850 * Appearance.effectiveScale
 
                         Layout.fillHeight: true
-                        implicitWidth: shouldShow ? (1 + 12 + 192 + 12) * Appearance.effectiveScale : 0
+                        implicitWidth: shouldShow ? (192 + 12) * Appearance.effectiveScale : 0
                         clip: true
 
-                        Rectangle {
-                            id: divider
-                            anchors.left: parent.left
-                            anchors.top: parent.top
-                            anchors.bottom: parent.bottom
-                            anchors.topMargin: 16 * Appearance.effectiveScale
-                            anchors.bottomMargin: 16 * Appearance.effectiveScale
-                            width: 1 * Appearance.effectiveScale
-                            color: Appearance.m3colors.m3outlineVariant
-                            opacity: subSidebarWrapper.shouldShow ? 1 : 0
-                            
-                            Behavior on opacity {
-                                NumberAnimation { duration: 150 }
-                            }
+                        // Reveal/collapse the sub sidebar island like NetworkDetailsSidebar
+                        Behavior on implicitWidth {
+                            NumberAnimation { duration: 250; easing.type: Easing.OutQuart }
                         }
 
                         SettingsSubSidebar {
                             id: subSidebar
-                            anchors.left: divider.right
-                            anchors.leftMargin: 12 * Appearance.effectiveScale
+                            anchors.left: parent.left
                             anchors.top: parent.top
                             anchors.bottom: parent.bottom
                             width: 192 * Appearance.effectiveScale
