@@ -24,7 +24,7 @@ ColumnLayout {
 
     ColumnLayout {
         Layout.fillWidth: true
-        spacing: 4 * Appearance.effectiveScale
+        spacing: 2 * Appearance.effectiveScale
 
         RowLayout {
             spacing: 12 * Appearance.effectiveScale

@@ -44,7 +44,7 @@ ColumnLayout {
 
         ColumnLayout {
             Layout.fillWidth: true
-            spacing: 4 * Appearance.effectiveScale // STANDAR GAP 4px
+            spacing: 2 * Appearance.effectiveScale // STANDAR GAP 2px
 
             // ── Enable Dock ──────────────
             SegmentedWrapper {

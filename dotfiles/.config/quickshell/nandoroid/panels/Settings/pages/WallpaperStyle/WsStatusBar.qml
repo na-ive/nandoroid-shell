@@ -490,10 +490,10 @@ ColumnLayout {
                     Row {
                         Layout.fillWidth: true
                         Layout.preferredHeight: 52 * Appearance.effectiveScale
-                        spacing: 4 * Appearance.effectiveScale
+                        spacing: 2 * Appearance.effectiveScale
                         
                         SegmentedButton {
-                            width: (parent.width - (4 * Appearance.effectiveScale)) / 2
+                            width: (parent.width - (2 * Appearance.effectiveScale)) / 2
                             height: parent.height
                             isHighlighted: Config.ready && Config.options.statusBar && Config.options.statusBar.moduleStyle !== "m3"
                             buttonText: I18nService.tr("Base Style")
@@ -501,7 +501,7 @@ ColumnLayout {
                         }
         
                         SegmentedButton {
-                            width: (parent.width - (4 * Appearance.effectiveScale)) / 2
+                            width: (parent.width - (2 * Appearance.effectiveScale)) / 2
                             height: parent.height
                             isHighlighted: Config.ready && Config.options.statusBar && Config.options.statusBar.moduleStyle === "m3"
                             buttonText: I18nService.tr("M3 Style")
@@ -520,7 +520,7 @@ ColumnLayout {
 
                     ColumnLayout {
                         Layout.fillWidth: true
-                        spacing: 4 * Appearance.effectiveScale
+                        spacing: 2 * Appearance.effectiveScale
 
                     // ── Auto Hide ──────────────────────────────────────────────
                     SegmentedWrapper {
@@ -815,7 +815,7 @@ ColumnLayout {
 
                     ColumnLayout {
                         Layout.fillWidth: true
-                        spacing: 4 * Appearance.effectiveScale
+                        spacing: 2 * Appearance.effectiveScale
 
                     // ── Center Module (Clock / None) ────────────
                     SegmentedWrapper {
@@ -1450,7 +1450,7 @@ ColumnLayout {
 
                     ColumnLayout {
                         Layout.fillWidth: true
-                        spacing: 4 * Appearance.effectiveScale
+                        spacing: 2 * Appearance.effectiveScale
 
                     // ── Workspace Style (Shape) ──
                     SegmentedWrapper {

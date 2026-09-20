@@ -12,7 +12,7 @@ import Quickshell.Io
 ColumnLayout {
     id: root
     Layout.fillWidth: true
-    spacing: 4 * Appearance.effectiveScale
+    spacing: 2 * Appearance.effectiveScale
 
     SearchHandler {
         searchString: "Sounds"

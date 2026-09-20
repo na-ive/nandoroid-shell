@@ -11,7 +11,7 @@ import Quickshell.Io
 
 ColumnLayout {
     Layout.fillWidth: true
-    spacing: 4 * Appearance.effectiveScale
+    spacing: 2 * Appearance.effectiveScale
 
     SearchHandler { 
         searchString: "Wallpaper Slideshow"

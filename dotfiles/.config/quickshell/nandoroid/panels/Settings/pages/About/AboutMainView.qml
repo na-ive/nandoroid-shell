@@ -170,7 +170,7 @@ ColumnLayout {
 
                 ColumnLayout {
                     Layout.fillWidth: true
-                    spacing: 4 * Appearance.effectiveScale
+                    spacing: 2 * Appearance.effectiveScale
 
                     InfoRow { label: I18nService.tr("Distro"); value: SystemInfo.distroName }
                     InfoRow { label: I18nService.tr("Username"); value: SystemInfo.username }
@@ -209,7 +209,7 @@ ColumnLayout {
 
                 ColumnLayout {
                     Layout.fillWidth: true
-                    spacing: 4 * Appearance.effectiveScale
+                    spacing: 2 * Appearance.effectiveScale
 
                     InfoRow { label: I18nService.tr("Processor"); value: SystemInfo.cpu }
                     InfoRow { label: "GPU"; value: SystemInfo.gpu }
@@ -243,7 +243,7 @@ ColumnLayout {
 
                 ColumnLayout {
                     Layout.fillWidth: true
-                    spacing: 4 * Appearance.effectiveScale
+                    spacing: 2 * Appearance.effectiveScale
 
                     SegmentedWrapper {
                         id: onboardingLinkWrapper

@@ -62,7 +62,7 @@ ColumnLayout {
 
         ColumnLayout {
             Layout.fillWidth: true
-            spacing: 4 * Appearance.effectiveScale
+            spacing: 2 * Appearance.effectiveScale
             visible: Config.ready && Config.options.appearance.atAGlance.show
 
             // Show Greeting (whole card clickable)

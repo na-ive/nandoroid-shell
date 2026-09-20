@@ -20,7 +20,7 @@ ColumnLayout {
 
     ColumnLayout {
         Layout.fillWidth: true
-        spacing: 4 * Appearance.effectiveScale
+        spacing: 2 * Appearance.effectiveScale
 
         RowLayout {
             spacing: 12 * Appearance.effectiveScale
@@ -42,7 +42,7 @@ ColumnLayout {
         // List of monitored disks
         ColumnLayout {
             Layout.fillWidth: true
-            spacing: 4 * Appearance.effectiveScale
+            spacing: 2 * Appearance.effectiveScale
 
             Repeater {
                 model: (Config.ready && Config.options.system) ? Config.options.system.monitoredDisks : []

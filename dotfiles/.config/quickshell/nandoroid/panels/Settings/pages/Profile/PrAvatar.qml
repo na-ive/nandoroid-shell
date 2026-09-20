@@ -68,7 +68,7 @@ ColumnLayout {
 
     ColumnLayout {
         Layout.fillWidth: true
-        spacing: 4 * Appearance.effectiveScale
+        spacing: 2 * Appearance.effectiveScale
 
         SearchHandler {
             searchString: "Avatar"
@@ -255,7 +255,7 @@ ColumnLayout {
     ColumnLayout {
         Layout.fillWidth: true
         Layout.topMargin: 24 * Appearance.effectiveScale
-        spacing: 4 * Appearance.effectiveScale
+        spacing: 2 * Appearance.effectiveScale
 
         SearchHandler {
             searchString: "Banner"
@@ -498,7 +498,7 @@ ColumnLayout {
     ColumnLayout {
         Layout.fillWidth: true
         Layout.topMargin: 24 * Appearance.effectiveScale
-        spacing: 4 * Appearance.effectiveScale
+        spacing: 2 * Appearance.effectiveScale
 
         SearchHandler {
             searchString: "Distro Icon"

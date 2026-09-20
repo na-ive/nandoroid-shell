@@ -51,7 +51,7 @@ ColumnLayout {
         ColumnLayout {
             id: weatherColumn
             Layout.fillWidth: true
-            spacing: 4 * Appearance.effectiveScale
+            spacing: 2 * Appearance.effectiveScale
 
             readonly property bool weatherServiceOn: Config.ready && (Config.options.weather?.enable ?? true)
 
@@ -170,7 +170,7 @@ ColumnLayout {
 
         ColumnLayout {
             Layout.fillWidth: true
-            spacing: 4 * Appearance.effectiveScale
+            spacing: 2 * Appearance.effectiveScale
 
             SegmentedWrapper {
                 id: showQsPerfCard

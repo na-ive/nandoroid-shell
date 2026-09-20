@@ -389,7 +389,7 @@ Item {
             // ── Layout & Arrangement Controls (Directly under visualization) ──
             ColumnLayout {
                 Layout.fillWidth: true
-                spacing: 4 * Appearance.effectiveScale
+                spacing: 2 * Appearance.effectiveScale
                 visible: root.currentMonitorIndex !== 0 && root.monitorList.length > 1
 
                 RowLayout {
@@ -613,7 +613,7 @@ Item {
             // ── Selected Monitor Settings ──
             ColumnLayout {
                 Layout.fillWidth: true
-                spacing: 4 * Appearance.effectiveScale
+                spacing: 2 * Appearance.effectiveScale
                 visible: root.currentMonitor !== null
 
                 RowLayout {
@@ -959,7 +959,7 @@ Item {
             // ── UI Scaling Section ──
             ColumnLayout {
                 Layout.fillWidth: true
-                spacing: 4 * Appearance.effectiveScale
+                spacing: 2 * Appearance.effectiveScale
 
                 RowLayout {
                     spacing: 12 * Appearance.effectiveScale

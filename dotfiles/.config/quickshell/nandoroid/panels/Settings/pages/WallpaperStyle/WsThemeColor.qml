@@ -96,7 +96,7 @@ ColumnLayout {
                 }
                 
                 SegmentedButton {
-                    width: (parent.width - (4 * Appearance.effectiveScale)) / 2
+                    width: (parent.width - (2 * Appearance.effectiveScale)) / 2
                     height: parent.height
                     isHighlighted: parent.currentTab === "wallpaper"
                     buttonText: I18nService.tr("Wallpaper color")
@@ -104,7 +104,7 @@ ColumnLayout {
                 }
 
                 SegmentedButton {
-                    width: (parent.width - (4 * Appearance.effectiveScale)) / 2
+                    width: (parent.width - (2 * Appearance.effectiveScale)) / 2
                     height: parent.height
                     isHighlighted: parent.currentTab === "basic"
                     buttonText: I18nService.tr("Basic colors")

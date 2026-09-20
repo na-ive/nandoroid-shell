@@ -120,7 +120,7 @@ ColumnLayout {
         RowLayout {
             Layout.fillWidth: true
             visible: rootClock.dedicatedIsLock || (Config.ready && !Config.options.appearance.clock.useSameStyle)
-            spacing: 4 * Appearance.effectiveScale
+            spacing: 2 * Appearance.effectiveScale
 
             Repeater {
                 model: [
@@ -798,7 +798,7 @@ ColumnLayout {
         ColumnLayout {
             id: fontsCol
 
-            Layout.fillWidth: true; spacing: 4 * Appearance.effectiveScale
+            Layout.fillWidth: true; spacing: 2 * Appearance.effectiveScale
             z: 10 // Ensure dropdowns overlap below elements
             visible: rootClock.dedicatedIsLock || (Config.ready && !Config.options.appearance.clock.useSameStyle)
             // Pixel clock hardcodes its display font; the picker is locked while it is active
@@ -946,7 +946,7 @@ ColumnLayout {
         // Global Toggles
         ColumnLayout {
             Layout.fillWidth: true
-            spacing: 4 * Appearance.effectiveScale
+            spacing: 2 * Appearance.effectiveScale
             visible: !rootClock.dedicatedIsLock
             SegmentedWrapper {
                 id: syncStylesCard
