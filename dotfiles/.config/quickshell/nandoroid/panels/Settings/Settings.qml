@@ -335,15 +335,30 @@ Scope {
                         id: subSidebarWrapper
                         
                         readonly property bool shouldShow: subSidebar.hasSections && settingsWindow.width >= 850 * Appearance.effectiveScale
+                        // Width snaps in one frame (animating it would re-layout
+                        // the active page every frame and stutter); the island's
+                        // own fade/slide provides the motion. Collapse is delayed
+                        // so the fade-out finishes before the slot collapses.
+                        property bool collapsed: true
+
+                        onShouldShowChanged: {
+                            if (shouldShow) {
+                                hideDelay.stop();
+                                collapsed = false;
+                            } else {
+                                hideDelay.restart();
+                            }
+                        }
+
+                        Timer {
+                            id: hideDelay
+                            interval: 180
+                            onTriggered: subSidebarWrapper.collapsed = true
+                        }
 
                         Layout.fillHeight: true
-                        implicitWidth: shouldShow ? (192 + 12) * Appearance.effectiveScale : 0
+                        implicitWidth: collapsed ? 0 : (192 + 12) * Appearance.effectiveScale
                         clip: true
-
-                        // Reveal/collapse the sub sidebar island like NetworkDetailsSidebar
-                        Behavior on implicitWidth {
-                            NumberAnimation { duration: 250; easing.type: Easing.OutQuart }
-                        }
 
                         SettingsSubSidebar {
                             id: subSidebar

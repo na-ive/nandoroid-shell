@@ -48,16 +48,39 @@ Rectangle {
         return sec;
     }
 
+    // Width snaps in a single frame instead of animating: an animated width
+    // re-solves the whole RowLayout AND the active page's layout tree on every
+    // frame, which stutters. Motion comes from the opacity fade + content
+    // slide below; on close the collapse is delayed so the fade finishes first.
+    readonly property bool open: network !== null
+    property bool collapsed: true
+    onOpenChanged: {
+        if (open) {
+            closeDelay.stop();
+            collapsed = false;
+        } else {
+            closeDelay.restart();
+        }
+    }
+    Component.onCompleted: collapsed = !open
+
+    Timer {
+        id: closeDelay
+        interval: 180
+        onTriggered: detailsIsland.collapsed = true
+    }
+
     Layout.fillHeight: true
-    Layout.preferredWidth: network !== null ? 320 * Appearance.effectiveScale : 0
-    // Stay visible until the close animation reaches 0, otherwise exit pops.
+    Layout.preferredWidth: collapsed ? 0 : 320 * Appearance.effectiveScale
+    // Stay visible until the collapse delay elapses, otherwise exit pops.
     visible: Layout.preferredWidth > 0
     color: Appearance.colors.colLayer1
     radius: 28 * Appearance.effectiveScale
     clip: true
 
-    Behavior on Layout.preferredWidth {
-        NumberAnimation { duration: 250; easing.type: Easing.OutQuart }
+    opacity: open ? 1 : 0
+    Behavior on opacity {
+        NumberAnimation { duration: 150 }
     }
 
     onNetworkChanged: {
@@ -106,7 +129,18 @@ Rectangle {
         anchors.fill: parent
         anchors.margins: 16 * Appearance.effectiveScale
         spacing: 0
-        visible: detailsIsland.network !== null
+        // Track the collapsed flag (not network) so content keeps rendering
+        // while the close fade plays.
+        visible: !detailsIsland.collapsed
+
+        transform: Translate {
+            // Right-docked island: content enters from (and exits toward) the
+            // right edge, clipped inside the island.
+            x: detailsIsland.open ? 0 : 24 * Appearance.effectiveScale
+            Behavior on x {
+                NumberAnimation { duration: 220; easing.type: Easing.OutCubic }
+            }
+        }
 
         RowLayout {
             Layout.fillWidth: true
