@@ -254,6 +254,149 @@ Singleton {
         }
     }
 
+    // ── Per-profile control (BlueZ) ─────────────────────────────
+    // Quickshell does not expose the profile UUID list, so we probe devices
+    // with bluetoothctl (a guaranteed dependency) and drive single profiles
+    // with busctl against org.bluez.Device1. If probing fails the UI simply
+    // hides the per-profile toggles.
+    readonly property string audioSinkUuid: "0000110b-0000-1000-8000-00805f9b34fb"
+    readonly property string audioSourceUuid: "0000110a-0000-1000-8000-00805f9b34fb"
+    readonly property string handsfreeUuid: "0000111e-0000-1000-8000-00805f9b34fb"
+    readonly property string headsetUuid: "00001108-0000-1000-8000-00805f9b34fb"
+    readonly property string phonebookUuid: "0000112f-0000-1000-8000-00805f9b34fb"
+
+    // address -> [uuid, ...] probed from bluetoothctl info
+    property var deviceUuids: ({})
+
+    function fetchDeviceUuids(device) {
+        if (!device || !device.address) return;
+        uuidProbeProc.targetAddress = device.address;
+        uuidProbeProc.exec(["bluetoothctl", "info", device.address]);
+    }
+
+    Process {
+        id: uuidProbeProc
+        property string targetAddress: ""
+        stdout: StdioCollector {
+            onStreamFinished: {
+                const uuids = [];
+                const re = /([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})/g;
+                let m;
+                while ((m = re.exec(text)) !== null) uuids.push(m[1].toLowerCase());
+                if (uuidProbeProc.targetAddress === "") return;
+                const next = Object.assign({}, root.deviceUuids);
+                next[uuidProbeProc.targetAddress] = uuids;
+                root.deviceUuids = next;
+            }
+        }
+    }
+
+    // Pick the concrete UUID to (dis)connect for a capability.
+    function a2dpUuidFor(uuids) {
+        if (!uuids) return "";
+        if (uuids.includes(audioSinkUuid)) return audioSinkUuid;
+        if (uuids.includes(audioSourceUuid)) return audioSourceUuid;
+        return "";
+    }
+    function hfpUuidFor(uuids) {
+        if (!uuids) return "";
+        if (uuids.includes(handsfreeUuid)) return handsfreeUuid;
+        if (uuids.includes(headsetUuid)) return headsetUuid;
+        return "";
+    }
+    function hasPhonebook(uuids) {
+        return !!uuids && uuids.includes(phonebookUuid);
+    }
+
+    // Optimistic per-profile state: connecting a device brings every
+    // supported profile up, so the default is "on"; overrides are dropped
+    // again when the device disconnects.
+    property var profileOverrides: ({})
+    function profileEnabled(address, key) {
+        const o = profileOverrides[address];
+        return (o && o[key] !== undefined) ? o[key] : true;
+    }
+    function setProfileEnabled(address, key, value) {
+        const next = Object.assign({}, profileOverrides);
+        next[address] = Object.assign({}, next[address] || {}, { [key]: value });
+        profileOverrides = next;
+    }
+
+    // Connect/disconnect a single profile (A2DP audio, HFP calls, PBAP contacts).
+    function connectProfile(device, uuid) {
+        if (!device || !uuid || !device.dbusPath) return;
+        profileProc.exec(["busctl", "call", "org.bluez", device.dbusPath, "org.bluez.Device1", "ConnectProfile", "s", uuid]);
+    }
+    function disconnectProfile(device, uuid) {
+        if (!device || !uuid || !device.dbusPath) return;
+        profileProc.exec(["busctl", "call", "org.bluez", device.dbusPath, "org.bluez.Device1", "DisconnectProfile", "s", uuid]);
+    }
+    Process { id: profileProc }
+
+    onConnectedDevicesChanged: {
+        // Reset optimistic per-profile overrides for devices that are no
+        // longer connected, so reconnecting starts with every profile on.
+        let next = null;
+        for (const addr in profileOverrides) {
+            const dev = Bluetooth.devices.values.find(d => d.address === addr);
+            if (!dev || !dev.connected) {
+                if (next === null) next = Object.assign({}, profileOverrides);
+                delete next[addr];
+            }
+        }
+        if (next !== null) profileOverrides = next;
+    }
+
+    // Material symbol for a BlueZ device icon / device type string.
+    // BlueZ reports the class the peripheral claims ("audio-headset",
+    // "input-gaming", ...), which is the same source Android uses, so
+    // TWS earbuds show up as headsets and gamepads as gaming devices.
+    function deviceIcon(type) {
+        if (!type) return "bluetooth";
+        switch (String(type)) {
+            case "phone": return "smartphone";
+            case "computer": return "computer";
+            case "audio-headset": return "headset";
+            case "audio-headphones": return "headphones";
+            case "audio-card": return "speaker";
+            case "input-gaming": return "sports_esports";
+            case "input-keyboard": return "keyboard";
+            case "input-mouse": return "mouse";
+            case "input-tablet": return "draw";
+            case "camera-video": return "videocam";
+            case "camera-photo": return "photo_camera";
+            case "multimedia-player": return "music_note";
+            case "printer": return "print";
+            case "network-wireless": return "router";
+            default: return "bluetooth";
+        }
+    }
+
+    // Resolve the icon for a device object: prefer BlueZ's reported icon
+    // string; deviceType only exists on some Quickshell builds.
+    function deviceTypeIcon(device) {
+        if (!device) return "bluetooth";
+        return deviceIcon(device.icon || device.deviceType || "");
+    }
+
+    // M3 container pair per device category, so each kind of peripheral gets
+    // a distinct tint: audio=primary, gaming=tertiary, phone/PC/input=secondary.
+    function deviceColors(type) {
+        const audioPair = { container: Appearance.colors.colPrimaryContainer, on: Appearance.colors.colOnPrimaryContainer };
+        if (!type) return audioPair;
+        const t = String(type);
+        if (t === "input-gaming")
+            return { container: Appearance.colors.colTertiaryContainer, on: Appearance.colors.colOnTertiaryContainer };
+        if (t.startsWith("input") || t === "phone" || t === "computer")
+            return { container: Appearance.colors.colSecondaryContainer, on: Appearance.colors.colOnSecondaryContainer };
+        return audioPair;
+    }
+
+    function deviceTypeColors(device) {
+        if (!device) return { container: Appearance.colors.colPrimaryContainer, on: Appearance.colors.colOnPrimaryContainer };
+        return deviceColors(device.icon || device.deviceType || "");
+    }
+
     function sortFunction(a, b) {
         // Ones with meaningful names before MAC addresses
         const macRegex = /^([0-9A-Fa-f]{2}-){5}[0-9A-Fa-f]{2}$/;

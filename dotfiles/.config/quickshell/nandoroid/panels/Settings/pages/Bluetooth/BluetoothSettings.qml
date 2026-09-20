@@ -8,7 +8,6 @@ import QtQuick.Layouts
 import QtQuick.Controls
 import Quickshell
 import Quickshell.Bluetooth
-import QtQuick.Shapes
 
 /**
  * Functional Bluetooth Settings page.
@@ -16,23 +15,62 @@ import QtQuick.Shapes
  */
 Item {
     id: root
-    
-    property int stackLevel: 0 // 0: Main, 1: Pair Menu
 
+    property string currentView: "main" // "main" or "pair"
+
+    function openPairView() {
+        root.currentView = "pair";
+    }
+    function closePairView() {
+        root.currentView = "main";
+    }
+
+    // Device details island lives at window level (Settings.qml); selection
+    // is kept in GlobalStates, mirroring the Network page.
+    function openDetails(device) {
+        GlobalStates.openBluetoothDetails(device);
+    }
+    function closeDetails() {
+        GlobalStates.closeBluetoothDetails();
+    }
+    // Close the details island when its device is forgotten or vanishes.
+    function closeIfDeviceGone() {
+        const t = GlobalStates.bluetoothDetailsTarget;
+        if (!t) return;
+        const stillThere = [...BluetoothStatus.connectedDevices, ...BluetoothStatus.pairedButNotConnectedDevices]
+            .some(d => d.address === t.address);
+        if (!stillThere) GlobalStates.closeBluetoothDetails();
+    }
+
+    // Deep link from QuickSettings: jump straight into pairing mode.
     function checkPairMode() {
         if (GlobalStates.settingsBluetoothPairMode) {
-            root.stackLevel = 1;
+            root.currentView = "pair";
+        }
+    }
+    Component.onCompleted: checkPairMode()
+
+    onVisibleChanged: {
+        if (visible) checkPairMode()
+        else {
+            root.currentView = "main";
+            BluetoothStatus.stopDiscovery();
+            root.closeDetails();
         }
     }
 
-    Component.onCompleted: checkPairMode()
-    onVisibleChanged: if (visible) checkPairMode()
+    // Reset scroll and stop scanning when changing views
+    onCurrentViewChanged: {
+        mainFlicking.contentY = 0
+        if (currentView !== "pair") BluetoothStatus.stopDiscovery()
+        if (currentView !== "main") root.closeDetails()
+    }
 
     Connections {
         target: GlobalStates
         function onSettingsBluetoothPairModeChanged() {
             if (GlobalStates.settingsBluetoothPairMode) {
-                root.stackLevel = 1;
+                root.currentView = "pair";
             }
         }
     }
@@ -41,364 +79,106 @@ Item {
         target: BluetoothStatus
         function onEnabledChanged() {
             if (!BluetoothStatus.enabled) {
-                root.stackLevel = 0;
+                root.currentView = "main";
+                root.closeDetails();
             }
         }
+        // Return to the device list once pairing finishes successfully.
+        function onDeviceConnected(device) {
+            root.currentView = "main";
+        }
+        // Auto-close the details island when its device is forgotten.
+        function onConnectedDevicesChanged() { root.closeIfDeviceGone() }
+        function onPairedButNotConnectedDevicesChanged() { root.closeIfDeviceGone() }
     }
-    
+
     ColumnLayout {
-        id: mainLayout
-        anchors.top: parent.top
-        anchors.bottom: parent.bottom
-        anchors.left: parent.left
-        width: parent.width - (24 * Appearance.effectiveScale)
+        anchors.fill: parent
+        anchors.margins: 0
         spacing: 24 * Appearance.effectiveScale
-        visible: stackLevel === 0
 
         // ── Header ──
         ColumnLayout {
             spacing: 4 * Appearance.effectiveScale
+            Layout.fillWidth: true
+            Layout.rightMargin: 24 * Appearance.effectiveScale
+
             RowLayout {
                 Layout.fillWidth: true
+                spacing: 12 * Appearance.effectiveScale
+
+                // Back Button (only in sub-pages)
+                RippleButton {
+                    visible: root.currentView !== "main"
+                    implicitWidth: 40 * Appearance.effectiveScale
+                    implicitHeight: 40 * Appearance.effectiveScale
+                    buttonRadius: 20 * Appearance.effectiveScale
+                    colBackground: Appearance.colors.colLayer1
+                    onClicked: root.currentView = "main"
+                    contentItem: MaterialSymbol {
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                        text: "arrow_back"
+                        iconSize: 24 * Appearance.effectiveScale
+                        color: Appearance.colors.colOnLayer1
+                    }
+                }
+
                 StyledText {
-                    text: I18nService.tr("Bluetooth")
+                    text: {
+                        if (root.currentView === "main") return I18nService.tr("Bluetooth")
+                        if (root.currentView === "pair") return I18nService.tr("Pair new device")
+                        return I18nService.tr("Bluetooth")
+                    }
                     font.pixelSize: Appearance.font.pixelSize.huge
                     font.family: Appearance.font.family.title
                     font.weight: Font.DemiBold
                     color: Appearance.colors.colOnLayer1
                     Layout.fillWidth: true
                 }
-                
-
-                // Bluetooth Global Toggle
-                AndroidToggle {
-                        checked: BluetoothStatus.enabled
-                        onToggled: {
-                            BluetoothStatus.toggle();
-                    }
-                }
             }
             StyledText {
-                text: I18nService.tr("Pair and manage your Bluetooth devices.")
+                text: {
+                    if (root.currentView === "main") return I18nService.tr("Pair and manage your Bluetooth devices.")
+                    if (root.currentView === "pair") return I18nService.tr("Select a nearby device to pair.")
+                    return ""
+                }
                 font.pixelSize: Appearance.font.pixelSize.normal
                 color: Appearance.colors.colSubtext
             }
         }
 
-        // ── Device Section ──
-        ColumnLayout {
-            Layout.fillWidth: true
-            spacing: 12 * Appearance.effectiveScale
-            visible: BluetoothStatus.enabled
-
-
-            RippleButton {
-                Layout.fillWidth: true
-                Layout.preferredHeight: 48 * Appearance.effectiveScale
-                buttonRadius: 16 * Appearance.effectiveScale
-                colBackground: Appearance.colors.colLayer1
-                onClicked: root.stackLevel = 1
-                
-                RowLayout {
-                    anchors.centerIn: parent
-                    spacing: 8 * Appearance.effectiveScale
-                    MaterialSymbol {
-                        text: "add"
-                        iconSize: 20 * Appearance.effectiveScale
-                        color: Appearance.colors.colPrimary
-                    }
-                    StyledText {
-                        text: I18nService.tr("Pair new device")
-                        font.weight: Font.Medium
-                        color: Appearance.colors.colOnLayer1
-                    }
-                }
-            }
-
-            StyledText {
-                text: I18nService.tr("Saved devices")
-                font.pixelSize: Appearance.font.pixelSize.large
-                font.family: Appearance.font.family.title
-                font.weight: Font.DemiBold
-                color: Appearance.colors.colOnLayer1
-                visible: BluetoothStatus.pairedButNotConnectedDevices.length + BluetoothStatus.connectedDevices.length > 0
-                Layout.topMargin: 8 * Appearance.effectiveScale
-            }
-
-            Rectangle {
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-                radius: 16 * Appearance.effectiveScale
-                color: Appearance.colors.colLayer1
-                clip: true
-
-                ListView {
-                    id: deviceList
-                    anchors.fill: parent
-                    anchors.margins: 8 * Appearance.effectiveScale
-                    clip: true
-                    spacing: 4 * Appearance.effectiveScale
-                    model: [...BluetoothStatus.connectedDevices, ...BluetoothStatus.pairedButNotConnectedDevices]
-
-                    delegate: Item {
-                        id: deviceItem
-                        width: deviceList.width
-                        height: implicitHeight
-                        implicitHeight: deviceContent.implicitHeight
-                        property bool expanded: false
-
-                        ColumnLayout {
-                            id: deviceContent
-                            width: parent.width
-                            spacing: 0
-
-                            RippleButton {
-                                id: cardHeader
-                                Layout.fillWidth: true
-                                implicitHeight: 64 * Appearance.effectiveScale
-                                buttonRadius: 16 * Appearance.effectiveScale
-                                colBackground: {
-                                    if (modelData.connected) return Functions.ColorUtils.mix(Appearance.colors.colLayer1, Appearance.colors.colPrimary, 0.92)
-                                    if (expanded) return Appearance.colors.colLayer1Hover
-                                    return "transparent"
-                                }
-                                
-                                onClicked: {
-                                    if (modelData.connected) {
-                                        modelData.disconnect();
-                                    } else {
-                                        modelData.connect();
-                                    }
-                                }
-
-                                RowLayout {
-                                    anchors.fill: parent
-                                    anchors.leftMargin: 16 * Appearance.effectiveScale
-                                    anchors.rightMargin: 16 * Appearance.effectiveScale
-                                    spacing: 16 * Appearance.effectiveScale
-
-                                    MaterialSymbol {
-                                        text: {
-                                            const type = modelData.deviceType;
-                                            if (type === "phone") return "smartphone";
-                                            if (type === "computer") return "computer";
-                                            if (type === "audio-card") return "headset";
-                                            return "bluetooth";
-                                        }
-                                        iconSize: 24 * Appearance.effectiveScale
-                                        color: modelData.connected ? Appearance.colors.colPrimary : Appearance.colors.colSubtext
-                                    }
-
-                                    ColumnLayout {
-                                        Layout.fillWidth: true
-                                        spacing: 0
-                                        StyledText {
-                                            text: modelData.name || modelData.address
-                                            font.pixelSize: Appearance.font.pixelSize.normal
-                                            font.weight: modelData.connected ? Font.DemiBold : Font.Normal
-                                            color: Appearance.colors.colOnLayer1
-                                            elide: Text.ElideRight
-                                            Layout.fillWidth: true
-                                        }
-                                        StyledText {
-                                            text: {
-                                                if (modelData.connected) return I18nService.tr("Connected") + (modelData.batteryAvailable ? " · " + Math.round(modelData.battery * 100) + "%" : "");
-                                                if (modelData.state === BluetoothDeviceState.Connecting) return I18nService.tr("Connecting...");
-                                                if (modelData.pairing) return I18nService.tr("Pairing...");
-                                                if (modelData.paired || modelData.trusted) return I18nService.tr("Paired");
-                                                return I18nService.tr("Available");
-                                            }
-                                            font.pixelSize: Appearance.font.pixelSize.small
-                                            color: {
-                                                if (modelData.state === BluetoothDeviceState.Connecting || modelData.pairing) return Appearance.colors.colPrimary;
-                                                return Appearance.colors.colSubtext;
-                                            }
-                                            Layout.fillWidth: true
-                                        }
-                                    }
-
-                                    RippleButton {
-                                        implicitWidth: 32 * Appearance.effectiveScale
-                                        implicitHeight: 32 * Appearance.effectiveScale
-                                        buttonRadius: 16 * Appearance.effectiveScale
-                                        colBackground: "transparent"
-                                        onClicked: deviceItem.expanded = !deviceItem.expanded
-                                        contentItem: MaterialSymbol {
-                                            horizontalAlignment: Text.AlignHCenter
-                                            verticalAlignment: Text.AlignVCenter
-                                            text: deviceItem.expanded ? "expand_less" : "expand_more"
-                                            iconSize: 20 * Appearance.effectiveScale
-                                            color: Appearance.colors.colSubtext
-                                        }
-                                    }
-                                }
-
-                                // Header rounding overlay for expansion joint
-                                Rectangle {
-                                    anchors.fill: parent
-                                    visible: deviceItem.expanded
-                                    color: cardHeader.colBackground
-                                    z: -1
-                                    radius: 16 * Appearance.effectiveScale
-                                    // Make bottom square
-                                    Rectangle {
-                                        anchors.bottom: parent.bottom
-                                        width: parent.width
-                                        height: 16 * Appearance.effectiveScale
-                                        color: parent.color
-                                    }
-                                }
-                            }
-
-                            // ── Expanded Actions ──
-                            Rectangle {
-                                id: cardExpansion
-                                Layout.fillWidth: true
-                                Layout.preferredHeight: deviceItem.expanded ? expansionColumn.implicitHeight + (32 * Appearance.effectiveScale) : 0
-                                clip: true
-                                color: Appearance.colors.colLayer2
-                                radius: 16 * Appearance.effectiveScale
-                                opacity: deviceItem.expanded ? 1 : 0
-                                visible: Layout.preferredHeight > 0
-                                Behavior on Layout.preferredHeight { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
-                                Behavior on opacity { NumberAnimation { duration: 200 } }
-                                
-                                // Merge with header by making top square
-                                Rectangle {
-                                    width: parent.width
-                                    height: 16 * Appearance.effectiveScale
-                                    color: parent.color
-                                    visible: deviceItem.expanded
-                                    anchors.top: parent.top
-                                }
-
-                                ColumnLayout {
-                                    id: expansionColumn
-                                    anchors.left: parent.left
-                                    anchors.right: parent.right
-                                    anchors.leftMargin: 16 * Appearance.effectiveScale
-                                    anchors.rightMargin: 16 * Appearance.effectiveScale
-                                    anchors.top: parent.top
-                                    anchors.topMargin: 16 * Appearance.effectiveScale
-                                    spacing: 12 * Appearance.effectiveScale
-
-
-                                    RowLayout {
-                                        Layout.fillWidth: true
-                                        spacing: 12 * Appearance.effectiveScale
-                                        
-                                        // Left Side: Address (Always left when expanded)
-                                        StyledText {
-                                            text: I18nService.tr("Address: ") + modelData.address
-                                            font.pixelSize: Appearance.font.pixelSize.smaller
-                                            color: Appearance.colors.colSubtext
-                                            Layout.alignment: Qt.AlignVCenter
-                                        }
-
-                                        Item { Layout.fillWidth: true }
-
-                                        // Right Side: Action Buttons
-                                        // Forget button (only if saved and NOT currently connected)
-                                        RippleButton {
-                                            visible: (modelData.paired || modelData.trusted) && !modelData.connected
-                                            buttonText: I18nService.tr("Forget")
-                                            implicitWidth: 90 * Appearance.effectiveScale
-                                            implicitHeight: 36 * Appearance.effectiveScale
-                                            buttonRadius: 18 * Appearance.effectiveScale
-                                            colBackground: Appearance.m3colors.m3error
-                                            colText: Appearance.m3colors.m3onError
-                                            onClicked: {
-                                                if (modelData.forget) modelData.forget()
-                                                else if (modelData.unpair) modelData.unpair()
-                                                modelData.trusted = false
-                                                deviceItem.expanded = false
-                                            }
-                                        }
-
-                                        RippleButton {
-                                            visible: modelData.paired
-                                            buttonText: modelData.connected ? I18nService.tr("Disconnect") : I18nService.tr("Connect")
-                                            implicitWidth: 110 * Appearance.effectiveScale
-                                            implicitHeight: 36 * Appearance.effectiveScale
-                                            buttonRadius: 18 * Appearance.effectiveScale
-                                            colBackground: Appearance.colors.colPrimary
-                                            colText: Appearance.colors.colOnPrimary
-                                            onClicked: {
-                                                if (modelData.connected) modelData.disconnect()
-                                                else BluetoothStatus.pairAndTrust(modelData)
-                                                deviceItem.expanded = false
-                                            }
-                                        }
-
-                                        RippleButton {
-                                            visible: !modelData.paired
-                                            buttonText: I18nService.tr("Pair & Connect")
-                                            implicitWidth: 110 * Appearance.effectiveScale
-                                            implicitHeight: 36 * Appearance.effectiveScale
-                                            buttonRadius: 18 * Appearance.effectiveScale
-                                            colBackground: Appearance.colors.colPrimary
-                                            colText: Appearance.colors.colOnPrimary
-                                            onClicked: {
-                                                BluetoothStatus.pairAndTrust(modelData)
-                                                deviceItem.expanded = false
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    ScrollBar.vertical: ScrollBar {
-                        active: deviceList.moving || deviceList.flicking
-                    }
-                }
-            }
-        }
-
-        // ── Offline State ──
-        ColumnLayout {
+        // ── Scrollable Content Area ──
+        Item {
             Layout.fillWidth: true
             Layout.fillHeight: true
-            visible: !BluetoothStatus.enabled
-            spacing: 16 * Appearance.effectiveScale
-            
-            Item { Layout.fillHeight: true }
-            
-            MaterialSymbol {
-                Layout.alignment: Qt.AlignHCenter
-                text: "bluetooth_disabled"
-                iconSize: 64 * Appearance.effectiveScale
-                color: Appearance.colors.colSubtext
-            }
-            
-            StyledText {
-                Layout.fillWidth: true
-                Layout.alignment: Qt.AlignHCenter
-                horizontalAlignment: Text.AlignHCenter
-                text: I18nService.tr("Bluetooth is turned off")
-                font.pixelSize: Appearance.font.pixelSize.large
-                font.family: Appearance.font.family.title
-                color: Appearance.colors.colSubtext
-            }
-            
-            Item { Layout.fillHeight: true }
+
+            Flickable {
+                id: mainFlicking
+                anchors.fill: parent
+                contentHeight: contentCol.implicitHeight
+                clip: true
+                interactive: true
+
+                ScrollBar.vertical: ScrollBar {}
+
+                ColumnLayout {
+                    id: contentCol
+                    width: parent.width - (24 * Appearance.effectiveScale)
+                    spacing: 24 * Appearance.effectiveScale
+
+                    BluetoothMainView {
+                        id: mainViewCol
+                        Layout.fillWidth: true
+                        visible: root.currentView === "main"
+                    }
+                    BluetoothPairView {
+                        id: pairViewCol
+                        Layout.fillWidth: true
+                        visible: root.currentView === "pair"
+                    }
+                }
+            } // End Flickable
         }
     }
-
-    // ── Pair New Device Sub-page ──
-    Loader {
-        anchors.top: parent.top
-        anchors.bottom: parent.bottom
-        anchors.left: parent.left
-        width: parent.width - (24 * Appearance.effectiveScale)
-        visible: stackLevel === 1
-        sourceComponent: Component { BluetoothPairDialog {} }
-        onVisibleChanged: {
-            if (visible && BluetoothStatus.enabled) {
-                BluetoothStatus.startDiscovery();
-            }
-        }
-    }
-
 }

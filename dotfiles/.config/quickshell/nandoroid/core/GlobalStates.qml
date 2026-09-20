@@ -71,10 +71,20 @@ Singleton {
     // "Network details" island next to the Settings page card.
     property var networkDetailsTarget: null
     function openNetworkDetails(accessPoint) {
+        bluetoothDetailsTarget = null;
         networkDetailsTarget = accessPoint;
     }
     function closeNetworkDetails() {
         networkDetailsTarget = null;
+    }
+    // "Device details" island for Bluetooth, same slot as the network one.
+    property var bluetoothDetailsTarget: null
+    function openBluetoothDetails(device) {
+        networkDetailsTarget = null;
+        bluetoothDetailsTarget = device;
+    }
+    function closeBluetoothDetails() {
+        bluetoothDetailsTarget = null;
     }
     property bool overviewOpen: false
     property bool datePickerOpen: false

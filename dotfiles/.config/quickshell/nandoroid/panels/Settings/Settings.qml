@@ -3,6 +3,7 @@ import "../../core/functions" as Functions
 import "../../services"
 import "../../widgets"
 import "pages/Network"
+import "pages/Bluetooth"
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
@@ -91,6 +92,7 @@ Scope {
                     GlobalStates.settingsBluetoothPairMode = false;
                     GlobalStates.closeNetworkDetails();
                     GlobalStates.closeNetworkPassword();
+                    GlobalStates.closeBluetoothDetails();
                     SearchRegistry.currentSearch = ""; // Clear active search to allow re-triggering the same query next time
                     searchInput.text = ""; // Reset search text
                     searchInput.hasNoResults = false;
@@ -468,6 +470,15 @@ Scope {
                         Layout.leftMargin: netDetailsCard.width > 1 ? 12 * Appearance.effectiveScale : 0
                         network: GlobalStates.networkDetailsTarget
                         onClosed: GlobalStates.closeNetworkDetails()
+                    }
+
+                    // "Device details" island for Bluetooth, same slot.
+                    BluetoothDeviceDetailsSidebar {
+                        id: btDetailsCard
+                        Layout.fillHeight: true
+                        Layout.leftMargin: btDetailsCard.width > 1 ? 12 * Appearance.effectiveScale : 0
+                        device: GlobalStates.bluetoothDetailsTarget
+                        onClosed: GlobalStates.closeBluetoothDetails()
                     }
                 }
             }
