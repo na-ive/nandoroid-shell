@@ -506,6 +506,8 @@ Item {
             WallSelHeader {
                 id: headerComponent
                 mainSelector: mainSelector
+                // Content area starts after the nav rail + row spacing
+                contentLeftInset: sidebarComponent.width + 12 * Appearance.effectiveScale
                 onSearchArrowPressed: {
                     focusStealer.forceActiveFocus();
                     headerComponent.defocusSearch();

@@ -136,7 +136,10 @@ Scope {
                     RowLayout {
                         anchors.fill: parent
                         anchors.leftMargin: 16 * Appearance.effectiveScale
-                        anchors.rightMargin: 16 * Appearance.effectiveScale
+                        // No extra right margin: headerItem is already inset 12
+                        // by the ColumnLayout, same as the content card, so the
+                        // close button's right edge lines up with the card's.
+                        anchors.rightMargin: 0
                         spacing: 8 * Appearance.effectiveScale
 
                         RippleButton {
@@ -193,6 +196,12 @@ Scope {
                             Layout.fillWidth: true
                             Layout.preferredHeight: 56 * Appearance.effectiveScale
                             Layout.alignment: Qt.AlignVCenter
+                            // Extra left padding so the pill starts right after
+                            // the nav sidebar (never inside it), aligned with the
+                            // content area's left edge. It stays put when the sub
+                            // sidebar island opens, so it never shrinks.
+                            // 16 margin + 48 avatar + 8 spacing are to its left.
+                            Layout.leftMargin: Math.max(0, sidebar.width + 12 * Appearance.effectiveScale - 72 * Appearance.effectiveScale)
                             radius: height / 2
                             color: Appearance.colors.colLayer1 // Using colLayer1 for search as it sits on colLayer0
                             
@@ -301,7 +310,8 @@ Scope {
                             implicitWidth: 48 * Appearance.effectiveScale
                             implicitHeight: 48 * Appearance.effectiveScale
                             buttonRadius: 24 * Appearance.effectiveScale
-                            colBackground: "transparent"
+                            colBackground: Appearance.colors.colLayer1
+                            colBackgroundHover: Appearance.colors.colLayer1Hover
                             onClicked: GlobalStates.settingsOpen = false
                             
                             MaterialSymbol {
@@ -373,6 +383,7 @@ Scope {
                     }
 
                     Rectangle {
+                        id: mainCard
                         Layout.fillWidth: true
                         Layout.fillHeight: true
                         color: Appearance.colors.colLayer1

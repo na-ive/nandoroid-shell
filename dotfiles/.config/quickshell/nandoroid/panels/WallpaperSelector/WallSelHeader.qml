@@ -16,6 +16,9 @@ import Quickshell.Io
                 property Item targetBtn: targetSelectorBtn
                 property Item sortBtnItem: sortBtn
                 property Item weSettingsBtnItem: weSettingsBtn
+                // Distance from the header's left edge to the main content
+                // area's left edge (bound by the parent to the nav rail width).
+                property real contentLeftInset: 0
                 property alias searchFilterText: headerSearch.text
                 
                 property bool isSearchFocused: headerSearch.input.activeFocus
@@ -29,7 +32,10 @@ import Quickshell.Io
                 RowLayout {
                     anchors.fill: parent
                     anchors.leftMargin: 16 * Appearance.effectiveScale
-                    anchors.rightMargin: 16 * Appearance.effectiveScale
+                    // No extra right margin: headerItem is already inset 12 by
+                    // the ColumnLayout, same as the content card, so the close
+                    // button's right edge lines up with the content's.
+                    anchors.rightMargin: 0
                     spacing: 8 * Appearance.effectiveScale
 
                     // Left actions grouped tightly to match right side
@@ -92,6 +98,11 @@ import Quickshell.Io
                         radius: 28 * Appearance.effectiveScale
                         color: Appearance.colors.colLayer1
                         Layout.alignment: Qt.AlignVCenter
+                        // Extra left padding so the pill starts right after the
+                        // nav rail (never inside it), aligned with the content
+                        // area's left edge. 16 margin + 48 menu button + target
+                        // button + 8 spacing are already to its left.
+                        Layout.leftMargin: Math.max(0, contentLeftInset - 72 * Appearance.effectiveScale - targetBtn.width)
                         
                         readonly property bool isActive: headerSearch.input.activeFocus || headerSearch.text.length > 0
 
@@ -287,7 +298,8 @@ import Quickshell.Io
                             implicitWidth: 48 * Appearance.effectiveScale
                             implicitHeight: 48 * Appearance.effectiveScale
                             buttonRadius: 24 * Appearance.effectiveScale
-                            colBackground: "transparent"
+                            colBackground: Appearance.colors.colLayer1
+                            colBackgroundHover: Appearance.colors.colLayer1Hover
                             onClicked: mainSelector.close()
                             MaterialSymbol { anchors.centerIn: parent; text: "close"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colSubtext }
                         }

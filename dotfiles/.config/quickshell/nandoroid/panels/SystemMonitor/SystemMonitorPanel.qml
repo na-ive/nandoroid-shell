@@ -85,7 +85,10 @@ Scope {
                     RowLayout {
                         anchors.fill: parent
                         anchors.leftMargin: 16 * Appearance.effectiveScale
-                        anchors.rightMargin: 16 * Appearance.effectiveScale
+                        // No extra right margin: headerWrapper is already inset
+                        // 12 by the ColumnLayout, same as the content card, so
+                        // the close button's right edge lines up with the card's.
+                        anchors.rightMargin: 0
                         spacing: 8 * Appearance.effectiveScale
 
                         RippleButton {
