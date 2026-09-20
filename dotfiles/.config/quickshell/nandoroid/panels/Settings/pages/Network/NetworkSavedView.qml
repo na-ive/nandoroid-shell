@@ -20,50 +20,37 @@ import Quickshell
                         color: Appearance.colors.colSubtext
                     }
 
-                    // ── Saved Networks Accordion List ──
-                    Rectangle {
+                    ColumnLayout {
                         Layout.fillWidth: true
-                        Layout.preferredHeight: savedRepeaterCol.implicitHeight + 32 * Appearance.effectiveScale
-                        radius: 20 * Appearance.effectiveScale
-                        color: Appearance.colors.colLayer1
+                        spacing: 2 * Appearance.effectiveScale
 
-                        ColumnLayout {
-                            id: savedRepeaterCol
-                            anchors.fill: parent
-                            anchors.margins: 16 * Appearance.effectiveScale
-                            spacing: 8 * Appearance.effectiveScale
+                        Repeater {
+                            model: Network.savedConnections
+                            delegate: SegmentedWrapper {
+                                id: segSaved
+                                Layout.fillWidth: true
+                                orientation: Qt.Vertical
+                                forceFirst: index === 0
+                                forceLast: index === Network.savedConnections.length - 1
+                                color: Appearance.m3colors.m3surfaceContainerHigh
+                                implicitHeight: savedInner.implicitHeight
 
-                            Repeater {
-                                model: Network.savedConnections
-                                delegate: ColumnLayout {
-                                    id: savedItem
-                                    Layout.fillWidth: true
+                                ColumnLayout {
+                                    id: savedInner
+                                    width: parent.width
                                     spacing: 0
                                     property bool expanded: false
 
                                     RippleButton {
                                         Layout.fillWidth: true
                                         implicitHeight: 64 * Appearance.effectiveScale
-                                        buttonRadius: 16 * Appearance.effectiveScale
-                                        colBackground: savedItem.expanded ? Appearance.colors.colLayer1Hover : "transparent"
+                                        topLeftRadius: segSaved.rTopLeft
+                                        topRightRadius: segSaved.rTopRight
+                                        bottomLeftRadius: savedInner.expanded ? 0 : segSaved.rBottomLeft
+                                        bottomRightRadius: savedInner.expanded ? 0 : segSaved.rBottomRight
+                                        colBackground: "transparent"
+                                        colBackgroundHover: Appearance.colors.colLayer1Hover
                                         onClicked: root.openSavedDetails(modelData)
-
-                                        // Header rounding overlay for expansion joint
-                                        Rectangle {
-                                            anchors.fill: parent
-                                            visible: savedItem.expanded
-                                            color: parent.colBackground
-                                            z: -1
-                                            radius: 16 * Appearance.effectiveScale
-
-                                            // Make bottom square
-                                            Rectangle {
-                                                anchors.bottom: parent.bottom
-                                                width: parent.width
-                                                height: 16 * Appearance.effectiveScale
-                                                color: parent.color
-                                            }
-                                        }
 
                                         RowLayout {
                                             anchors.fill: parent
@@ -91,14 +78,14 @@ import Quickshell
                                                 implicitHeight: 32 * Appearance.effectiveScale
                                                 buttonRadius: 16 * Appearance.effectiveScale
                                                 colBackground: "transparent"
-                                                onClicked: savedItem.expanded = !savedItem.expanded
+                                                onClicked: savedInner.expanded = !savedInner.expanded
                                                 contentItem: MaterialSymbol {
                                                     horizontalAlignment: Text.AlignHCenter
                                                     verticalAlignment: Text.AlignVCenter
-                                                    text: "keyboard_arrow_down"
+                                                    text: "settings"
                                                     iconSize: 20 * Appearance.effectiveScale
                                                     color: Appearance.colors.colSubtext
-                                                    rotation: savedItem.expanded ? 180 : 0
+                                                    rotation: savedInner.expanded ? 180 : 0
                                                     Behavior on rotation { NumberAnimation { duration: 200 } }
                                                 }
                                             }
@@ -107,20 +94,11 @@ import Quickshell
 
                                     Rectangle {
                                         Layout.fillWidth: true
-                                        Layout.preferredHeight: savedItem.expanded ? (savedActionCol.implicitHeight + 24 * Appearance.effectiveScale) : 0
+                                        Layout.preferredHeight: savedInner.expanded ? (savedActionCol.implicitHeight + 24 * Appearance.effectiveScale) : 0
                                         visible: Layout.preferredHeight > 0
                                         clip: true
                                         color: Appearance.colors.colLayer2
-                                        radius: 16 * Appearance.effectiveScale
-
-                                        // Merge with header by making top square
-                                        Rectangle {
-                                            width: parent.width
-                                            height: 16 * Appearance.effectiveScale
-                                            color: parent.color
-                                            visible: savedItem.expanded
-                                            anchors.top: parent.top
-                                        }
+                                        Behavior on Layout.preferredHeight { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
 
                                         ColumnLayout {
                                             id: savedActionCol
@@ -176,7 +154,7 @@ import Quickshell
                                             Connections {
                                                 target: Network
                                                 function onPasswordRecovered(password) {
-                                                    if (savedItem.expanded) {
+                                                    if (savedInner.expanded) {
                                                         savedPassLabel.text = I18nService.tr("Password: ") + password;
                                                     }
                                                 }

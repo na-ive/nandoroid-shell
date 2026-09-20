@@ -7,171 +7,388 @@ import QtQuick.Layouts
 import QtQuick.Controls
 import Quickshell
 
-                // Android behavior: saved/open -> connect, connected -> details, secured -> password dialog
-                ColumnLayout {
-                    id: mainViewCol
-                    Layout.fillWidth: true
-                    visible: root.currentView === "main"
-                    spacing: 24 * Appearance.effectiveScale
+ColumnLayout {
+    id: mainViewCol
+    Layout.fillWidth: true
+    visible: root.currentView === "main"
+    spacing: 24 * Appearance.effectiveScale
 
-                    // ── Available Networks Header ──
-                    StyledText {
-                        visible: Network.wifiEnabled && Network.friendlyWifiNetworks.length > 0
-                        text: I18nService.tr("Available Networks")
-                        font.pixelSize: Appearance.font.pixelSize.large
-                        font.family: Appearance.font.family.title
-                        font.weight: Font.DemiBold
-                        color: Appearance.colors.colOnLayer1
-                        Layout.topMargin: 12 * Appearance.effectiveScale
+    readonly property var otherNetworks: Network.friendlyWifiNetworks.filter(n => !n.active)
+
+    // ── 1. Connected Network Card ──
+    ColumnLayout {
+        Layout.fillWidth: true
+        spacing: 2 * Appearance.effectiveScale
+        SegmentedWrapper {
+            id: enableCard
+            Layout.fillWidth: true
+            implicitHeight: Math.max(64 * Appearance.effectiveScale, enableRow.implicitHeight)
+            visible: root.currentView === "main"
+            orientation: Qt.Vertical
+            color: Appearance.m3colors.m3surfaceContainerHigh
+
+            RippleButton {
+                anchors.fill: parent
+                colBackground: Appearance.m3colors.m3surfaceContainerHigh
+                colBackgroundHover: Appearance.m3colors.m3surfaceContainerHigh
+                buttonRadius: 0
+                topLeftRadius: enableCard.rTopLeft
+                topRightRadius: enableCard.rTopRight
+                bottomLeftRadius: enableCard.rBottomLeft
+                bottomRightRadius: enableCard.rBottomRight
+                onClicked: Network.toggleWifi()
+            }
+
+            RowLayout {
+                id: enableRow
+                anchors.fill: parent
+                anchors {
+                    leftMargin: 16 * Appearance.effectiveScale
+                    rightMargin: 16 * Appearance.effectiveScale
+                }
+                spacing: 16 * Appearance.effectiveScale
+
+                StyledText {
+                    text: I18nService.tr("Enable WiFi")
+                    Layout.fillWidth: true
+                    color: Appearance.colors.colOnLayer1
+                    font.pixelSize: Appearance.font.pixelSize.normal
                     }
 
-                    // ── Available Networks List ──
-                    Rectangle {
-                        id: activeAreaRect
+                AndroidToggle {
+                    checked: Network.wifiEnabled
+                    onToggled: Network.toggleWifi()
+                }
+            }
+        }
+
+        SegmentedWrapper {
+            id: connectedCard
+            Layout.fillWidth: true
+            visible: Network.wifiEnabled && Network.activeNetwork !== null
+            orientation: Qt.Vertical
+            color: Appearance.m3colors.m3surfaceContainerHigh
+
+            RippleButton {
+                anchors.fill: parent
+                topLeftRadius: connectedCard.rTopLeft
+                topRightRadius: connectedCard.rTopRight
+                bottomLeftRadius: connectedCard.rBottomLeft
+                bottomRightRadius: connectedCard.rBottomRight
+                colBackground: "transparent"
+                colBackgroundHover: Appearance.colors.colLayer1Hover
+                onClicked: root.openDetails(Network.activeNetwork)
+
+                RowLayout {
+                    anchors.fill: parent
+                    anchors.leftMargin: 16 * Appearance.effectiveScale
+                    anchors.rightMargin: 16 * Appearance.effectiveScale
+                    spacing: 16 * Appearance.effectiveScale
+
+                    NetworkIcon {
+                        strength: Network.activeNetwork ? Network.activeNetwork.strength : 0
+                        iconSize: 24 * Appearance.effectiveScale
+                        color: Appearance.colors.colSubtext
+                    }
+
+                    ColumnLayout {
                         Layout.fillWidth: true
-                        Layout.preferredHeight: wifiList.contentHeight + 24 * Appearance.effectiveScale
-                        visible: Network.wifiEnabled && Network.friendlyWifiNetworks.length > 0
-                        radius: 16 * Appearance.effectiveScale
-                        color: Appearance.colors.colLayer1
-                        clip: true
+                        spacing: 0
+                        StyledText {
+                            text: Network.activeNetwork ? Network.activeNetwork.ssid : ""
+                            font.pixelSize: Appearance.font.pixelSize.normal
+                            color: Appearance.colors.colOnLayer1
+                            elide: Text.ElideRight
+                            Layout.fillWidth: true
+                        }
+                        StyledText {
+                            text: I18nService.tr("Connected")
+                            font.pixelSize: Appearance.font.pixelSize.small
+                            color: Appearance.colors.colSubtext
+                            Layout.fillWidth: true
+                        }
+                    }
 
-                        ListView {
-                            id: wifiList
-                            anchors.fill: parent
-                            anchors.margins: 12 * Appearance.effectiveScale
-                            clip: true
-                            spacing: 8 * Appearance.effectiveScale
-                            model: Network.friendlyWifiNetworks
-                            interactive: false
+                    MaterialSymbol {
+                        visible: (Network.activeNetwork && Network.activeNetwork.priority > 0) || false
+                        text: "push_pin"
+                        iconSize: 18 * Appearance.effectiveScale
+                        color: Appearance.colors.colSubtext
+                        fill: 1
+                    }
 
-                            delegate: Item {
-                                id: networkItem
-                                width: wifiList.width
-                                height: 64 * Appearance.effectiveScale
+                    MaterialSymbol {
+                        text: "settings"
+                        iconSize: 20 * Appearance.effectiveScale
+                        color: Appearance.colors.colSubtext
+                    }
+                }
+            }
+        }
+    }
 
-                                RippleButton {
-                                    anchors.fill: parent
-                                    buttonRadius: 16 * Appearance.effectiveScale
-                                    colBackground: {
-                                        if (modelData.active) return Functions.ColorUtils.mix(Appearance.colors.colLayer1, Appearance.colors.colPrimary, 0.85);
-                                        if (GlobalStates.networkDetailsTarget === modelData) return Appearance.colors.colLayer2;
-                                        return "transparent";
-                                    }
-                                    colBackgroundHover: {
-                                        if (modelData.active) return colBackground;
-                                        return Appearance.colors.colLayer1Hover;
-                                    }
+    // ── 2. Other Networks + Add Network ──
+    ColumnLayout {
+        Layout.fillWidth: true
+        visible: Network.wifiEnabled
+        spacing: 8 * Appearance.effectiveScale
 
-                                    onClicked: {
-                                        if (modelData.active) {
-                                            root.openDetails(modelData);
-                                        } else if (modelData.isSaved) {
-                                            Network.connectToWifiNetwork(modelData);
-                                        } else if (!modelData.isSecure) {
-                                            Network.connectToWifiNetwork(modelData);
-                                        } else {
-                                            root.openPassword(modelData);
-                                        }
-                                    }
+        RowLayout {
+            spacing: 12 * Appearance.effectiveScale
 
-                                    RowLayout {
-                                        anchors.fill: parent
-                                        anchors.leftMargin: 16 * Appearance.effectiveScale
-                                        anchors.rightMargin: 16 * Appearance.effectiveScale
-                                        spacing: 16 * Appearance.effectiveScale
+            StyledText {
+                text: I18nService.tr("Available Networks")
+                font.pixelSize: Appearance.font.pixelSize.large
+                font.family: Appearance.font.family.title
+                font.weight: Font.Medium
+                color: Appearance.colors.colOnLayer1
+                Layout.fillWidth: true
+            }
+            
+            RippleButton {
+                implicitWidth: 40 * Appearance.effectiveScale
+                implicitHeight: 40 * Appearance.effectiveScale
+                buttonRadius: 20 * Appearance.effectiveScale
+                colBackground: Appearance.colors.colLayer1
+                onClicked: Network.wifiScanning ? Network.cancelRescanWifi() : Network.rescanWifi()
 
-                                        NetworkIcon {
-                                            strength: modelData.strength
-                                            iconSize: 24 * Appearance.effectiveScale
-                                            color: modelData.active ? Appearance.colors.colPrimary : Appearance.colors.colSubtext
-                                        }
+                contentItem: MaterialSymbol {
+                    id: refreshIconNetwork
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    text: Network.wifiScanning ? "close" : "refresh"
+                    iconSize: 20 * Appearance.effectiveScale
+                    color: Appearance.colors.colOnLayer1
+                }
+            }
+        }
 
-                                        ColumnLayout {
-                                            Layout.fillWidth: true
-                                            spacing: 0
-                                            StyledText {
-                                                text: modelData.ssid
-                                                font.pixelSize: Appearance.font.pixelSize.normal
-                                                font.weight: modelData.active ? Font.DemiBold : Font.Normal
-                                                color: Appearance.colors.colOnLayer1
-                                                elide: Text.ElideRight
-                                                Layout.fillWidth: true
-                                            }
-                                            StyledText {
-                                                text: {
-                                                    if (modelData.active) return I18nService.tr("Connected");
-                                                    if (modelData.isSaved) return I18nService.tr("Saved");
-                                                    if (modelData.isSecure) return I18nService.tr("Secured");
-                                                    return I18nService.tr("Open");
-                                                }
-                                                font.pixelSize: Appearance.font.pixelSize.small
-                                                color: Appearance.colors.colSubtext
-                                                Layout.fillWidth: true
-                                            }
-                                        }
+        Item {
+            id: loadingNetwork
+            Layout.fillWidth: true
+            implicitHeight: 80 * Appearance.effectiveScale
+            readonly property bool isLoading: Network.wifiEnabled && (Network.wifiScanning || mainViewCol.otherNetworks.length === 0)
+            visible: isLoading
 
-                                        MaterialSymbol {
-                                            visible: modelData.isSecure && !modelData.active
-                                            text: "lock"
-                                            iconSize: 20 * Appearance.effectiveScale
-                                            color: Appearance.colors.colSubtext
-                                        }
+            MaterialLoadingIndicator {
+                anchors.centerIn: parent
+                implicitSize: 60 * Appearance.effectiveScale
+            }
+        }
 
-                                        MaterialSymbol {
-                                            visible: modelData.priority > 0
-                                            text: "push_pin"
-                                            iconSize: 18 * Appearance.effectiveScale
-                                            color: Appearance.colors.colPrimary
-                                            fill: 1
-                                        }
+        ColumnLayout {
+            Layout.fillWidth: true
+            spacing: 2 * Appearance.effectiveScale
+            visible: !loadingNetwork.isLoading
 
-                                        // Connected row: pin (if any) + settings gear, no checkmark
-                                        MaterialSymbol {
-                                            visible: modelData.active
-                                            text: "settings"
-                                            iconSize: 20 * Appearance.effectiveScale
-                                            color: Appearance.colors.colSubtext
-                                        }
+            Repeater {
+                model: mainViewCol.otherNetworks
+                delegate: SegmentedWrapper {
+                    id: netRow
+                    Layout.fillWidth: true
+                    orientation: Qt.Vertical
+                    color: Appearance.m3colors.m3surfaceContainerHigh
 
-                                        MaterialSymbol {
-                                            visible: !modelData.active && modelData.isSaved
-                                            text: "chevron_right"
-                                            iconSize: 20 * Appearance.effectiveScale
-                                            color: Appearance.colors.colSubtext
-                                        }
-                                    }
-                                }
+                    RippleButton {
+                        anchors.fill: parent
+                        topLeftRadius: netRow.rTopLeft
+                        topRightRadius: netRow.rTopRight
+                        bottomLeftRadius: netRow.rBottomLeft
+                        bottomRightRadius: netRow.rBottomRight
+                        colBackground: "transparent"
+                        colBackgroundHover: Appearance.colors.colLayer1Hover
+
+                        onClicked: {
+                            if (modelData.isSaved) {
+                                Network.connectToWifiNetwork(modelData);
+                            } else if (!modelData.isSecure) {
+                                Network.connectToWifiNetwork(modelData);
+                            } else {
+                                root.openPassword(modelData);
                             }
                         }
-                    } // End activeAreaRect
 
-                    // ── Offline State ──
-                    ColumnLayout {
-                        id: offlineContent
-                        Layout.fillWidth: true
-                        Layout.preferredHeight: 300 * Appearance.effectiveScale
-                        visible: !Network.wifiEnabled
+                        RowLayout {
+                            anchors.fill: parent
+                            anchors.leftMargin: 16 * Appearance.effectiveScale
+                            anchors.rightMargin: 16 * Appearance.effectiveScale
+                            spacing: 16 * Appearance.effectiveScale
+
+                            NetworkIcon {
+                                strength: modelData.strength
+                                iconSize: 24 * Appearance.effectiveScale
+                                color: Appearance.colors.colSubtext
+                            }
+
+                            ColumnLayout {
+                                Layout.fillWidth: true
+                                spacing: 0
+                                StyledText {
+                                    text: modelData.ssid
+                                    font.pixelSize: Appearance.font.pixelSize.normal
+                                    color: Appearance.colors.colOnLayer1
+                                    elide: Text.ElideRight
+                                    Layout.fillWidth: true
+                                }
+                                StyledText {
+                                    text: {
+                                        if (modelData.isSaved) return I18nService.tr("Saved");
+                                        if (modelData.isSecure) return I18nService.tr("Secured");
+                                        return I18nService.tr("Open");
+                                    }
+                                    font.pixelSize: Appearance.font.pixelSize.small
+                                    color: Appearance.colors.colSubtext
+                                    Layout.fillWidth: true
+                                }
+                            }
+
+                            MaterialSymbol {
+                                visible: modelData.isSecure
+                                text: "lock"
+                                iconSize: 20 * Appearance.effectiveScale
+                                color: Appearance.colors.colSubtext
+                            }
+
+                            MaterialSymbol {
+                                visible: modelData.isSaved
+                                text: "chevron_right"
+                                iconSize: 20 * Appearance.effectiveScale
+                                color: Appearance.colors.colSubtext
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Add network row
+            SegmentedWrapper {
+                id: addRow
+                Layout.fillWidth: true
+                orientation: Qt.Vertical
+                forcePill: mainViewCol.otherNetworks.length === 0
+                forceFirst: mainViewCol.otherNetworks.length === 0
+                maxRadius: mainViewCol.otherNetworks.length === 0 ? 32 * Appearance.effectiveScale : undefined
+                forceLast: true
+                color: Appearance.m3colors.m3surfaceContainerHigh
+
+                RippleButton {
+                    anchors.fill: parent
+                    topLeftRadius: addRow.rTopLeft
+                    topRightRadius: addRow.rTopRight
+                    bottomLeftRadius: addRow.rBottomLeft
+                    bottomRightRadius: addRow.rBottomRight
+                    colBackground: "transparent"
+                    colBackgroundHover: Appearance.colors.colLayer1Hover
+                    onClicked: GlobalStates.addNetworkDialogOpen = true
+
+                    RowLayout {
+                        anchors.fill: parent
+                        anchors.leftMargin: 16 * Appearance.effectiveScale
+                        anchors.rightMargin: 16 * Appearance.effectiveScale
                         spacing: 16 * Appearance.effectiveScale
 
-                        Item { Layout.fillHeight: true }
-
                         MaterialSymbol {
-                            Layout.alignment: Qt.AlignHCenter
-                            text: "wifi_off"
-                            iconSize: 64 * Appearance.effectiveScale
+                            text: "add"
+                            iconSize: 24 * Appearance.effectiveScale
                             color: Appearance.colors.colSubtext
                         }
 
                         StyledText {
+                            text: I18nService.tr("Add network")
+                            font.pixelSize: Appearance.font.pixelSize.normal
+                            color: Appearance.colors.colOnLayer1
                             Layout.fillWidth: true
-                            Layout.alignment: Qt.AlignHCenter
-                            horizontalAlignment: Text.AlignHCenter
-                            text: I18nService.tr("WiFi is turned off")
-                            font.pixelSize: Appearance.font.pixelSize.large
-                            font.family: Appearance.font.family.title
-                            color: Appearance.colors.colSubtext
                         }
-
-                        Item { Layout.fillHeight: true }
                     }
-                } // End mainViewCol
+                }
+            }
+        }
+    }
+
+    // ── 3. Wired / Saved Networks Group ──
+    ColumnLayout {
+        Layout.fillWidth: true
+        Layout.topMargin: 8 * Appearance.effectiveScale
+        spacing: 2 * Appearance.effectiveScale
+
+        SegmentedWrapper {
+            id: wiredRow
+            Layout.fillWidth: true
+            orientation: Qt.Vertical
+            forceFirst: true
+            forceLast: false
+            color: Appearance.m3colors.m3surfaceContainerHigh
+
+            RippleButton {
+                anchors.fill: parent
+                topLeftRadius: wiredRow.rTopLeft
+                topRightRadius: wiredRow.rTopRight
+                bottomLeftRadius: wiredRow.rBottomLeft
+                bottomRightRadius: wiredRow.rBottomRight
+                colBackground: "transparent"
+                colBackgroundHover: Appearance.colors.colLayer1Hover
+                onClicked: root.currentView = "wired"
+
+                RowLayout {
+                    anchors.fill: parent
+                    anchors.leftMargin: 16 * Appearance.effectiveScale
+                    anchors.rightMargin: 16 * Appearance.effectiveScale
+                    spacing: 16 * Appearance.effectiveScale
+
+                    MaterialSymbol {
+                        text: "lan"
+                        iconSize: 24 * Appearance.effectiveScale
+                        color: Appearance.colors.colSubtext
+                    }
+
+                    StyledText {
+                        text: I18nService.tr("Wired Network")
+                        font.pixelSize: Appearance.font.pixelSize.normal
+                        color: Appearance.colors.colOnLayer1
+                        Layout.fillWidth: true
+                    }
+                }
+            }
+        }
+
+        SegmentedWrapper {
+            id: savedRow
+            Layout.fillWidth: true
+            orientation: Qt.Vertical
+            forceFirst: false
+            forceLast: true
+            color: Appearance.m3colors.m3surfaceContainerHigh
+
+            RippleButton {
+                anchors.fill: parent
+                topLeftRadius: savedRow.rTopLeft
+                topRightRadius: savedRow.rTopRight
+                bottomLeftRadius: savedRow.rBottomLeft
+                bottomRightRadius: savedRow.rBottomRight
+                colBackground: "transparent"
+                colBackgroundHover: Appearance.colors.colLayer1Hover
+                onClicked: root.currentView = "saved"
+
+                RowLayout {
+                    anchors.fill: parent
+                    anchors.leftMargin: 16 * Appearance.effectiveScale
+                    anchors.rightMargin: 16 * Appearance.effectiveScale
+                    spacing: 16 * Appearance.effectiveScale
+
+                    MaterialSymbol {
+                        text: "history"
+                        iconSize: 24 * Appearance.effectiveScale
+                        color: Appearance.colors.colSubtext
+                    }
+
+                    StyledText {
+                        text: I18nService.tr("Saved Networks")
+                        font.pixelSize: Appearance.font.pixelSize.normal
+                        color: Appearance.colors.colOnLayer1
+                        Layout.fillWidth: true
+                    }
+                }
+            }
+        }
+    }
+}

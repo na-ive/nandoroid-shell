@@ -142,8 +142,24 @@ Singleton {
         }
     }
 
+    // GUI connection editor availability; falls back to nmtui in kitty.
+    property bool advEditorAvailable: false
+    Process {
+        id: advEditorCheckProc
+        command: ["sh", "-c", "command -v nm-connection-editor >/dev/null 2>&1 && echo yes || echo no"]
+        stdout: StdioCollector {
+            onStreamFinished: root.advEditorAvailable = text.trim() === "yes"
+        }
+    }
+
     function openAdvancedSettings() {
-        advancedSettingsProc.start();
+        // execDetached so the editor outlives the panel; Process.start() is not
+        // a Quickshell API and nm-connection-editor may not even be installed.
+        if (advEditorAvailable) {
+            Quickshell.execDetached(["nm-connection-editor"]);
+        } else {
+            Quickshell.execDetached(["kitty", "-e", "nmtui"]);
+        }
     }
 
     function getSavedPassword(ssid) {
@@ -244,9 +260,11 @@ Singleton {
                 const lines = text.trim().split("\n");
                 const details = {};
                 lines.forEach(line => {
-                    const parts = line.split(":");
-                    if (parts.length >= 2) {
-                        details[parts[0].toLowerCase()] = parts[1];
+                    // Split on the FIRST colon only: values like GENERAL.HWADDR
+                    // (AA:BB:CC:...) contain colons themselves.
+                    const idx = line.indexOf(":");
+                    if (idx !== -1) {
+                        details[line.substring(0, idx).toLowerCase()] = line.substring(idx + 1);
                     }
                 });
                 root.wiredDetails = details;
@@ -360,11 +378,6 @@ Singleton {
     }
 
     Process {
-        id: advancedSettingsProc
-        command: ["nm-connection-editor"]
-    }
-
-    Process {
         id: passwordRecoveryProc
         stdout: StdioCollector {
             onStreamFinished: root.passwordRecovered(text.trim())
@@ -436,6 +449,9 @@ Singleton {
                             priorities[name] = priority;
                             autoconn[name] = (ac !== "no");
                         } else if (type === "802-3-ethernet") {
+                            // Wired profiles keep autoconnect state too, so the
+                            // wired view can show a working toggle.
+                            autoconn[name] = (ac !== "no");
                             wired.push({
                                 name: name,
                                 type: type,
@@ -461,6 +477,7 @@ Singleton {
     Component.onCompleted: {
         update()
         wifiDeviceProc.exec(wifiDeviceProc.command);
+        advEditorCheckProc.exec();
         // Initial check; warpMonitor starts automatically after detection.
         warpInitProc.running = true
     }

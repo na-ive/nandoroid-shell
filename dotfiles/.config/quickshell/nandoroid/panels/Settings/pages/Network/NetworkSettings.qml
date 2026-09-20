@@ -125,51 +125,6 @@ Item {
                         color: Appearance.colors.colOnLayer1
                         Layout.fillWidth: true
                     }
-
-                    RowLayout {
-                        visible: root.currentView === "main"
-                        spacing: 12 * Appearance.effectiveScale
-
-                        // Refresh Button
-                        RippleButton {
-                            implicitWidth: 40 * Appearance.effectiveScale
-                            implicitHeight: 40 * Appearance.effectiveScale
-                            buttonRadius: 20 * Appearance.effectiveScale
-                            colBackground: Appearance.colors.colLayer1
-                            onClicked: Network.wifiScanning ? Network.cancelRescanWifi() : Network.rescanWifi()
-
-                            contentItem: MaterialSymbol {
-                                id: refreshIconNetwork
-                                horizontalAlignment: Text.AlignHCenter
-                                verticalAlignment: Text.AlignVCenter
-                                text: Network.wifiScanning ? "close" : "refresh"
-                                iconSize: 20 * Appearance.effectiveScale
-                                color: Appearance.colors.colOnLayer1
-                            }
-                        }
-
-                        // Add Network Button
-                        RippleButton {
-                            implicitWidth: 40 * Appearance.effectiveScale
-                            implicitHeight: 40 * Appearance.effectiveScale
-                            buttonRadius: 20 * Appearance.effectiveScale
-                            colBackground: Appearance.colors.colLayer1
-                            onClicked: GlobalStates.addNetworkDialogOpen = true
-                            contentItem: MaterialSymbol {
-                                horizontalAlignment: Text.AlignHCenter
-                                verticalAlignment: Text.AlignVCenter
-                                text: "add"
-                                iconSize: 20 * Appearance.effectiveScale
-                                color: Appearance.colors.colOnLayer1
-                            }
-                        }
-
-                        // Global WiFi Toggle
-                        AndroidToggle {
-                            checked: Network.wifiEnabled
-                            onToggled: Network.toggleWifi()
-                        }
-                    }
                 }
                 StyledText {
                     text: {
@@ -199,7 +154,6 @@ Item {
 
                     ColumnLayout {
                         id: contentCol
-                        visible: !Network.wifiScanning
                         width: parent.width - (24 * Appearance.effectiveScale)
                         spacing: 24 * Appearance.effectiveScale
 
@@ -220,70 +174,6 @@ Item {
                         }
                     }
                 } // End Flickable
-
-                MaterialLoadingIndicator {
-                    anchors.centerIn: parent
-                    visible: Network.wifiScanning
-                    implicitSize: 60 * Appearance.effectiveScale
-                    z: 10
-                }
-            } // End content Item
-
-            // ── Bottom Management Buttons (Main View) ──
-            RowLayout {
-                id: bottomManagementRow
-                Layout.fillWidth: true
-                Layout.margins: 16 * Appearance.effectiveScale
-                Layout.rightMargin: 40 * Appearance.effectiveScale
-                Layout.topMargin: 0
-                spacing: 12 * Appearance.effectiveScale
-                visible: root.currentView === "main"
-
-                RippleButton {
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: 48 * Appearance.effectiveScale
-                    buttonRadius: 16 * Appearance.effectiveScale
-                    colBackground: Appearance.colors.colLayer1
-                    onClicked: root.currentView = "wired"
-
-                    RowLayout {
-                        anchors.centerIn: parent
-                        spacing: 8 * Appearance.effectiveScale
-                        MaterialSymbol {
-                            text: "lan"
-                            iconSize: 20 * Appearance.effectiveScale
-                            color: Appearance.colors.colOnLayer1
-                        }
-                        StyledText {
-                            text: I18nService.tr("Wired Network")
-                            font.weight: Font.Medium
-                            color: Appearance.colors.colOnLayer1
-                        }
-                    }
-                }
-
-                RippleButton {
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: 48 * Appearance.effectiveScale
-                    buttonRadius: 16 * Appearance.effectiveScale
-                    colBackground: Appearance.colors.colLayer1
-                    onClicked: root.currentView = "saved"
-
-                    RowLayout {
-                        anchors.centerIn: parent
-                        spacing: 8 * Appearance.effectiveScale
-                        MaterialSymbol {
-                            text: "history"
-                            iconSize: 20 * Appearance.effectiveScale
-                            color: Appearance.colors.colOnLayer1
-                        }
-                        StyledText {
-                            text: I18nService.tr("Saved Networks")
-                            font.weight: Font.Medium
-                            color: Appearance.colors.colOnLayer1
-                        }
-                    }
-                }
+            }
         }
     }
-}

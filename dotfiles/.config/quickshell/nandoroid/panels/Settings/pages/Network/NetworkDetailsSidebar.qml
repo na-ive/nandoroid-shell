@@ -165,12 +165,12 @@ Rectangle {
                 width: parent.width
                 spacing: 0
 
-                NetworkIcon {
-                    Layout.alignment: Qt.AlignHCenter
-                    Layout.topMargin: 12 * Appearance.effectiveScale
-                    strength: detailsIsland.network ? detailsIsland.network.strength : 0
+                MaterialSymbol { 
+                    text: "wifi"
                     iconSize: 48 * Appearance.effectiveScale
                     color: Appearance.colors.colOnLayer1
+                    Layout.alignment: Qt.AlignHCenter
+                    Layout.topMargin: 12 * Appearance.effectiveScale
                 }
 
                 StyledText {
@@ -350,18 +350,6 @@ Rectangle {
                             spacing: 0
                             StyledText { text: I18nService.tr("Security"); font.pixelSize: Appearance.font.pixelSize.small; font.weight: Font.Medium; color: Appearance.colors.colOnLayer1 }
                             StyledText { text: securityLabel(detailsIsland.network ? detailsIsland.network.security : ""); font.pixelSize: Appearance.font.pixelSize.small; color: Appearance.colors.colSubtext }
-                        }
-                    }
-
-                    RowLayout {
-                        Layout.fillWidth: true
-                        spacing: 16 * Appearance.effectiveScale
-                        MaterialSymbol { text: "attach_money"; iconSize: 20 * Appearance.effectiveScale; color: Appearance.colors.colSubtext }
-                        ColumnLayout {
-                            Layout.fillWidth: true
-                            spacing: 0
-                            StyledText { text: I18nService.tr("Network usage"); font.pixelSize: Appearance.font.pixelSize.small; font.weight: Font.Medium; color: Appearance.colors.colOnLayer1 }
-                            StyledText { text: I18nService.tr("Detect automatically"); font.pixelSize: Appearance.font.pixelSize.small; color: Appearance.colors.colSubtext }
                         }
                     }
 
