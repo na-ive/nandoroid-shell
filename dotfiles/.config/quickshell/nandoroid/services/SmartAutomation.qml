@@ -427,6 +427,9 @@ Singleton {
     // process instance. One instance per notification: a shared Process
     // drops sends while busy (notify-send -A runs until click/timeout)
     // and its shared target state could misroute Dismiss actions.
+    //
+    // NOTE: notify-send only waits ~60s (-t value), so late Dismiss clicks
+    // are handled directly via hints in Notifications.attemptInvokeAction.
     Component {
         id: alarmNotifProcess
         Process {
@@ -436,13 +439,7 @@ Singleton {
             stdout: StdioCollector {
                 onStreamFinished: {
                     if (this.text.trim() !== "dismiss") return;
-                    const a = AlarmService.alarms.find(x => x.id === targetAlarmId);
-                    if (!a) return;
-                    if (!a.days || a.days.length === 0) {
-                        AlarmService.updateAlarm(a.id, { enabled: false });
-                    } else if (targetKey !== "") {
-                        AlarmService.updateAlarm(a.id, { lastFiredKey: targetKey });
-                    }
+                    AlarmService.dismissUpcomingOccurrence(targetAlarmId, targetKey);
                 }
             }
             onExited: Qt.callLater(destroy)
@@ -459,6 +456,8 @@ Singleton {
                 "-a", "NAnDoroid",
                 "-i", iconPath,
                 "-t", "60000",
+                "-h", "string:nandoroid-alarm-id:" + alarmId,
+                "-h", "string:nandoroid-occurrence-key:" + occurrenceKey,
                 "-A", "dismiss=Dismiss",
                 title,
                 body

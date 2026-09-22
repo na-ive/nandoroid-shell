@@ -93,6 +93,31 @@ Singleton {
         updateAlarm(id, { enabled: !a.enabled, lastFiredKey: "", lastNotifiedKey: "" });
     }
 
+    // Dismiss one upcoming occurrence: one-shot off, repeating skipped.
+    function dismissUpcomingOccurrence(id, occurrenceKey) {
+        const a = root.alarms.find(x => x.id === id);
+        if (!a) return;
+        if (!a.days || a.days.length === 0) {
+            updateAlarm(a.id, { enabled: false });
+        } else if (occurrenceKey !== "") {
+            updateAlarm(a.id, { lastFiredKey: occurrenceKey });
+        }
+    }
+
+    // Sent when a ringing alarm auto-stops unanswered.
+    function sendMissedNotification(alarm) {
+        const iconPath = Directories.home.replace("file://", "") + "/.config/quickshell/nandoroid/assets/icons/NAnDoroid.svg";
+        const label = (alarm.label && alarm.label !== "") ? alarm.label + " · " : "";
+        Quickshell.execDetached([
+            "notify-send",
+            "-a", "NAnDoroid",
+            "-i", iconPath,
+            "-t", "8000",
+            I18nService.tr("Missed alarm"),
+            label + alarm.time
+        ]);
+    }
+
     // ── Firing: event-driven single-shot scheduling (zero periodic polling) ──
     // The timer is armed exactly for the earliest upcoming occurrence and
     // re-armed whenever alarms change, after a ring, or after a snooze.
@@ -247,7 +272,12 @@ Singleton {
         id: autoStopTimer
         interval: root.maxRingMinutes * 60000
         repeat: false
-        onTriggered: root.stop()
+        onTriggered: {
+            // Unanswered for the full window: stop, then leave a missed notice.
+            const a = root._pendingAlarm;
+            root.stop();
+            if (a) root.sendMissedNotification(a);
+        }
     }
 
     Process {

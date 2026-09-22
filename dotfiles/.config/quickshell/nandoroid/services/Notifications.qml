@@ -423,6 +423,15 @@ Singleton {
                     if (action) action.invoke();
                 }
             } else {
+                // notify-send stops listening after ~60s; dismiss via hints
+                // so the button works no matter when it is pressed.
+                if (actionIdentifier === "dismiss" && notif.hints) {
+                    const alarmId = notif.hints["nandoroid-alarm-id"];
+                    if (alarmId !== undefined && alarmId !== "") {
+                        const occKey = notif.hints["nandoroid-occurrence-key"] || "";
+                        AlarmService.dismissUpcomingOccurrence(String(alarmId), String(occKey));
+                    }
+                }
                 const action = notif.actions.find(a => a.identifier === actionIdentifier);
                 if (action) action.invoke();
             }
