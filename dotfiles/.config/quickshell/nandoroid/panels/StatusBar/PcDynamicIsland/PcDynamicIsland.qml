@@ -28,7 +28,7 @@ Item {
     readonly property real mediaExpandedWidthCap: 220
     property real mediaTextContentWidth: 0
     property bool mediaTrackInfoVisible: mediaHoverHandler.hovered || mediaTrackChangeTimer.running
-    readonly property real mediaExpandedWidth: Math.min(root.mediaExpandedWidthCap, root.mediaTextContentWidth)
+    readonly property real mediaExpandedWidth: Math.min(root.mediaExpandedWidthCap, Math.max(root.mediaCollapsedWidth, root.mediaTextContentWidth))
     readonly property real mediaWidth: root.mediaTrackInfoVisible ? root.mediaExpandedWidth : root.mediaCollapsedWidth
     // --- Timer / Pomodoro / Stopwatch: dynamic width like media (measured content, not hardcoded) ---
     property real pomodoroTextContentWidth: 0
