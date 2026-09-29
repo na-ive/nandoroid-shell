@@ -257,6 +257,7 @@ This project is a personal creation inspired by the following open-source develo
 
 - **[end-4](https://github.com/end-4)** - Core architecture, project structure, and shell logic inspired by [dots-hyprland](https://github.com/end-4/dots-hyprland).
 - **[pC](https://github.com/pctrade)** - UI design, layout, and interaction references from [end4-pC](https://github.com/pctrade/end4-pC).
+- **[P3DROVFX](https://github.com/P3DROVFX)** - Design and interaction references from [ii-p3drovfx](https://github.com/P3DROVFX/ii-p3drovfx).
 - **[vaguesyntax (Vynx)](https://github.com/vaguesyntax)** - UI design and interaction references from [ii-vynx](https://github.com/vaguesyntax/ii-vynx).
 - **[AvengeMedia](https://github.com/AvengeMedia)** - System monitoring implementation inspired by [DankMaterialShell](https://github.com/AvengeMedia/DankMaterialShell) and powered by [dgop](https://github.com/AvengeMedia/dgop).
 - **[Axenide](https://github.com/Axenide)** - Spatial UI and Dynamic Island (notch) design references from [Ambxst](https://github.com/Axenide/Ambxst).

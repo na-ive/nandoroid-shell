@@ -56,6 +56,14 @@ ColumnLayout {
         }
 
         ProjectCard {
+            title: "ii-p3drovfx"
+            description: I18nService.tr("P3DROVFX's fork of illogical-impulse. Design and interaction references for various parts throughout the config.")
+            iconSource: "../../../../assets/icons/illogical-impulse.svg"
+            url: "https://github.com/P3DROVFX/ii-p3drovfx"
+            accentColor: "#a6e3a1"
+        }
+
+        ProjectCard {
             title: "Dank Material Shell"
             description: I18nService.tr("AvengeMedia's DMS. Helped a ton with a lot of the harder parts of the config, and dgop was super useful for system monitoring stuff.")
             iconSource: "../../../../assets/icons/danklogo.svg"
