@@ -185,6 +185,23 @@ Item {
                 property string editLabel: alarm ? (alarm.label || "") : ""
                 property var editDays: alarm && alarm.days ? [...alarm.days] : []
                 readonly property var timeParts: root.formatTimeParts(editTime)
+                // Preset pill derived from editDays — empty = once, so
+                // unchecking all day chips falls back to once automatically
+                readonly property string activePreset: {
+                    if (!editDays || editDays.length === 0) return "once";
+                    const s = [...editDays].sort((a, b) => a - b).join(",");
+                    if (s === "0,1,2,3,4,5,6") return "everyday";
+                    if (s === "0,1,2,3,4") return "weekdays";
+                    if (s === "5,6") return "weekend";
+                    return "";
+                }
+
+                function applyPreset(preset) {
+                    if (preset === "once") settingsCol.editDays = [];
+                    else if (preset === "weekdays") settingsCol.editDays = [0, 1, 2, 3, 4];
+                    else if (preset === "weekend") settingsCol.editDays = [5, 6];
+                    else if (preset === "everyday") settingsCol.editDays = [0, 1, 2, 3, 4, 5, 6];
+                }
 
                 function saveSettings() {
                     if (!alarm) return;
@@ -281,6 +298,43 @@ Item {
             }
 
             Item { Layout.preferredHeight: 12 * Appearance.effectiveScale }
+
+            // ── Repeat preset pills (same chip style as day list) ──
+            RowLayout {
+                Layout.alignment: Qt.AlignHCenter
+                spacing: 6 * Appearance.effectiveScale
+
+                Repeater {
+                    model: [
+                        { key: "once", labelKey: "Once" },
+                        { key: "weekdays", labelKey: "Weekdays" },
+                        { key: "weekend", labelKey: "Weekend" },
+                        { key: "everyday", labelKey: "Every day" }
+                    ]
+
+                    delegate: RippleButton {
+                        id: presetPill
+                        required property var modelData
+                        readonly property bool selected: settingsCol.activePreset === presetPill.modelData.key
+                        implicitWidth: presetText.implicitWidth + (32 * Appearance.effectiveScale)
+                        implicitHeight: 36 * Appearance.effectiveScale
+                        buttonRadius: 18 * Appearance.effectiveScale
+                        colBackground: selected ? Appearance.m3colors.m3primary : Appearance.m3colors.m3surfaceContainerHighest
+
+                        onClicked: settingsCol.applyPreset(presetPill.modelData.key)
+
+                        StyledText {
+                            id: presetText
+                            anchors.centerIn: parent
+                            text: I18nService.tr(presetPill.modelData.labelKey)
+                            font.pixelSize: 13 * Appearance.effectiveScale
+                            color: presetPill.selected ? Appearance.m3colors.m3onPrimary : Appearance.colors.colSubtext
+                        }
+                    }
+                }
+            }
+
+            Item { Layout.preferredHeight: 4 * Appearance.effectiveScale }
 
             // ── Repeat day chips ──
             RowLayout {
@@ -539,11 +593,19 @@ Item {
                             id: summaryLabel
                             anchors.top: parent.top
                             anchors.left: parent.left
+                            anchors.right: parent.right
                             anchors.topMargin: 24 * Appearance.effectiveScale
                             anchors.leftMargin: 24 * Appearance.effectiveScale
-                            text: alarmCard.isEnabled ? root.daysSummary(alarmCard.alarm.days) : I18nService.tr("Not scheduled")
+                            anchors.rightMargin: (alarmCard.dismissible ? 120 : 24) * Appearance.effectiveScale
+                            text: {
+                                const base = alarmCard.isEnabled ? root.daysSummary(alarmCard.alarm.days) : I18nService.tr("Not scheduled");
+                                const lbl = (alarmCard.alarm.label || "").trim();
+                                return lbl !== "" ? base + " • " + lbl : base;
+                            }
                             font.pixelSize: Appearance.font.pixelSize.normal
                             color: alarmCard.isEnabled ? Appearance.m3colors.m3onPrimaryContainer : Appearance.colors.colSubtext
+                            elide: Text.ElideRight
+                            maximumLineCount: 1
                         }
 
                         // ── Top-right: Dismiss (only when ringing within 2h) ──
