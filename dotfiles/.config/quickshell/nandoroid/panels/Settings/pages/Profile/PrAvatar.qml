@@ -175,75 +175,45 @@ ColumnLayout {
                     }
                 }
 
-                ColumnLayout {
-                    spacing: 8 * Appearance.effectiveScale
+                RowLayout {
+                    spacing: 2 * Appearance.effectiveScale
                     Layout.alignment: Qt.AlignVCenter
 
-                    RippleButton {
+                    SegmentedButton {
+                        orientation: Qt.Horizontal
+                        forceFirst: true
+                        forceLast: Config.options.profile.avatarPicture === ""
+                        pillOnActive: false
                         implicitWidth: 120 * Appearance.effectiveScale
-                        implicitHeight: 36 * Appearance.effectiveScale
-                        buttonRadius: 18 * Appearance.effectiveScale
-                        colBackground: Appearance.m3colors.m3primaryContainer
-
-                        RowLayout {
-                            anchors.centerIn: parent
-                            spacing: 6 * Appearance.effectiveScale
-                            MaterialSymbol {
-                                text: "folder_open"
-                                iconSize: 16 * Appearance.effectiveScale
-                                color: Appearance.m3colors.m3onPrimaryContainer
-                            }
-                            StyledText {
-                                text: I18nService.tr("Browse")
-                                font.pixelSize: Appearance.font.pixelSize.small
-                                color: Appearance.m3colors.m3onPrimaryContainer
-                            }
-                        }
-
-                        onClicked: {
-                            avatarPickerProc.running = true
-                        }
+                        iconName: "folder_open"
+                        iconSize: 18 * Appearance.effectiveScale
+                        buttonText: I18nService.tr("Browse")
+                        colInactive: Appearance.m3colors.m3secondaryContainer
+                        colBackgroundHover: Appearance.m3colors.m3secondaryContainer
+                        colInactiveText: Appearance.m3colors.m3onSecondaryContainer
+                        onClicked: avatarPickerProc.running = true
                     }
 
-                    Item {
-                        implicitWidth: 120 * Appearance.effectiveScale
-                        implicitHeight: 36 * Appearance.effectiveScale
+                    SegmentedButton {
+                        id: avatarClearBtn
+                        orientation: Qt.Horizontal
+                        forceFirst: false
+                        forceLast: true
+                        pillOnActive: false
                         visible: Config.options.profile.avatarPicture !== ""
-
-                        Rectangle {
-                            anchors.fill: parent
-                            radius: 18 * Appearance.effectiveScale
-                            color: "transparent"
-                            border.width: 1 * Appearance.effectiveScale
-                            border.color: Appearance.colors.colError
-                            opacity: mouseArea.containsMouse ? 0.8 : 1
-                            Behavior on opacity { NumberAnimation { duration: 150 } }
+                        iconName: "close"
+                        iconSize: 18 * Appearance.effectiveScale
+                        colInactive: Appearance.m3colors.m3secondaryContainer
+                        colBackgroundHover: Appearance.m3colors.m3secondaryContainer
+                        colInactiveText: Appearance.m3colors.m3onSecondaryContainer
+                        onClicked: {
+                            Config.options.profile.avatarPicture = ""
+                            Config.options.bar.avatar_path = ""
                         }
 
-                        RowLayout {
-                            anchors.centerIn: parent
-                            spacing: 6 * Appearance.effectiveScale
-                            MaterialSymbol {
-                                text: "close"
-                                iconSize: 16 * Appearance.effectiveScale
-                                color: Appearance.colors.colError
-                            }
-                            StyledText {
-                                text: I18nService.tr("Clear")
-                                font.pixelSize: Appearance.font.pixelSize.small
-                                color: Appearance.colors.colError
-                            }
-                        }
-
-                        MouseArea {
-                            id: mouseArea
-                            anchors.fill: parent
-                            cursorShape: Qt.PointingHandCursor
-                            hoverEnabled: true
-                            onClicked: {
-                                Config.options.profile.avatarPicture = ""
-                                Config.options.bar.avatar_path = ""
-                            }
+                        StyledToolTip {
+                            text: I18nService.tr("Clear")
+                            extraVisibleCondition: avatarClearBtn.hovered
                         }
                     }
                 }
@@ -361,74 +331,42 @@ ColumnLayout {
                     }
                 }
 
-                ColumnLayout {
-                    spacing: 8 * Appearance.effectiveScale
+                RowLayout {
+                    spacing: 2 * Appearance.effectiveScale
                     Layout.alignment: Qt.AlignVCenter
 
-                    RippleButton {
+                    SegmentedButton {
+                        orientation: Qt.Horizontal
+                        forceFirst: true
+                        forceLast: Config.options.profile.bannerImage === ""
+                        pillOnActive: false
                         implicitWidth: 120 * Appearance.effectiveScale
-                        implicitHeight: 36 * Appearance.effectiveScale
-                        buttonRadius: 18 * Appearance.effectiveScale
-                        colBackground: Appearance.m3colors.m3primaryContainer
-
-                        RowLayout {
-                            anchors.centerIn: parent
-                            spacing: 6 * Appearance.effectiveScale
-                            MaterialSymbol {
-                                text: "folder_open"
-                                iconSize: 16 * Appearance.effectiveScale
-                                color: Appearance.m3colors.m3onPrimaryContainer
-                            }
-                                    StyledText {
-                                        text: I18nService.tr("Browse")
-                                        font.pixelSize: Appearance.font.pixelSize.small
-                                        color: Appearance.m3colors.m3onPrimaryContainer
-                                    }
-                                }
-
-                                onClicked: {
-                                    bannerPickerProc.running = true
-                                }
+                        iconName: "folder_open"
+                        iconSize: 18 * Appearance.effectiveScale
+                        buttonText: I18nService.tr("Browse")
+                        colInactive: Appearance.m3colors.m3secondaryContainer
+                        colBackgroundHover: Appearance.m3colors.m3secondaryContainer
+                        colInactiveText: Appearance.m3colors.m3onSecondaryContainer
+                        onClicked: bannerPickerProc.running = true
                     }
 
-                    Item {
-                        implicitWidth: 120 * Appearance.effectiveScale
-                        implicitHeight: 36 * Appearance.effectiveScale
+                    SegmentedButton {
+                        id: bannerClearBtn
+                        orientation: Qt.Horizontal
+                        forceFirst: false
+                        forceLast: true
+                        pillOnActive: false
                         visible: Config.options.profile.bannerImage !== ""
+                        iconName: "close"
+                        iconSize: 18 * Appearance.effectiveScale
+                        colInactive: Appearance.m3colors.m3secondaryContainer
+                        colBackgroundHover: Appearance.m3colors.m3secondaryContainer
+                        colInactiveText: Appearance.m3colors.m3onSecondaryContainer
+                        onClicked: Config.options.profile.bannerImage = ""
 
-                        Rectangle {
-                            anchors.fill: parent
-                            radius: 18 * Appearance.effectiveScale
-                            color: "transparent"
-                            border.width: 1 * Appearance.effectiveScale
-                            border.color: Appearance.colors.colError
-                            opacity: bannerClearMouse.containsMouse ? 0.8 : 1
-                            Behavior on opacity { NumberAnimation { duration: 150 } }
-                        }
-
-                        RowLayout {
-                            anchors.centerIn: parent
-                            spacing: 6 * Appearance.effectiveScale
-                            MaterialSymbol {
-                                text: "close"
-                                iconSize: 16 * Appearance.effectiveScale
-                                color: Appearance.colors.colError
-                            }
-                                StyledText {
-                                    text: I18nService.tr("Clear")
-                                    font.pixelSize: Appearance.font.pixelSize.small
-                                    color: Appearance.colors.colError
-                                }
-                            }
-
-                            MouseArea {
-                                id: bannerClearMouse
-                            anchors.fill: parent
-                            cursorShape: Qt.PointingHandCursor
-                            hoverEnabled: true
-                            onClicked: {
-                                Config.options.profile.bannerImage = ""
-                            }
+                        StyledToolTip {
+                            text: I18nService.tr("Clear")
+                            extraVisibleCondition: bannerClearBtn.hovered
                         }
                     }
                 }
@@ -609,30 +547,16 @@ ColumnLayout {
                             return true
                         }
 
-                        RippleButton {
-                            implicitWidth: 110 * Appearance.effectiveScale
-                            implicitHeight: 36 * Appearance.effectiveScale
-                            buttonRadius: 18 * Appearance.effectiveScale
-                            colBackground: Appearance.m3colors.m3primaryContainer
-
-                            RowLayout {
-                                anchors.centerIn: parent
-                                spacing: 6 * Appearance.effectiveScale
-                                MaterialSymbol {
-                                    text: "folder_open"
-                                    iconSize: 16 * Appearance.effectiveScale
-                                    color: Appearance.m3colors.m3onPrimaryContainer
-                                }
-                            StyledText {
-                                text: I18nService.tr("Browse")
-                                    font.pixelSize: Appearance.font.pixelSize.small
-                                    color: Appearance.m3colors.m3onPrimaryContainer
-                                }
-                            }
-
-                            onClicked: {
-                                iconPickerProc.running = true
-                            }
+                        SegmentedButton {
+                            pillOnActive: false
+                            implicitWidth: 120 * Appearance.effectiveScale
+                            iconName: "folder_open"
+                            iconSize: 18 * Appearance.effectiveScale
+                            buttonText: I18nService.tr("Browse")
+                            colInactive: Appearance.m3colors.m3secondaryContainer
+                            colBackgroundHover: Appearance.m3colors.m3secondaryContainer
+                            colInactiveText: Appearance.m3colors.m3onSecondaryContainer
+                            onClicked: iconPickerProc.running = true
                         }
                     }
                 }

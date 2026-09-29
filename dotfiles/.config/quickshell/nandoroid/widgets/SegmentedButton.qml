@@ -28,6 +28,7 @@ SegmentedWrapper {
     property color colInactive: Appearance.m3colors.m3surfaceContainerHigh
     property color colActiveText: Appearance.m3colors.m3onPrimary
     property color colInactiveText: Appearance.m3colors.m3onSurface
+    property color colBackgroundHover: Appearance.colors.colLayer1Hover
 
     signal clicked()
     
@@ -57,7 +58,7 @@ SegmentedWrapper {
         // Color logic
         toggled: root.active
         colBackground: root.colInactive
-        colBackgroundHover: Appearance.colors.colLayer1Hover
+        colBackgroundHover: root.colBackgroundHover
         colBackgroundToggled: root.colActive
         colBackgroundToggledHover: root.colActive
         

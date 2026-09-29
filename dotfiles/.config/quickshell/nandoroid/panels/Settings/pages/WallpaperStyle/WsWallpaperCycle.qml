@@ -147,13 +147,15 @@ ColumnLayout {
                     Layout.fillWidth: true
                 }
             }
-            M3IconButton {
-                iconName: "edit"
-                iconSize: 20 * Appearance.effectiveScale
-                implicitWidth: 36 * Appearance.effectiveScale; implicitHeight: 36 * Appearance.effectiveScale
-                buttonRadius: 18 * Appearance.effectiveScale
-                colBackground: Appearance.colors.colPrimary
-                color: Appearance.colors.colOnPrimary
+            SegmentedButton {
+                pillOnActive: false
+                implicitWidth: 120 * Appearance.effectiveScale
+                iconName: "folder_open"
+                iconSize: 18 * Appearance.effectiveScale
+                buttonText: I18nService.tr("Browse")
+                colInactive: Appearance.m3colors.m3secondaryContainer
+                colBackgroundHover: Appearance.m3colors.m3secondaryContainer
+                colInactiveText: Appearance.m3colors.m3onSecondaryContainer
                 onClicked: folderPickerProc.running = true
             }
         }

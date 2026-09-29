@@ -191,93 +191,56 @@ ColumnLayout {
             }
 
             RowLayout {
-                spacing: 8 * Appearance.effectiveScale
+                spacing: 2 * Appearance.effectiveScale
                 Layout.alignment: Qt.AlignVCenter
 
-                RippleButton {
+                SegmentedButton {
+                    orientation: Qt.Horizontal
+                    forceFirst: true
+                    forceLast: false
+                    pillOnActive: false
                     implicitWidth: 120 * Appearance.effectiveScale
-                    implicitHeight: 36 * Appearance.effectiveScale
-                    buttonRadius: 18 * Appearance.effectiveScale
-                    colBackground: Appearance.m3colors.m3primaryContainer
-
-                    RowLayout {
-                        anchors.centerIn: parent
-                        spacing: 6 * Appearance.effectiveScale
-                        MaterialSymbol {
-                            text: root.previewing === "notification" ? "stop" : "play_arrow"
-                            iconSize: 16 * Appearance.effectiveScale
-                            color: Appearance.m3colors.m3onPrimaryContainer
-                        }
-                        StyledText {
-                            text: root.previewing === "notification" ? I18nService.tr("Stop") : I18nService.tr("Preview")
-                            font.pixelSize: Appearance.font.pixelSize.small
-                            color: Appearance.m3colors.m3onPrimaryContainer
-                        }
-                    }
-
+                    iconName: root.previewing === "notification" ? "stop" : "play_arrow"
+                    iconSize: 18 * Appearance.effectiveScale
+                    buttonText: root.previewing === "notification" ? I18nService.tr("Stop") : I18nService.tr("Preview")
+                    colInactive: Appearance.m3colors.m3secondaryContainer
+                    colBackgroundHover: Appearance.m3colors.m3secondaryContainer
+                    colInactiveText: Appearance.m3colors.m3onSecondaryContainer
                     onClicked: root.togglePreview("notification")
                 }
 
-                RippleButton {
+                SegmentedButton {
+                    orientation: Qt.Horizontal
+                    forceFirst: false
+                    forceLast: root.notificationSound === ""
+                    pillOnActive: false
                     implicitWidth: 120 * Appearance.effectiveScale
-                    implicitHeight: 36 * Appearance.effectiveScale
-                    buttonRadius: 18 * Appearance.effectiveScale
-                    colBackground: Appearance.m3colors.m3primaryContainer
-
-                    RowLayout {
-                        anchors.centerIn: parent
-                        spacing: 6 * Appearance.effectiveScale
-                        MaterialSymbol {
-                            text: "folder_open"
-                            iconSize: 16 * Appearance.effectiveScale
-                            color: Appearance.m3colors.m3onPrimaryContainer
-                        }
-                        StyledText {
-                            text: I18nService.tr("Browse")
-                            font.pixelSize: Appearance.font.pixelSize.small
-                            color: Appearance.m3colors.m3onPrimaryContainer
-                        }
-                    }
-
+                    iconName: "folder_open"
+                    iconSize: 18 * Appearance.effectiveScale
+                    buttonText: I18nService.tr("Browse")
+                    colInactive: Appearance.m3colors.m3secondaryContainer
+                    colBackgroundHover: Appearance.m3colors.m3secondaryContainer
+                    colInactiveText: Appearance.m3colors.m3onSecondaryContainer
                     onClicked: soundPickerProc.open("notification")
                 }
 
-                Item {
+                SegmentedButton {
+                    id: notifClearBtn
+                    orientation: Qt.Horizontal
+                    forceFirst: false
+                    forceLast: true
+                    pillOnActive: false
                     visible: root.notificationSound !== ""
-                    implicitWidth: 120 * Appearance.effectiveScale
-                    implicitHeight: 36 * Appearance.effectiveScale
+                    iconName: "close"
+                    iconSize: 18 * Appearance.effectiveScale
+                    colInactive: Appearance.m3colors.m3secondaryContainer
+                    colBackgroundHover: Appearance.m3colors.m3secondaryContainer
+                    colInactiveText: Appearance.m3colors.m3onSecondaryContainer
+                    onClicked: if (Config.ready) Config.options.sounds.notification = ""
 
-                    Rectangle {
-                        anchors.fill: parent
-                        radius: 18 * Appearance.effectiveScale
-                        color: "transparent"
-                        border.width: 1 * Appearance.effectiveScale
-                        border.color: Appearance.colors.colError
-                        opacity: notifClearArea.containsMouse ? 0.8 : 1
-                        Behavior on opacity { NumberAnimation { duration: 150 } }
-                    }
-
-                    RowLayout {
-                        anchors.centerIn: parent
-                        spacing: 6 * Appearance.effectiveScale
-                        MaterialSymbol {
-                            text: "close"
-                            iconSize: 16 * Appearance.effectiveScale
-                            color: Appearance.colors.colError
-                        }
-                        StyledText {
-                            text: I18nService.tr("Clear")
-                            font.pixelSize: Appearance.font.pixelSize.small
-                            color: Appearance.colors.colError
-                        }
-                    }
-
-                    MouseArea {
-                        id: notifClearArea
-                        anchors.fill: parent
-                        cursorShape: Qt.PointingHandCursor
-                        hoverEnabled: true
-                        onClicked: if (Config.ready) Config.options.sounds.notification = ""
+                    StyledToolTip {
+                        text: I18nService.tr("Clear")
+                        extraVisibleCondition: notifClearBtn.hovered
                     }
                 }
             }
@@ -329,93 +292,56 @@ ColumnLayout {
                 }
 
                 RowLayout {
-                    spacing: 8 * Appearance.effectiveScale
+                    spacing: 2 * Appearance.effectiveScale
                     Layout.alignment: Qt.AlignVCenter
 
-                    RippleButton {
+                    SegmentedButton {
+                        orientation: Qt.Horizontal
+                        forceFirst: true
+                        forceLast: false
+                        pillOnActive: false
                         implicitWidth: 120 * Appearance.effectiveScale
-                        implicitHeight: 36 * Appearance.effectiveScale
-                        buttonRadius: 18 * Appearance.effectiveScale
-                        colBackground: Appearance.m3colors.m3primaryContainer
-
-                        RowLayout {
-                            anchors.centerIn: parent
-                            spacing: 6 * Appearance.effectiveScale
-                            MaterialSymbol {
-                                text: root.previewing === soundCard.kind ? "stop" : "play_arrow"
-                                iconSize: 16 * Appearance.effectiveScale
-                                color: Appearance.m3colors.m3onPrimaryContainer
-                            }
-                            StyledText {
-                                text: root.previewing === soundCard.kind ? I18nService.tr("Stop") : I18nService.tr("Preview")
-                                font.pixelSize: Appearance.font.pixelSize.small
-                                color: Appearance.m3colors.m3onPrimaryContainer
-                            }
-                        }
-
+                        iconName: root.previewing === soundCard.kind ? "stop" : "play_arrow"
+                        iconSize: 18 * Appearance.effectiveScale
+                        buttonText: root.previewing === soundCard.kind ? I18nService.tr("Stop") : I18nService.tr("Preview")
+                        colInactive: Appearance.m3colors.m3secondaryContainer
+                        colBackgroundHover: Appearance.m3colors.m3secondaryContainer
+                        colInactiveText: Appearance.m3colors.m3onSecondaryContainer
                         onClicked: root.togglePreview(soundCard.kind)
                     }
 
-                    RippleButton {
+                    SegmentedButton {
+                        orientation: Qt.Horizontal
+                        forceFirst: false
+                        forceLast: soundCard.soundPath === ""
+                        pillOnActive: false
                         implicitWidth: 120 * Appearance.effectiveScale
-                        implicitHeight: 36 * Appearance.effectiveScale
-                        buttonRadius: 18 * Appearance.effectiveScale
-                        colBackground: Appearance.m3colors.m3primaryContainer
-
-                        RowLayout {
-                            anchors.centerIn: parent
-                            spacing: 6 * Appearance.effectiveScale
-                            MaterialSymbol {
-                                text: "folder_open"
-                                iconSize: 16 * Appearance.effectiveScale
-                                color: Appearance.m3colors.m3onPrimaryContainer
-                            }
-                            StyledText {
-                                text: I18nService.tr("Browse")
-                                font.pixelSize: Appearance.font.pixelSize.small
-                                color: Appearance.m3colors.m3onPrimaryContainer
-                            }
-                        }
-
+                        iconName: "folder_open"
+                        iconSize: 18 * Appearance.effectiveScale
+                        buttonText: I18nService.tr("Browse")
+                        colInactive: Appearance.m3colors.m3secondaryContainer
+                        colBackgroundHover: Appearance.m3colors.m3secondaryContainer
+                        colInactiveText: Appearance.m3colors.m3onSecondaryContainer
                         onClicked: soundPickerProc.open(soundCard.kind)
                     }
 
-                    Item {
+                    SegmentedButton {
+                        id: clearBtn
+                        orientation: Qt.Horizontal
+                        forceFirst: false
+                        forceLast: true
+                        pillOnActive: false
                         visible: soundCard.soundPath !== ""
-                        implicitWidth: 120 * Appearance.effectiveScale
-                        implicitHeight: 36 * Appearance.effectiveScale
+                        iconName: "close"
+                        iconSize: 18 * Appearance.effectiveScale
+                        colInactive: Appearance.m3colors.m3secondaryContainer
+                        colBackgroundHover: Appearance.m3colors.m3secondaryContainer
+                        colInactiveText: Appearance.m3colors.m3onSecondaryContainer
+                        onClicked: if (Config.ready) Config.options.sounds[soundCard.kind] = ""
 
-                        Rectangle {
-                            anchors.fill: parent
-                            radius: 18 * Appearance.effectiveScale
-                            color: "transparent"
-                            border.width: 1 * Appearance.effectiveScale
-                            border.color: Appearance.colors.colError
-                            opacity: clearArea.containsMouse ? 0.8 : 1
-                            Behavior on opacity { NumberAnimation { duration: 150 } }
-                        }
-
-                        RowLayout {
-                            anchors.centerIn: parent
-                            spacing: 6 * Appearance.effectiveScale
-                            MaterialSymbol {
-                                text: "close"
-                                iconSize: 16 * Appearance.effectiveScale
-                                color: Appearance.colors.colError
-                            }
-                            StyledText {
-                                text: I18nService.tr("Clear")
-                                font.pixelSize: Appearance.font.pixelSize.small
-                                color: Appearance.colors.colError
-                            }
-                        }
-
-                        MouseArea {
-                            id: clearArea
-                            anchors.fill: parent
-                            cursorShape: Qt.PointingHandCursor
-                            hoverEnabled: true
-                            onClicked: if (Config.ready) Config.options.sounds[soundCard.kind] = ""
+                        StyledToolTip {
+                            text: I18nService.tr("Clear")
+                            extraVisibleCondition: clearBtn.hovered
                         }
                     }
                 }
