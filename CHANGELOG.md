@@ -1,3 +1,86 @@
+# Nandoroid Shell v1.6.0 Release Notes
+
+## Overview
+Nandoroid Shell v1.6.0 is a major update focused on language access, daily productivity, and visual consistency. The shell is now fully translated into Indonesian and English, the Dashboard receives a complete Clock, Alarm, and Schedule revamp, and Settings has been reworked page by page for a more consistent feel. It also introduces the pC Dynamic Island, video wallpaper support, and a redesigned update experience.
+
+## Changelog
+
+**Language Support**
+- Add complete English and Indonesian translations across the whole shell
+- Add in-app language switcher with instant reload, no restart needed
+
+**Dashboard, Clock & Alarm**
+- Redesign Schedule as a simple today timeline with an event editor and reminders
+- Add square cell calendar with a live schedule summary
+- Add Clock suite with stopwatch, timer, and pomodoro, wired into the Dynamic Island
+- Add Alarm tab with snooze, custom ringtone, repeat presets, per day scheduling, and visible alarm names on each card
+- Rework Todo into a kanban board with drag and drop, plus a cleaner Notepad
+- Redesign Translate view with side by side cards, smarter language swap, and romaji and pinyin transliteration
+
+**Dynamic Island & Status Bar**
+- Introduce pC Dynamic Island with idle info, timers, media, and notifications
+- Mirror island status onto the lockscreen pill while the session is locked
+- Add date and distro uptime on island hover, with newest notification focus
+- Add random material shapes for the workspace indicator and full width wave
+
+**Launcher, Dock & Overview**
+- Add emoji picker grid with recents and keyboard navigation
+- Add settings search, wallpaper and color sub commands, and quick system toggles
+- Improve clipboard history with wide preview, search, and item deletion
+- Add dual mode dock previews with live thumbnails and compact list
+- Add Niri style vertical overview layout
+
+**Wallpaper & Visuals**
+- Add video wallpaper support through mpvpaper with per target desktop and lockscreen
+- Separate desktop and lockscreen wallpaper commands and shortcuts
+- Add selectable wallpaper transitions, including random material shapes
+- Add desktop visualizer styles with bars, mirror, aurora, and dots options
+- Rework weather card animations with calmer clouds and rain
+
+**Settings**
+- Refresh Settings layout with a cleaner top bar, responsive sidebar, and Material 3 polish
+- Apply the new page standard to Display, Profile, About, System, Services, Widgets, and Customize
+- Rework Network views with Android style details and password dialogs
+- Rework Bluetooth views with a device details sidebar
+- Add game mode auto toggles for do not disturb, keep awake, and performance
+- Redesign the shell update page with grouped changelog and release history (thanks to @P3DROVFX for the design reference)
+- Add NAnDoroid theme, a scheme picker in the accent overlay, and 6 new basic themes
+- Add first day of week, notification duration, and alarm sound settings
+
+**Sound, Feedback & Small Touches**
+- Add system sounds settings with custom notification and ringtone picks
+- Add notification modes with a dedicated Quick Settings panel
+- Add global snackbar feedback with undo for deletes, copies, and screenshots
+- Add global confirmation dialog and cleaner dialog buttons
+- Add custom title and numbers fonts setting
+- Add keyboard navigation and focus rings to Quick Settings, workspace selector, and notifications
+- Add GitHub widget with contribution heatmap and live system monitor header stats
+- Add Pixel clock style and new material loading indicators
+
+**Installer & Update**
+- Add installer dry run mode for a safe preview before changing anything
+- Add shell only copy scope with timestamped config backups
+- Guard updates on dev setups so symlinked checkouts are never overwritten silently
+
+**Stability & Fixes**
+- Keep OSD above the lockscreen, stop Overview from closing shell windows, and give it exclusive keyboard focus with absolute navigation
+- Fix status bar module spacing, panel hitboxes, empty workspace pill sizing, and special workspace detection
+- Fix Quick Settings blinking disk stats, hover leaks, and Bluetooth toggle issues
+- Make clock dates update in real time and fix the battery tip color at full charge
+- Fix media player icons and duplicate browser players
+- Fix recording start spam notification and off screen image capture crash
+- Fix clipboard delete behavior and backdrop clicks on polkit and dialog panels
+- Fix lockscreen battery position and workspace evacuation on lock
+- Persist desktop widget stacking order across restarts
+- Lazy load the system monitor and onboarding to cut startup cost, with lighter disk polling
+- Harden preset save and apply, including lockscreen colors
+- Soften the installer on non Arch systems, guard Hyprland injection, and disable blur on fullscreen shell layers
+- Tighten panel input masks so clicks no longer get swallowed around the status bar and corners
+
+For a complete list of changes, please refer to the git commit history.
+
+---
+
 # Nandoroid Shell v1.5.0 Release Notes
 
 ## Overview

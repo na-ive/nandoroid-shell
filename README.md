@@ -17,7 +17,7 @@ A Quickshell-based desktop shell for Hyprland adopting Android 16 design element
 > 
 > **Opinionated Design**: NAnDoroid is highly opinionated. Many design choices, UI layouts, and workflows are built specifically to suit my personal preferences. While some features are customizable, core paradigms remain fixed by design.
 
-**Version:** v1.5.0
+**Version:** v1.6.0
 **License:** AGPL-3.0
 
 ## Key Features
