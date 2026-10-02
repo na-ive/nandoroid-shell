@@ -59,7 +59,7 @@ Singleton {
     property string materialSymbol: root.ethernet
         ? "lan"
         : root.wifiEnabled
-            ? (root.wifiStatus === "connected")
+            ? (root.wifiStatus === "connected" || root.wifiStatus === "limited")
                 ? (root.networkStrength > 66 ? "wifi" :
                    root.networkStrength > 33 ? "wifi_2_bar" :
                    root.networkStrength > 0 ? "wifi_1_bar" :
@@ -71,7 +71,7 @@ Singleton {
                         
     property string materialSymbolBackground: root.ethernet
         ? ""
-        : root.wifiEnabled && (root.wifiStatus === "connected" || root.wifiStatus === "connecting")
+        : root.wifiEnabled && (root.wifiStatus === "connected" || root.wifiStatus === "connecting" || root.wifiStatus === "limited")
             ? "wifi"
             : ""
 
@@ -477,7 +477,7 @@ Singleton {
     Component.onCompleted: {
         update()
         wifiDeviceProc.exec(wifiDeviceProc.command);
-        advEditorCheckProc.exec();
+        advEditorCheckProc.exec(advEditorCheckProc.command);
         // Initial check; warpMonitor starts automatically after detection.
         warpInitProc.running = true
     }
