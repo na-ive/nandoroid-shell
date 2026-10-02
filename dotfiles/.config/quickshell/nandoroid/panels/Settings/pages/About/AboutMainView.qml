@@ -28,7 +28,7 @@ ColumnLayout {
                     Layout.preferredWidth: 1
                     title: I18nService.tr("Shell")
                     name: "NAnDoroid"
-                    subText: I18nService.tr("Version ") + version
+                    subText: I18nService.tr("Version ") + (version.startsWith("v") ? version.slice(1) : version)
                     accentColor: Appearance.colors.colPrimary
                     icon: "verified_user"
                     logoSource: "nandoroid-symbolic"
