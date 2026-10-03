@@ -38,6 +38,14 @@ Item {
     readonly property string indicatorStyle: forcedStyle !== "" ? forcedStyle : (isPcIslandActive ? "unified" : (Config.options.workspaces?.indicatorStyle ?? "pill"))
     readonly property string indicatorLabel: Config.options.workspaces?.indicatorLabel ?? "none"
 
+    // Full-height transparent hitbox when this module lives in a side cluster
+    // (pcIsland active): root stretches to status-bar height so wheel events
+    // anywhere over the module switch workspace instead of falling through
+    // to the brightness/volume scroll areas behind it. Visual stays centered.
+    // Set to false when embedding inside a fixed-size pill (e.g. M3 wrapper).
+    property bool fullHeightMode: isPcIslandActive
+    readonly property real _hitHPad: fullHeightMode ? 8 * Appearance.effectiveScale : 0
+
     // Contiguous occupied groups — one rect per group, no overlap
     readonly property var _occGroups: {
         const occ = root.workspaceOccupied;
@@ -106,8 +114,8 @@ Item {
     // wrapper primary (darkmode) -> onPrimary, wrapper primaryContainer -> onPrimaryContainer
     readonly property color _onWrapperColor: Appearance.m3colors.darkmode ? Appearance.colors.colOnPrimary : Appearance.colors.colOnPrimaryContainer
 
-    implicitWidth: root.isSpecialActive ? specialOverlay.implicitWidth : pillRow.implicitWidth
-    implicitHeight: pillRow.implicitHeight
+    implicitWidth: (root.isSpecialActive ? specialOverlay.implicitWidth : pillRow.implicitWidth) + _hitHPad * 2
+    implicitHeight: fullHeightMode ? Appearance.sizes.statusBarHeightCurrent : pillRow.implicitHeight
 
     Component.onCompleted: {
         const localIdx = (root.activeWsId - 1) % root.workspacesShown
@@ -141,7 +149,10 @@ Item {
         }
     }
 
-    // Block parent brightness/volume wheel when over indicator
+    // Block parent brightness/volume wheel when over indicator.
+    // anchors.fill parent covers the full-height transparent wrapper in
+    // fullHeightMode, so scrolling anywhere over the module (not just over
+    // the dots) switches workspace and never leaks to volume/brightness.
     MouseArea {
         anchors.fill: parent
         acceptedButtons: Qt.NoButton
@@ -173,8 +184,7 @@ Item {
     Row {
         id: pillRow
         z: 2
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.centerIn: parent
         spacing: root.indicatorStyle === "unified" ? root._tabSpacing : 4 * Appearance.effectiveScale
         opacity: root.isSpecialActive ? 0 : 1
         Behavior on opacity { NumberAnimation { duration: 250; easing.type: Easing.OutExpo } }

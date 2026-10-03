@@ -417,15 +417,49 @@ Item {
         }
     }}
 
-    Component { id: m3WorkspaceIndicatorComponent; M3StatusWrapper {
+    // Transparent full-height wrapper around the M3 workspace pill (pcIsland
+    // side-cluster module): the colored pill keeps its size and stays centered,
+    // while the wrapper + expanded wheel grabber cover the full bar height so
+    // scrolling over the module switches workspace instead of leaking to the
+    // brightness/volume scroll areas behind it.
+    Component { id: m3WorkspaceIndicatorComponent; Item {
         Layout.alignment: Qt.AlignVCenter
-        show: true
-        m3Color: Appearance.m3colors.m3surfaceContainerHigh
-        m3ContentColor: Appearance.m3colors.m3onSurfaceVariant
-        WorkspaceIndicator {
-            Layout.alignment: Qt.AlignVCenter
-            monitor: rootM3.monitor
-            forcedStyle: "unified"
+        implicitWidth: wsInner.implicitWidth
+        implicitHeight: wsInner.implicitHeight
+        M3StatusWrapper {
+            id: wsInner
+            anchors.centerIn: parent
+            show: true
+            m3Color: Appearance.m3colors.m3surfaceContainerHigh
+            m3ContentColor: Appearance.m3colors.m3onSurfaceVariant
+            WorkspaceIndicator {
+                Layout.alignment: Qt.AlignVCenter
+                monitor: rootM3.monitor
+                forcedStyle: "unified"
+                // Height handled by the transparent wrapper, not the indicator
+                fullHeightMode: false
+            }
+        }
+        MouseArea {
+            anchors.fill: parent
+            // Expand hitbox beyond the pill to full bar height (+ a bit) and
+            // a wider horizontal grab area; negative margins don't affect layout.
+            anchors.topMargin: -12 * Appearance.effectiveScale
+            anchors.bottomMargin: -12 * Appearance.effectiveScale
+            anchors.leftMargin: -8 * Appearance.effectiveScale
+            anchors.rightMargin: -8 * Appearance.effectiveScale
+            acceptedButtons: Qt.NoButton
+            hoverEnabled: true
+            cursorShape: Qt.PointingHandCursor
+            propagateComposedEvents: false
+            onWheel: (wheel) => {
+                if (wheel.angleDelta.y > 0) {
+                    if ((rootM3.monitor?.activeWorkspace?.id ?? 1) > 1) Hyprland.dispatch(HyprlandCompat.dspWorkspace("r-1"))
+                } else if (wheel.angleDelta.y < 0) {
+                    Hyprland.dispatch(HyprlandCompat.dspWorkspace("r+1"))
+                }
+                wheel.accepted = true
+            }
         }
     }}
 
