@@ -423,6 +423,7 @@ Item {
     // scrolling over the module switches workspace instead of leaking to the
     // brightness/volume scroll areas behind it.
     Component { id: m3WorkspaceIndicatorComponent; Item {
+        id: m3wsRoot
         Layout.alignment: Qt.AlignVCenter
         implicitWidth: wsInner.implicitWidth
         implicitHeight: wsInner.implicitHeight
@@ -433,6 +434,7 @@ Item {
             m3Color: Appearance.m3colors.m3surfaceContainerHigh
             m3ContentColor: Appearance.m3colors.m3onSurfaceVariant
             WorkspaceIndicator {
+                id: m3wsIndicator
                 Layout.alignment: Qt.AlignVCenter
                 monitor: rootM3.monitor
                 forcedStyle: "unified"
@@ -440,7 +442,18 @@ Item {
                 fullHeightMode: false
             }
         }
+        // M3 hover state layer (8%).
+        Rectangle {
+            anchors.centerIn: parent
+            width: wsInner.width
+            height: wsInner.height
+            radius: height / 2
+            color: Appearance.m3colors.darkmode ? "#ffffff" : "#000000"
+            opacity: m3wsWheel.containsMouse ? 0.08 : 0
+            Behavior on opacity { NumberAnimation { duration: 120 } }
+        }
         MouseArea {
+            id: m3wsWheel
             anchors.fill: parent
             // Expand hitbox beyond the pill to full bar height (+ a bit) and
             // a wider horizontal grab area; negative margins don't affect layout.
@@ -452,6 +465,16 @@ Item {
             hoverEnabled: true
             cursorShape: Qt.PointingHandCursor
             propagateComposedEvents: false
+            // Topmost layer: hover never reaches the indicator below,
+            // so the hover index is computed here instead.
+            function updateHover(mx, my) {
+                const p = m3wsWheel.mapToItem(m3wsIndicator.hoverRow, mx, my)
+                const idx = m3wsIndicator.hoveredIndexAt(p.x)
+                if (idx !== -1) m3wsIndicator._hoveredIndex = idx
+            }
+            onEntered: updateHover(mouseX, mouseY)
+            onPositionChanged: (mouse) => updateHover(mouse.x, mouse.y)
+            onExited: m3wsIndicator._hoveredIndex = -1
             onWheel: (wheel) => {
                 if (wheel.angleDelta.y > 0) {
                     if ((rootM3.monitor?.activeWorkspace?.id ?? 1) > 1) Hyprland.dispatch(HyprlandCompat.dspWorkspace("r-1"))

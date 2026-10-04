@@ -30,8 +30,8 @@ Item {
     readonly property int startWsId: Math.floor((activeWsId - 1) / workspacesShown) * workspacesShown + 1
 
     property list<bool> workspaceOccupied: []
-    onWorkspacesShownChanged: updateOccupied()
-    onStartWsIdChanged: updateOccupied()
+    onWorkspacesShownChanged: { _hoveredIndex = -1; updateOccupied() }
+    onStartWsIdChanged: { _hoveredIndex = -1; updateOccupied() }
 
     property string forcedStyle: ""
     readonly property bool isPcIslandActive: Config.ready && Config.options.statusBar && Config.options.statusBar.centerModule === "pcIsland"
@@ -75,6 +75,21 @@ Item {
     property real _tabIdx2: 0
     property int _hoveredIndex: -1
 
+    // Public hover API for overlaying owners (e.g. M3 pill):
+    // map pointer coords to hoverRow, then call hoveredIndexAt().
+    property alias hoverRow: pillRow
+    function hoveredIndexAt(rowX) {
+        let best = -1
+        let bestD = 1e9
+        for (let i = 0; i < workspacesShown; i++) {
+            const it = wsRepeater.itemAt(i)
+            if (!it) continue
+            const d = Math.abs(rowX - (it.x + it.width / 2))
+            if (d < bestD) { bestD = d; best = i }
+        }
+        return best
+    }
+
     Behavior on _tabIdx1 {
         enabled: !GlobalStates.screenLocked
         NumberAnimation { duration: 100; easing.type: Easing.OutSine }
@@ -104,7 +119,7 @@ Item {
         MaterialShape.Shape.Cookie9Sided
     ]
 
-    // Deterministic pseudo-random per wsId — stable, tidak blink saat paging
+    // Deterministic pseudo-random per wsId — stable across paging.
     function _shapeForWs(wsId) {
         if (_noneShapePool.length === 0) return MaterialShape.Shape.Circle
         return _noneShapePool[(wsId * 7 + 3) % _noneShapePool.length]
@@ -156,7 +171,8 @@ Item {
     MouseArea {
         anchors.fill: parent
         acceptedButtons: Qt.NoButton
-        hoverEnabled: true
+        // Keep hover off: this layer sits below pillRow.
+        hoverEnabled: false
         propagateComposedEvents: false
         onWheel: (wheel) => {
             const delta = wheel.angleDelta.y
@@ -175,7 +191,13 @@ Item {
     signal hoveredChanged(bool hovered)
 
     HoverHandler {
-        onHoveredChanged: root.hoveredChanged(hovered)
+        id: rootHover
+        onHoveredChanged: {
+            root.hoveredChanged(hovered)
+            // Fallback reset if a delegate is destroyed mid-hover (paging).
+            if (!hovered && root._hoveredIndex !== -1)
+                root._hoveredIndex = -1
+        }
     }
 
     // ====================================================================
@@ -190,6 +212,7 @@ Item {
         Behavior on opacity { NumberAnimation { duration: 250; easing.type: Easing.OutExpo } }
 
         Repeater {
+            id: wsRepeater
             model: root.workspacesShown
 
             delegate: Item {
@@ -200,7 +223,8 @@ Item {
                 readonly property bool isOccupied: root.workspaceOccupied[index] ?? false
                 readonly property bool isPill: root.indicatorStyle === "pill"
                 readonly property bool showLabel: root.indicatorLabel !== "none"
-                readonly property bool isHovered: mouseArea.containsMouse
+                // Owned by hoverGrabber (single source of truth).
+                readonly property bool isHovered: root._hoveredIndex === index
 
                 // Sizing
                 implicitWidth: isPill
@@ -224,7 +248,8 @@ Item {
 
                     color: {
                         if (isActive) return Appearance.m3colors.darkmode ? Appearance.colors.colNotchPrimary : Appearance.colors.colPrimaryContainer
-                        return isOccupied ? Appearance.colors.colNotchText : Appearance.colors.colNotchSubtext
+                        if (isHovered || isOccupied) return Appearance.colors.colNotchText
+                        return Appearance.colors.colNotchSubtext
                     }
                     border.width: (!isActive && !isOccupied && !isHovered) ? 1 : 0
                     border.color: Appearance.colors.colNotchSubtext
@@ -251,17 +276,18 @@ Item {
                     }
                 }
 
-                // ----- Unified: inactive dot when no label (active pakai MaterialShape) -----
+                // ----- Unified: inactive dot, no label -----
                 Rectangle {
                     visible: !isPill && !showLabel && !isActive
                     anchors.centerIn: parent
-                    width: Math.round(root._tabDotSize * 0.25)
+                    width: Math.round(root._tabDotSize * (isHovered ? 0.4 : 0.25))
                     height: width
                     radius: width / 2
-                    color: isOccupied ? Appearance.colors.colNotchText : Appearance.colors.colNotchSubtext
+                    color: (isOccupied || isHovered) ? Appearance.colors.colNotchText : Appearance.colors.colNotchSubtext
+                    Behavior on width { NumberAnimation { duration: 120; easing.type: Easing.OutSine } }
                 }
 
-                // ----- Unified none: active random MaterialShape di atas sliding wrapper -----
+                // ----- Unified, no label: active MaterialShape over sliding wrapper -----
                 MaterialShape {
                     visible: !isPill && !showLabel && isActive
                     anchors.centerIn: parent
@@ -274,7 +300,7 @@ Item {
                     Behavior on opacity { NumberAnimation { duration: 150 } }
                 }
 
-                // ----- Pill none: active random MaterialShape di atas pill wrapper -----
+                // ----- Pill, no label: active MaterialShape over pill -----
                 MaterialShape {
                     visible: isPill && !showLabel && isActive
                     anchors.centerIn: parent
@@ -289,21 +315,40 @@ Item {
 
                 Behavior on implicitWidth { NumberAnimation { duration: 250; easing.type: Easing.OutExpo } }
                 Behavior on implicitHeight { NumberAnimation { duration: 250; easing.type: Easing.OutExpo } }
-
-                MouseArea {
-                    id: mouseArea
-                    anchors.fill: parent
-                    anchors.margins: -4 * Appearance.effectiveScale
-                    hoverEnabled: true
-                    cursorShape: Qt.PointingHandCursor
-                    onClicked: Hyprland.dispatch(HyprlandCompat.dspWorkspace(wsId))
-                    onEntered: root._hoveredIndex = index
-                    onExited: {
-                        if (root._hoveredIndex === index)
-                            root._hoveredIndex = -1
-                    }
-                }
             }
+        }
+    }
+
+    // Sole hover/click owner where no outer layer covers this indicator.
+    // Covers dots and gaps, so gap clicks switch workspace instead of
+    // leaking to the dashboard catcher below. Left-only: middle/right
+    // fall through to the catcher underneath. Wheel passes through.
+    // (In the M3 pill, m3wsWheel sits above, so hover never fires there;
+    // clicks still land here, which is equivalent.)
+    MouseArea {
+        id: hoverGrabber
+        anchors.fill: pillRow
+        z: 5
+        acceptedButtons: Qt.LeftButton
+        hoverEnabled: true
+        cursorShape: Qt.PointingHandCursor
+        enabled: !root.isSpecialActive
+        function updateHover(mx) {
+            const idx = root.hoveredIndexAt(mx)
+            if (idx !== -1 && root._hoveredIndex !== idx)
+                root._hoveredIndex = idx
+        }
+        // entered() carries no coords; mouseX is already in pillRow coords.
+        onEntered: updateHover(mouseX)
+        onPositionChanged: (mouse) => updateHover(mouse.x)
+        onClicked: (mouse) => {
+            const idx = root.hoveredIndexAt(mouse.x)
+            if (idx !== -1)
+                Hyprland.dispatch(HyprlandCompat.dspWorkspace(root.startWsId + idx))
+        }
+        onExited: {
+            if (root._hoveredIndex !== -1)
+                root._hoveredIndex = -1
         }
     }
 
@@ -365,7 +410,7 @@ Item {
             implicitHeight: root._tabDotSize
             radius: height / 2
             color: "#ffffff"
-            opacity: root._hoveredIndex >= 0 ? 0.15 : 0
+            opacity: root._hoveredIndex >= 0 ? 0.28 : 0
             Behavior on x { NumberAnimation { duration: 100; easing.type: Easing.OutSine } }
             Behavior on opacity { NumberAnimation { duration: 100 } }
         }
