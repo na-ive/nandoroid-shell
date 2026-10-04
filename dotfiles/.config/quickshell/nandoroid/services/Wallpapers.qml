@@ -452,12 +452,37 @@ Singleton {
         id: themeReadProc
         command: ["cat", filePath]
         property string filePath
+        property string fileName
         stdout: StdioCollector {
             onStreamFinished: {
                 try {
                     MaterialThemeLoader.applyColors(this.text);
                 } catch(e) {
                     console.error("[Wallpapers] Theme Load Error:", e);
+                    return;
+                }
+                // Everything below reads straight from the theme file itself
+                // (the single source of truth): seed color, dark/light mode
+                // and system targets. No hardcoded per-theme lists.
+                try {
+                    const data = JSON.parse(this.text);
+                    const isDarkTheme = data.isDark !== undefined ? data.isDark : true;
+                    if (!Config.ready) return;
+                    Config.options.appearance.background.matugenCustomColor = data.source_color || data.primary || "";
+                    if (!isDarkTheme && Config.options.appearance.background.darkmode) {
+                        Config.options.appearance.background.darkmode = false;
+                    } else if (isDarkTheme && !Config.options.appearance.background.darkmode) {
+                        Config.options.appearance.background.darkmode = true;
+                    }
+                    const wp = Config.options.appearance.background.wallpaperPath || "";
+                    const cleanWp = wp.toString().startsWith("file://") ? wp.toString().substring(7) : wp.toString();
+                    themeApplyProc.fileName = themeReadProc.fileName;
+                    themeApplyProc.mode = isDarkTheme ? "dark" : "light";
+                    themeApplyProc.wallpaperPath = cleanWp;
+                    themeApplyProc.running = false;
+                    Qt.callLater(() => { themeApplyProc.running = true; });
+                } catch (e) {
+                    console.warn("[Wallpapers] cannot parse theme metadata:", e);
                 }
             }
         }
@@ -469,36 +494,15 @@ Singleton {
         const themesDir = Qt.resolvedUrl("../assets/themes/").toString();
         const cleanDir = themesDir.startsWith("file://") ? themesDir.substring(7) : themesDir;
         const fullPath = cleanDir + fileName;
-        
-        // Update config first for proper dark mode detection in matugen
-        const theme = root.findBasicThemeByFile(fileName);
-        if (theme) {
-            Config.options.appearance.background.matugen = false;
-            Config.options.appearance.background.matugenCustomColor = theme.colors[0];
-            Config.options.appearance.background.matugenThemeFile = fileName; // Unique identifier
-            
-            // Automatic mode switching based on explicit theme property
-            const isDarkTheme = theme.isDark !== undefined ? theme.isDark : true;
-            
-            if (!isDarkTheme && Config.options.appearance.background.darkmode) {
-                Config.options.appearance.background.darkmode = false;
-            } else if (isDarkTheme && !Config.options.appearance.background.darkmode) {
-                Config.options.appearance.background.darkmode = true;
-            }
 
-            // Exact theme mode: render the flat theme file 1:1 to all system
-            // targets (GTK, terminal, KDE static) instead of the matugen
-            // single-seed approximation.
-            const wp = Config.options.appearance.background.wallpaperPath || "";
-            const cleanWp = wp.toString().startsWith("file://") ? wp.toString().substring(7) : wp.toString();
-            themeApplyProc.fileName = fileName;
-            themeApplyProc.mode = isDarkTheme ? "dark" : "light";
-            themeApplyProc.wallpaperPath = cleanWp;
-            themeApplyProc.running = false;
-            Qt.callLater(() => { themeApplyProc.running = true; });
-        }
+        // Theme mode on immediately so UI selected-states follow; the rest
+        // (seed color, darkmode sync, system targets) follows once the theme
+        // file itself is read above.
+        Config.options.appearance.background.matugen = false;
+        Config.options.appearance.background.matugenThemeFile = fileName; // Unique identifier
 
         // 1. apply immediately to UI (for fast feedback)
+        themeReadProc.fileName = fileName;
         themeReadProc.filePath = fullPath;
         themeReadProc.running = true;
         
@@ -542,48 +546,6 @@ Singleton {
         interval: 500
         repeat: false
         onTriggered: root.initializeMatugen()
-    }
-
-    function findBasicThemeByFile(fileName) {
-        const basicThemes = [
-            { file: "angel.json", colors: ["#e8b882"], isDark: true },
-            { file: "angel_light.json", colors: ["#9a6830"], isDark: false },
-            { file: "ayu.json", colors: ["#e6b450"], isDark: true },
-            { file: "cobalt2.json", colors: ["#0088ff"], isDark: true },
-            { file: "cursor.json", colors: ["#88c0d0"], isDark: true },
-            { file: "dracula.json", colors: ["#bd93f9"], isDark: true },
-            { file: "eldritch.json", colors: ["#37f499"], isDark: true },
-            { file: "everforest.json", colors: ["#a7c080"], isDark: true },
-            { file: "flexoki.json", colors: ["#DA702C"], isDark: true },
-            { file: "frappe.json", colors: ["#ef9f76"], isDark: true },
-            { file: "github.json", colors: ["#58a6ff"], isDark: true },
-            { file: "gruvbox.json", colors: ["#b8bb26"], isDark: true },
-            { file: "kanagawa.json", colors: ["#76946a"], isDark: true },
-            { file: "latte.json", colors: ["#8839ef"], isDark: false },
-            { file: "macchiato.json", colors: ["#f5a97f"], isDark: true },
-            { file: "material_ocean.json", colors: ["#82aaff"], isDark: true },
-            { file: "matrix.json", colors: ["#00ff41"], isDark: true },
-            { file: "mercury.json", colors: ["#8da4f5"], isDark: true },
-            { file: "mocha.json", colors: ["#cba6f7"], isDark: true },
-            { file: "nandoroid.json", colors: ["#477ad6"], isDark: true },
-            { file: "nord.json", colors: ["#8fbcbb"], isDark: true },
-            { file: "one_dark.json", colors: ["#61afef"], isDark: true },
-            { file: "open_code.json", colors: ["#fab283"], isDark: true },
-            { file: "orng.json", colors: ["#EC5B2B"], isDark: true },
-            { file: "osaka_jade.json", colors: ["#2DD5B7"], isDark: true },
-            { file: "oxocarbon.json", colors: ["#33b1ff"], isDark: true },
-            { file: "rose_pine.json", colors: ["#ebbcba"], isDark: true },
-            { file: "sakura.json", colors: ["#d4869c"], isDark: false },
-            { file: "samurai.json", colors: ["#c41e3a"], isDark: true },
-            { file: "solarized.json", colors: ["#b58900"], isDark: true },
-            { file: "synthwave84.json", colors: ["#36f9f6"], isDark: true },
-            { file: "tokyo_night.json", colors: ["#7aa2f7"], isDark: true },
-            { file: "vercel.json", colors: ["#0070F3"], isDark: true },
-            { file: "vesper.json", colors: ["#FFC799"], isDark: true },
-            { file: "zen_burn.json", colors: ["#8cd0d3"], isDark: true },
-            { file: "zen_garden.json", colors: ["#7a9a7a"], isDark: true }
-        ];
-        return basicThemes.find(t => t.file === fileName);
     }
 
     function selectForLockscreen(path, enableSeparate = true) {

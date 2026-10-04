@@ -36,6 +36,11 @@ parser = argparse.ArgumentParser(description="Apply enriched nandoroid theme")
 parser.add_argument("--theme", help="Theme file name (tokyo_night.json) or full path")
 parser.add_argument("--list", action="store_true", help="List themes + enrichment status")
 parser.add_argument("--validate", metavar="FILE", help="Validate a theme file")
+parser.add_argument("--index", action="store_true",
+                    help="Regenerate assets/themes/index.json (debug helper)")
+parser.add_argument("--index-stdout", action="store_true",
+                    help="Print the theme index (name/file/colors/isDark, read "
+                         "live from the theme files) as JSON to stdout")
 parser.add_argument("--mode", choices=["dark", "light"], default="dark")
 parser.add_argument("--image", default="")
 parser.add_argument("--matugen-config",
@@ -72,6 +77,8 @@ def discover_themes():
     if not THEMES_DIR.is_dir():
         return found
     for f in sorted(THEMES_DIR.glob("*.json")):
+        if f.name == "index.json":
+            continue
         data, errors = load_theme(f)
         if data is None:
             print(f"[apply_theme] skipping {f.name}: {'; '.join(errors)}",
@@ -99,6 +106,32 @@ if args.validate:
         print("\n".join(errors), file=sys.stderr)
         sys.exit(1)
     print("OK")
+    sys.exit(0)
+
+def build_index():
+    # Read live from the theme files (they are the single source of truth).
+    # Order is by display name to keep the settings grid stable.
+    index = []
+    for fname, data in sorted(discover_themes().items(),
+                              key=lambda kv: kv[1].get("name", kv[0]).lower()):
+        index.append({
+            "name": data.get("name", Path(fname).stem.replace("_", " ").title()),
+            "file": fname,
+            "colors": [data.get("primary"), data.get("secondary"),
+                       data.get("tertiary")],
+            "isDark": data.get("isDark", True),
+        })
+    return index
+
+
+if args.index_stdout:
+    print(json.dumps(build_index()))
+    sys.exit(0)
+
+if args.index:
+    out_path = THEMES_DIR / "index.json"
+    out_path.write_text(json.dumps(build_index(), indent=2) + "\n")
+    print(f"[apply_theme] wrote {out_path}")
     sys.exit(0)
 
 if not args.theme:
