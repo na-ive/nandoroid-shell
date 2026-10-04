@@ -181,6 +181,27 @@ Singleton {
         }
     }
 
+    // Exact theme mode: render enriched flat theme 1:1 to all system targets
+    // (GTK, kitty, terminal sequences, KDE static). Replaces the matugen
+    // single-seed approximation when a theme file is active.
+    Process {
+        id: themeApplyProc
+        property string fileName
+        property string mode: Config.options.appearance.background.darkmode ? "dark" : "light"
+        property string wallpaperPath
+        command: ["bash", `${Quickshell.shellPath("scripts")}/colors/apply_theme.sh`, fileName, mode, wallpaperPath]
+
+        onRunningChanged: if (running) CavaService.stop(); else CavaService.start();
+
+        stderr: StdioCollector {
+            onStreamFinished: {
+                if (this.text.trim() !== "") {
+                    console.warn("[Wallpapers] apply_theme.sh:", this.text);
+                }
+            }
+        }
+    }
+
     // Process to generate lockscreen matugen colors (output as JSON, no config file needed)
     Process {
         id: matugenLockscreenProc
@@ -270,6 +291,15 @@ Singleton {
                 matugenProc.filePath = cleanPath
                 matugenProc.running = true
             }
+        } else if (Config.options.appearance.background.matugenThemeFile !== "") {
+            const file = Config.options.appearance.background.matugenThemeFile;
+            const wp = Config.options.appearance.background.wallpaperPath || "";
+            const cleanWp = wp.toString().startsWith("file://") ? wp.toString().substring(7) : wp.toString();
+            themeApplyProc.fileName = file;
+            themeApplyProc.mode = Config.options.appearance.background.darkmode ? "dark" : "light";
+            themeApplyProc.wallpaperPath = cleanWp;
+            themeApplyProc.running = false;
+            Qt.callLater(() => { themeApplyProc.running = true; });
         } else {
             const hex = Config.options.appearance.background.matugenCustomColor
             if (hex) applyColor(hex)
@@ -456,9 +486,16 @@ Singleton {
                 Config.options.appearance.background.darkmode = true;
             }
 
-            // Run matugen to generate full system colors (GTK, KDE, etc) from the first basic color
-            matugenColorProc.hexColor = theme.colors[0];
-            matugenColorProc.running = true;
+            // Exact theme mode: render the flat theme file 1:1 to all system
+            // targets (GTK, terminal, KDE static) instead of the matugen
+            // single-seed approximation.
+            const wp = Config.options.appearance.background.wallpaperPath || "";
+            const cleanWp = wp.toString().startsWith("file://") ? wp.toString().substring(7) : wp.toString();
+            themeApplyProc.fileName = fileName;
+            themeApplyProc.mode = isDarkTheme ? "dark" : "light";
+            themeApplyProc.wallpaperPath = cleanWp;
+            themeApplyProc.running = false;
+            Qt.callLater(() => { themeApplyProc.running = true; });
         }
 
         // 1. apply immediately to UI (for fast feedback)
