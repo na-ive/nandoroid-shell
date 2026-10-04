@@ -51,5 +51,42 @@
   "success": "#42be65",
   "on_success": "#0d3320",
   "success_container": "#14452a",
-  "on_success_container": "#c9f0d6"
+  "on_success_container": "#c9f0d6",
+  "name": "Oxocarbon",
+  "isDark": true,
+  "source_color": "#33b1ff",
+  "defaults": {
+    "primary": "cyan",
+    "secondary": "green",
+    "tertiary": "purple"
+  },
+  "accents": {
+    "cyan": "#33b1ff",
+    "green": "#42be65",
+    "purple": "#be95ff",
+    "pink": "#ee5396",
+    "red": "#ee5396",
+    "orange": "#ff9933",
+    "yellow": "#ffee33",
+    "teal": "#33ffee",
+    "blue": "#3377ff"
+  },
+  "term": [
+    "#161616",
+    "#ee5396",
+    "#42be65",
+    "#ffee33",
+    "#3377ff",
+    "#be95ff",
+    "#33b1ff",
+    "#dde1e6",
+    "#525252",
+    "#ef8bb8",
+    "#80d198",
+    "#faf078",
+    "#76a3fd",
+    "#d0b6fd",
+    "#76c8fd",
+    "#f2f4f8"
+  ]
 }

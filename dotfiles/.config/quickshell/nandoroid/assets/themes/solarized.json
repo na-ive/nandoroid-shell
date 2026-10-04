@@ -51,5 +51,42 @@
   "success": "#859900",
   "on_success": "#263102",
   "success_container": "#2c3a06",
-  "on_success_container": "#d3e0a8"
+  "on_success_container": "#d3e0a8",
+  "name": "Solarized",
+  "isDark": true,
+  "source_color": "#b58900",
+  "defaults": {
+    "primary": "yellow",
+    "secondary": "pink",
+    "tertiary": "orange"
+  },
+  "accents": {
+    "yellow": "#b58900",
+    "pink": "#d33682",
+    "orange": "#cb4b16",
+    "red": "#dc322f",
+    "green": "#00b52d",
+    "teal": "#00b5a6",
+    "cyan": "#0088b5",
+    "blue": "#003cb5",
+    "purple": "#5a00b5"
+  },
+  "term": [
+    "#002b36",
+    "#dc322f",
+    "#00b52d",
+    "#b58900",
+    "#003cb5",
+    "#5a00b5",
+    "#0088b5",
+    "#657b83",
+    "#0c5c70",
+    "#bd5453",
+    "#2ea952",
+    "#a48d34",
+    "#2e5baa",
+    "#6834aa",
+    "#2e8caa",
+    "#839496"
+  ]
 }

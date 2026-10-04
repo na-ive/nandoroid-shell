@@ -51,5 +51,42 @@
   "success": "#7f9f7f",
   "on_success": "#3f3f3f",
   "success_container": "#354235",
-  "on_success_container": "#8fb28f"
+  "on_success_container": "#8fb28f",
+  "name": "Zen Burn",
+  "isDark": true,
+  "source_color": "#8cd0d3",
+  "defaults": {
+    "primary": "teal",
+    "secondary": "pink",
+    "tertiary": "teal"
+  },
+  "accents": {
+    "teal": "#8cd0d3",
+    "pink": "#dc8cc3",
+    "red": "#cc9393",
+    "green": "#7f9f7f",
+    "orange": "#d3b08c",
+    "yellow": "#d3cd8c",
+    "cyan": "#8cc1d3",
+    "blue": "#8ca4d3",
+    "purple": "#af8cd3"
+  },
+  "term": [
+    "#3f3f3f",
+    "#cc9393",
+    "#7f9f7f",
+    "#d3cd8c",
+    "#8ca4d3",
+    "#af8cd3",
+    "#8cc1d3",
+    "#bfbfbf",
+    "#7f7f7f",
+    "#d2ada7",
+    "#a0b49a",
+    "#d6d2a2",
+    "#a8b8d1",
+    "#bfa8d1",
+    "#a8cad1",
+    "#dcdccc"
+  ]
 }

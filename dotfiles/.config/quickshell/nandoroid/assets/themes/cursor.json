@@ -51,5 +51,42 @@
   "success": "#3fa266",
   "on_success": "#181818",
   "success_container": "#184028",
-  "on_success_container": "#9fd1b3"
+  "on_success_container": "#9fd1b3",
+  "name": "Cursor",
+  "isDark": true,
+  "source_color": "#88c0d0",
+  "defaults": {
+    "primary": "cyan",
+    "secondary": "blue",
+    "tertiary": "teal"
+  },
+  "accents": {
+    "cyan": "#88c0d0",
+    "blue": "#81a1c1",
+    "teal": "#82D2CE",
+    "pink": "#e34671",
+    "green": "#3fa266",
+    "red": "#e34671",
+    "orange": "#d0ac88",
+    "yellow": "#d0ca88",
+    "purple": "#ac88d0"
+  },
+  "term": [
+    "#181818",
+    "#e34671",
+    "#3fa266",
+    "#d0ca88",
+    "#81a1c1",
+    "#ac88d0",
+    "#88c0d0",
+    "#a0a0a0",
+    "#505050",
+    "#e37d99",
+    "#79b992",
+    "#d7d3a8",
+    "#a4b8cd",
+    "#c0a8d7",
+    "#a8cdd7",
+    "#e4e4e4"
+  ]
 }

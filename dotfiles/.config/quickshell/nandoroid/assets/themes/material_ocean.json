@@ -51,5 +51,42 @@
   "success": "#c3e88d",
   "on_success": "#263238",
   "success_container": "#475435",
-  "on_success_container": "#e1f4c6"
+  "on_success_container": "#e1f4c6",
+  "name": "Material Ocean",
+  "isDark": true,
+  "source_color": "#82aaff",
+  "defaults": {
+    "primary": "blue",
+    "secondary": "purple",
+    "tertiary": "cyan"
+  },
+  "accents": {
+    "blue": "#82aaff",
+    "purple": "#c792ea",
+    "cyan": "#89ddff",
+    "red": "#f07178",
+    "yellow": "#c3e88d",
+    "orange": "#ffc082",
+    "green": "#82ffa1",
+    "teal": "#82fff5",
+    "pink": "#ff82c1"
+  },
+  "term": [
+    "#263238",
+    "#f07178",
+    "#82ffa1",
+    "#c3e88d",
+    "#82aaff",
+    "#c792ea",
+    "#89ddff",
+    "#90a4ae",
+    "#546e7a",
+    "#efa3a7",
+    "#a8ffc2",
+    "#d2f0b5",
+    "#a8c8ff",
+    "#d5b8f1",
+    "#ace9ff",
+    "#eeffff"
+  ]
 }

@@ -51,5 +51,42 @@
   "success": "#9eff80",
   "on_success": "#193549",
   "success_container": "#25451d",
-  "on_success_container": "#b9ff9f"
+  "on_success_container": "#b9ff9f",
+  "name": "Cobalt2",
+  "isDark": true,
+  "source_color": "#0088ff",
+  "defaults": {
+    "primary": "blue",
+    "secondary": "purple",
+    "tertiary": "teal"
+  },
+  "accents": {
+    "blue": "#0088ff",
+    "purple": "#9a5feb",
+    "teal": "#2affdf",
+    "pink": "#ff0088",
+    "green": "#9eff80",
+    "red": "#ff0088",
+    "orange": "#ff8000",
+    "yellow": "#ffea00",
+    "cyan": "#00bfff"
+  },
+  "term": [
+    "#193549",
+    "#ff0088",
+    "#9eff80",
+    "#ffea00",
+    "#0088ff",
+    "#9a5feb",
+    "#00bfff",
+    "#adb7c9",
+    "#1f4662",
+    "#ff59b2",
+    "#c0ffac",
+    "#fff159",
+    "#59b2ff",
+    "#bd97f2",
+    "#59d5ff",
+    "#ffffff"
+  ]
 }

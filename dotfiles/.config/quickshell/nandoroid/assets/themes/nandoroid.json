@@ -51,5 +51,42 @@
   "success": "#5ab77b",
   "on_success": "#050b18",
   "success_container": "#1e5c36",
-  "on_success_container": "#c9f0d6"
+  "on_success_container": "#c9f0d6",
+  "name": "NAnDoroid",
+  "isDark": true,
+  "source_color": "#477ad6",
+  "defaults": {
+    "primary": "blue",
+    "secondary": "cyan",
+    "tertiary": "purple"
+  },
+  "accents": {
+    "blue": "#477ad6",
+    "purple": "#b479d6",
+    "red": "#e25d5d",
+    "green": "#5ab77b",
+    "orange": "#d68e47",
+    "yellow": "#d6ca47",
+    "teal": "#47d6ca",
+    "cyan": "#47b2d6",
+    "pink": "#d6478f"
+  },
+  "term": [
+    "#050b18",
+    "#e25d5d",
+    "#5ab77b",
+    "#d6ca47",
+    "#477ad6",
+    "#b479d6",
+    "#47b2d6",
+    "#a9b6d2",
+    "#5a6f94",
+    "#e28d90",
+    "#8ac7a4",
+    "#dad482",
+    "#7da0df",
+    "#c49fdf",
+    "#7dc4df",
+    "#e2e6f0"
+  ]
 }

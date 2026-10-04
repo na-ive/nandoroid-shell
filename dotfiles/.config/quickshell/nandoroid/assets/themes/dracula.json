@@ -51,5 +51,42 @@
   "success": "#50fa7b",
   "on_success": "#282a36",
   "success_container": "#1e5128",
-  "on_success_container": "#b8f1b9"
+  "on_success_container": "#b8f1b9",
+  "name": "Dracula",
+  "isDark": true,
+  "source_color": "#bd93f9",
+  "defaults": {
+    "primary": "purple",
+    "secondary": "pink",
+    "tertiary": "cyan"
+  },
+  "accents": {
+    "red": "#ff5555",
+    "orange": "#ffb86c",
+    "yellow": "#f1fa8c",
+    "green": "#50fa7b",
+    "teal": "#8be9fd",
+    "cyan": "#8be9fd",
+    "blue": "#bd93f9",
+    "purple": "#bd93f9",
+    "pink": "#ff79c6"
+  },
+  "term": [
+    "#21222c",
+    "#ff5555",
+    "#50fa7b",
+    "#f1fa8c",
+    "#bd93f9",
+    "#ff79c6",
+    "#8be9fd",
+    "#f8f8f2",
+    "#6272a4",
+    "#ff6e6e",
+    "#69ff94",
+    "#ffffa5",
+    "#d6acff",
+    "#ff92df",
+    "#a4ffff",
+    "#ffffff"
+  ]
 }

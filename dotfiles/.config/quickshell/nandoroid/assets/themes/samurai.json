@@ -51,5 +51,42 @@
   "success": "#4a7c4a",
   "on_success": "#ffffff",
   "success_container": "#1e3a1e",
-  "on_success_container": "#a8d4a8"
+  "on_success_container": "#a8d4a8",
+  "name": "Samurai",
+  "isDark": true,
+  "source_color": "#c41e3a",
+  "defaults": {
+    "primary": "red",
+    "secondary": "pink",
+    "tertiary": "yellow"
+  },
+  "accents": {
+    "red": "#ff4444",
+    "pink": "#8b8589",
+    "yellow": "#d4af37",
+    "green": "#4a7c4a",
+    "orange": "#c4711e",
+    "teal": "#1ec4b6",
+    "cyan": "#1e9bc4",
+    "blue": "#1e55c4",
+    "purple": "#711ec4"
+  },
+  "term": [
+    "#0f0f0f",
+    "#ff4444",
+    "#4a7c4a",
+    "#d4af37",
+    "#1e55c4",
+    "#711ec4",
+    "#1e9bc4",
+    "#c0b8b0",
+    "#6b6560",
+    "#f77c7b",
+    "#81a07e",
+    "#dbc272",
+    "#6587ce",
+    "#9b63ce",
+    "#65b5ce",
+    "#e8e4e0"
+  ]
 }

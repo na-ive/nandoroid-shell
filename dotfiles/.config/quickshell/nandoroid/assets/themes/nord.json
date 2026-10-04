@@ -51,5 +51,42 @@
   "success": "#a3be8c",
   "on_success": "#2e3440",
   "success_container": "#3a4d36",
-  "on_success_container": "#d9e8cc"
+  "on_success_container": "#d9e8cc",
+  "name": "Nord",
+  "isDark": true,
+  "source_color": "#8fbcbb",
+  "defaults": {
+    "primary": "teal",
+    "secondary": "cyan",
+    "tertiary": "blue"
+  },
+  "accents": {
+    "teal": "#8fbcbb",
+    "cyan": "#88c0d0",
+    "blue": "#5e81ac",
+    "red": "#bf616a",
+    "yellow": "#a3be8c",
+    "orange": "#bca68f",
+    "green": "#8fbc9a",
+    "purple": "#a58fbc",
+    "pink": "#bc8fa6"
+  },
+  "term": [
+    "#2e3440",
+    "#bf616a",
+    "#8fbc9a",
+    "#a3be8c",
+    "#5e81ac",
+    "#a58fbc",
+    "#88c0d0",
+    "#d8dee9",
+    "#505a70",
+    "#cf939a",
+    "#b0ceba",
+    "#bdcfb0",
+    "#90a8c5",
+    "#beb1d0",
+    "#abd0dd",
+    "#eceff4"
+  ]
 }

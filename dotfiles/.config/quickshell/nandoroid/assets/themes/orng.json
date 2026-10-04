@@ -51,5 +51,42 @@
   "success": "#6ba1e6",
   "on_success": "#0a0a0a",
   "success_container": "#263a53",
-  "on_success_container": "#aaccf2"
+  "on_success_container": "#aaccf2",
+  "name": "Orng",
+  "isDark": true,
+  "source_color": "#EC5B2B",
+  "defaults": {
+    "primary": "orange",
+    "secondary": "orange",
+    "tertiary": "blue"
+  },
+  "accents": {
+    "red": "#e06c75",
+    "orange": "#EE7948",
+    "blue": "#6ba1e6",
+    "yellow": "#ecdc2b",
+    "green": "#2bec5b",
+    "teal": "#2becdc",
+    "cyan": "#2bbcec",
+    "purple": "#8b2bec",
+    "pink": "#ec2b8c"
+  },
+  "term": [
+    "#0a0a0a",
+    "#e06c75",
+    "#2bec5b",
+    "#ecdc2b",
+    "#6ba1e6",
+    "#8b2bec",
+    "#2bbcec",
+    "#808080",
+    "#484848",
+    "#e59a9f",
+    "#6fed8e",
+    "#ede26f",
+    "#99bce9",
+    "#ae6fed",
+    "#6fceed",
+    "#eeeeee"
+  ]
 }

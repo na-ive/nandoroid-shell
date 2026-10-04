@@ -51,5 +51,42 @@
   "success": "#a6d189",
   "on_success": "#303446",
   "success_container": "#3a4d2e",
-  "on_success_container": "#d5e8c4"
+  "on_success_container": "#d5e8c4",
+  "name": "Frappe",
+  "isDark": true,
+  "source_color": "#ef9f76",
+  "defaults": {
+    "primary": "orange",
+    "secondary": "yellow",
+    "tertiary": "blue"
+  },
+  "accents": {
+    "orange": "#ef9f76",
+    "blue": "#babbf1",
+    "red": "#e78284",
+    "green": "#a6d189",
+    "purple": "#8839ef",
+    "yellow": "#efe576",
+    "teal": "#76efe5",
+    "cyan": "#76d1ef",
+    "pink": "#ef76b3"
+  },
+  "term": [
+    "#303446",
+    "#e78284",
+    "#a6d189",
+    "#efe576",
+    "#babbf1",
+    "#8839ef",
+    "#76d1ef",
+    "#b5bfe2",
+    "#737994",
+    "#db9dac",
+    "#b1d1af",
+    "#e1dea2",
+    "#bec2f2",
+    "#9e6ef1",
+    "#92d1f1",
+    "#c6d0f5"
+  ]
 }

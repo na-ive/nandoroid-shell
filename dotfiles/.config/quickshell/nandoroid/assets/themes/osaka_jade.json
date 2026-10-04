@@ -51,5 +51,42 @@
   "success": "#549e6a",
   "on_success": "#111c18",
   "success_container": "#1e3826",
-  "on_success_container": "#63b07a"
+  "on_success_container": "#63b07a",
+  "name": "Osaka Jade",
+  "isDark": true,
+  "source_color": "#2DD5B7",
+  "defaults": {
+    "primary": "teal",
+    "secondary": "pink",
+    "tertiary": "green"
+  },
+  "accents": {
+    "teal": "#2DD5B7",
+    "pink": "#D2689C",
+    "green": "#549e6a",
+    "red": "#FF5345",
+    "orange": "#d5812d",
+    "yellow": "#d5c72d",
+    "cyan": "#2dabd5",
+    "blue": "#2d65d5",
+    "purple": "#812dd5"
+  },
+  "term": [
+    "#111c18",
+    "#FF5345",
+    "#549e6a",
+    "#d5c72d",
+    "#2d65d5",
+    "#812dd5",
+    "#2dabd5",
+    "#9aa88a",
+    "#53685B",
+    "#e97b62",
+    "#7aab7a",
+    "#cec652",
+    "#6186bf",
+    "#9762bf",
+    "#61b4bf",
+    "#C1C497"
+  ]
 }

@@ -51,5 +51,42 @@
   "success": "#40a02b",
   "on_success": "#ffffff",
   "success_container": "#dce0e8",
-  "on_success_container": "#40a02b"
+  "on_success_container": "#40a02b",
+  "name": "Latte",
+  "isDark": false,
+  "source_color": "#8839ef",
+  "defaults": {
+    "primary": "purple",
+    "secondary": "pink",
+    "tertiary": "teal"
+  },
+  "accents": {
+    "purple": "#8839ef",
+    "pink": "#ea76cb",
+    "teal": "#179299",
+    "red": "#d20f39",
+    "green": "#40a02b",
+    "orange": "#ef9439",
+    "yellow": "#efe039",
+    "cyan": "#39c2ef",
+    "blue": "#3976ef"
+  },
+  "term": [
+    "#eff1f5",
+    "#d20f39",
+    "#40a02b",
+    "#efe039",
+    "#3976ef",
+    "#8839ef",
+    "#39c2ef",
+    "#5c5f77",
+    "#8c8fa1",
+    "#a3254a",
+    "#448441",
+    "#b6ad4a",
+    "#4068c0",
+    "#7341c0",
+    "#409ac0",
+    "#4c4f69"
+  ]
 }

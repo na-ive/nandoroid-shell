@@ -51,5 +51,42 @@
   "success": "#aad94c",
   "on_success": "#0b0e14",
   "success_container": "#35470a",
-  "on_success_container": "#d8f0a8"
+  "on_success_container": "#d8f0a8",
+  "name": "Ayu",
+  "isDark": true,
+  "source_color": "#e6b450",
+  "defaults": {
+    "primary": "orange",
+    "secondary": "yellow",
+    "tertiary": "cyan"
+  },
+  "accents": {
+    "orange": "#e6b450",
+    "yellow": "#aad94c",
+    "cyan": "#39bae6",
+    "red": "#d95757",
+    "green": "#50e676",
+    "teal": "#50e6da",
+    "blue": "#5082e6",
+    "purple": "#9b50e6",
+    "pink": "#e6509b"
+  },
+  "term": [
+    "#0b0e14",
+    "#d95757",
+    "#50e676",
+    "#aad94c",
+    "#5082e6",
+    "#9b50e6",
+    "#39bae6",
+    "#8e959e",
+    "#565b66",
+    "#d6827e",
+    "#7ddf92",
+    "#b8d677",
+    "#7d9edb",
+    "#ae7ddb",
+    "#6ec2db",
+    "#d1d1c7"
+  ]
 }

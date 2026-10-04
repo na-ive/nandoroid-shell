@@ -51,5 +51,42 @@
   "success": "#9ccfd8",
   "on_success": "#191724",
   "success_container": "#25484f",
-  "on_success_container": "#c9ecf0"
+  "on_success_container": "#c9ecf0",
+  "name": "Rose Pine",
+  "isDark": true,
+  "source_color": "#ebbcba",
+  "defaults": {
+    "primary": "orange",
+    "secondary": "cyan",
+    "tertiary": "cyan"
+  },
+  "accents": {
+    "red": "#eb6f92",
+    "cyan": "#9ccfd8",
+    "pink": "#eb6f92",
+    "orange": "#ebd2ba",
+    "yellow": "#ebe7ba",
+    "green": "#baebc6",
+    "teal": "#baebe7",
+    "blue": "#bacaeb",
+    "purple": "#d2baeb"
+  },
+  "term": [
+    "#191724",
+    "#eb6f92",
+    "#baebc6",
+    "#ebe7ba",
+    "#bacaeb",
+    "#d2baeb",
+    "#9ccfd8",
+    "#908caa",
+    "#403d52",
+    "#e796b4",
+    "#c7e6d6",
+    "#e7e4ce",
+    "#c7d1ee",
+    "#d7c7ee",
+    "#b4d4e2",
+    "#e0def4"
+  ]
 }

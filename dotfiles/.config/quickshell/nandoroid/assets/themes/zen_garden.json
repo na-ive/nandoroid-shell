@@ -51,5 +51,42 @@
   "success": "#6a9a6a",
   "on_success": "#1a1e1a",
   "success_container": "#2a4a2a",
-  "on_success_container": "#a8d8a8"
+  "on_success_container": "#a8d8a8",
+  "name": "Zen Garden",
+  "isDark": true,
+  "source_color": "#7a9a7a",
+  "defaults": {
+    "primary": "green",
+    "secondary": "orange",
+    "tertiary": "cyan"
+  },
+  "accents": {
+    "green": "#7a9a7a",
+    "orange": "#9a9080",
+    "cyan": "#8a9aa0",
+    "red": "#c07070",
+    "yellow": "#9a977a",
+    "teal": "#7a9a97",
+    "blue": "#7a859a",
+    "purple": "#8a7a9a",
+    "pink": "#9a7a8a"
+  },
+  "term": [
+    "#1a1e1a",
+    "#c07070",
+    "#7a9a7a",
+    "#9a977a",
+    "#7a859a",
+    "#8a7a9a",
+    "#8a9aa0",
+    "#b0b8b0",
+    "#6a756a",
+    "#c79693",
+    "#9ab19a",
+    "#afaf9a",
+    "#9aa3af",
+    "#a49caf",
+    "#a4b1b3",
+    "#d5dcd5"
+  ]
 }

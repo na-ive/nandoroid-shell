@@ -51,5 +51,42 @@
   "success": "#99FFE4",
   "on_success": "#101010",
   "success_container": "#375c52",
-  "on_success_container": "#ccfff1"
+  "on_success_container": "#ccfff1",
+  "name": "Vesper",
+  "isDark": true,
+  "source_color": "#FFC799",
+  "defaults": {
+    "primary": "orange",
+    "secondary": "teal",
+    "tertiary": "green"
+  },
+  "accents": {
+    "orange": "#FFC799",
+    "teal": "#99FFE4",
+    "red": "#FF8080",
+    "yellow": "#fff699",
+    "green": "#99ffb3",
+    "cyan": "#99e6ff",
+    "blue": "#99bbff",
+    "purple": "#cc99ff",
+    "pink": "#ff99cc"
+  },
+  "term": [
+    "#101010",
+    "#FF8080",
+    "#99ffb3",
+    "#fff699",
+    "#99bbff",
+    "#cc99ff",
+    "#99e6ff",
+    "#A0A0A0",
+    "#404040",
+    "#ffacac",
+    "#bdffce",
+    "#fff9bd",
+    "#bdd3ff",
+    "#debdff",
+    "#bdefff",
+    "#FFFFFF"
+  ]
 }

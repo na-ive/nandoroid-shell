@@ -51,5 +51,42 @@
   "success": "#a6e3a1",
   "on_success": "#1e1e2e",
   "success_container": "#45475a",
-  "on_success_container": "#a6e3a1"
+  "on_success_container": "#a6e3a1",
+  "name": "Mocha",
+  "isDark": true,
+  "source_color": "#cba6f7",
+  "defaults": {
+    "primary": "purple",
+    "secondary": "pink",
+    "tertiary": "teal"
+  },
+  "accents": {
+    "purple": "#cba6f7",
+    "pink": "#f5c2e7",
+    "teal": "#94e2d5",
+    "green": "#a6e3a1",
+    "red": "#f38ba8",
+    "orange": "#f7cea6",
+    "yellow": "#f7f0a6",
+    "cyan": "#a6e3f7",
+    "blue": "#a6c1f7"
+  },
+  "term": [
+    "#1e1e2e",
+    "#f38ba8",
+    "#a6e3a1",
+    "#f7f0a6",
+    "#a6c1f7",
+    "#cba6f7",
+    "#a6e3f7",
+    "#bac2de",
+    "#6c7086",
+    "#e6a5c3",
+    "#b4debe",
+    "#e8e7c1",
+    "#b4c8f6",
+    "#ccb7f6",
+    "#b4def6",
+    "#cdd6f4"
+  ]
 }

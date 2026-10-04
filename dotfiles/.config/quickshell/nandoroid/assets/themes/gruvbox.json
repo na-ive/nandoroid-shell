@@ -51,5 +51,42 @@
   "success": "#8ec07c",
   "on_success": "#282828",
   "success_container": "#3a4a2a",
-  "on_success_container": "#d8e8c8"
+  "on_success_container": "#d8e8c8",
+  "name": "Gruvbox",
+  "isDark": true,
+  "source_color": "#b8bb26",
+  "defaults": {
+    "primary": "yellow",
+    "secondary": "orange",
+    "tertiary": "teal"
+  },
+  "accents": {
+    "yellow": "#b8bb26",
+    "orange": "#fabd2f",
+    "teal": "#83a598",
+    "red": "#fb4934",
+    "green": "#8ec07c",
+    "cyan": "#2696bb",
+    "blue": "#2658bb",
+    "purple": "#7026bb",
+    "pink": "#bb2671"
+  },
+  "term": [
+    "#282828",
+    "#fb4934",
+    "#8ec07c",
+    "#b8bb26",
+    "#2658bb",
+    "#7026bb",
+    "#2696bb",
+    "#ebdbb2",
+    "#57514e",
+    "#fb8467",
+    "#b4d196",
+    "#cfce5e",
+    "#718ebf",
+    "#a16dbf",
+    "#71b6bf",
+    "#fbf1c7"
+  ]
 }

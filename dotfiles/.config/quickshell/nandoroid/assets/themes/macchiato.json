@@ -51,5 +51,42 @@
   "success": "#a6da95",
   "on_success": "#24273a",
   "success_container": "#354d2c",
-  "on_success_container": "#d3e8c5"
+  "on_success_container": "#d3e8c5",
+  "name": "Macchiato",
+  "isDark": true,
+  "source_color": "#f5a97f",
+  "defaults": {
+    "primary": "orange",
+    "secondary": "yellow",
+    "tertiary": "blue"
+  },
+  "accents": {
+    "orange": "#f5a97f",
+    "blue": "#b7bdf8",
+    "red": "#ed8796",
+    "green": "#a6da95",
+    "yellow": "#f5eb7f",
+    "teal": "#7ff5eb",
+    "cyan": "#7fd8f5",
+    "purple": "#ba7ff5",
+    "pink": "#f57fba"
+  },
+  "term": [
+    "#24273a",
+    "#ed8796",
+    "#a6da95",
+    "#f5eb7f",
+    "#b7bdf8",
+    "#ba7ff5",
+    "#7fd8f5",
+    "#b8c0e0",
+    "#6e738d",
+    "#e1a2b7",
+    "#b3d8b7",
+    "#e6e3a8",
+    "#bec5f7",
+    "#c09cf5",
+    "#99d6f5",
+    "#cad3f5"
+  ]
 }

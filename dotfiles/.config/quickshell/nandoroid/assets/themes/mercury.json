@@ -51,5 +51,42 @@
   "success": "#77c599",
   "on_success": "#171721",
   "success_container": "#036e43",
-  "on_success_container": "#bcedce"
+  "on_success_container": "#bcedce",
+  "name": "Mercury",
+  "isDark": true,
+  "source_color": "#8da4f5",
+  "defaults": {
+    "primary": "blue",
+    "secondary": "blue",
+    "tertiary": "cyan"
+  },
+  "accents": {
+    "blue": "#8da4f5",
+    "cyan": "#77becf",
+    "pink": "#fc92b4",
+    "green": "#77c599",
+    "red": "#fc92b4",
+    "orange": "#f5c18d",
+    "yellow": "#f5ec8d",
+    "teal": "#8df5ec",
+    "purple": "#c18df5"
+  },
+  "term": [
+    "#171721",
+    "#fc92b4",
+    "#77c599",
+    "#f5ec8d",
+    "#8da4f5",
+    "#c18df5",
+    "#77becf",
+    "#9d9da8",
+    "#636375",
+    "#f1acc5",
+    "#9bcdb4",
+    "#ede7ac",
+    "#a9b8ef",
+    "#cba9ef",
+    "#9bc9d7",
+    "#dddde5"
+  ]
 }

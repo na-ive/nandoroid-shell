@@ -51,5 +51,42 @@
   "success": "#3fb950",
   "on_success": "#0d1117",
   "success_container": "#2ea043",
-  "on_success_container": "#56d364"
+  "on_success_container": "#56d364",
+  "name": "Github",
+  "isDark": true,
+  "source_color": "#58a6ff",
+  "defaults": {
+    "primary": "blue",
+    "secondary": "purple",
+    "tertiary": "teal"
+  },
+  "accents": {
+    "blue": "#58a6ff",
+    "purple": "#bc8cff",
+    "teal": "#39c5cf",
+    "red": "#f85149",
+    "green": "#3fb950",
+    "orange": "#ffac58",
+    "yellow": "#fff158",
+    "cyan": "#58d5ff",
+    "pink": "#ff58ac"
+  },
+  "term": [
+    "#0d1117",
+    "#f85149",
+    "#3fb950",
+    "#fff158",
+    "#58a6ff",
+    "#bc8cff",
+    "#58d5ff",
+    "#8b949e",
+    "#30363d",
+    "#e87e7b",
+    "#6fc180",
+    "#ece685",
+    "#80b5f2",
+    "#c1a4f2",
+    "#80d4f2",
+    "#c9d1d9"
+  ]
 }

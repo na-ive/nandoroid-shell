@@ -51,5 +51,42 @@
   "success": "#37f499",
   "on_success": "#171928",
   "success_container": "#0b4d31",
-  "on_success_container": "#b8f5d8"
+  "on_success_container": "#b8f5d8",
+  "name": "Eldritch",
+  "isDark": true,
+  "source_color": "#37f499",
+  "defaults": {
+    "primary": "green",
+    "secondary": "cyan",
+    "tertiary": "purple"
+  },
+  "accents": {
+    "green": "#37f499",
+    "cyan": "#04d1f9",
+    "purple": "#a48cf2",
+    "red": "#f16c75",
+    "teal": "#0ea76a",
+    "orange": "#f49637",
+    "yellow": "#f4e437",
+    "blue": "#3776f4",
+    "pink": "#f43796"
+  },
+  "term": [
+    "#212337",
+    "#f16c75",
+    "#37f499",
+    "#f4e437",
+    "#3776f4",
+    "#a48cf2",
+    "#04d1f9",
+    "#abb4da",
+    "#3b4261",
+    "#ef9ea4",
+    "#76f6bb",
+    "#f1ec7b",
+    "#76a4f6",
+    "#bdb2f5",
+    "#55dff9",
+    "#ebfafa"
+  ]
 }

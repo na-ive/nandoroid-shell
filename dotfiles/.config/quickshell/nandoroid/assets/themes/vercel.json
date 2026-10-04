@@ -51,5 +51,42 @@
   "success": "#46A758",
   "on_success": "#000000",
   "success_container": "#1e4726",
-  "on_success_container": "#63C46D"
+  "on_success_container": "#63C46D",
+  "name": "Vercel",
+  "isDark": true,
+  "source_color": "#0070F3",
+  "defaults": {
+    "primary": "blue",
+    "secondary": "cyan",
+    "tertiary": "purple"
+  },
+  "accents": {
+    "blue": "#0070F3",
+    "purple": "#8E4EC6",
+    "red": "#E5484D",
+    "green": "#46A758",
+    "orange": "#f37a00",
+    "yellow": "#f3df00",
+    "teal": "#00f3df",
+    "cyan": "#00b6f3",
+    "pink": "#f3007a"
+  },
+  "term": [
+    "#000000",
+    "#E5484D",
+    "#46A758",
+    "#f3df00",
+    "#0070F3",
+    "#8E4EC6",
+    "#00b6f3",
+    "#a1a1a1",
+    "#454545",
+    "#e88285",
+    "#80c08c",
+    "#f1e453",
+    "#539cf1",
+    "#af86d4",
+    "#53c9f1",
+    "#ededed"
+  ]
 }

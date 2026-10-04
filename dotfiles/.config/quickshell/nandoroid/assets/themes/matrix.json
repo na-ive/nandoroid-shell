@@ -51,5 +51,42 @@
   "success": "#00ff41",
   "on_success": "#000000",
   "success_container": "#003b00",
-  "on_success_container": "#ccffcc"
+  "on_success_container": "#ccffcc",
+  "name": "Matrix",
+  "isDark": true,
+  "source_color": "#00ff41",
+  "defaults": {
+    "primary": "green",
+    "secondary": "green",
+    "tertiary": "yellow"
+  },
+  "accents": {
+    "green": "#00ff41",
+    "red": "#ff0000",
+    "orange": "#ff8000",
+    "yellow": "#ffea00",
+    "teal": "#00ffea",
+    "cyan": "#00bfff",
+    "blue": "#0055ff",
+    "purple": "#7f00ff",
+    "pink": "#ff0080"
+  },
+  "term": [
+    "#000000",
+    "#ff0000",
+    "#00ff41",
+    "#ffea00",
+    "#0055ff",
+    "#7f00ff",
+    "#00bfff",
+    "#008f11",
+    "#003b00",
+    "#a65917",
+    "#00ff41",
+    "#a6f117",
+    "#0090bc",
+    "#5359bc",
+    "#00d5bc",
+    "#00ff41"
+  ]
 }

@@ -51,5 +51,42 @@
   "success": "#72f1b8",
   "on_success": "#262335",
   "success_container": "#1e3a2f",
-  "on_success_container": "#97f1d8"
+  "on_success_container": "#97f1d8",
+  "name": "Synthwave84",
+  "isDark": true,
+  "source_color": "#36f9f6",
+  "defaults": {
+    "primary": "teal",
+    "secondary": "pink",
+    "tertiary": "purple"
+  },
+  "accents": {
+    "teal": "#36f9f6",
+    "pink": "#ff7edb",
+    "purple": "#b084eb",
+    "red": "#fe4450",
+    "green": "#72f1b8",
+    "orange": "#f99836",
+    "yellow": "#f9e936",
+    "cyan": "#36c8f9",
+    "blue": "#3677f9"
+  },
+  "term": [
+    "#262335",
+    "#fe4450",
+    "#72f1b8",
+    "#f9e936",
+    "#3677f9",
+    "#b084eb",
+    "#36c8f9",
+    "#b0b8e6",
+    "#616eb3",
+    "#fe858d",
+    "#a3f6d1",
+    "#fbf17c",
+    "#7ca7fb",
+    "#ccaff2",
+    "#7cdbfb",
+    "#ffffff"
+  ]
 }

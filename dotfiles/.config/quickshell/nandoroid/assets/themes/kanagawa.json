@@ -51,5 +51,42 @@
   "success": "#98bb6c",
   "on_success": "#1f1f28",
   "success_container": "#2e4a3a",
-  "on_success_container": "#c4d99e"
+  "on_success_container": "#c4d99e",
+  "name": "Kanagawa",
+  "isDark": true,
+  "source_color": "#76946a",
+  "defaults": {
+    "primary": "green",
+    "secondary": "orange",
+    "tertiary": "blue"
+  },
+  "accents": {
+    "green": "#76946a",
+    "orange": "#c0a36e",
+    "blue": "#7e9cd8",
+    "red": "#c34043",
+    "yellow": "#98bb6c",
+    "teal": "#6a9490",
+    "cyan": "#6a8a94",
+    "purple": "#7f6a94",
+    "pink": "#946a7f"
+  },
+  "term": [
+    "#1f1f28",
+    "#c34043",
+    "#76946a",
+    "#98bb6c",
+    "#7e9cd8",
+    "#7f6a94",
+    "#6a8a94",
+    "#717c7c",
+    "#363646",
+    "#c56d5f",
+    "#93a378",
+    "#a9bd7a",
+    "#98a9c0",
+    "#998894",
+    "#8b9d94",
+    "#c8c093"
+  ]
 }

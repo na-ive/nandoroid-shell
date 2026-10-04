@@ -51,5 +51,42 @@
   "success": "#98c379",
   "on_success": "#22331a",
   "success_container": "#2c3f22",
-  "on_success_container": "#d9e8c8"
+  "on_success_container": "#d9e8c8",
+  "name": "One Dark",
+  "isDark": true,
+  "source_color": "#61afef",
+  "defaults": {
+    "primary": "cyan",
+    "secondary": "purple",
+    "tertiary": "yellow"
+  },
+  "accents": {
+    "cyan": "#61afef",
+    "purple": "#c678dd",
+    "yellow": "#98c379",
+    "red": "#e06c75",
+    "orange": "#efa861",
+    "green": "#61ef84",
+    "teal": "#61efe3",
+    "blue": "#6190ef",
+    "pink": "#ef61a8"
+  },
+  "term": [
+    "#1e2127",
+    "#e06c75",
+    "#61ef84",
+    "#98c379",
+    "#6190ef",
+    "#c678dd",
+    "#61afef",
+    "#9aa3b2",
+    "#3e4451",
+    "#d9909b",
+    "#87e6a5",
+    "#abc99d",
+    "#87a8ea",
+    "#c898de",
+    "#87bcea",
+    "#cdd4e1"
+  ]
 }

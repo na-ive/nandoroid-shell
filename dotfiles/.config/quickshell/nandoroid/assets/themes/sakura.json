@@ -51,5 +51,42 @@
   "success": "#6a9a6a",
   "on_success": "#ffffff",
   "success_container": "#d5f0d5",
-  "on_success_container": "#3a5a3a"
+  "on_success_container": "#3a5a3a",
+  "name": "Sakura",
+  "isDark": false,
+  "source_color": "#d4869c",
+  "defaults": {
+    "primary": "pink",
+    "secondary": "pink",
+    "tertiary": "green"
+  },
+  "accents": {
+    "pink": "#d4869c",
+    "red": "#c44040",
+    "green": "#8faa8f",
+    "orange": "#d4ad86",
+    "yellow": "#d4ce86",
+    "teal": "#86d4ce",
+    "cyan": "#86c1d4",
+    "blue": "#86a0d4",
+    "purple": "#ad86d4"
+  },
+  "term": [
+    "#fef9f3",
+    "#c44040",
+    "#8faa8f",
+    "#d4ce86",
+    "#86a0d4",
+    "#ad86d4",
+    "#86c1d4",
+    "#5c5050",
+    "#9a8a8a",
+    "#994040",
+    "#778573",
+    "#a49c6d",
+    "#717ea0",
+    "#8a6da0",
+    "#7194a0",
+    "#4a3f3f"
+  ]
 }

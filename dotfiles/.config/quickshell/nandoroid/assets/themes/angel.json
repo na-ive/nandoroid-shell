@@ -51,5 +51,43 @@
   "success": "#98c890",
   "on_success": "#142014",
   "success_container": "#1c3018",
-  "on_success_container": "#c0e8b8"
+  "on_success_container": "#c0e8b8",
+  "name": "Angel",
+  "isDark": true,
+  "pair": "angel_light.json",
+  "source_color": "#e8b882",
+  "defaults": {
+    "primary": "orange",
+    "secondary": "orange",
+    "tertiary": "blue"
+  },
+  "accents": {
+    "orange": "#e8b882",
+    "blue": "#b8c4d8",
+    "red": "#f0a090",
+    "green": "#98c890",
+    "yellow": "#e8df82",
+    "teal": "#82e8df",
+    "cyan": "#82cee8",
+    "purple": "#b582e8",
+    "pink": "#e882b5"
+  },
+  "term": [
+    "#08070a",
+    "#f0a090",
+    "#98c890",
+    "#e8df82",
+    "#b8c4d8",
+    "#b582e8",
+    "#82cee8",
+    "#c8c0b4",
+    "#5c5466",
+    "#ecb6a8",
+    "#b3d0a8",
+    "#e7df9f",
+    "#c8cdd7",
+    "#c6a3e2",
+    "#a5d4e2",
+    "#e6dfd6"
+  ]
 }

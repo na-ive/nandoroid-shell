@@ -51,5 +51,42 @@
   "success": "#879A39",
   "on_success": "#100F0F",
   "success_container": "#384018",
-  "on_success_container": "#c3cc9b"
+  "on_success_container": "#c3cc9b",
+  "name": "Flexoki",
+  "isDark": true,
+  "source_color": "#DA702C",
+  "defaults": {
+    "primary": "orange",
+    "secondary": "blue",
+    "tertiary": "purple"
+  },
+  "accents": {
+    "orange": "#DA702C",
+    "blue": "#4385BE",
+    "purple": "#8B7EC8",
+    "red": "#D14D41",
+    "yellow": "#879A39",
+    "green": "#2cda58",
+    "teal": "#2cdacb",
+    "cyan": "#2caeda",
+    "pink": "#da2c83"
+  },
+  "term": [
+    "#100f0f",
+    "#D14D41",
+    "#2cda58",
+    "#879A39",
+    "#4385BE",
+    "#8B7EC8",
+    "#2caeda",
+    "#b7b5ac",
+    "#6F6E69",
+    "#d07a6e",
+    "#65d57d",
+    "#a0ac69",
+    "#749ec0",
+    "#a29ac6",
+    "#65b9d2",
+    "#CECDC3"
+  ]
 }

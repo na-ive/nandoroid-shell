@@ -51,5 +51,42 @@
   "success": "#a7c080",
   "on_success": "#1e2b20",
   "success_container": "#2f3d22",
-  "on_success_container": "#d8e8c0"
+  "on_success_container": "#d8e8c0",
+  "name": "Everforest",
+  "isDark": true,
+  "source_color": "#a7c080",
+  "defaults": {
+    "primary": "yellow",
+    "secondary": "orange",
+    "tertiary": "green"
+  },
+  "accents": {
+    "yellow": "#a7c080",
+    "orange": "#d3c6aa",
+    "green": "#9da9a0",
+    "red": "#e67e80",
+    "teal": "#80c0bb",
+    "cyan": "#80b0c0",
+    "blue": "#8095c0",
+    "purple": "#a080c0",
+    "pink": "#c080a0"
+  },
+  "term": [
+    "#232a2e",
+    "#e67e80",
+    "#9da9a0",
+    "#a7c080",
+    "#8095c0",
+    "#a080c0",
+    "#80b0c0",
+    "#859289",
+    "#7a8478",
+    "#df978f",
+    "#b0b3a4",
+    "#b6c28f",
+    "#9da6b8",
+    "#b298b8",
+    "#9db8b8",
+    "#d3c6aa"
+  ]
 }
