@@ -461,6 +461,7 @@ property JsonObject background: JsonObject {
                 property int autoHideMode: 0 
                 property bool showOnlyInDesktop: true
                 property int backgroundStyle: 1 
+                property bool attachedRoundCorner: true
                 property int hoverRegionHeight: 5
                 property bool pinnedOnStartup: false
                 property bool monochromeIcons: true

@@ -211,6 +211,54 @@ ColumnLayout {
                 }
             }
 
+            // ── Attached Rounded Corner (only when Attached + enabled) ──────────────
+            SegmentedWrapper {
+                id: attachedCornerCard
+                Layout.fillWidth: true
+                implicitHeight: Math.max(64 * Appearance.effectiveScale, attachedCornerRow.implicitHeight)
+                orientation: Qt.Vertical
+                color: Appearance.m3colors.m3surfaceContainerHigh
+                visible: Config.ready && Config.options.dock && Config.options.dock.enable && Config.options.dock.backgroundStyle === 2
+
+                RippleButton {
+                    anchors.fill: parent
+                    colBackground: Appearance.m3colors.m3surfaceContainerHigh
+                    colBackgroundHover: Appearance.m3colors.m3surfaceContainerHigh
+                    buttonRadius: 0
+                    topLeftRadius: attachedCornerCard.rTopLeft
+                    topRightRadius: attachedCornerCard.rTopRight
+                    bottomLeftRadius: attachedCornerCard.rBottomLeft
+                    bottomRightRadius: attachedCornerCard.rBottomRight
+                    onClicked: if (Config.ready && Config.options.dock) {
+                        const cur = Config.options.dock.attachedRoundCorner !== undefined ? Config.options.dock.attachedRoundCorner : ((Config.options.dock.attachedCornerRadius ?? 18) > 0);
+                        Config.options.dock.attachedRoundCorner = !cur;
+                    }
+                }
+
+                RowLayout {
+                    id: attachedCornerRow
+                    anchors.fill: parent
+                    anchors {
+                        leftMargin: 16 * Appearance.effectiveScale
+                        rightMargin: 16 * Appearance.effectiveScale
+                    }
+                    spacing: 16 * Appearance.effectiveScale
+                    MaterialSymbol { text: "rounded_corner"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
+                    StyledText { text: I18nService.tr("Rounded Corner"); Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
+                    AndroidToggle {
+                        checked: {
+                            if (!Config.ready || !Config.options.dock) return true;
+                            if (Config.options.dock.attachedRoundCorner !== undefined) return Config.options.dock.attachedRoundCorner;
+                            return (Config.options.dock.attachedCornerRadius ?? 18) > 0;
+                        }
+                        onToggled: if (Config.ready && Config.options.dock) {
+                            const cur = Config.options.dock.attachedRoundCorner !== undefined ? Config.options.dock.attachedRoundCorner : ((Config.options.dock.attachedCornerRadius ?? 18) > 0);
+                            Config.options.dock.attachedRoundCorner = !cur;
+                        }
+                    }
+                }
+            }
+
             // ── Themed Icons ──────────────
             SegmentedWrapper {
                 id: monoCard

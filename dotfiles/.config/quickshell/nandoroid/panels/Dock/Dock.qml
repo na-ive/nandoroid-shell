@@ -72,6 +72,12 @@ Scope {
                 readonly property real dockHeight: 70 * Appearance.effectiveScale
                 readonly property real dockScale: (Config.ready && Config.options.dock ? Config.options.dock.scale : 1.0) * Appearance.effectiveScale
                 readonly property int bgStyle: Config.ready && Config.options.dock ? Config.options.dock.backgroundStyle : 1
+                readonly property bool useAttachedCorners: {
+                    if (!Config.ready || !Config.options.dock) return true;
+                    if (Config.options.dock.attachedRoundCorner !== undefined) return Config.options.dock.attachedRoundCorner;
+                    return (Config.options.dock.attachedCornerRadius ?? 18) > 0;
+                }
+                readonly property bool showAttachedCorners: bgStyle === 2 && useAttachedCorners
                 
                 implicitWidth: modelData.width
                 // Provide enough height for popups and shadows without pushing them too far up
@@ -181,9 +187,33 @@ Scope {
                                     
                                 }
 
+                                // Attached mode: concave corners hugging the screen edge (mirrors StatusBar centered/HUD)
+                                // Same 24px as the dock's top radius for a seamless S-curve
+                                RoundCorner {
+                                    id: attachedLeftCorner
+                                    anchors.bottom: parent.bottom
+                                    anchors.right: parent.left
+                                    anchors.rightMargin: -1 * Appearance.effectiveScale
+                                    implicitSize: 24 * Appearance.effectiveScale
+                                    color: dockVisualRect.color
+                                    corner: RoundCorner.CornerEnum.BottomRight
+                                    visible: dockWindow.showAttachedCorners && dockVisualRect.opacity > 0
+                                    opacity: dockVisualRect.opacity
+                                }
+                                RoundCorner {
+                                    id: attachedRightCorner
+                                    anchors.bottom: parent.bottom
+                                    anchors.left: parent.right
+                                    anchors.leftMargin: -1 * Appearance.effectiveScale
+                                    implicitSize: 24 * Appearance.effectiveScale
+                                    color: dockVisualRect.color
+                                    corner: RoundCorner.CornerEnum.BottomLeft
+                                    visible: dockWindow.showAttachedCorners && dockVisualRect.opacity > 0
+                                    opacity: dockVisualRect.opacity
+                                }
                                 StyledRectangularShadow {
                                     target: dockVisualRect
-                                    radius: dockVisualRect.radius
+                                    radius: dockWindow.bgStyle === 2 ? dockVisualRect.topLeftRadius : dockVisualRect.radius
                                     color: Functions.ColorUtils.applyAlpha(Appearance.colors.colShadow, 0.2)
                                     visible: dockWindow.bgStyle !== 0
                                     z: -1
