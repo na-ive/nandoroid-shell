@@ -347,13 +347,20 @@ Item {
         Item {
             id: listView
             anchors.fill: parent
-            anchors.margins: 16 * Appearance.effectiveScale
             visible: root._view === "list"
+
+            // ── List island (matches Schedule/Translate tab islands) ──
+            Rectangle {
+                anchors.fill: parent
+                color: Appearance.m3colors.m3surfaceContainer
+                radius: Appearance.rounding.large
+            }
 
             // ── Item List ──
             Flickable {
                 id: itemList
                 anchors.fill: parent
+                anchors.margins: 12 * Appearance.effectiveScale
                 contentHeight: contentCol.implicitHeight
                 bottomMargin: 80 * Appearance.effectiveScale
                 clip: true
@@ -467,7 +474,7 @@ Item {
                 if (c === "error" || c === "errorContainer") return Appearance.m3colors.m3errorContainer || Appearance.m3colors.m3error;
                 if (c === "surfaceContainerHigh") return Appearance.m3colors.m3surfaceContainerHigh;
                 if (c === "surfaceContainerLowest") return Appearance.m3colors.m3surfaceContainerLowest;
-                return "transparent";
+                return Appearance.m3colors.m3surfaceContainer;
             }
             
             color: getNoteColor(root._currentItem() ? root._currentItem().color || "" : "")

@@ -29,137 +29,152 @@ Item {
         timelineFlickable.contentY = Math.max(0, Math.min(maxScroll, target - timelineFlickable.height / 2));
     }
 
+    // ── Header island: day label + ‹ › (tinted with the Schedule accent) ──
     Rectangle {
-        id: timelineIsland
+        id: headerIsland
 
-        anchors.fill: parent
-        color: Appearance.colors.colLayer1
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.right: parent.right
+        implicitHeight: 56 * Appearance.effectiveScale
+        height: 56 * Appearance.effectiveScale
+        color: Appearance.colors.colSecondaryContainer
         radius: Appearance.rounding.large
 
-        ColumnLayout {
+        // ── Day navigation header ──
+        RowLayout {
             anchors.fill: parent
-            anchors.margins: 10 * Appearance.effectiveScale
+            anchors.margins: 12 * Appearance.effectiveScale
             spacing: 8 * Appearance.effectiveScale
 
-            // ── Day navigation header ──
-            RowLayout {
-                Layout.fillWidth: true
-                spacing: 8 * Appearance.effectiveScale
+            // Interactive day label — click returns to today
+            Item {
+                id: labelSlot
 
-                // Interactive day label — click returns to today
-                Item {
-                    id: labelSlot
+                implicitWidth: labelText.width + 18 * Appearance.effectiveScale
+                implicitHeight: 32 * Appearance.effectiveScale
 
-                    implicitWidth: labelText.width + 18 * Appearance.effectiveScale
-                    implicitHeight: 32 * Appearance.effectiveScale
+                Rectangle {
+                    id: labelPill
 
-                    Rectangle {
-                        id: labelPill
+                    anchors.fill: parent
+                    radius: 16 * Appearance.effectiveScale
+                    visible: ctrl.dayOffset !== 0
+                    color: labelMouse.containsMouse ? Appearance.colors.colLayer2 : "transparent"
 
-                        anchors.fill: parent
-                        radius: 16 * Appearance.effectiveScale
-                        visible: ctrl.dayOffset !== 0
-                        color: labelMouse.containsMouse ? Appearance.colors.colLayer2 : "transparent"
-
-                        Behavior on color {
-                            ColorAnimation {
-                                duration: 150
-                            }
-
+                    Behavior on color {
+                        ColorAnimation {
+                            duration: 150
                         }
 
                     }
 
-                    StyledText {
-                        id: labelText
+                }
 
-                        anchors.left: parent.left
-                        anchors.verticalCenter: parent.verticalCenter
-                        anchors.leftMargin: 9 * Appearance.effectiveScale
-                        text: ctrl._dayLabel
-                        font.pixelSize: Appearance.font.pixelSize.normal
-                        font.weight: Font.DemiBold
+                StyledText {
+                    id: labelText
+
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.leftMargin: 9 * Appearance.effectiveScale
+                    text: ctrl._dayLabel
+                    font.pixelSize: Appearance.font.pixelSize.normal
+                    font.weight: Font.DemiBold
+                    color: Appearance.m3colors.m3onSurface
+                }
+
+                MouseArea {
+                    id: labelMouse
+
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    cursorShape: ctrl.dayOffset !== 0 ? Qt.PointingHandCursor : Qt.ArrowCursor
+                    onClicked: {
+                        if (ctrl.dayOffset !== 0)
+                            ctrl.dayOffset = 0;
+
+                    }
+                }
+
+                StyledToolTip {
+                    x: labelText.x + (labelText.width - width) / 2
+                    y: 34 * Appearance.effectiveScale
+                    text: I18nService.tr("Back to today")
+                    alternativeVisibleCondition: labelMouse.containsMouse && ctrl.dayOffset !== 0
+                }
+
+            }
+
+            Item {
+                Layout.fillWidth: true
+                implicitHeight: 32 * Appearance.effectiveScale
+            }
+
+            // Navigation group: ‹ ›
+            RowLayout {
+                spacing: 4 * Appearance.effectiveScale
+
+                RippleButton {
+                    implicitWidth: 32 * Appearance.effectiveScale
+                    implicitHeight: 32 * Appearance.effectiveScale
+                    buttonRadius: 16 * Appearance.effectiveScale
+                    colBackground: "transparent"
+                    colBackgroundHover: Appearance.colors.colLayer2
+                    colRipple: Appearance.colors.colLayer2Active
+                    onClicked: ctrl.dayOffset -= 1
+
+                    MaterialSymbol {
+                        anchors.centerIn: parent
+                        text: "chevron_left"
+                        iconSize: 20 * Appearance.effectiveScale
                         color: Appearance.m3colors.m3onSurface
                     }
 
-                    MouseArea {
-                        id: labelMouse
+                    StyledToolTip {
+                        text: I18nService.tr("Previous day")
+                    }
 
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        cursorShape: ctrl.dayOffset !== 0 ? Qt.PointingHandCursor : Qt.ArrowCursor
-                        onClicked: {
-                            if (ctrl.dayOffset !== 0)
-                                ctrl.dayOffset = 0;
+                }
 
-                        }
+                RippleButton {
+                    implicitWidth: 32 * Appearance.effectiveScale
+                    implicitHeight: 32 * Appearance.effectiveScale
+                    buttonRadius: 16 * Appearance.effectiveScale
+                    colBackground: "transparent"
+                    colBackgroundHover: Appearance.colors.colLayer2
+                    colRipple: Appearance.colors.colLayer2Active
+                    onClicked: ctrl.dayOffset += 1
+
+                    MaterialSymbol {
+                        anchors.centerIn: parent
+                        text: "chevron_right"
+                        iconSize: 20 * Appearance.effectiveScale
+                        color: Appearance.m3colors.m3onSurface
                     }
 
                     StyledToolTip {
-                        x: labelText.x + (labelText.width - width) / 2
-                        y: 34 * Appearance.effectiveScale
-                        text: I18nService.tr("Back to today")
-                        alternativeVisibleCondition: labelMouse.containsMouse && ctrl.dayOffset !== 0
-                    }
-
-                }
-
-                Item {
-                    Layout.fillWidth: true
-                    implicitHeight: 32 * Appearance.effectiveScale
-                }
-
-                // Navigation group: ‹ ›
-                RowLayout {
-                    spacing: 4 * Appearance.effectiveScale
-
-                    RippleButton {
-                        implicitWidth: 32 * Appearance.effectiveScale
-                        implicitHeight: 32 * Appearance.effectiveScale
-                        buttonRadius: 16 * Appearance.effectiveScale
-                        colBackground: "transparent"
-                        colBackgroundHover: Appearance.colors.colLayer2
-                        colRipple: Appearance.colors.colLayer2Active
-                        onClicked: ctrl.dayOffset -= 1
-
-                        MaterialSymbol {
-                            anchors.centerIn: parent
-                            text: "chevron_left"
-                            iconSize: 20 * Appearance.effectiveScale
-                            color: Appearance.m3colors.m3onSurface
-                        }
-
-                        StyledToolTip {
-                            text: I18nService.tr("Previous day")
-                        }
-
-                    }
-
-                    RippleButton {
-                        implicitWidth: 32 * Appearance.effectiveScale
-                        implicitHeight: 32 * Appearance.effectiveScale
-                        buttonRadius: 16 * Appearance.effectiveScale
-                        colBackground: "transparent"
-                        colBackgroundHover: Appearance.colors.colLayer2
-                        colRipple: Appearance.colors.colLayer2Active
-                        onClicked: ctrl.dayOffset += 1
-
-                        MaterialSymbol {
-                            anchors.centerIn: parent
-                            text: "chevron_right"
-                            iconSize: 20 * Appearance.effectiveScale
-                            color: Appearance.m3colors.m3onSurface
-                        }
-
-                        StyledToolTip {
-                            text: I18nService.tr("Next day")
-                        }
-
+                        text: I18nService.tr("Next day")
                     }
 
                 }
 
             }
+
+        }
+    }
+
+    Rectangle {
+        id: timelineIsland
+
+        anchors.fill: parent
+        anchors.topMargin: (56 + 12) * Appearance.effectiveScale
+        color: Appearance.m3colors.m3surfaceContainer
+        radius: Appearance.rounding.large
+
+        ColumnLayout {
+            anchors.fill: parent
+            anchors.margins: 12 * Appearance.effectiveScale
+            spacing: 8 * Appearance.effectiveScale
 
             // ── Hour grid timeline ──
             Rectangle {

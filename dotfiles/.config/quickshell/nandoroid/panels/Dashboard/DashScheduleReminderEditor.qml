@@ -24,16 +24,24 @@ Item {
         anchors.fill: parent
         spacing: 12 * Appearance.effectiveScale
 
+        // ── Header island ──
+        Rectangle {
+            Layout.fillWidth: true
+            Layout.preferredHeight: 60 * Appearance.effectiveScale
+            color: Appearance.colors.colSecondaryContainer
+            radius: Appearance.rounding.large
+
         // ── Header ──
         RowLayout {
-            Layout.fillWidth: true
+            anchors.fill: parent
+            anchors.margins: 12 * Appearance.effectiveScale
             spacing: 8 * Appearance.effectiveScale
 
             RippleButton {
                 implicitWidth: 36 * Appearance.effectiveScale
                 implicitHeight: 36 * Appearance.effectiveScale
                 buttonRadius: 18 * Appearance.effectiveScale
-                colBackground: Appearance.colors.colLayer2
+                colBackground: "transparent"
                 colRipple: Appearance.colors.colLayer2Active
                 onClicked: ctrl.backFromReminderEditor()
 
@@ -61,7 +69,7 @@ Item {
                 implicitWidth: 36 * Appearance.effectiveScale
                 implicitHeight: 36 * Appearance.effectiveScale
                 buttonRadius: 18 * Appearance.effectiveScale
-                colBackground: Appearance.m3colors.m3surfaceContainer
+                colBackground: "transparent"
                 onClicked: ctrl.deleteEditingReminder()
 
                 MaterialSymbol {
@@ -73,11 +81,20 @@ Item {
                 StyledToolTip { text: I18nService.tr("Delete reminder") }
             }
         }
+        }
+
+        // ── Form island ──
+        Rectangle {
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            color: Appearance.m3colors.m3surfaceContainer
+            radius: Appearance.rounding.large
+            clip: true
 
         // ── Scrollable form ──
         StyledFlickable {
-            Layout.fillWidth: true
-            Layout.fillHeight: true
+            anchors.fill: parent
+            anchors.margins: 12 * Appearance.effectiveScale
             contentHeight: reminderFormLayout.implicitHeight
             clip: true
 
@@ -92,7 +109,7 @@ Item {
                     Layout.fillWidth: true
                     implicitHeight: 44 * Appearance.effectiveScale
                     inputRadius: Appearance.rounding.small / Appearance.effectiveScale
-                    backgroundColor: Appearance.m3colors.m3surfaceContainer
+                    backgroundColor: Appearance.m3colors.m3surfaceContainerHighest
                     placeholder: I18nService.tr("Remind me to...")
                     text: ctrl.reminderText
                     onTextChanged: {
@@ -116,7 +133,7 @@ Item {
                         Layout.fillWidth: true
                         implicitHeight: 40 * Appearance.effectiveScale
                         buttonRadius: Appearance.rounding.small
-                        colBackground: Appearance.m3colors.m3surfaceContainer
+                        colBackground: Appearance.m3colors.m3surfaceContainerHighest
                         colRipple: Appearance.colors.colLayer2Active
                         onClicked: ctrl.openReminderDatePicker()
 
@@ -157,7 +174,7 @@ Item {
                         Layout.fillWidth: true
                         implicitHeight: 40 * Appearance.effectiveScale
                         buttonRadius: Appearance.rounding.small
-                        colBackground: Appearance.m3colors.m3surfaceContainer
+                        colBackground: Appearance.m3colors.m3surfaceContainerHighest
                         colRipple: Appearance.colors.colLayer2Active
                         onClicked: ctrl.openReminderTimePicker()
 
@@ -206,7 +223,7 @@ Item {
                                 default: return I18nService.tr("Basic");
                             }
                         }
-                        colBackground: Appearance.m3colors.m3surfaceContainer
+                        colBackground: Appearance.m3colors.m3surfaceContainerHighest
                         onAccepted: (val) => {
                             if (val === I18nService.tr("Notepad")) ctrl.reminderType = "notepad";
                             else if (val === I18nService.tr("Todo")) ctrl.reminderType = "todo";
@@ -261,7 +278,7 @@ Item {
                         placeholder: ctrl.reminderType === "notepad"
                             ? I18nService.tr("Select notepad...")
                             : I18nService.tr("Select task...")
-                        colBackground: Appearance.m3colors.m3surfaceContainer
+                        colBackground: Appearance.m3colors.m3surfaceContainerHighest
 
                         onAccepted: (val) => {
                             // Update the combo's own text directly (no external binding conflict)
@@ -301,6 +318,7 @@ Item {
 
                 Item { implicitHeight: 8 * Appearance.effectiveScale }
             }
+        }
         }
 
         // ── Save button — pinned at bottom (outside scrollable area) ──

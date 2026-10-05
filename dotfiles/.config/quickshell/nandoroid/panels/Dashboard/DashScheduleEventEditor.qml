@@ -22,16 +22,24 @@ Item {
         anchors.fill: parent
         spacing: 12 * Appearance.effectiveScale
 
+        // ── Header island ──
+        Rectangle {
+            Layout.fillWidth: true
+            Layout.preferredHeight: 60 * Appearance.effectiveScale
+            color: Appearance.colors.colSecondaryContainer
+            radius: Appearance.rounding.large
+
         // ── Header: back + title + focus toggle + delete ──
         RowLayout {
-            Layout.fillWidth: true
+            anchors.fill: parent
+            anchors.margins: 12 * Appearance.effectiveScale
             spacing: 8 * Appearance.effectiveScale
 
             RippleButton {
                 implicitWidth: 36 * Appearance.effectiveScale
                 implicitHeight: 36 * Appearance.effectiveScale
                 buttonRadius: 18 * Appearance.effectiveScale
-                colBackground: Appearance.colors.colLayer2
+                colBackground: "transparent"
                 colRipple: Appearance.colors.colLayer2Active
                 onClicked: ctrl.backToTimeline()
 
@@ -91,7 +99,7 @@ Item {
                 implicitWidth: 36 * Appearance.effectiveScale
                 implicitHeight: 36 * Appearance.effectiveScale
                 buttonRadius: 18 * Appearance.effectiveScale
-                colBackground: Appearance.m3colors.m3surfaceContainer
+                colBackground: "transparent"
                 onClicked: ctrl.deleteEditingEvent()
 
                 MaterialSymbol {
@@ -108,6 +116,20 @@ Item {
             }
 
         }
+        }
+
+        // ── Form island ──
+        Rectangle {
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            color: Appearance.m3colors.m3surfaceContainer
+            radius: Appearance.rounding.large
+            clip: true
+
+            ColumnLayout {
+                anchors.fill: parent
+                anchors.margins: 12 * Appearance.effectiveScale
+                spacing: 12 * Appearance.effectiveScale
 
         // ── Title field ──
         StyledTextInput {
@@ -116,7 +138,7 @@ Item {
             Layout.fillWidth: true
             implicitHeight: 44 * Appearance.effectiveScale
             inputRadius: Appearance.rounding.small / Appearance.effectiveScale
-            backgroundColor: Appearance.m3colors.m3surfaceContainer
+            backgroundColor: Appearance.m3colors.m3surfaceContainerHighest
             placeholder: I18nService.tr("Event title...")
             text: ctrl.formTitle
             onTextChanged: {
@@ -144,8 +166,8 @@ Item {
                 Layout.fillWidth: true
                 implicitHeight: 44 * Appearance.effectiveScale
                 buttonRadius: Appearance.rounding.small
-                colBackground: "transparent"
-                colBackgroundHover: "transparent"
+                colBackground: Appearance.m3colors.m3surfaceContainerHighest
+                colBackgroundHover: Functions.ColorUtils.mix(Appearance.m3colors.m3surfaceContainerHighest, Appearance.m3colors.m3onSurface, 0.92)
                 colText: "transparent"
                 onClicked: ctrl.openDatePicker()
 
@@ -165,8 +187,8 @@ Item {
                 Layout.fillWidth: true
                 implicitHeight: 44 * Appearance.effectiveScale
                 buttonRadius: Appearance.rounding.small
-                colBackground: "transparent"
-                colBackgroundHover: "transparent"
+                colBackground: Appearance.m3colors.m3surfaceContainerHighest
+                colBackgroundHover: Functions.ColorUtils.mix(Appearance.m3colors.m3surfaceContainerHighest, Appearance.m3colors.m3onSurface, 0.92)
                 colText: "transparent"
                 onClicked: ctrl.openStartTimePicker()
 
@@ -201,8 +223,8 @@ Item {
                 Layout.fillWidth: true
                 implicitHeight: 44 * Appearance.effectiveScale
                 buttonRadius: Appearance.rounding.small
-                colBackground: "transparent"
-                colBackgroundHover: "transparent"
+                colBackground: Appearance.m3colors.m3surfaceContainerHighest
+                colBackgroundHover: Functions.ColorUtils.mix(Appearance.m3colors.m3surfaceContainerHighest, Appearance.m3colors.m3onSurface, 0.92)
                 colText: "transparent"
                 onClicked: ctrl.openEndDatePicker()
 
@@ -222,8 +244,8 @@ Item {
                 Layout.fillWidth: true
                 implicitHeight: 44 * Appearance.effectiveScale
                 buttonRadius: Appearance.rounding.small
-                colBackground: "transparent"
-                colBackgroundHover: "transparent"
+                colBackground: Appearance.m3colors.m3surfaceContainerHighest
+                colBackgroundHover: Functions.ColorUtils.mix(Appearance.m3colors.m3surfaceContainerHighest, Appearance.m3colors.m3onSurface, 0.92)
                 colText: "transparent"
                 onClicked: ctrl.openEndTimePicker()
 
@@ -253,7 +275,7 @@ Item {
             Layout.fillWidth: true
             Layout.fillHeight: true
             radius: Appearance.rounding.normal
-            color: Appearance.m3colors.m3surfaceContainer
+            color: Appearance.m3colors.m3surfaceContainerHighest
             border.color: descArea.activeFocus ? Appearance.colors.colPrimary : "transparent"
             border.width: 2 * Appearance.effectiveScale
             clip: true
@@ -351,6 +373,8 @@ Item {
 
             }
 
+        }
+            }
         }
 
         // ── Save button ──
