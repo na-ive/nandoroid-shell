@@ -236,18 +236,20 @@ Item {
                 Row {
                     id: mainLayout
                     anchors.fill: parent
-                    // Inner padding
-                    leftPadding: 16 * Appearance.effectiveScale
-                    rightPadding: 16 * Appearance.effectiveScale
-                    topPadding: 16 * Appearance.effectiveScale
-                    bottomPadding: 16 * Appearance.effectiveScale
-                    spacing: 16 * Appearance.effectiveScale
+                    // Inner padding (12px grid, same as content card gaps)
+                    leftPadding: 12 * Appearance.effectiveScale
+                    rightPadding: 12 * Appearance.effectiveScale
+                    topPadding: 12 * Appearance.effectiveScale
+                    bottomPadding: 12 * Appearance.effectiveScale
+                    spacing: 12 * Appearance.effectiveScale
 
-                    // ── Vertical Tab Strip ──
+                    // ── Vertical Navigation Rail (end4-pC group rail style) ──
             Item {
                 id: tabStrip
                 width: root.tabStripWidth
-                height: parent.height
+                // Row padding already offsets y by 12: subtract top+bottom padding
+                // so the strip exactly matches the content area (no double inset)
+                height: parent.height - 24 * Appearance.effectiveScale
 
                 // Scroll to change tab - restricted to tabStrip area
                 MouseArea {
@@ -385,9 +387,9 @@ Item {
             // ── Content Area ──
             Item {
                 id: contentArea
-                // panelWidth minus (leftPadding+rightPadding=32) minus tabStripWidth minus spacing(16)
-                width: root.panelWidth - 48 * Appearance.effectiveScale - root.tabStripWidth
-                height: root.panelHeight - 32 * Appearance.effectiveScale
+                // panelWidth minus (leftPadding+rightPadding=24) minus tabStripWidth minus spacing(12)
+                width: root.panelWidth - 36 * Appearance.effectiveScale - root.tabStripWidth
+                height: root.panelHeight - 24 * Appearance.effectiveScale
 
                 // Tab 0: Calendar + Pomodoro
                 Loader {

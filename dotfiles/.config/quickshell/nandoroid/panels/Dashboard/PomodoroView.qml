@@ -62,7 +62,7 @@ Item {
     // ── MAIN RUNNING PAGE ──
     ColumnLayout {
         anchors.fill: parent
-        anchors.margins: 16 * Appearance.effectiveScale
+        anchors.margins: 12 * Appearance.effectiveScale
         visible: root.configMode === 0
 
         // Arc Ring
@@ -245,7 +245,7 @@ Item {
     // ── CONFIG NUMPAD PAGE ──
     ColumnLayout {
         anchors.fill: parent
-        anchors.margins: 16 * Appearance.effectiveScale
+        anchors.margins: 12 * Appearance.effectiveScale
         visible: root.configMode > 0
         
         Item { Layout.fillHeight: true }

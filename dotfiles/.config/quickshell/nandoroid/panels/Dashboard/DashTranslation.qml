@@ -13,7 +13,7 @@ import Quickshell
  */
 ColumnLayout {
     id: root
-    spacing: 16 * Appearance.effectiveScale
+    spacing: 12 * Appearance.effectiveScale
 
     property string srcLang: (Config.ready && Config.options.language && Config.options.language.translator) ? Config.options.language.translator.sourceLanguage : "auto"
     property string targetLang: (Config.ready && Config.options.language && Config.options.language.translator) ? Config.options.language.translator.targetLanguage : "en"

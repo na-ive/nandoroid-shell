@@ -12,7 +12,7 @@ Item {
 
     ColumnLayout {
         anchors.fill: parent
-        anchors.margins: 16 * Appearance.effectiveScale
+        anchors.margins: 12 * Appearance.effectiveScale
         spacing: 12 * Appearance.effectiveScale
 
         // ── Large Time Display ──

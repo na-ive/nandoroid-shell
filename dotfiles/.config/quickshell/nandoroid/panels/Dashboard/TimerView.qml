@@ -50,7 +50,7 @@ Item {
     // ── INPUT PAGE ──
     ColumnLayout {
         anchors.fill: parent
-        anchors.margins: 16 * Appearance.effectiveScale
+        anchors.margins: 12 * Appearance.effectiveScale
         visible: !TimerService.active && TimerService.remainingMs === TimerService.setSeconds * 1000 && !TimerService.overflowing && !root.forceRunningMode
         
         Item { Layout.fillHeight: true }
@@ -142,7 +142,7 @@ Item {
     // ── RUNNING / PAUSED PAGE ──
     ColumnLayout {
         anchors.fill: parent
-        anchors.margins: 16 * Appearance.effectiveScale
+        anchors.margins: 12 * Appearance.effectiveScale
         visible: TimerService.active || TimerService.remainingMs !== TimerService.setSeconds * 1000 || TimerService.overflowing || root.forceRunningMode
 
         Item { Layout.fillHeight: true }

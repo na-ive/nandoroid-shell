@@ -541,7 +541,7 @@ Item {
         // Alarm cards
         Flickable {
             anchors.fill: parent
-            anchors.margins: 16 * Appearance.effectiveScale
+            anchors.margins: 12 * Appearance.effectiveScale
             contentHeight: cardsCol.implicitHeight
             bottomMargin: 88 * Appearance.effectiveScale
             clip: true
