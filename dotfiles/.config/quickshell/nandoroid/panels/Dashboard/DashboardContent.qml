@@ -32,13 +32,23 @@ Item {
     property bool active: GlobalStates.dashboardOpen
     property int currentTab: 0
     onCurrentTabChanged: {
-        tabHighlight.idx1 = currentTab
-        Qt.callLater(() => { tabHighlight.idx2 = currentTab })
         GlobalStates.closeSubPopups()
     }
     readonly property int tabCount: 5
-    readonly property int tabButtonSize: 44 * Appearance.effectiveScale
-    readonly property int tabStripWidth: tabButtonSize + 16 * Appearance.effectiveScale // button + side padding
+    readonly property int tabStripWidth: 78 * Appearance.effectiveScale // rail box + narrow side padding
+
+    // Per-tab M3 accent pairs (mirrors end4-pC group colors)
+    readonly property var dashTabs: {
+        const c = Appearance.colors;
+        const mix = (a, b) => Functions.ColorUtils.mix(a, b, 0.5);
+        return [
+            { name: I18nService.tr("Calendar"), icon: "calendar_today", container: mix(c.colPrimaryContainer, c.colTertiaryContainer), onContainer: mix(c.colOnPrimaryContainer, c.colOnTertiaryContainer), accent: mix(c.colPrimary, c.colTertiary), onAccent: mix(c.colOnPrimary, c.colOnTertiary), count: 0 },
+            { name: I18nService.tr("Schedule"), icon: "event_note", container: c.colSecondaryContainer, onContainer: c.colOnSecondaryContainer, accent: c.colSecondary, onAccent: c.colOnSecondary, count: 0 },
+            { name: I18nService.tr("Notepad"), icon: "edit_note", container: c.colTertiaryContainer, onContainer: c.colOnTertiaryContainer, accent: c.colTertiary, onAccent: c.colOnTertiary, count: 0 },
+            { name: I18nService.tr("Kanban"), icon: "view_kanban", container: mix(c.colPrimaryContainer, c.colSecondaryContainer), onContainer: mix(c.colOnPrimaryContainer, c.colOnSecondaryContainer), accent: mix(c.colPrimary, c.colSecondary), onAccent: mix(c.colOnPrimary, c.colOnSecondary), count: 0 },
+            { name: I18nService.tr("Translate"), icon: "translate", container: mix(c.colSecondaryContainer, c.colTertiaryContainer), onContainer: mix(c.colOnSecondaryContainer, c.colOnTertiaryContainer), accent: mix(c.colSecondary, c.colTertiary), onAccent: mix(c.colOnSecondary, c.colOnTertiary), count: 0 }
+        ];
+    }
 
     // The panel itself is centred inside the full-screen-width window
     readonly property int panelWidth: Appearance.sizes.dashboardWidth
@@ -143,7 +153,6 @@ Item {
             if (GlobalStates.dashboardOpen) {
                 // Reset tab to default (tab 1 = calendar) when opened
                 currentTab = 0
-                tabHighlight.reset()
                 root.forceActiveFocus()
             }
         }
@@ -264,121 +273,13 @@ Item {
                     }
                 }
 
-                // Y-offset where the button group starts (vertically centered)
-                readonly property real buttonsTop: Math.round(
-                    (height - root.tabCount * (root.tabButtonSize + 6 * Appearance.effectiveScale) + 6 * Appearance.effectiveScale) / 2
-                )
-
-                // Card background for the tab buttons
-                Rectangle {
-                    id: tabButtonsCard
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    y: tabStrip.buttonsTop - 8 * Appearance.effectiveScale
-                    width: root.tabButtonSize + 16 * Appearance.effectiveScale
-                    height: (root.tabButtonSize + 6 * Appearance.effectiveScale) * root.tabCount + 10 * Appearance.effectiveScale
-                    radius: Appearance.rounding.large
-                    color: Appearance.colors.colLayer2
-                    opacity: 0.8
-                }
-
-                // Animated stretch-highlight pill (Ambxst style)
-                Rectangle {
-                    id: tabHighlight
-                    // Centered within the strip, same as the Column's horizontalCenter
-                    x: Math.round((tabStrip.width - root.tabButtonSize) / 2)
-                    width: root.tabButtonSize
-                    radius: 16 * Appearance.effectiveScale
-
-                    // Elastic stretch: idx1 snaps fast, idx2 follows slowly
-                    property int idx1: 0
-                    property int idx2: 0
-                    
-                    function reset() {
-                        idx1 = 0
-                        idx2 = 0
-                    }
-
-                    function getYForIndex(i) {
-                        return tabStrip.buttonsTop + i * (root.tabButtonSize + 6 * Appearance.effectiveScale)
-                    }
-
-                    property real targetY1: getYForIndex(idx1)
-                    property real targetY2: getYForIndex(idx2)
-                    property real animY1: targetY1
-                    property real animY2: targetY2
-
-                    y: Math.min(animY1, animY2)
-                    height: Math.abs(animY2 - animY1) + root.tabButtonSize
-
-                    color: Appearance.colors.colPrimaryContainer
-
-                    Behavior on animY1 {
-                        NumberAnimation { duration: 120; easing.type: Easing.OutSine }
-                    }
-                    Behavior on animY2 {
-                        NumberAnimation { duration: 380; easing.type: Easing.OutCubic }
-                    }
-
-                    onTargetY1Changed: animY1 = targetY1
-                    onTargetY2Changed: animY2 = targetY2
-
-                    onIdx1Changed: { targetY1 = getYForIndex(idx1) }
-                    onIdx2Changed: { targetY2 = getYForIndex(idx2) }
-                }
-
-                // Tab buttons (vertically centered, matching buttonsTop used by highlight)
-                Column {
-                    anchors.top: parent.top
-                    anchors.topMargin: tabStrip.buttonsTop
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    spacing: 6 * Appearance.effectiveScale
-
-                    Repeater {
-                        model: [
-                            { icon: "calendar_today",  tooltip: I18nService.tr("Calendar & Pomodoro") },
-                            { icon: "event_note",       tooltip: I18nService.tr("Schedule") },
-                            { icon: "edit_note",        tooltip: I18nService.tr("Notepad") },
-                            { icon: "view_kanban",      tooltip: I18nService.tr("Kanban Board") },
-                            { icon: "translate",        tooltip: I18nService.tr("Translator") }
-                        ]
-                        delegate: Item {
-                            required property int index
-                            required property var modelData
-                            width: root.tabButtonSize
-                            height: root.tabButtonSize
-
-                            // Hover ripple
-                            Rectangle {
-                                anchors.fill: parent
-                                radius: Appearance.rounding.small
-                                color: Appearance.colors.colLayer1
-                                opacity: btnMouse.containsMouse && root.currentTab !== index ? 0.7 : 0
-                                Behavior on opacity { NumberAnimation { duration: 150 } }
-                            }
-
-                            MaterialSymbol {
-                                anchors.centerIn: parent
-                                text: modelData.icon
-                                iconSize: 22 * Appearance.effectiveScale
-                                color: root.currentTab === index
-                                    ? Appearance.colors.colOnPrimaryContainer
-                                    : Appearance.colors.colSubtext
-                                Behavior on color { ColorAnimation { duration: 200 } }
-                            }
-
-                            StyledToolTip { text: modelData.tooltip }
-
-                            MouseArea {
-                                id: btnMouse
-                                anchors.fill: parent
-                                hoverEnabled: true
-                                cursorShape: Qt.PointingHandCursor
-                                onClicked: {
-                                    GlobalStates.closeSubPopups()
-                                    root.currentTab = index
-                                }
-                            }
-                        }
+                DashGroupRail {
+                    anchors.fill: parent
+                    groups: root.dashTabs
+                    current: root.currentTab
+                    onPicked: (index) => {
+                        GlobalStates.closeSubPopups()
+                        root.currentTab = index
                     }
                 }
 
