@@ -337,7 +337,7 @@ Item {
 
             CalendarHeaderButton {
                 compact: root.compact
-                buttonText: root.getMonthYearHeader(root.viewingDate)
+                buttonText: (root.monthShift !== 0 ? "• " : "") + root.getMonthYearHeader(root.viewingDate)
                 tooltipText: (root.monthShift === 0) ? "" : I18nService.tr("Jump to current month")
                 colBackground: "transparent"
                 colBackgroundHover: Appearance.colors.colLayer2Hover

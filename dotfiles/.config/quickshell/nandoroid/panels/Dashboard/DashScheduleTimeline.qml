@@ -77,7 +77,7 @@ Item {
                     anchors.left: parent.left
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.leftMargin: 9 * Appearance.effectiveScale
-                    text: ctrl._dayLabel
+                    text: (ctrl.dayOffset !== 0 ? "• " : "") + ctrl._dayLabel
                     font.pixelSize: Appearance.font.pixelSize.normal
                     font.weight: Font.DemiBold
                     color: Appearance.m3colors.m3onSurface
