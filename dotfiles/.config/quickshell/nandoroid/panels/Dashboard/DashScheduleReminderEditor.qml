@@ -327,8 +327,8 @@ Item {
             implicitHeight: 44 * Appearance.effectiveScale
             buttonRadius: 22 * Appearance.effectiveScale
             enabled: ctrl.reminderText.trim() !== ""
-            colBackground: Appearance.colors.colPrimary
-            colRipple: Functions.ColorUtils.applyAlpha(Appearance.colors.colOnPrimary, 0.15)
+            colBackground: Appearance.colors.colSecondaryContainer
+            colRipple: Functions.ColorUtils.applyAlpha(Appearance.colors.colOnSecondaryContainer, 0.15)
             opacity: enabled ? 1 : 0.5
             onClicked: ctrl.saveReminder()
 
@@ -339,13 +339,13 @@ Item {
                 MaterialSymbol {
                     text: "alarm_add"
                     iconSize: 20 * Appearance.effectiveScale
-                    color: Appearance.colors.colOnPrimary
+                    color: Appearance.colors.colOnSecondaryContainer
                 }
 
                 StyledText {
                     text: ctrl._editingReminderId ? I18nService.tr("Update Reminder") : I18nService.tr("Set Reminder")
                     font.weight: Font.Medium
-                    color: Appearance.colors.colOnPrimary
+                    color: Appearance.colors.colOnSecondaryContainer
                 }
             }
         }

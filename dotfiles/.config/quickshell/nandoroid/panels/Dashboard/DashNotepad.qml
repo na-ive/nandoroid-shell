@@ -450,6 +450,10 @@ Item {
             anchors.fill: parent
             visible: root._view === "list"
             icon: "edit"
+            colBackground: Appearance.m3colors.m3tertiaryContainer
+            colOnColor: Appearance.m3colors.m3onTertiaryContainer
+            colBackgroundOpen: Appearance.m3colors.m3tertiary
+            colOnColorOpen: Appearance.m3colors.m3onTertiary
             label: I18nService.tr("New note")
             tooltipText: ""
             onClicked: root.newNotepad()
@@ -460,7 +464,7 @@ Item {
             visible: root._view === "notepad"
             radius: Appearance.rounding.normal
             clip: true
-            
+
             onVisibleChanged: {
                 if (!visible && colorPopup.opened) {
                     colorPopup.close()
@@ -546,23 +550,17 @@ Item {
                             fill: colorPopup.opened ? 1 : 0
                         }
                         
-                        property bool _justClosed: false
-                        Timer {
-                            id: blockReopenTimer
-                            interval: 100
-                            onTriggered: paletteBtn._justClosed = false
-                        }
-
                         onClicked: {
                             if (colorPopup.opened) {
                                 colorPopup.close()
-                            } else if (!paletteBtn._justClosed) {
+                            } else {
                                 colorPopup.open()
                             }
                         }
 
                         Popup {
                             id: colorPopup
+                            closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutsideParent
                             y: paletteBtn.height + 8 * Appearance.effectiveScale
                             x: -width + paletteBtn.width + 44 * Appearance.effectiveScale
                             width: colorGrid.implicitWidth + 24 * Appearance.effectiveScale
@@ -660,8 +658,8 @@ Item {
                         font.pixelSize: Appearance.font.pixelSize.large || 16 * Appearance.effectiveScale
                         color: Appearance.colors.colOnLayer1
                         wrapMode: TextEdit.Wrap
-                        selectionColor: Appearance.colors.colPrimaryContainer
-                        selectedTextColor: Appearance.colors.colOnPrimaryContainer
+                        selectionColor: Appearance.colors.colTertiaryContainer
+                        selectedTextColor: Appearance.colors.colOnTertiaryContainer
                         onTextChanged: saveTimer.restart()
 
                         onCursorRectangleChanged: {

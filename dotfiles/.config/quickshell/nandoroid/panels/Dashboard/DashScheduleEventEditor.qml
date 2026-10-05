@@ -72,7 +72,7 @@ Item {
                 MaterialSymbol {
                     text: "do_not_disturb_on"
                     iconSize: 18 * Appearance.effectiveScale
-                    color: ctrl.formFocus ? Appearance.colors.colPrimary : Appearance.colors.colSubtext
+                    color: ctrl.formFocus ? Appearance.colors.colSecondaryContainer : Appearance.colors.colSubtext
                 }
 
                 StyledText {
@@ -83,7 +83,7 @@ Item {
 
                 AndroidToggle {
                     checked: ctrl.formFocus
-                    color: checked ? Appearance.colors.colPrimary : Appearance.m3colors.m3surfaceContainerHigh
+                    color: checked ? Appearance.colors.colSecondaryContainer : Appearance.m3colors.m3surfaceContainerHigh
                     onToggled: {
                         ctrl.formFocus = !ctrl.formFocus;
                         if (ctrl._editingId)
@@ -276,7 +276,7 @@ Item {
             Layout.fillHeight: true
             radius: Appearance.rounding.normal
             color: Appearance.m3colors.m3surfaceContainerHighest
-            border.color: descArea.activeFocus ? Appearance.colors.colPrimary : "transparent"
+            border.color: descArea.activeFocus ? Appearance.colors.colSecondaryContainer : "transparent"
             border.width: 2 * Appearance.effectiveScale
             clip: true
 
@@ -382,7 +382,7 @@ Item {
             Layout.fillWidth: true
             implicitHeight: 44 * Appearance.effectiveScale
             buttonRadius: 22 * Appearance.effectiveScale
-            colBackground: Appearance.colors.colPrimary
+            colBackground: Appearance.colors.colSecondaryContainer
             enabled: ctrl.formTitle.trim().length > 0 && ctrl.formDatesValid
             opacity: enabled ? 1 : 0.5
             onClicked: ctrl.saveEvent()
@@ -394,13 +394,13 @@ Item {
                 MaterialSymbol {
                     text: "save"
                     iconSize: 18 * Appearance.effectiveScale
-                    color: Appearance.colors.colOnPrimary
+                    color: Appearance.colors.colOnSecondaryContainer
                 }
 
                 StyledText {
                     text: ctrl._editingId ? I18nService.tr("Update Event") : I18nService.tr("Add Event")
                     font.weight: Font.Medium
-                    color: Appearance.colors.colOnPrimary
+                    color: Appearance.colors.colOnSecondaryContainer
                 }
 
             }

@@ -1,4 +1,5 @@
 import "../../core"
+import "../../core/functions" as Functions
 import "../../services"
 import "../../widgets"
 import QtQuick
@@ -10,6 +11,10 @@ import QtQuick.Layouts
  */
 RowLayout {
     id: root
+
+    // ── Calendar accent family (matches the Calendar rail button inactive state) ──
+    readonly property color calContainer: Functions.ColorUtils.mix(Appearance.colors.colPrimaryContainer, Appearance.colors.colTertiaryContainer, 0.5)
+    readonly property color calOnContainer: Functions.ColorUtils.mix(Appearance.colors.colOnPrimaryContainer, Appearance.colors.colOnTertiaryContainer, 0.5)
 
     readonly property string _todayStr: {
         const _ = DateTime.now;
@@ -233,10 +238,11 @@ RowLayout {
         }
 
         // Schedule summary card (own card, below the calendar)
+        // Tinted when there is an upcoming event, neutral otherwise
         Rectangle {
             Layout.fillWidth: true
             Layout.preferredHeight: 56 * Appearance.effectiveScale
-            color: Appearance.colors.colLayer2
+            color: root._summary.state === "none" ? Appearance.colors.colLayer2 : root.calContainer
             radius: Appearance.rounding.normal
             clip: true
 
@@ -244,8 +250,8 @@ RowLayout {
                 anchors.fill: parent
                 buttonRadius: Appearance.rounding.normal
                 colBackground: "transparent"
-                colBackgroundHover: Appearance.colors.colLayer2Hover
-                colRipple: Appearance.colors.colLayer2Active
+                colBackgroundHover: root._summary.state === "none" ? Appearance.colors.colLayer2Hover : Functions.ColorUtils.mix(root.calContainer, root.calOnContainer, 0.92)
+                colRipple: root._summary.state === "none" ? Appearance.colors.colLayer2Active : Functions.ColorUtils.mix(root.calContainer, root.calOnContainer, 0.85)
                 onClicked: root.jumpToSchedule()
 
                 RowLayout {
@@ -257,7 +263,7 @@ RowLayout {
                     MaterialSymbol {
                         text: root._summaryIcon
                         iconSize: 22 * Appearance.effectiveScale
-                        color: root._summary.state === "none" ? Appearance.colors.colSubtext : Appearance.colors.colPrimary
+                        color: root._summary.state === "none" ? Appearance.colors.colSubtext : root.calOnContainer
                     }
 
                     ColumnLayout {

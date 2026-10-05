@@ -15,6 +15,10 @@ ColumnLayout {
     id: root
     spacing: 12 * Appearance.effectiveScale
 
+    // ── Translate accent family (matches the Translate rail button inactive state) ──
+    readonly property color translateContainer: Functions.ColorUtils.mix(Appearance.colors.colSecondaryContainer, Appearance.colors.colTertiaryContainer, 0.5)
+    readonly property color translateOnContainer: Functions.ColorUtils.mix(Appearance.colors.colOnSecondaryContainer, Appearance.colors.colOnTertiaryContainer, 0.5)
+
     property string srcLang: (Config.ready && Config.options.language && Config.options.language.translator) ? Config.options.language.translator.sourceLanguage : "auto"
     property string targetLang: (Config.ready && Config.options.language && Config.options.language.translator) ? Config.options.language.translator.targetLanguage : "en"
 
@@ -66,8 +70,8 @@ ColumnLayout {
             id: srcCombo
             Layout.fillWidth: true
             Layout.preferredHeight: 48 * Appearance.effectiveScale
-            colBackground: Appearance.m3colors.m3primaryContainer
-            colText: Appearance.m3colors.m3onPrimaryContainer
+            colBackground: root.translateContainer
+            colText: root.translateOnContainer
             bgRadius: 24 * Appearance.effectiveScale
             borderWidth: isOpened ? Math.max(2, 2 * Appearance.effectiveScale) : 0
             model: {
@@ -99,8 +103,8 @@ ColumnLayout {
             id: swapBtn
             text: "sync_alt"
             iconSize: 20 * Appearance.effectiveScale
-            color: Appearance.m3colors.m3tertiaryContainer
-            colSymbol: Appearance.m3colors.m3onTertiaryContainer
+            color: Appearance.m3colors.m3primaryContainer
+            colSymbol: Appearance.m3colors.m3onPrimaryContainer
             shape: MaterialShape.Shape.Squircle
             width: 40 * Appearance.effectiveScale
             height: 40 * Appearance.effectiveScale
@@ -168,8 +172,8 @@ ColumnLayout {
             id: targetCombo
             Layout.fillWidth: true
             Layout.preferredHeight: 48 * Appearance.effectiveScale
-            colBackground: Appearance.m3colors.m3primaryContainer
-            colText: Appearance.m3colors.m3onPrimaryContainer
+            colBackground: root.translateContainer
+            colText: root.translateOnContainer
             bgRadius: 24 * Appearance.effectiveScale
             borderWidth: isOpened ? Math.max(2, 2 * Appearance.effectiveScale) : 0
             model: {

@@ -15,6 +15,13 @@ import "../../services"
 Item {
     id: root
 
+    // ── Calendar accent family (matches the Calendar rail button inactive state;
+    // active accents used for controls, containers for cards) ──
+    readonly property color calAccent: Functions.ColorUtils.mix(Appearance.colors.colPrimary, Appearance.colors.colTertiary, 0.5)
+    readonly property color calOnAccent: Functions.ColorUtils.mix(Appearance.colors.colOnPrimary, Appearance.colors.colOnTertiary, 0.5)
+    readonly property color calContainer: Functions.ColorUtils.mix(Appearance.colors.colPrimaryContainer, Appearance.colors.colTertiaryContainer, 0.5)
+    readonly property color calOnContainer: Functions.ColorUtils.mix(Appearance.colors.colOnPrimaryContainer, Appearance.colors.colOnTertiaryContainer, 0.5)
+
     // Alarm days are stored Mon-based (0=Mon..6=Sun); chips follow the same
     // firstDayOfWeek config as the dashboard calendar
     readonly property var dayNames: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
@@ -319,7 +326,7 @@ Item {
                         implicitWidth: presetText.implicitWidth + (32 * Appearance.effectiveScale)
                         implicitHeight: 36 * Appearance.effectiveScale
                         buttonRadius: 18 * Appearance.effectiveScale
-                        colBackground: selected ? Appearance.m3colors.m3primary : Appearance.m3colors.m3surfaceContainerHighest
+                        colBackground: selected ? root.calAccent : Appearance.m3colors.m3surfaceContainerHighest
 
                         onClicked: settingsCol.applyPreset(presetPill.modelData.key)
 
@@ -328,7 +335,7 @@ Item {
                             anchors.centerIn: parent
                             text: I18nService.tr(presetPill.modelData.labelKey)
                             font.pixelSize: 13 * Appearance.effectiveScale
-                            color: presetPill.selected ? Appearance.m3colors.m3onPrimary : Appearance.colors.colSubtext
+                            color: presetPill.selected ? root.calOnAccent : Appearance.colors.colSubtext
                         }
                     }
                 }
@@ -353,7 +360,7 @@ Item {
                         implicitWidth: 44 * Appearance.effectiveScale
                         implicitHeight: 44 * Appearance.effectiveScale
                         buttonRadius: dayChip.selected ? 22 * Appearance.effectiveScale : 12 * Appearance.effectiveScale
-                        colBackground: selected ? Appearance.m3colors.m3primary : Appearance.m3colors.m3surfaceContainerHighest
+                        colBackground: selected ? root.calAccent : Appearance.m3colors.m3surfaceContainerHighest
 
                         onClicked: {
                             if (selected) settingsCol.editDays = settingsCol.editDays.filter(d => d !== dayChip.dayValue);
@@ -365,7 +372,7 @@ Item {
                             text: root.dayLetters[dayChip.dayValue]
                             font.pixelSize: 13 * Appearance.effectiveScale
                             font.weight: dayChip.selected ? Font.DemiBold : Font.Normal
-                            color: dayChip.selected ? Appearance.m3colors.m3onPrimary : Appearance.colors.colSubtext
+                            color: dayChip.selected ? root.calOnAccent : Appearance.colors.colSubtext
                         }
                         StyledToolTip { text: I18nService.tr(root.dayNames[dayChip.dayValue]); extraVisibleCondition: dayChip.realHovered }
                     }
@@ -414,16 +421,16 @@ Item {
                     implicitHeight: 40 * Appearance.effectiveScale
                     buttonRadius: 20 * Appearance.effectiveScale
                     colBackground: "transparent"
-                    colBackgroundHover: Functions.ColorUtils.applyAlpha(Appearance.colors.colPrimary, 0.08)
+                    colBackgroundHover: Functions.ColorUtils.applyAlpha(root.calAccent, 0.08)
                     onClicked: settingsCol.deleteAlarm()
 
                     StyledText {
                         id: deleteText
                         anchors.centerIn: parent
-                        text: I18nService.tr("Delete")
-                        font.pixelSize: Appearance.font.pixelSize.small
-                        font.weight: Font.Medium
-                        color: Appearance.colors.colPrimary
+                            text: I18nService.tr("Delete")
+                            font.pixelSize: Appearance.font.pixelSize.small
+                            font.weight: Font.Medium
+                            color: root.calAccent
                     }
                 }
 
@@ -434,16 +441,16 @@ Item {
                     implicitHeight: 40 * Appearance.effectiveScale
                     buttonRadius: 20 * Appearance.effectiveScale
                     colBackground: "transparent"
-                    colBackgroundHover: Functions.ColorUtils.applyAlpha(Appearance.colors.colPrimary, 0.08)
+                    colBackgroundHover: Functions.ColorUtils.applyAlpha(root.calAccent, 0.08)
                     onClicked: DialogService.cancel()
 
                     StyledText {
                         id: cancelText
                         anchors.centerIn: parent
-                        text: I18nService.tr("Cancel")
-                        font.pixelSize: Appearance.font.pixelSize.small
-                        font.weight: Font.Medium
-                        color: Appearance.colors.colPrimary
+                            text: I18nService.tr("Cancel")
+                            font.pixelSize: Appearance.font.pixelSize.small
+                            font.weight: Font.Medium
+                            color: root.calAccent
                     }
                 }
 
@@ -452,16 +459,16 @@ Item {
                     implicitHeight: 40 * Appearance.effectiveScale
                     buttonRadius: 20 * Appearance.effectiveScale
                     colBackground: "transparent"
-                    colBackgroundHover: Functions.ColorUtils.applyAlpha(Appearance.colors.colPrimary, 0.08)
+                    colBackgroundHover: Functions.ColorUtils.applyAlpha(root.calAccent, 0.08)
                     onClicked: settingsCol.saveSettings()
 
                     StyledText {
                         id: saveText
                         anchors.centerIn: parent
-                        text: I18nService.tr("Save")
-                        font.pixelSize: Appearance.font.pixelSize.small
-                        font.weight: Font.Medium
-                        color: Appearance.colors.colPrimary
+                            text: I18nService.tr("Save")
+                            font.pixelSize: Appearance.font.pixelSize.small
+                            font.weight: Font.Medium
+                            color: root.calAccent
                     }
                 }
             }
@@ -576,9 +583,9 @@ Item {
                         implicitHeight: (24 + 2 + 24) * Appearance.effectiveScale
                             + summaryLabel.implicitHeight + timeText.implicitHeight
                         radius: Appearance.rounding.large
-                        color: isEnabled ? Appearance.m3colors.m3primaryContainer : Appearance.m3colors.m3surfaceContainerHigh
+                        color: isEnabled ? root.calContainer : Appearance.m3colors.m3surfaceContainerHigh
                         border.width: alarmCard.isRinging ? 2 : 0
-                        border.color: Appearance.m3colors.m3primary
+                        border.color: root.calAccent
                         Behavior on color { ColorAnimation { duration: 200 } }
 
                         // Row click target (below interactive children)
@@ -603,7 +610,7 @@ Item {
                                 return lbl !== "" ? base + " • " + lbl : base;
                             }
                             font.pixelSize: Appearance.font.pixelSize.normal
-                            color: alarmCard.isEnabled ? Appearance.m3colors.m3onPrimaryContainer : Appearance.colors.colSubtext
+                            color: alarmCard.isEnabled ? root.calOnContainer : Appearance.colors.colSubtext
                             elide: Text.ElideRight
                             maximumLineCount: 1
                         }
@@ -618,7 +625,7 @@ Item {
                             implicitWidth: dismissText.implicitWidth + (24 * Appearance.effectiveScale)
                             buttonRadius: 15 * Appearance.effectiveScale
                             colBackground: "transparent"
-                            colRipple: Functions.ColorUtils.applyAlpha(Appearance.m3colors.m3onPrimaryContainer, 0.12)
+                            colRipple: Functions.ColorUtils.applyAlpha(root.calOnContainer, 0.12)
                             onClicked: root.dismissOccurrence(alarmCard.alarm)
 
                             StyledText {
@@ -627,7 +634,7 @@ Item {
                                 text: I18nService.tr("Dismiss")
                                 font.pixelSize: Appearance.font.pixelSize.normal
                                 font.weight: Font.Medium
-                                color: alarmCard.isEnabled ? Appearance.m3colors.m3onPrimaryContainer : Appearance.colors.colSubtext
+                                color: alarmCard.isEnabled ? root.calOnContainer : Appearance.colors.colSubtext
                             }
                             StyledToolTip { text: I18nService.tr("Skip next occurrence"); extraVisibleCondition: parent.realHovered }
                         }
@@ -645,7 +652,7 @@ Item {
                             font.pixelSize: 44 * Appearance.effectiveScale
                             font.weight: Font.DemiBold
                             font.features: { "tnum": 1 }
-                            color: alarmCard.isEnabled ? Appearance.m3colors.m3onPrimaryContainer : Appearance.colors.colSubtext
+                            color: alarmCard.isEnabled ? root.calOnContainer : Appearance.colors.colSubtext
                         }
                         StyledText {
                             visible: alarmCard.timeParts.suffix !== ""
@@ -655,7 +662,7 @@ Item {
                             text: alarmCard.timeParts.suffix
                             font.pixelSize: 14 * Appearance.effectiveScale
                             font.weight: Font.Medium
-                            color: alarmCard.isEnabled ? Appearance.m3colors.m3onPrimaryContainer : Appearance.colors.colSubtext
+                            color: alarmCard.isEnabled ? root.calOnContainer : Appearance.colors.colSubtext
                         }
 
                         // Time click target — standalone time picker, no editor dialog

@@ -10,6 +10,10 @@ import "../../services"
 Item {
     id: root
 
+    // ── Calendar accent family (matches the Calendar rail button active state) ──
+    readonly property color calAccent: Functions.ColorUtils.mix(Appearance.colors.colPrimary, Appearance.colors.colTertiary, 0.5)
+    readonly property color calOnAccent: Functions.ColorUtils.mix(Appearance.colors.colOnPrimary, Appearance.colors.colOnTertiary, 0.5)
+
     property bool forceRunningMode: false
     property string inputDigits: ""
     
@@ -118,7 +122,7 @@ Item {
             implicitHeight: 40 * Appearance.effectiveScale
             buttonRadius: 20 * Appearance.effectiveScale
             enabled: parseInputToSeconds() > 0
-            colBackground: enabled ? Appearance.m3colors.m3primary : Appearance.m3colors.m3surfaceContainerHigh
+            colBackground: enabled ? root.calAccent : Appearance.m3colors.m3surfaceContainerHigh
             
             onClicked: {
                 let s = root.parseInputToSeconds();
@@ -133,7 +137,7 @@ Item {
                 anchors.centerIn: parent
                 text: "play_arrow"
                 iconSize: 24 * Appearance.effectiveScale
-                color: parent.enabled ? Appearance.m3colors.m3onPrimary : Appearance.colors.colOnLayer1
+                color: parent.enabled ? root.calOnAccent : Appearance.colors.colOnLayer1
             }
             StyledToolTip { text: I18nService.tr("Start Timer") }
         }
@@ -156,7 +160,7 @@ Item {
             GappedCircularProgress {
                 anchors.fill: parent
                 progress: TimerService.progress
-                colPrimary: TimerService.isNegative ? Appearance.m3colors.m3error : Appearance.m3colors.m3primary
+                colPrimary: TimerService.isNegative ? Appearance.m3colors.m3error : root.calAccent
                 strokeWidth: 10 * Appearance.effectiveScale
             }
 
@@ -253,7 +257,7 @@ Item {
                 implicitWidth: 104 * Appearance.effectiveScale
                 implicitHeight: 64 * Appearance.effectiveScale
                 buttonRadius: 32 * Appearance.effectiveScale
-                colBackground: TimerService.active ? Appearance.m3colors.m3surfaceContainerHigh : Appearance.m3colors.m3primary
+                colBackground: TimerService.active ? Appearance.m3colors.m3surfaceContainerHigh : root.calAccent
                 
                 onClicked: {
                     if (TimerService.active) {
@@ -267,7 +271,7 @@ Item {
                     anchors.centerIn: parent
                     text: TimerService.active ? "pause" : "play_arrow"
                     iconSize: 24 * Appearance.effectiveScale
-                    color: TimerService.active ? Appearance.colors.colOnLayer1 : Appearance.m3colors.m3onPrimary
+                    color: TimerService.active ? Appearance.colors.colOnLayer1 : root.calOnAccent
                 }
                 StyledToolTip { text: TimerService.active ? I18nService.tr("Pause") : I18nService.tr("Start") }
             }

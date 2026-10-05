@@ -10,6 +10,10 @@ import "../../services"
 Item {
     id: root
 
+    // ── Calendar accent family (matches the Calendar rail button active state) ──
+    readonly property color calAccent: Functions.ColorUtils.mix(Appearance.colors.colPrimary, Appearance.colors.colTertiary, 0.5)
+    readonly property color calOnAccent: Functions.ColorUtils.mix(Appearance.colors.colOnPrimary, Appearance.colors.colOnTertiary, 0.5)
+
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: 12 * Appearance.effectiveScale
@@ -133,7 +137,7 @@ Item {
                         StyledText {
                             Layout.alignment: Qt.AlignHCenter
                             text: ((index + 1) < 10 ? "0" : "") + (index + 1)
-                            color: isCurrent ? Appearance.colors.colOnLayer1 : (isFastest ? Appearance.m3colors.m3primary : (isSlowest ? Appearance.m3colors.m3error : Appearance.colors.colOnLayer1))
+                            color: isCurrent ? Appearance.colors.colOnLayer1 : (isFastest ? root.calOnAccent : (isSlowest ? Appearance.m3colors.m3error : Appearance.colors.colOnLayer1))
                             font.pixelSize: 12 * Appearance.effectiveScale
                             font.features: { "tnum": 1 }
                         }
@@ -141,7 +145,7 @@ Item {
                         StyledText {
                             Layout.alignment: Qt.AlignHCenter
                             text: isCurrent ? StopwatchService.formatTime(StopwatchService.currentLapMs) : StopwatchService.formatTime(lapData ? lapData.lapMs : 0)
-                            color: isCurrent ? Appearance.colors.colOnLayer1 : (isFastest ? Appearance.m3colors.m3primary : (isSlowest ? Appearance.m3colors.m3error : Appearance.colors.colSubtext))
+                            color: isCurrent ? Appearance.colors.colOnLayer1 : (isFastest ? root.calOnAccent : (isSlowest ? Appearance.m3colors.m3error : Appearance.colors.colSubtext))
                             font.pixelSize: 12 * Appearance.effectiveScale
                             font.family: Appearance.font.family.numbers
                             font.features: { "tnum": 1 }
@@ -150,7 +154,7 @@ Item {
                         StyledText {
                             Layout.alignment: Qt.AlignHCenter
                             text: isCurrent ? StopwatchService.formatTime(StopwatchService.elapsedMs) : StopwatchService.formatTime(lapData ? lapData.totalMs : 0)
-                            color: isCurrent ? Appearance.colors.colSubtext : (isFastest ? Appearance.m3colors.m3primary : (isSlowest ? Appearance.m3colors.m3error : Appearance.colors.colSubtext))
+                            color: isCurrent ? Appearance.colors.colSubtext : (isFastest ? root.calOnAccent : (isSlowest ? Appearance.m3colors.m3error : Appearance.colors.colSubtext))
                             font.pixelSize: 12 * Appearance.effectiveScale
                             font.family: Appearance.font.family.numbers
                             font.features: { "tnum": 1 }
@@ -169,7 +173,7 @@ Item {
                 Layout.fillWidth: true
                 implicitHeight: 64 * Appearance.effectiveScale
                 buttonRadius: StopwatchService.active ? 16 * Appearance.effectiveScale : height / 2
-                colBackground: StopwatchService.active ? Appearance.m3colors.m3error : Appearance.m3colors.m3primary
+                colBackground: StopwatchService.active ? Appearance.m3colors.m3error : root.calAccent
                 
                 onClicked: {
                     if (StopwatchService.active) {
@@ -184,7 +188,7 @@ Item {
                     text: StopwatchService.active ? I18nService.tr("Stop") : I18nService.tr("Start")
                     font.pixelSize: 16 * Appearance.effectiveScale
                     font.weight: Font.Medium
-                    color: StopwatchService.active ? Appearance.m3colors.m3onError : Appearance.m3colors.m3onPrimary
+                    color: StopwatchService.active ? Appearance.m3colors.m3onError : root.calOnAccent
                 }
             }
 

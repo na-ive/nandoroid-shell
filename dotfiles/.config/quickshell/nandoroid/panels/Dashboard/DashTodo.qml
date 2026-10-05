@@ -26,6 +26,11 @@ Item {
     readonly property string oldStoragePath: Functions.FileUtils.trimFileProtocol(Directories.home) + "/.cache/nandoroid/notes.json"
     property int _idCounter: 0
 
+    // ── Kanban accent family (matches the Kanban rail button inactive state) ──
+    readonly property color kanbanAccent: Functions.ColorUtils.mix(Appearance.colors.colPrimary, Appearance.colors.colSecondary, 0.5)
+    readonly property color kanbanContainer: Functions.ColorUtils.mix(Appearance.colors.colPrimaryContainer, Appearance.colors.colSecondaryContainer, 0.5)
+    readonly property color kanbanOnContainer: Functions.ColorUtils.mix(Appearance.colors.colOnPrimaryContainer, Appearance.colors.colOnSecondaryContainer, 0.5)
+
     function makeId() {
         root._idCounter++;
         return Date.now().toString(36) + "_" + root._idCounter.toString(36) + Math.random().toString(36).substr(2, 5);
@@ -253,7 +258,7 @@ Item {
                     anchors.left: parent.left
                     anchors.right: parent.right
                     height: 4 * Appearance.effectiveScale
-                    color: Appearance.m3colors.m3primary
+                    color: root.kanbanContainer
                     visible: (cardDropArea.dragEntered && delegateRoot.modelData.id !== root.draggedTaskId) || delegateRoot.headerGap
                     radius: Appearance.rounding.small
                 }
@@ -269,7 +274,7 @@ Item {
                 color: Appearance.m3colors.m3surfaceContainerHigh
                 // Highlight while dragging
                 border.width: delegateRoot.dragging ? Math.max(1, 2 * Appearance.effectiveScale) : 0
-                border.color: Appearance.colors.colPrimary
+                border.color: root.kanbanContainer
                 scale: delegateRoot.dragging ? 1.02 : 1
                 opacity: delegateRoot.dragging ? 0.9 : 1
                 Drag.active: delegateRoot.dragging
@@ -409,7 +414,7 @@ Item {
                 }, {
                     "title": I18nService.tr("Done"),
                     "status": "done",
-                    "color": Appearance.m3colors.m3primary,
+                    "color": root.kanbanContainer,
                     "icon": "check_circle",
                     "shape": MaterialShape.Shape.Squircle
                 }]
@@ -517,7 +522,7 @@ Item {
                                         implicitWidth: 32 * Appearance.effectiveScale
                                         implicitHeight: 32 * Appearance.effectiveScale
                                         buttonRadius: 8 * Appearance.effectiveScale
-                                        colBackground: Appearance.colors.colPrimary
+                                        colBackground: root.kanbanContainer
                                         onClicked: {
                                             const newId = root.makeId();
                                             const t = {
@@ -537,7 +542,7 @@ Item {
                                             anchors.centerIn: parent
                                             text: "add"
                                             iconSize: 20 * Appearance.effectiveScale
-                                            color: Appearance.colors.colOnPrimary
+                                            color: root.kanbanOnContainer
                                         }
 
                                     }
@@ -577,7 +582,7 @@ Item {
 
                                         Layout.fillWidth: true
                                         height: 4 * Appearance.effectiveScale
-                                        color: Appearance.m3colors.m3primary
+                                        color: root.kanbanContainer
                                         visible: colDrop.dragEntered && root.hoveredTargetId === ""
                                         radius: Appearance.rounding.small
 
@@ -670,7 +675,7 @@ Item {
                     Layout.preferredHeight: 120 * Appearance.effectiveScale
                     color: "transparent"
                     border.width: editTaskInput.activeFocus ? 2 * Appearance.effectiveScale : 1 * Appearance.effectiveScale
-                    border.color: editTaskInput.activeFocus ? Appearance.m3colors.m3primary : Appearance.m3colors.m3outline
+                    border.                    color: editTaskInput.activeFocus ? root.kanbanContainer : Appearance.m3colors.m3outline
                     radius: 8 * Appearance.effectiveScale
 
                     StyledFlickable {
@@ -689,8 +694,8 @@ Item {
                             font.pixelSize: Appearance.font.pixelSize.normal
                             color: Appearance.colors.colOnLayer1
                             wrapMode: TextEdit.Wrap
-                            selectionColor: Appearance.colors.colPrimaryContainer
-                            selectedTextColor: Appearance.colors.colOnPrimaryContainer
+                        selectionColor: root.kanbanContainer
+                        selectedTextColor: root.kanbanOnContainer
                             text: root._editText
                             onTextChanged: root._editText = text
                             onCursorRectangleChanged: {
@@ -722,7 +727,7 @@ Item {
                         implicitHeight: 40 * Appearance.effectiveScale
                         buttonRadius: 20 * Appearance.effectiveScale
                         colBackground: "transparent"
-                        colBackgroundHover: Functions.ColorUtils.applyAlpha(Appearance.colors.colPrimary, 0.08)
+                        colBackgroundHover: Functions.ColorUtils.applyAlpha(root.kanbanContainer, 0.08)
                         onClicked: {
                             root.deleteTask(editRoot.editingId);
                             DialogService.cancel();
@@ -734,7 +739,7 @@ Item {
                             text: I18nService.tr("Delete")
                             font.pixelSize: Appearance.font.pixelSize.small
                             font.weight: Font.Medium
-                            color: Appearance.colors.colPrimary
+                            color: root.kanbanAccent
                         }
                     }
 
@@ -748,7 +753,7 @@ Item {
                         implicitHeight: 40 * Appearance.effectiveScale
                         buttonRadius: 20 * Appearance.effectiveScale
                         colBackground: "transparent"
-                        colBackgroundHover: Functions.ColorUtils.applyAlpha(Appearance.colors.colPrimary, 0.08)
+                        colBackgroundHover: Functions.ColorUtils.applyAlpha(root.kanbanContainer, 0.08)
                         onClicked: DialogService.cancel()
 
                         StyledText {
@@ -758,7 +763,7 @@ Item {
                             text: I18nService.tr("Cancel")
                             font.pixelSize: Appearance.font.pixelSize.small
                             font.weight: Font.Medium
-                            color: Appearance.colors.colPrimary
+                            color: root.kanbanAccent
                         }
 
                     }
@@ -769,7 +774,7 @@ Item {
                         implicitHeight: 40 * Appearance.effectiveScale
                         buttonRadius: 20 * Appearance.effectiveScale
                         colBackground: "transparent"
-                        colBackgroundHover: Functions.ColorUtils.applyAlpha(Appearance.colors.colPrimary, 0.08)
+                        colBackgroundHover: Functions.ColorUtils.applyAlpha(root.kanbanContainer, 0.08)
                         onClicked: {
                             const newText = editTaskInput.text.trim() === "" ? I18nService.tr("New task") : editTaskInput.text.trim();
                             const item = root.items.find((i) => {
@@ -791,7 +796,7 @@ Item {
                             text: I18nService.tr("Save")
                             font.pixelSize: Appearance.font.pixelSize.small
                             font.weight: Font.Medium
-                            color: Appearance.colors.colPrimary
+                            color: root.kanbanAccent
                         }
 
                     }

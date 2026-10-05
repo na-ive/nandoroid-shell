@@ -10,6 +10,10 @@ import "../../services"
 Item {
     id: root
 
+    // ── Calendar accent family (matches the Calendar rail button active state) ──
+    readonly property color calAccent: Functions.ColorUtils.mix(Appearance.colors.colPrimary, Appearance.colors.colTertiary, 0.5)
+    readonly property color calOnAccent: Functions.ColorUtils.mix(Appearance.colors.colOnPrimary, Appearance.colors.colOnTertiary, 0.5)
+
     property int configMode: 0 // 0: None, 1: Setting Focus, 2: Setting Break
     property string inputDigits: ""
 
@@ -74,7 +78,7 @@ Item {
             GappedCircularProgress {
                 anchors.fill: parent
                 progress: PomodoroService.progress
-                colPrimary: PomodoroService.mode === 0 ? Appearance.m3colors.m3primary : Appearance.m3colors.m3tertiary
+                colPrimary: PomodoroService.mode === 0 ? root.calAccent : Appearance.m3colors.m3tertiary
                 strokeWidth: 10 * Appearance.effectiveScale
             }
 
@@ -171,14 +175,14 @@ Item {
                 implicitWidth: 44 * Appearance.effectiveScale
                 implicitHeight: 36 * Appearance.effectiveScale
                 buttonRadius: 18 * Appearance.effectiveScale
-                colBackground: PomodoroService.autoContinue ? Appearance.m3colors.m3primary : Appearance.m3colors.m3surfaceContainerHigh
+                colBackground: PomodoroService.autoContinue ? root.calAccent : Appearance.m3colors.m3surfaceContainerHigh
                 onClicked: PomodoroService.autoContinue = !PomodoroService.autoContinue
                 
                 MaterialSymbol {
                     anchors.centerIn: parent
                     text: "autorenew"
                     iconSize: 16 * Appearance.effectiveScale
-                    color: PomodoroService.autoContinue ? Appearance.m3colors.m3onPrimary : Appearance.colors.colOnLayer1
+                    color: PomodoroService.autoContinue ? root.calOnAccent : Appearance.colors.colOnLayer1
                 }
                 StyledToolTip { text: I18nService.tr("Auto-continue") }
             }
@@ -221,7 +225,7 @@ Item {
                 implicitWidth: 104 * Appearance.effectiveScale
                 implicitHeight: 64 * Appearance.effectiveScale
                 buttonRadius: 32 * Appearance.effectiveScale
-                colBackground: PomodoroService.active ? Appearance.m3colors.m3surfaceContainerHigh : Appearance.m3colors.m3primary
+                colBackground: PomodoroService.active ? Appearance.m3colors.m3surfaceContainerHigh : root.calAccent
                 
                 onClicked: {
                     if (PomodoroService.active) {
@@ -235,7 +239,7 @@ Item {
                     anchors.centerIn: parent
                     text: PomodoroService.active ? "pause" : "play_arrow"
                     iconSize: 24 * Appearance.effectiveScale
-                    color: PomodoroService.active ? Appearance.colors.colOnLayer1 : Appearance.m3colors.m3onPrimary
+                    color: PomodoroService.active ? Appearance.colors.colOnLayer1 : root.calOnAccent
                 }
                 StyledToolTip { text: PomodoroService.active ? I18nService.tr("Pause") : I18nService.tr("Start") }
             }
@@ -358,7 +362,7 @@ Item {
                 implicitHeight: 40 * Appearance.effectiveScale
                 buttonRadius: 20 * Appearance.effectiveScale
                 enabled: parseInputToSeconds() > 0
-                colBackground: enabled ? Appearance.m3colors.m3primary : Appearance.m3colors.m3surfaceContainerHigh
+                colBackground: enabled ? root.calAccent : Appearance.m3colors.m3surfaceContainerHigh
                 
                 onClicked: {
                     let secs = parseInputToSeconds();
@@ -375,7 +379,7 @@ Item {
                     anchors.centerIn: parent
                     text: "check"
                     iconSize: 20 * Appearance.effectiveScale
-                    color: parent.enabled ? Appearance.m3colors.m3onPrimary : Appearance.colors.colOnLayer1
+                    color: parent.enabled ? root.calOnAccent : Appearance.colors.colOnLayer1
                 }
                 StyledToolTip { text: I18nService.tr("Save") }
             }
