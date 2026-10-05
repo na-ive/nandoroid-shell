@@ -381,12 +381,32 @@ Item {
                         spacing: 12 * Appearance.effectiveScale
                         visible: itemList.pinnedItems.length > 0
 
-                        StyledText {
-                            text: I18nService.tr("Pinned")
-                            font.pixelSize: Appearance.font.pixelSize.small
-                            font.weight: Font.Medium
-                            color: Appearance.colors.colSubtext
-                            Layout.leftMargin: 8 * Appearance.effectiveScale
+                        // Section header: pill label + horizontal line (end4-pC settings style)
+                        RowLayout {
+                            Layout.fillWidth: true
+                            spacing: 12 * Appearance.effectiveScale
+
+                            Rectangle {
+                                implicitWidth: pinnedPillText.implicitWidth + 24 * Appearance.effectiveScale
+                                implicitHeight: 28 * Appearance.effectiveScale
+                                radius: 14 * Appearance.effectiveScale
+                                color: Appearance.m3colors.m3tertiaryContainer
+
+                                StyledText {
+                                    id: pinnedPillText
+                                    anchors.centerIn: parent
+                                    text: I18nService.tr("Pinned")
+                                    font.pixelSize: Appearance.font.pixelSize.small
+                                    font.weight: Font.Medium
+                                    color: Appearance.m3colors.m3onTertiaryContainer
+                                }
+                            }
+
+                            Rectangle {
+                                Layout.fillWidth: true
+                                implicitHeight: 1 * Appearance.effectiveScale
+                                color: Functions.ColorUtils.applyAlpha(Appearance.m3colors.m3outlineVariant, 0.6)
+                            }
                         }
 
                         RowLayout {
@@ -413,13 +433,32 @@ Item {
                         spacing: 12 * Appearance.effectiveScale
                         visible: itemList.otherItems.length > 0
 
-                        StyledText {
-                            text: I18nService.tr("Others")
-                            font.pixelSize: Appearance.font.pixelSize.small
-                            font.weight: Font.Medium
-                            color: Appearance.colors.colSubtext
-                            Layout.leftMargin: 8 * Appearance.effectiveScale
+                        RowLayout {
+                            Layout.fillWidth: true
+                            spacing: 12 * Appearance.effectiveScale
                             visible: itemList.pinnedItems.length > 0 // Only show title if pinned exists
+
+                            Rectangle {
+                                implicitWidth: othersPillText.implicitWidth + 24 * Appearance.effectiveScale
+                                implicitHeight: 28 * Appearance.effectiveScale
+                                radius: 14 * Appearance.effectiveScale
+                                color: Appearance.m3colors.m3tertiaryContainer
+
+                                StyledText {
+                                    id: othersPillText
+                                    anchors.centerIn: parent
+                                    text: I18nService.tr("Others")
+                                    font.pixelSize: Appearance.font.pixelSize.small
+                                    font.weight: Font.Medium
+                                    color: Appearance.m3colors.m3onTertiaryContainer
+                                }
+                            }
+
+                            Rectangle {
+                                Layout.fillWidth: true
+                                implicitHeight: 1 * Appearance.effectiveScale
+                                color: Functions.ColorUtils.applyAlpha(Appearance.m3colors.m3outlineVariant, 0.6)
+                            }
                         }
 
                         RowLayout {
