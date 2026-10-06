@@ -53,7 +53,9 @@ Item {
     readonly property real countdownExpandedWidth: Math.min(root.countdownExpandedWidthCap, Math.max(root.countdownCollapsedWidth, root.countdownTextContentWidth))
     readonly property real countdownWidth: root.timerControlsExpanded ? root.countdownExpandedWidth : Math.max(root.countdownCollapsedWidth, Math.min(root.countdownExpandedWidth, root.countdownTextContentWidth))
     readonly property real timerWidth: 130
-    readonly property real osdWidth: OsdHelper.pillWidth
+    // OSD floor is OsdHelper.pillWidth; PcDiOsd reports measured width on top.
+    property real osdTextContentWidth: 0
+    readonly property real osdWidth: Math.max(OsdHelper.pillWidth, osdTextContentWidth)
     readonly property real notificationWidth: 220
     readonly property real batteryWidth: 170
     readonly property real badgeSize: 32

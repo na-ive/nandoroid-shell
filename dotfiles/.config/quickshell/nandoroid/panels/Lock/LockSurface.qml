@@ -253,10 +253,11 @@ MouseArea {
             visible: !lockStatusBarContainer.isM3
             anchors.horizontalCenter: parent.horizontalCenter
             
-            // Matches the desktop PcIsland pill.
+            // Floor is pillWidth; grows with measured OSD content (matches desktop).
             y: lockStatusBarContainer.isWaterdrop ? 0 : 4 * Appearance.effectiveScale
             height: lockStatusBarContainer.isWaterdrop ? 34 * Appearance.effectiveScale : 32 * Appearance.effectiveScale
-            width: lockStatusBarContainer.showLockOsd ? PcIsland.OsdHelper.pillWidth : lockedContent.implicitWidth + (24 * Appearance.effectiveScale)
+            readonly property real osdMeasuredWidth: lockOsdContent.anchors.leftMargin + lockOsdIcon.implicitWidth + lockOsdContent.spacing * 2 + lockOsdMetrics.implicitWidth + lockOsdContent.anchors.rightMargin
+            width: lockStatusBarContainer.showLockOsd ? Math.max(PcIsland.OsdHelper.pillWidth, lockIndicatorPill.osdMeasuredWidth) : lockedContent.implicitWidth + (24 * Appearance.effectiveScale)
             color: "black"
             radius: height / 2
 
@@ -322,6 +323,7 @@ MouseArea {
                 visible: opacity > 0
                 Behavior on opacity { NumberAnimation { duration: 250; easing.type: Easing.InOutQuad } }
                 MaterialShapeWrappedMaterialSymbol {
+                    id: lockOsdIcon
                     Layout.alignment: Qt.AlignVCenter
                     shape: MaterialShape.Shape.Cookie12Sided
                     color: Appearance.colors.colPrimary
@@ -333,12 +335,21 @@ MouseArea {
                 }
                 Item { Layout.fillWidth: true }
                 StyledText {
+                    id: lockOsdLabel
                     Layout.alignment: Qt.AlignVCenter
                     text: PcIsland.OsdHelper.osdText()
                     font.pixelSize: Appearance.font.pixelSize.small
                     font.features: { "tnum": 1 }
                     color: Appearance.colors.colNotchText
                 }
+            }
+
+            StyledText {
+                id: lockOsdMetrics
+                visible: false
+                text: lockOsdLabel.text
+                font.pixelSize: lockOsdLabel.font.pixelSize
+                font.features: lockOsdLabel.font.features
             }
         }
 
@@ -656,7 +667,9 @@ MouseArea {
                 readonly property real padding: Math.round(4 * Appearance.effectiveScale)
 
                 height: Math.round(32 * Appearance.effectiveScale) + (padding * 2)
-                width: lockStatusBarContainer.showLockOsd ? PcIsland.OsdHelper.pillWidth : lockM3LockWrapper.implicitWidth + (padding * 2)
+                // Floor is pillWidth; grows with measured OSD content (matches desktop).
+                readonly property real osdMeasuredWidth: lockM3OsdContent.anchors.leftMargin + lockM3OsdIcon.implicitWidth + lockM3OsdContent.spacing * 2 + lockM3OsdMetrics.implicitWidth + lockM3OsdContent.anchors.rightMargin
+                width: lockStatusBarContainer.showLockOsd ? Math.max(PcIsland.OsdHelper.pillWidth, lockM3CenterCluster.osdMeasuredWidth) : lockM3LockWrapper.implicitWidth + (padding * 2)
                 radius: height / 2
                 color: lockStatusBarContainer.isPcIslandActive ? "black" : Appearance.lockM3colors.m3surfaceContainer
 
@@ -700,6 +713,7 @@ MouseArea {
                     Behavior on opacity { NumberAnimation { duration: 250; easing.type: Easing.InOutQuad } }
 
                     MaterialShapeWrappedMaterialSymbol {
+                        id: lockM3OsdIcon
                         Layout.alignment: Qt.AlignVCenter
                         shape: MaterialShape.Shape.Cookie12Sided
                         color: Appearance.colors.colPrimary
@@ -711,12 +725,21 @@ MouseArea {
                     }
                     Item { Layout.fillWidth: true }
                     StyledText {
+                        id: lockM3OsdLabel
                         Layout.alignment: Qt.AlignVCenter
                         text: PcIsland.OsdHelper.osdText()
                         font.pixelSize: Appearance.font.pixelSize.normal
                         font.features: { "tnum": 1 }
                         color: Appearance.colors.colNotchText
                     }
+                }
+
+                StyledText {
+                    id: lockM3OsdMetrics
+                    visible: false
+                    text: lockM3OsdLabel.text
+                    font.pixelSize: lockM3OsdLabel.font.pixelSize
+                    font.features: lockM3OsdLabel.font.features
                 }
             }
 
