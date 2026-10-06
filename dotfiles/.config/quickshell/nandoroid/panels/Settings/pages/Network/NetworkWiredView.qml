@@ -49,7 +49,7 @@ ColumnLayout {
         Item { Layout.preferredHeight: 40 * Appearance.effectiveScale }
         MaterialSymbol {
             Layout.alignment: Qt.AlignHCenter
-            text: "lan_off"
+            text: "cable"
             iconSize: 64 * Appearance.effectiveScale
             color: Appearance.colors.colSubtext
         }
