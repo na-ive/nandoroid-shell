@@ -14,3 +14,4 @@ WsWallpaperCycle 1.0 WsWallpaperCycle.qml
 WsWallpaperTransition 1.0 WsWallpaperTransition.qml
 ColorCard 1.0 ColorCard.qml
 WallpaperPreview 1.0 WallpaperPreview.qml
+LazySection 1.0 LazySection.qml

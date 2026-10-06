@@ -28,7 +28,10 @@ ColumnLayout {
         return I18nService.tr("Main Font");
     }
 
-    SearchHandler { searchString: "Typography" }
+    SearchHandler {
+        searchString: "Typography"
+        aliases: ["Font", "Fonts", "Typeface", "Font Family"]
+    }
 
     // ── Typography Section ──
 

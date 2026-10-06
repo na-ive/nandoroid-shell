@@ -233,35 +233,115 @@ Flickable {
                 }
         }
 
-        // ── Theme Section ──
-        WsThemeColor { Layout.fillWidth: true }
+        // Theme (lazy)
+        LazySection {
+            Layout.fillWidth: true
+            visible: !root.isOnboarding
+            estimate: 500 * Appearance.effectiveScale
+            viewportY: root.contentY
+            viewportH: root.height
+            content: WsThemeColor {}
+            searchEntries: [["Theme Color", ["Colors", "Matugen", "Material You", "Accent Color"]]]
+        }
 
-        // ── Launcher Settings Section ──
-        WsLauncher { Layout.fillWidth: true; visible: !root.isOnboarding }
+        // Launcher (lazy)
+        LazySection {
+            Layout.fillWidth: true
+            visible: !root.isOnboarding
+            estimate: 400 * Appearance.effectiveScale
+            viewportY: root.contentY
+            viewportH: root.height
+            content: WsLauncher {}
+            searchEntries: [["Launcher", ["App Launcher", "Search Bar", "Drawer"]], ["Icon Shapes", ["Icons", "Shapes", "App Icons"]]]
+        }
 
-        // ── Dock Settings Section ──
-        WsDock { Layout.fillWidth: true; visible: !root.isOnboarding }
+        // Dock (lazy)
+        LazySection {
+            Layout.fillWidth: true
+            visible: !root.isOnboarding
+            estimate: 600 * Appearance.effectiveScale
+            viewportY: root.contentY
+            viewportH: root.height
+            content: WsDock {}
+            searchEntries: [["Dock", ["Taskbar", "App Dock", "Pinned Apps"]]]
+        }
 
-        // ── Overview Settings Section ──
-        WsOverview { Layout.fillWidth: true; visible: !root.isOnboarding }
+        // Overview (lazy)
+        LazySection {
+            Layout.fillWidth: true
+            visible: !root.isOnboarding
+            estimate: 400 * Appearance.effectiveScale
+            viewportY: root.contentY
+            viewportH: root.height
+            content: WsOverview {}
+            searchEntries: [["Overview", ["Workspaces", "Window Manager", "Expose"]]]
+        }
 
-        // ── Visualizer Section ──
-        WsCava { Layout.fillWidth: true; visible: !root.isOnboarding }
+        // Visualizer (lazy)
+        LazySection {
+            Layout.fillWidth: true
+            visible: !root.isOnboarding
+            estimate: 800 * Appearance.effectiveScale
+            viewportY: root.contentY
+            viewportH: root.height
+            content: WsCava {}
+            searchEntries: [["Visualizer", ["Cava", "Audio", "Desktop Cava", "Lockscreen Cava"]]]
+        }
 
-        // ── Lockscreen Section ──
-        WsLockscreen { Layout.fillWidth: true; visible: !root.isOnboarding }
+        // Lockscreen (lazy)
+        LazySection {
+            Layout.fillWidth: true
+            visible: !root.isOnboarding
+            estimate: 400 * Appearance.effectiveScale
+            viewportY: root.contentY
+            viewportH: root.height
+            content: WsLockscreen {}
+            searchEntries: [["Lockscreen", ["Lock", "Lock Screen"]], ["Lockscreen Clock", ["Clock", "Time", "Watch", "Clock Style"]]]
+        }
 
-        // ── Overlay Section (Notification Center / Quick Settings) ──
-        WsOverlay { Layout.fillWidth: true; visible: !root.isOnboarding }
+        // Overlay (lazy)
+        LazySection {
+            Layout.fillWidth: true
+            visible: !root.isOnboarding
+            estimate: 400 * Appearance.effectiveScale
+            viewportY: root.contentY
+            viewportH: root.height
+            content: WsOverlay {}
+            searchEntries: [["Overlays", ["Notification Center", "Quick Settings", "Media Card", "Weather Card", "Performance Stats", "System Monitor", "Banner Image"]]]
+        }
 
-        // ── Status Bar Section ──
-        WsStatusBar { Layout.fillWidth: true; visible: !root.isOnboarding }
+        // Status bar (lazy)
+        LazySection {
+            Layout.fillWidth: true
+            visible: !root.isOnboarding
+            estimate: 2200 * Appearance.effectiveScale
+            viewportY: root.contentY
+            viewportH: root.height
+            content: WsStatusBar {}
+            searchEntries: [["Status Bar", ["Bar", "Top Bar", "Panel", "Statusbar", "Distro Icon", "Notification Counter", "Notification Position"]]]
+        }
 
-        // ── Screen Decor Section ──
-        WsScreenDecor { Layout.fillWidth: true; visible: !root.isOnboarding }
+        // Screen decor (lazy)
+        LazySection {
+            Layout.fillWidth: true
+            visible: !root.isOnboarding
+            estimate: 350 * Appearance.effectiveScale
+            viewportY: root.contentY
+            viewportH: root.height
+            content: WsScreenDecor {}
+            searchEntries: [["Screen Decor", ["Corners", "Borders", "Rounding"]]]
+        }
 
-        // ── Typography Section ──
-        WsTypography { Layout.fillWidth: true; visible: !root.isOnboarding }
+        // Typography (lazy)
+        LazySection {
+            Layout.fillWidth: true
+            visible: !root.isOnboarding
+            estimate: 500 * Appearance.effectiveScale
+            viewportY: root.contentY
+            viewportH: root.height
+            content: WsTypography {}
+            searchEntries: [["Typography", ["Font", "Fonts", "Typeface", "Font Family"]]]
+        }
 
         Item { Layout.fillHeight: true; Layout.preferredHeight: 32 * Appearance.effectiveScale }
     }
