@@ -12,6 +12,7 @@ import "."
  * - Material 3 aesthetics
  * - Modern open/close animations
  * - Custom scrollbar and ripple feedback
+ * - Optional footer action row (e.g. "+ New ...")
  */
 Item {
     id: root
@@ -38,6 +39,11 @@ Item {
     }
     
     signal accepted(string value)
+
+    // Optional footer action (e.g. "+ New board"); empty hides it.
+    property string actionText: ""
+    property string actionIcon: "add"
+    signal actionTriggered()
     
     implicitWidth: 200 * Appearance.effectiveScale
     implicitHeight: 48 * Appearance.effectiveScale
@@ -199,7 +205,7 @@ Item {
         closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutsideParent | Popup.CloseOnPressOutside
         
         background: Item {
-            visible: root.filteredModel.length > 0
+            visible: root.filteredModel.length > 0 || root.actionText !== ""
             
             StyledRectangularShadow {
                 target: popupBgRect
@@ -222,8 +228,65 @@ Item {
         
         // exit transition removed to prevent Wayland click grab bugs during fade out
 
+        Component {
+            id: actionFooter
+
+            Column {
+                width: listView.width
+
+                Rectangle {
+                    width: parent.width - 24 * Appearance.effectiveScale
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    height: 1 * Appearance.effectiveScale
+                    color: Functions.ColorUtils.applyAlpha(Appearance.m3colors.m3outlineVariant, 0.5)
+                }
+
+                RippleButton {
+                    width: parent.width
+                    implicitHeight: 40 * Appearance.effectiveScale
+                    buttonRadius: 12 * Appearance.effectiveScale
+                    colBackground: "transparent"
+                    colBackgroundHover: Appearance.m3colors.m3secondaryContainer
+                    onClicked: {
+                        root._selecting = true;
+                        // Close first so the grab releases before firing.
+                        root.isOpened = false;
+                        input.text = root.text;
+                        input.focus = false;
+                        root.actionTriggered();
+                        Qt.callLater(() => {
+                            root._selecting = false;
+                        });
+                    }
+
+                    contentItem: RowLayout {
+                        anchors.fill: parent
+                        anchors.leftMargin: 16 * Appearance.effectiveScale
+                        anchors.rightMargin: 16 * Appearance.effectiveScale
+                        spacing: 8 * Appearance.effectiveScale
+
+                        MaterialSymbol {
+                            text: root.actionIcon
+                            iconSize: 20 * Appearance.effectiveScale
+                            color: Appearance.colors.colPrimary
+                            Layout.alignment: Qt.AlignVCenter
+                        }
+
+                        StyledText {
+                            text: root.actionText
+                            color: Appearance.colors.colPrimary
+                            font.weight: Font.Medium
+                            Layout.fillWidth: true
+                            verticalAlignment: Text.AlignVCenter
+                        }
+                    }
+                }
+            }
+        }
+
         contentItem: ListView {
             id: listView
+            footer: root.actionText !== "" ? actionFooter : null
             implicitHeight: Math.min(root.maxHeight - 8 * Appearance.effectiveScale, contentHeight)
             model: root.filteredModel
             boundsBehavior: Flickable.StopAtBounds

@@ -12,7 +12,16 @@ Item {
     id: root
 
     // ── Properties ──
+    // Cards of the active board (read by DashSchedule).
     property var items: []
+    // Multi-board storage: [{ id, name, items: [] }]. Old todo.json (plain
+    // array) is auto-migrated into a single board named "Default".
+    property var boards: []
+    property string activeBoardId: ""
+    // Board dialog state: "create" | "rename"
+    property string _boardDialogMode: "create"
+    property string _boardDialogId: ""
+    property string _boardDialogText: ""
     // List of Kanban cards
     property string _editingId: ""
     property string _editText: ""
@@ -40,8 +49,28 @@ Item {
         return root.hoveredStatus === status && root.hoveredTargetId === root.topDropTarget;
     }
 
-    function save() {
-        const clean = root.items.map((i) => {
+    // ── Multi-board helpers ──
+    function activeBoard() {
+        for (let b of root.boards) {
+            if (b.id === root.activeBoardId)
+                return b;
+        }
+        return root.boards.length > 0 ? root.boards[0] : null;
+    }
+
+    function activeBoardName() {
+        const b = root.activeBoard();
+        return b ? b.name : I18nService.tr("Default");
+    }
+
+    function boardNames() {
+        return root.boards.map((b) => {
+            return b.name;
+        });
+    }
+
+    function _cleanItems(arr) {
+        return (arr || []).map((i) => {
             const c = {
             };
             for (const key in i) {
@@ -52,7 +81,166 @@ Item {
             }
             return c;
         });
-        todoFile.setText(JSON.stringify(clean, null, 2));
+    }
+
+    function _syncItemsFromActive() {
+        const b = root.activeBoard();
+        root.items = b ? (b.items || []).slice() : [];
+    }
+
+    function _uniqueBoardName(base) {
+        let name = (base || "").trim();
+        if (name === "")
+            name = I18nService.tr("New board");
+        const existing = new Set(root.boards.map((b) => {
+            return b.name.toLowerCase();
+        }));
+        if (!existing.has(name.toLowerCase()))
+            return name;
+        let n = 2;
+        while (existing.has((name + " " + n).toLowerCase()))
+            n++;
+        return name + " " + n;
+    }
+
+    function _ensureDefaultBoard() {
+        if (root.boards.length === 0) {
+            root.boards = [{
+                "id": "default",
+                "name": I18nService.tr("Default"),
+                "items": []
+            }];
+            root.activeBoardId = "default";
+        } else if (!root.activeBoard()) {
+            root.activeBoardId = root.boards[0].id;
+        }
+    }
+
+    function save() {
+        // Persist the v2 wrapper; v1 files are read-only.
+        const clean = _cleanItems(root.items);
+        const b = root.activeBoard();
+        if (b)
+            b.items = clean;
+        root.boards = root.boards.slice();
+        const payload = {
+            "version": 2,
+            "activeId": root.activeBoardId,
+            "boards": root.boards.map((board) => {
+                return {
+                    "id": board.id,
+                    "name": board.name,
+                    "items": _cleanItems(board.items)
+                };
+            })
+        };
+        todoFile.setText(JSON.stringify(payload, null, 2));
+    }
+
+    function _setBoards(list, activeId) {
+        root.boards = list;
+        root.activeBoardId = activeId || (list.length > 0 ? list[0].id : "");
+        root._ensureDefaultBoard();
+        root._syncItemsFromActive();
+    }
+
+    // ── Board Operations ──
+    function switchBoard(id) {
+        if (!id || id === root.activeBoardId)
+            return ;
+        // Flush current items into the old board.
+        const cur = root.activeBoard();
+        if (cur)
+            cur.items = _cleanItems(root.items);
+        root.activeBoardId = id;
+        root._syncItemsFromActive();
+        save();
+    }
+
+    function createBoard(name) {
+        const cur = root.activeBoard();
+        if (cur)
+            cur.items = _cleanItems(root.items);
+        const board = {
+            "id": makeId(),
+            "name": _uniqueBoardName(name),
+            "items": []
+        };
+        root.boards = root.boards.concat([board]);
+        root.activeBoardId = board.id;
+        root._syncItemsFromActive();
+        save();
+    }
+
+    function renameBoard(id, name) {
+        const clean = (name || "").trim();
+        if (clean === "")
+            return ;
+        for (let b of root.boards) {
+            if (b.id !== id && b.name.toLowerCase() === clean.toLowerCase())
+                return ;
+        }
+        for (let b of root.boards) {
+            if (b.id === id) {
+                b.name = clean;
+                break;
+            }
+        }
+        root.boards = root.boards.slice();
+        save();
+    }
+
+    function deleteBoard(id) {
+        if (root.boards.length <= 1)
+            return ;
+        const idx = root.boards.findIndex((b) => {
+            return b.id === id;
+        });
+        if (idx === -1)
+            return ;
+        const removed = root.boards[idx];
+        let nextBoards = root.boards.filter((b) => {
+            return b.id !== id;
+        });
+        root.boards = nextBoards;
+        if (root.activeBoardId === id)
+            root.activeBoardId = nextBoards.length > 0 ? nextBoards[0].id : "";
+
+        root._ensureDefaultBoard();
+        root._syncItemsFromActive();
+        save();
+        SnackbarService.show(I18nService.tr("Board deleted"), I18nService.tr("Undo"), () => {
+            const arr = root.boards.slice();
+            arr.splice(Math.min(idx, arr.length), 0, removed);
+            root.boards = arr;
+            root.activeBoardId = removed.id;
+            root._syncItemsFromActive();
+            save();
+        }, SnackbarService.undoDuration);
+    }
+
+    function openBoardDialog(mode, id, currentName) {
+        root._boardDialogMode = mode;
+        root._boardDialogId = id || "";
+        root._boardDialogText = mode === "rename" ? (currentName || "") : "";
+        DialogService.requestCustom(boardEditContent, 360);
+    }
+
+    function confirmDeleteBoard(id, name) {
+        DialogService.requestConfirmation({
+            "titleText": I18nService.tr("Delete board?"),
+            "messageText": I18nService.tr("Board \"%1\" and its %2 tasks will be removed.").arg(name).arg((root.boards.find((b) => {
+                return b.id === id;
+            }) || {
+                "items": []
+            }).items.length),
+            "confirmText": I18nService.tr("Delete"),
+            "cancelText": I18nService.tr("Cancel"),
+            "iconText": "delete",
+            "isDestructive": true
+        }, () => {
+            root.deleteBoard(id);
+        });
     }
 
     // ── Migration Script ──
@@ -85,11 +273,19 @@ Item {
                 }
             }
             if (migratedTasks.length > 0) {
-                root.items = migratedTasks;
-                save(); // Save to todo.json
+                root._setBoards([{
+                    "id": "default",
+                    "name": I18nService.tr("Default"),
+                    "items": migratedTasks
+                }], "default");
+                save(); // Save to todo.json (v2)
                 notesFile.setText(JSON.stringify(remainingNotes, null, 2)); // Remove from notes.json
             } else {
-                root.items = [];
+                root._setBoards([{
+                    "id": "default",
+                    "name": I18nService.tr("Default"),
+                    "items": []
+                }], "default");
                 save();
             }
         } catch (e) {
@@ -177,7 +373,11 @@ Item {
         DialogService.requestCustom(taskEditContent, 400);
     }
 
-    Component.onCompleted: todoFile.reload()
+    Component.onCompleted: {
+        root._ensureDefaultBoard();
+        root._syncItemsFromActive();
+        todoFile.reload();
+    }
 
     // ── File I/O ──
     FileView {
@@ -199,9 +399,36 @@ Item {
                     _runMigration();
                 } else {
                     let parsed = JSON.parse(text);
-                    if (Array.isArray(parsed))
-                        root.items = parsed;
+                    if (Array.isArray(parsed)) {
+                        // v1: plain array -> becomes the "Default" board
+                        root._setBoards([{
+                            "id": "default",
+                            "name": I18nService.tr("Default"),
+                            "items": parsed
+                        }], "default");
+                        save(); // Upgrade file to v2 wrapper
+                    } else if (parsed && Array.isArray(parsed.boards)) {
+                        // v2 wrapper
+                        let list = parsed.boards.map((b, bi) => {
+                            return {
+                                "id": b.id || ("board_" + bi),
+                                "name": b.name || (I18nService.tr("Default") + (bi > 0 ? " " + (bi + 1) : "")),
+                                "items": Array.isArray(b.items) ? b.items : []
+                            };
+                        });
+                        if (list.length === 0)
+                            list = [{
+                                "id": "default",
+                                "name": I18nService.tr("Default"),
+                                "items": []
+                            }];
 
+                        root._setBoards(list, parsed.activeId);
+                        // Re-persist if the file was missing ids/names
+                        save();
+                    } else {
+                        _runMigration();
+                    }
                 }
             } catch (e) {
                 console.warn("Error loading todo.json: ", e);
@@ -392,6 +619,158 @@ Item {
     ColumnLayout {
         anchors.fill: parent
         spacing: 12 * Appearance.effectiveScale
+
+        // ── Board header: icon island (board menu trigger, distinct color)
+        // + title island (flat title text + active-board actions) ──
+        RowLayout {
+            Layout.fillWidth: true
+            Layout.preferredHeight: 56 * Appearance.effectiveScale
+            spacing: 12 * Appearance.effectiveScale
+
+            // Matches the inactive Schedule rail button.
+            Rectangle {
+                Layout.preferredWidth: 56 * Appearance.effectiveScale
+                Layout.preferredHeight: 56 * Appearance.effectiveScale
+                radius: Appearance.rounding.large
+                color: Appearance.colors.colSecondaryContainer
+
+                RippleButton {
+                    id: boardMenuBtn
+
+                    anchors.fill: parent
+                    buttonRadius: Appearance.rounding.large
+                    colBackground: "transparent"
+                    colBackgroundHover: Appearance.colors.colLayer2
+                    colRipple: Appearance.colors.colLayer2Active
+                    // Decided on PRESS (never click): no click-through reopen.
+                    downAction: () => {
+                        boardSwitcher.isOpened = !boardSwitcher.isOpened;
+                    }
+
+                    MaterialSymbol {
+                        anchors.centerIn: parent
+                        text: "view_kanban"
+                        iconSize: 24 * Appearance.effectiveScale
+                        color: Appearance.colors.colOnSecondaryContainer
+                    }
+
+                    StyledToolTip {
+                        text: I18nService.tr("Boards")
+                    }
+                }
+
+                // Invisible stock-ComboBox engine behind the icon button; renders
+                // the menu below the island. Mouse-driven (no visible input).
+                StyledComboBox {
+                    id: boardSwitcher
+
+                    x: 0
+                    y: 28 * Appearance.effectiveScale
+                    width: 240 * Appearance.effectiveScale
+                    height: 32 * Appearance.effectiveScale
+                    visible: false
+                    searchable: false
+                    text: root.activeBoardName()
+                    model: root.boardNames()
+                    actionText: I18nService.tr("New board")
+                    onActionTriggered: root.openBoardDialog("create", "", "")
+                    onAccepted: (value) => {
+                        const b = root.boards.find((x) => {
+                            return x.name === value;
+                        });
+                        if (b)
+                            root.switchBoard(b.id);
+                    }
+                }
+            }
+
+            Rectangle {
+                id: boardHeader
+
+                Layout.fillWidth: true
+                Layout.preferredHeight: 56 * Appearance.effectiveScale
+                color: root.kanbanContainer
+                radius: Appearance.rounding.large
+
+                RowLayout {
+                    anchors.fill: parent
+                    anchors.margins: 12 * Appearance.effectiveScale
+                    spacing: 8 * Appearance.effectiveScale
+
+                // Flat title text, capped before the action buttons.
+                StyledText {
+                    Layout.alignment: Qt.AlignVCenter
+                    text: root.activeBoardName()
+                    font.pixelSize: Appearance.font.pixelSize.normal
+                    font.weight: Font.DemiBold
+                    color: root.kanbanOnContainer
+                    elide: Text.ElideRight
+                    verticalAlignment: Text.AlignVCenter
+                    Layout.maximumWidth: Math.max(48 * Appearance.effectiveScale, boardHeader.width - 112 * Appearance.effectiveScale)
+                }
+
+                Item {
+                    Layout.fillWidth: true
+                    implicitHeight: 32 * Appearance.effectiveScale
+                }
+
+                // Rename active board
+                RippleButton {
+                    implicitWidth: 32 * Appearance.effectiveScale
+                    implicitHeight: 32 * Appearance.effectiveScale
+                    buttonRadius: 16 * Appearance.effectiveScale
+                    colBackground: "transparent"
+                    colBackgroundHover: Appearance.colors.colLayer2
+                    colRipple: Appearance.colors.colLayer2Active
+                    onClicked: {
+                        const b = root.activeBoard();
+                        if (b)
+                            root.openBoardDialog("rename", b.id, b.name);
+                    }
+
+                    MaterialSymbol {
+                        anchors.centerIn: parent
+                        text: "edit"
+                        iconSize: 20 * Appearance.effectiveScale
+                        color: root.kanbanOnContainer
+                    }
+
+                    StyledToolTip {
+                        text: I18nService.tr("Rename board")
+                    }
+                }
+
+                // Delete active board (disabled when only one board left)
+                RippleButton {
+                    implicitWidth: 32 * Appearance.effectiveScale
+                    implicitHeight: 32 * Appearance.effectiveScale
+                    buttonRadius: 16 * Appearance.effectiveScale
+                    colBackground: "transparent"
+                    colBackgroundHover: Appearance.colors.colLayer2
+                    colRipple: Appearance.colors.colLayer2Active
+                    enabled: root.boards.length > 1
+                    opacity: enabled ? 1 : 0.35
+                    onClicked: {
+                        const b = root.activeBoard();
+                        if (b)
+                            root.confirmDeleteBoard(b.id, b.name);
+                    }
+
+                    MaterialSymbol {
+                        anchors.centerIn: parent
+                        text: "delete"
+                        iconSize: 20 * Appearance.effectiveScale
+                        color: root.kanbanOnContainer
+                    }
+
+                    StyledToolTip {
+                        text: I18nService.tr("Delete board")
+                    }
+                }
+            }
+        }
+
+        }
 
         RowLayout {
             Layout.fillWidth: true
@@ -620,7 +999,7 @@ Item {
 
     Connections {
         function onDashboardOpenChanged() {
-            if (!GlobalStates.dashboardOpen && DialogService.contentComponent === taskEditContent)
+            if (!GlobalStates.dashboardOpen && (DialogService.contentComponent === taskEditContent || DialogService.contentComponent === boardEditContent))
                 DialogService.cancel();
 
         }
@@ -807,6 +1186,145 @@ Item {
 
         }
 
+    }
+
+    // ── New / Rename Board Dialog ──
+    Component {
+        id: boardEditContent
+
+        Item {
+            id: boardRoot
+
+            implicitHeight: boardCol.implicitHeight
+
+            function submitBoard() {
+                const v = boardNameInput.text.trim();
+                if (root._boardDialogMode === "rename")
+                    root.renameBoard(root._boardDialogId, v === "" ? root._boardDialogText : v);
+                else
+                    root.createBoard(v === "" ? I18nService.tr("New board") : v);
+                DialogService.submit();
+            }
+
+            Timer {
+                id: boardFocusTimer
+
+                interval: 0
+                onTriggered: {
+                    boardNameInput.forceActiveFocus();
+                    boardNameInput.selectAll();
+                }
+            }
+
+            Component.onCompleted: {
+                boardNameInput.text = root._boardDialogMode === "rename" ? root._boardDialogText : "";
+                boardFocusTimer.restart();
+            }
+
+            ColumnLayout {
+                id: boardCol
+
+                anchors.fill: parent
+                spacing: 16 * Appearance.effectiveScale
+
+                StyledText {
+                    text: root._boardDialogMode === "rename" ? I18nService.tr("Rename board") : I18nService.tr("New board")
+                    font.pixelSize: Appearance.font.pixelSize.huge
+                    font.family: Appearance.font.family.title
+                    font.weight: Font.Normal
+                    color: Appearance.colors.colOnLayer1
+                }
+
+                Rectangle {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 52 * Appearance.effectiveScale
+                    color: "transparent"
+                    border.width: boardNameInput.activeFocus ? 2 * Appearance.effectiveScale : 1 * Appearance.effectiveScale
+                    border.color: boardNameInput.activeFocus ? root.kanbanContainer : Appearance.m3colors.m3outline
+                    radius: 8 * Appearance.effectiveScale
+
+                    TextInput {
+                        id: boardNameInput
+
+                        anchors.fill: parent
+                        anchors.leftMargin: 12 * Appearance.effectiveScale
+                        anchors.rightMargin: 12 * Appearance.effectiveScale
+                        verticalAlignment: TextInput.AlignVCenter
+                        // Single-line inputs paint outside their bounds when
+                        // the text overflows unless clipped (cf. combo input).
+                        clip: true
+                        font.family: Appearance.font.family.main
+                        font.pixelSize: Appearance.font.pixelSize.normal
+                        color: Appearance.colors.colOnLayer1
+                        selectionColor: root.kanbanContainer
+                        selectedTextColor: root.kanbanOnContainer
+                        maximumLength: 60
+                        onAccepted: boardRoot.submitBoard()
+
+                        Text {
+                            text: I18nService.tr("Board name")
+                            color: Appearance.colors.colSubtext
+                            visible: !parent.text && !parent.activeFocus
+                            font: parent.font
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+
+                        HoverHandler {
+                            cursorShape: Qt.IBeamCursor
+                        }
+                    }
+                }
+
+                RowLayout {
+                    Layout.fillWidth: true
+                    spacing: 8 * Appearance.effectiveScale
+
+                    Item {
+                        Layout.fillWidth: true
+                    }
+
+                    RippleButton {
+                        implicitWidth: boardCancelText.width + 24 * Appearance.effectiveScale
+                        implicitHeight: 40 * Appearance.effectiveScale
+                        buttonRadius: 20 * Appearance.effectiveScale
+                        colBackground: "transparent"
+                        colBackgroundHover: Functions.ColorUtils.applyAlpha(root.kanbanContainer, 0.08)
+                        onClicked: DialogService.cancel()
+
+                        StyledText {
+                            id: boardCancelText
+
+                            anchors.centerIn: parent
+                            text: I18nService.tr("Cancel")
+                            font.pixelSize: Appearance.font.pixelSize.small
+                            font.weight: Font.Medium
+                            color: root.kanbanAccent
+                        }
+                    }
+
+                    RippleButton {
+                        id: boardSaveBtn
+
+                        implicitWidth: boardOkText.width + 24 * Appearance.effectiveScale
+                        implicitHeight: 40 * Appearance.effectiveScale
+                        buttonRadius: 20 * Appearance.effectiveScale
+                        colBackground: "transparent"
+                        colBackgroundHover: Functions.ColorUtils.applyAlpha(root.kanbanContainer, 0.08)
+                        onClicked: boardRoot.submitBoard()
+
+                        StyledText {
+                            id: boardOkText
+
+                            anchors.centerIn: parent
+                            text: root._boardDialogMode === "rename" ? I18nService.tr("Rename") : I18nService.tr("Create")
+                            font.pixelSize: Appearance.font.pixelSize.small
+                            font.weight: Font.Medium
+                            color: root.kanbanAccent
+                        }
+                    }
+                }
+            }
+        }
     }
 
 }
