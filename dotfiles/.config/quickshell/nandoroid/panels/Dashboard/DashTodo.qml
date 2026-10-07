@@ -29,6 +29,7 @@ Item {
     property string hoveredTargetId: ""
     property string draggedTaskId: ""
     property string topDropTarget: "__top__"
+    property double _boardMenuLastClose: 0
     property real gapHeight: 48 * Appearance.effectiveScale
     property alias dragOverlay: dragOverlayItem
     readonly property string storagePath: Functions.FileUtils.trimFileProtocol(Directories.home) + "/.cache/nandoroid/todo.json"
@@ -464,9 +465,11 @@ Item {
                     colBackground: "transparent"
                     colBackgroundHover: Appearance.colors.colLayer2
                     colRipple: Appearance.colors.colLayer2Active
-                    // Decided on PRESS (never click): no click-through reopen.
                     downAction: () => {
-                        boardSwitcher.isOpened = !boardSwitcher.isOpened;
+                        if (boardSwitcher.isOpened)
+                            boardSwitcher.isOpened = false;
+                        else if (Date.now() - root._boardMenuLastClose > 250)
+                            boardSwitcher.isOpened = true;
                     }
 
                     MaterialSymbol {
@@ -495,6 +498,10 @@ Item {
                     text: root.activeBoardName()
                     model: root.boardNames()
                     actionText: I18nService.tr("New board")
+                    onIsOpenedChanged: {
+                        if (!boardSwitcher.isOpened)
+                            root._boardMenuLastClose = Date.now();
+                    }
                     onActionTriggered: root.openBoardDialog("create", "", "")
                     onAccepted: (value) => {
                         const b = root.boards.find((x) => {
