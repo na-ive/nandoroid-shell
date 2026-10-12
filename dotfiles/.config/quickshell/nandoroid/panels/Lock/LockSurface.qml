@@ -137,14 +137,13 @@ MouseArea {
         readonly property real sidePadding: isCentered ? Math.round((parent.width - Math.min(centeredWidth, parent.width - 40 * Appearance.effectiveScale)) / 2) : 12 * Appearance.effectiveScale
         readonly property real cornerRadius: isCentered ? (lockStatusBarContainer.height / 2) : Math.round(((Config.ready && Config.options.statusBar && Config.options.statusBar.backgroundCornerRadius !== undefined) ? Config.options.statusBar.backgroundCornerRadius : 20) * Appearance.effectiveScale)
 
-        // Adaptive background detection
         readonly property int bgStyle: (Config.ready && Config.options.statusBar) ? (Config.options.statusBar.backgroundStyle ?? 0) : 0
         readonly property int activeWorkspaceId: root.monitor?.activeWorkspace?.id ?? -1
         readonly property bool hasTiledWindows: {
-            if (bgStyle !== 2 || activeWorkspaceId === -1) return false;
-            return HyprlandData.windowList.some(w => 
-                w.workspace.id === activeWorkspaceId && 
-                !w.floating && 
+            if (bgStyle !== 3 || activeWorkspaceId === -1) return false;
+            return HyprlandData.windowList.some(w =>
+                w.workspace.id === activeWorkspaceId &&
+                !w.floating &&
                 w.monitor === root.monitorIndex
             );
         }
@@ -175,7 +174,7 @@ MouseArea {
             anchors.top: parent.top
             anchors.horizontalCenter: parent.horizontalCenter
             
-            readonly property bool showBg: (lockStatusBarContainer.bgStyle === 1) || (lockStatusBarContainer.bgStyle === 2 && lockStatusBarContainer.hasTiledWindows)
+            readonly property bool showBg: lockStatusBarContainer.bgStyle === 1 || lockStatusBarContainer.bgStyle === 2 || (lockStatusBarContainer.bgStyle === 3 && lockStatusBarContainer.hasTiledWindows)
             
             width: (lockStatusBarContainer.isCentered && showBg) ? Math.min(lockStatusBarContainer.centeredWidth, parent.width - 40 * Appearance.effectiveScale) : parent.width
             height: parent.height + (lockStatusBarContainer.isCentered && showBg ? lockStatusBarContainer.cornerRadius : 0)

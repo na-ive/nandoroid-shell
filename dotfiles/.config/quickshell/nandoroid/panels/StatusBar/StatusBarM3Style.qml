@@ -25,7 +25,13 @@ Item {
     property color contentColor: Appearance.m3colors.m3onSurface
     property color subtextColor: Appearance.m3colors.m3onSurfaceVariant
 
-    readonly property real targetSidePadding: isCentered ? Math.max(12 * Appearance.effectiveScale, (rootM3.width - centeredWidth) / 2) : 12 * Appearance.effectiveScale
+    readonly property int bgStyle: (Config.ready && Config.options.statusBar) ? (Config.options.statusBar.backgroundStyle ?? 0) : 0
+    readonly property bool isHug: bgStyle === 2
+    readonly property bool centerIsClock: (Config.ready && Config.options.statusBar) ? ((Config.options.statusBar.centerModule ?? "clock") === "clock") : true
+    readonly property bool hugCenter: isHug && centerIsClock && !isPcIsland
+    readonly property real hugOutward: Appearance.rounding.screenRounding
+
+    readonly property real targetSidePadding: isHug ? 0 : (isCentered ? Math.max(12 * Appearance.effectiveScale, (rootM3.width - centeredWidth) / 2) : 12 * Appearance.effectiveScale)
     property real sidePadding: targetSidePadding
     Behavior on sidePadding { NumberAnimation { duration: 450; easing.type: Easing.OutQuint } }
 
@@ -584,11 +590,16 @@ Item {
     Rectangle {
         id: leftClusterCard
         anchors.left: parent.left
-        anchors.verticalCenter: parent.verticalCenter
+        anchors.top: isHug ? parent.top : undefined
+        anchors.verticalCenter: isHug ? undefined : parent.verticalCenter
         anchors.leftMargin: rootM3.sidePadding + (rootM3.isCentered ? 12 * Appearance.effectiveScale : 0)
-        height: leftCluster.implicitHeight + (8 * Appearance.effectiveScale)
-        width: leftCluster.implicitWidth + (8 * Appearance.effectiveScale)
+        height: isHug ? parent.height : leftCluster.implicitHeight + (8 * Appearance.effectiveScale)
+        width: leftCluster.implicitWidth + ((isHug ? 12 : 8) * Appearance.effectiveScale)
         radius: height / 2
+        topLeftRadius: isHug ? 0 : height / 2
+        topRightRadius: isHug ? 0 : height / 2
+        bottomLeftRadius: isHug ? 0 : height / 2
+        bottomRightRadius: height / 2
         color: Appearance.m3colors.m3surfaceContainer
         
         RowLayout {
@@ -610,10 +621,21 @@ Item {
         }
     }
 
+    RoundCorner {
+        visible: rootM3.isHug
+        anchors.left: leftClusterCard.right
+        anchors.top: leftClusterCard.top
+        implicitSize: rootM3.hugOutward
+        color: leftClusterCard.color
+        corner: RoundCorner.CornerEnum.TopLeft
+    }
+
     // ── Center Cluster ──
     Rectangle {
         id: centerClusterCard
-        anchors.centerIn: parent
+        anchors.centerIn: hugCenter ? undefined : parent
+        anchors.horizontalCenter: hugCenter ? parent.horizontalCenter : undefined
+        anchors.top: hugCenter ? parent.top : undefined
         
         readonly property real padding: Math.round(4 * Appearance.effectiveScale)
         readonly property real spacing: Math.round(4 * Appearance.effectiveScale)
@@ -626,6 +648,10 @@ Item {
         height: Math.round(32 * Appearance.effectiveScale) + (padding * 2)
         width: rootM3.isPcIsland ? islandWidth : (sidePillWidth > 0 ? ((sidePillWidth * 2) + islandWidth + (spacing * 2) + (padding * 2)) : (islandWidth + (padding * 2)))
         radius: height / 2
+        topLeftRadius: hugCenter ? 0 : height / 2
+        topRightRadius: hugCenter ? 0 : height / 2
+        bottomLeftRadius: height / 2
+        bottomRightRadius: height / 2
         color: rootM3.isPcIsland ? "transparent" : Appearance.m3colors.m3surfaceContainer
         border.width: rootM3.isPcIsland ? 0 : 0
 
@@ -705,15 +731,37 @@ Item {
         }
     }
 
+    RoundCorner {
+        visible: rootM3.hugCenter
+        anchors.right: centerClusterCard.left
+        anchors.top: centerClusterCard.top
+        implicitSize: rootM3.hugOutward
+        color: centerClusterCard.color
+        corner: RoundCorner.CornerEnum.TopRight
+    }
+    RoundCorner {
+        visible: rootM3.hugCenter
+        anchors.left: centerClusterCard.right
+        anchors.top: centerClusterCard.top
+        implicitSize: rootM3.hugOutward
+        color: centerClusterCard.color
+        corner: RoundCorner.CornerEnum.TopLeft
+    }
+
     // ── Right Cluster ──
     Rectangle {
         id: rightClusterCard
         anchors.right: parent.right
-        anchors.verticalCenter: parent.verticalCenter
+        anchors.top: isHug ? parent.top : undefined
+        anchors.verticalCenter: isHug ? undefined : parent.verticalCenter
         anchors.rightMargin: rootM3.sidePadding + (rootM3.isCentered ? 12 * Appearance.effectiveScale : 0)
-        height: rightCluster.implicitHeight + (8 * Appearance.effectiveScale)
-        width: rightCluster.implicitWidth + (8 * Appearance.effectiveScale)
+        height: isHug ? parent.height : rightCluster.implicitHeight + (8 * Appearance.effectiveScale)
+        width: rightCluster.implicitWidth + ((isHug ? 12 : 8) * Appearance.effectiveScale)
         radius: height / 2
+        topLeftRadius: isHug ? 0 : height / 2
+        topRightRadius: isHug ? 0 : height / 2
+        bottomRightRadius: isHug ? 0 : height / 2
+        bottomLeftRadius: height / 2
         color: Appearance.m3colors.m3surfaceContainer
         
         RowLayout {
@@ -771,5 +819,30 @@ Item {
                 }
             }
         }
+    }
+
+    RoundCorner {
+        visible: rootM3.isHug
+        anchors.right: rightClusterCard.left
+        anchors.top: rightClusterCard.top
+        implicitSize: rootM3.hugOutward
+        color: rightClusterCard.color
+        corner: RoundCorner.CornerEnum.TopRight
+    }
+    RoundCorner {
+        visible: rootM3.isHug
+        anchors.left: leftClusterCard.left
+        anchors.top: leftClusterCard.bottom
+        implicitSize: rootM3.hugOutward
+        color: leftClusterCard.color
+        corner: RoundCorner.CornerEnum.TopLeft
+    }
+    RoundCorner {
+        visible: rootM3.isHug
+        anchors.right: rightClusterCard.right
+        anchors.top: rightClusterCard.bottom
+        implicitSize: rootM3.hugOutward
+        color: rightClusterCard.color
+        corner: RoundCorner.CornerEnum.TopRight
     }
 }

@@ -286,7 +286,7 @@ Singleton {
             ? (Config.options.statusBar.backgroundStyle ?? 0) === 1
             : false
 
-        // Gradient is only active when backgroundStyle != 1 AND useGradient = true
+        // Gradient is only active when no background is shown AND useGradient = true
         readonly property bool statusBarGradientActive: !statusBarAlwaysSolid
             && (Config.ready && Config.options.statusBar ? (Config.options.statusBar.useGradient ?? true) : true)
 

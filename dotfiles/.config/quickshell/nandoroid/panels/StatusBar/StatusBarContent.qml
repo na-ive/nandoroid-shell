@@ -26,20 +26,25 @@ Item {
     
     // Dynamic background detection for color switching
     readonly property int bgStyle: (Config.ready && Config.options.statusBar) ? (Config.options.statusBar.backgroundStyle ?? 0) : 0
+    readonly property bool isFull: bgStyle === 1
+    readonly property bool isHug: bgStyle === 2
+    readonly property bool isAdaptive: bgStyle === 3
     readonly property int activeWorkspaceId: monitor?.activeWorkspace?.id ?? -1
     readonly property bool hasTiledWindows: {
-        if (bgStyle !== 2 || activeWorkspaceId === -1) return false;
-        return HyprlandData.windowList.some(w => 
-            w.workspace.id === activeWorkspaceId && 
-            !w.floating && 
+        if (!isAdaptive || activeWorkspaceId === -1) return false;
+        return HyprlandData.windowList.some(w =>
+            w.workspace.id === activeWorkspaceId &&
+            !w.floating &&
             w.monitor === monitorIndex
         );
     }
-    readonly property bool showBackground: bgStyle === 1 || (bgStyle === 2 && hasTiledWindows)
+    readonly property bool showBackground: isFull || (isHug && !isCentered) || (isAdaptive && hasTiledWindows)
+    readonly property real hugOutward: Appearance.rounding.screenRounding
 
-    // Selection of the final color based on actual visibility
     property color contentColor: showBackground ? Appearance.m3colors.m3onSurface : Appearance.colors.colStatusBarText
     property color subtextColor: showBackground ? Appearance.m3colors.m3onSurfaceVariant : Appearance.colors.colStatusBarSubtext
+    property color centerContentColor: (isFull || (isAdaptive && hasTiledWindows)) ? Appearance.m3colors.m3onSurface : Appearance.colors.colStatusBarText
+    property color centerSubtextColor: (isFull || (isAdaptive && hasTiledWindows)) ? Appearance.m3colors.m3onSurfaceVariant : Appearance.colors.colStatusBarSubtext
 
     Behavior on contentColor { ColorAnimation { duration: 300 } }
     Behavior on subtextColor { ColorAnimation { duration: 300 } }
@@ -399,6 +404,65 @@ Item {
     }
 
 
+    Rectangle {
+        id: leftHugBg
+        visible: root.isHug && !root.isCentered
+        anchors.left: parent.left
+        anchors.top: parent.top
+        width: leftCluster.anchors.leftMargin + leftCluster.width + (12 * Appearance.effectiveScale)
+        height: parent.height
+        color: Appearance.colors.colStatusBarSolid
+        topLeftRadius: 0
+        topRightRadius: 0
+        bottomLeftRadius: 0
+        bottomRightRadius: height / 2
+    }
+    RoundCorner {
+        visible: root.isHug && !root.isCentered
+        anchors.left: leftHugBg.right
+        anchors.top: parent.top
+        implicitSize: root.hugOutward
+        color: Appearance.colors.colStatusBarSolid
+        corner: RoundCorner.CornerEnum.TopLeft
+    }
+    Rectangle {
+        id: rightHugBg
+        visible: root.isHug && !root.isCentered
+        anchors.right: parent.right
+        anchors.top: parent.top
+        width: rightCluster.anchors.rightMargin + rightCluster.width + (12 * Appearance.effectiveScale)
+        height: parent.height
+        color: Appearance.colors.colStatusBarSolid
+        topLeftRadius: 0
+        topRightRadius: 0
+        bottomRightRadius: 0
+        bottomLeftRadius: height / 2
+    }
+    RoundCorner {
+        visible: root.isHug && !root.isCentered
+        anchors.right: rightHugBg.left
+        anchors.top: parent.top
+        implicitSize: root.hugOutward
+        color: Appearance.colors.colStatusBarSolid
+        corner: RoundCorner.CornerEnum.TopRight
+    }
+    RoundCorner {
+        visible: root.isHug && !root.isCentered
+        anchors.left: leftHugBg.left
+        anchors.top: leftHugBg.bottom
+        implicitSize: root.hugOutward
+        color: Appearance.colors.colStatusBarSolid
+        corner: RoundCorner.CornerEnum.TopLeft
+    }
+    RoundCorner {
+        visible: root.isHug && !root.isCentered
+        anchors.right: rightHugBg.right
+        anchors.top: rightHugBg.bottom
+        implicitSize: root.hugOutward
+        color: Appearance.colors.colStatusBarSolid
+        corner: RoundCorner.CornerEnum.TopRight
+    }
+
     // ── Left Cluster ──
     RowLayout {
         id: leftCluster
@@ -433,6 +497,35 @@ Item {
 
     // ── Center Cluster (Dynamic Island host) ──
     // PcDynamicIsland takes over when centerModule === "pcIsland"
+    Rectangle {
+        id: centerHugBg
+        visible: root.isHug && !root.isCentered && !root.isPcIsland && root.centerIsClock
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: parent.top
+        width: centerTimeText.implicitWidth + dynamicIsland.pill.width + centerDateText.implicitWidth + (52 * Appearance.effectiveScale)
+        height: parent.height
+        color: "black"
+        topLeftRadius: 0
+        topRightRadius: 0
+        bottomLeftRadius: height / 2
+        bottomRightRadius: height / 2
+    }
+    RoundCorner {
+        visible: root.isHug && !root.isCentered && !root.isPcIsland && root.centerIsClock
+        anchors.right: centerHugBg.left
+        anchors.top: parent.top
+        implicitSize: root.hugOutward
+        color: "black"
+        corner: RoundCorner.CornerEnum.TopRight
+    }
+    RoundCorner {
+        visible: root.isHug && !root.isCentered && !root.isPcIsland && root.centerIsClock
+        anchors.left: centerHugBg.right
+        anchors.top: parent.top
+        implicitSize: root.hugOutward
+        color: "black"
+        corner: RoundCorner.CornerEnum.TopLeft
+    }
     Item {
         id: pcIslandHost
         visible: root.isPcIsland
@@ -452,12 +545,14 @@ Item {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: parent.top
         monitor: root.monitor
+        forcedStyle: (root.isHug && root.centerIsClock) ? "pill" : ""
         indicatorWidth: wsIndicator.implicitWidth
         indicatorStyle: wsIndicator.indicatorStyle
     }
 
     // Time (Left of Notch) — hidden when PcIsland
     StyledText {
+        id: centerTimeText
         visible: !root.isPcIsland && Config.ready && Config.options.statusBar && Config.options.statusBar.centerModule === "clock"
         anchors.verticalCenter: parent.verticalCenter
         x: dynamicIsland.x + dynamicIsland.pill.x - width - 16 * Appearance.effectiveScale
@@ -465,11 +560,12 @@ Item {
         text: DateTime.currentTime
         font.pixelSize: Appearance.font.pixelSize.small
         font.weight: Font.Normal
-        color: root.contentColor
+        color: centerHugBg.visible ? Appearance.colors.colNotchText : root.centerContentColor
     }
 
     // Date (Right of Notch)
     StyledText {
+        id: centerDateText
         visible: !root.isPcIsland && Config.ready && Config.options.statusBar && Config.options.statusBar.centerModule === "clock"
         anchors.verticalCenter: parent.verticalCenter
         x: dynamicIsland.x + dynamicIsland.pill.x + dynamicIsland.pill.width + 16 * Appearance.effectiveScale
@@ -477,7 +573,7 @@ Item {
         text: DateTime.currentDate
         font.pixelSize: Appearance.font.pixelSize.small
         font.weight: Font.Normal
-        color: root.contentColor
+        color: centerHugBg.visible ? Appearance.colors.colNotchText : root.centerContentColor
     }
 
     // --- Absolute Center Workspace Indicator (hide when PcIsland, use module instead) ---

@@ -158,12 +158,13 @@ Item {
         }
     }
     // ── Statusbar Background Detection ──
+    // Shoulders connect the panel to the bar when a solid background (Full/Hug) is shown
     readonly property int bgStyle: Config.ready && Config.options.statusBar
         ? (Config.options.statusBar.backgroundStyle ?? 0) : 0
     property bool hasActiveWindows: false
 
     Connections {
-        enabled: root.bgStyle === 2
+        enabled: root.bgStyle === 3
         target: HyprlandData
         function onWindowListChanged() {
             root.updateActiveWindows()
@@ -172,11 +173,9 @@ Item {
             root.updateActiveWindows()
         }
     }
-    
+
     function updateActiveWindows() {
         if (!HyprlandData) return;
-        // Check current workspace based on HyprlandData.activeWorkspace
-        // Since Dashboard is a global window, assume we care about the currently focused monitor's workspace
         const activeWsId = HyprlandData.activeWorkspace?.id;
         root.hasActiveWindows = activeWsId
             ? HyprlandData.windowList.some(w => w.workspace.id === activeWsId && !w.floating)
@@ -188,7 +187,7 @@ Item {
         let style = Config.options.statusBar.moduleStyle ?? "";
         if (style === "m3") return false;
         if (bgStyle === 1) return true;
-        if (bgStyle === 2) return hasActiveWindows;
+        if (bgStyle === 3) return hasActiveWindows;
         return false;
     }
 

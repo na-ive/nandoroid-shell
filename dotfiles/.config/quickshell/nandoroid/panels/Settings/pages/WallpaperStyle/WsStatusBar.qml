@@ -451,16 +451,25 @@ ColumnLayout {
                 readonly property bool isM3Style: Config.ready && Config.options.statusBar && (Config.options.statusBar.moduleStyle === "m3")
 
     
-                // Computed: background is ALWAYS active (style == 1)
-                readonly property bool sbAlwaysSolid: Config.ready && Config.options.statusBar
+                readonly property bool sbFullBg: Config.ready && Config.options.statusBar
                     ? (Config.options.statusBar.backgroundStyle ?? 0) === 1
                     : false
-                // Computed: any background style is selected (style > 0)
-                readonly property bool sbAnyBgStyle: Config.ready && Config.options.statusBar
-                    ? (Config.options.statusBar.backgroundStyle ?? 0) > 0
+                readonly property bool sbSolidBg: Config.ready && Config.options.statusBar
+                    ? ((Config.options.statusBar.backgroundStyle ?? 0) === 1 || (Config.options.statusBar.backgroundStyle ?? 0) === 2)
                     : false
-                // Gradient is active: only when bg is not ALWAYS solid + useGradient = true
-                readonly property bool sbGradientActive: !sbAlwaysSolid
+                readonly property bool sbIsHug: Config.ready && Config.options.statusBar
+                    ? (Config.options.statusBar.backgroundStyle ?? 0) === 2
+                    : false
+                readonly property bool sbAdaptiveBg: Config.ready && Config.options.statusBar
+                    ? (Config.options.statusBar.backgroundStyle ?? 0) === 3
+                    : false
+                readonly property bool sbCenterIsClock: Config.ready && Config.options.statusBar
+                    ? ((Config.options.statusBar.centerModule ?? "clock") === "clock")
+                    : true
+                readonly property bool sbIsCentered: Config.ready && Config.options.statusBar
+                    ? ((Config.options.statusBar.layoutStyle ?? "standard") === "centered")
+                    : false
+                readonly property bool sbGradientActive: !sbFullBg
                     && (Config.ready && Config.options.statusBar ? Config.options.statusBar.useGradient : true)
     
                 // Section Header
@@ -568,7 +577,7 @@ ColumnLayout {
                         implicitHeight: Math.max(64 * Appearance.effectiveScale, statusBarTextRow.implicitHeight)
                         orientation: Qt.Vertical
                         color: Appearance.m3colors.m3surfaceContainerHigh
-                        opacity: parent.parent.sbAlwaysSolid ? 0.4 : 1.0
+                        opacity: parent.parent.sbSolidBg ? 0.4 : 1.0
                         Behavior on opacity { NumberAnimation { duration: 200 } }
                         RowLayout {
                             id: statusBarTextRow
@@ -591,14 +600,14 @@ ColumnLayout {
                                     delegate: SegmentedButton {
                                         required property var modelData
                                         buttonText: modelData.label
-                                        enabled: !sbSettingsCol.parent.sbAlwaysSolid
+                                        enabled: !sbSettingsCol.parent.sbSolidBg
                                         isHighlighted: Config.ready && Config.options.statusBar
                                             ? Config.options.statusBar.textColorMode === modelData.id
                                             : modelData.id === "adaptive"
                                         colActive: Appearance.m3colors.m3primary
                                         colActiveText: Appearance.m3colors.m3onPrimary
                                         colInactive: Appearance.m3colors.m3surfaceContainerLow
-                                        onClicked: if (Config.ready && Config.options.statusBar && !sbSettingsCol.parent.sbAlwaysSolid)
+                                        onClicked: if (Config.ready && Config.options.statusBar && !sbSettingsCol.parent.sbSolidBg)
                                             Config.options.statusBar.textColorMode = modelData.id
                                     }
                                 }
@@ -606,7 +615,6 @@ ColumnLayout {
                         }
                     }
     
-                    // ── Use Gradient (disabled ONLY when background is ALWAYS active) ──────────────
                     SegmentedWrapper {
                         id: sbGradientCard
                         visible: !sbSettingsCol.parent.isM3Style
@@ -614,7 +622,7 @@ ColumnLayout {
                         implicitHeight: Math.max(64 * Appearance.effectiveScale, statusBarGradientRow.implicitHeight)
                         orientation: Qt.Vertical
                         color: Appearance.m3colors.m3surfaceContainerHigh
-                        opacity: sbSettingsCol.parent.sbAlwaysSolid ? 0.4 : 1.0
+                        opacity: sbSettingsCol.parent.sbSolidBg ? 0.4 : 1.0
                         Behavior on opacity { NumberAnimation { duration: 200 } }
 
                         RippleButton {
@@ -626,8 +634,8 @@ ColumnLayout {
                             topRightRadius: sbGradientCard.rTopRight
                             bottomLeftRadius: sbGradientCard.rBottomLeft
                             bottomRightRadius: sbGradientCard.rBottomRight
-                            enabled: !sbSettingsCol.parent.sbAlwaysSolid
-                            onClicked: if (Config.ready && Config.options.statusBar && !sbSettingsCol.parent.sbAlwaysSolid)
+                            enabled: !sbSettingsCol.parent.sbSolidBg
+                            onClicked: if (Config.ready && Config.options.statusBar && !sbSettingsCol.parent.sbSolidBg)
                                 Config.options.statusBar.useGradient = !Config.options.statusBar.useGradient
                         }
 
@@ -643,15 +651,13 @@ ColumnLayout {
                             StyledText { text: I18nService.tr("Use gradient"); Layout.fillWidth: true; color: Appearance.colors.colOnLayer1 }
                             AndroidToggle {
                                 checked: Config.ready && Config.options.statusBar ? Config.options.statusBar.useGradient : true
-                                onToggled: if (Config.ready && Config.options.statusBar && !sbSettingsCol.parent.sbAlwaysSolid)
+                                onToggled: if (Config.ready && Config.options.statusBar && !sbSettingsCol.parent.sbSolidBg)
                                     Config.options.statusBar.useGradient = !Config.options.statusBar.useGradient
                             }
                         }
                     }
     
-                    // ── Background Style (None / Always / Adaptive) ────────────
                     SegmentedWrapper {
-                        visible: !sbSettingsCol.parent.isM3Style
                         Layout.fillWidth: true
                         implicitHeight: Math.max(64 * Appearance.effectiveScale, statusBarBgRow.implicitHeight)
                         orientation: Qt.Vertical
@@ -669,11 +675,20 @@ ColumnLayout {
                             RowLayout {
                                 spacing: 2 * Appearance.effectiveScale
                                 Repeater {
-                                    model: [
-                                        { val: 0, label: I18nService.tr("None") },
-                                        { val: 1, label: I18nService.tr("Always") },
-                                        { val: 2, label: I18nService.tr("Adaptive") }
-                                    ]
+                                    model: sbSettingsCol.parent.isM3Style ? [
+                                        { val: 0, label: I18nService.tr("Off") },
+                                        { val: 2, label: I18nService.tr("Hug") },
+                                        { val: 1, label: I18nService.tr("Full") }
+                                    ] : (sbSettingsCol.parent.sbIsCentered ? [
+                                        { val: 0, label: I18nService.tr("Off") },
+                                        { val: 3, label: I18nService.tr("Adaptive") },
+                                        { val: 1, label: I18nService.tr("Full") }
+                                    ] : [
+                                        { val: 0, label: I18nService.tr("Off") },
+                                        { val: 3, label: I18nService.tr("Adaptive") },
+                                        { val: 2, label: I18nService.tr("Hug") },
+                                        { val: 1, label: I18nService.tr("Full") }
+                                    ])
                                     delegate: SegmentedButton {
                                         required property var modelData
                                         buttonText: modelData.label
@@ -691,13 +706,12 @@ ColumnLayout {
                         }
                     }
 
-                     // ── Corner radius (visible when ANY background style is active) ──
                     SegmentedWrapper {
                         Layout.fillWidth: true
                         implicitHeight: Math.max(64 * Appearance.effectiveScale, sbCornerRow.implicitHeight)
                         orientation: Qt.Vertical
                         color: Appearance.m3colors.m3surfaceContainerHigh
-                        visible: sbSettingsCol.parent.sbAnyBgStyle && !sbSettingsCol.parent.isM3Style && (Config.ready ? Config.options.statusBar?.layoutStyle !== "centered" : true)
+                        visible: (sbSettingsCol.parent.sbFullBg || (sbSettingsCol.parent.sbAdaptiveBg && !sbSettingsCol.parent.isM3Style)) && (Config.ready ? Config.options.statusBar?.layoutStyle !== "centered" : true)
                         RowLayout {
                             id: sbCornerRow
                             anchors.fill: parent
@@ -759,8 +773,11 @@ ColumnLayout {
                                         colActive: Appearance.m3colors.m3primary
                                         colActiveText: Appearance.m3colors.m3onPrimary
                                         colInactive: Appearance.m3colors.m3surfaceContainerLow
-                                        onClicked: if (Config.ready && Config.options.statusBar)
+                                        onClicked: if (Config.ready && Config.options.statusBar) {
                                             Config.options.statusBar.layoutStyle = modelData.id
+                                            if (modelData.id === "centered" && (Config.options.statusBar.backgroundStyle ?? 0) === 2)
+                                                Config.options.statusBar.backgroundStyle = 1
+                                        }
                                     }
                                 }
                             }
@@ -1537,7 +1554,7 @@ ColumnLayout {
 
                     // ── Island Style ──
                     SegmentedWrapper {
-                        visible: !sbSettingsCol.parent.isM3Style
+                        visible: !sbSettingsCol.parent.isM3Style && !(sbSettingsCol.parent.sbIsHug && sbSettingsCol.parent.sbCenterIsClock)
                         Layout.fillWidth: true
                         implicitHeight: Math.max(64 * Appearance.effectiveScale, islandStyleRow.implicitHeight)
                         orientation: Qt.Vertical

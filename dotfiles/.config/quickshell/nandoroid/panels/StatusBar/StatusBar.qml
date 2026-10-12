@@ -82,7 +82,8 @@ Scope {
             }
 
             color: "transparent"
-            implicitHeight: actualStatusBarHeight + (showBackground ? cornerRadius : 0)
+            readonly property real bottomCornerExtra: showFullBg ? cornerRadius : ((isHugBg && !isCentered) ? Appearance.rounding.screenRounding : 0)
+            implicitHeight: actualStatusBarHeight + bottomCornerExtra
 
             // Define clickable area mask
             mask: Region {
@@ -123,31 +124,29 @@ Scope {
 
             readonly property int bgStyle: Config.ready && Config.options.statusBar
                 ? (Config.options.statusBar.backgroundStyle !== undefined ? Config.options.statusBar.backgroundStyle : 0) : 0
-            
-            // In centered mode, use exactly half the bar height for a perfect S-curve transition
-            readonly property real cornerRadius: isCentered ? (actualStatusBarHeight / 2) : Math.round((Config.ready && Config.options.statusBar
-                ? (Config.options.statusBar.backgroundCornerRadius !== undefined ? Config.options.statusBar.backgroundCornerRadius : 20) : 20) * Appearance.effectiveScale)
 
+            readonly property bool isFullBg: bgStyle === 1
+            readonly property bool isHugBg: bgStyle === 2
+            readonly property bool isAdaptiveBg: bgStyle === 3
             readonly property bool hasTiledWindows: {
-                if (bgStyle !== 2 || !Hyprland.monitorFor(modelData) || !Hyprland.monitorFor(modelData).activeWorkspace || Hyprland.monitorFor(modelData).activeWorkspace.id === -1) return false;
+                if (!isAdaptiveBg || !Hyprland.monitorFor(modelData) || !Hyprland.monitorFor(modelData).activeWorkspace || Hyprland.monitorFor(modelData).activeWorkspace.id === -1) return false;
                 const wsId = Hyprland.monitorFor(modelData).activeWorkspace.id;
-                return HyprlandData.windowList.some(w => 
+                return HyprlandData.windowList.some(w =>
                     w.workspace.id === wsId && !w.floating && w.monitor === monitorIndex
                 );
             }
+            readonly property bool showFullBg: isFullBg || (!isM3 && isAdaptiveBg && hasTiledWindows)
 
-            readonly property bool showBackground: {
-                if (isM3) return false;
-                if (bgStyle === 1) return true;
-                if (bgStyle === 2) return hasTiledWindows;
-                return false;
-            }
+            // In centered mode, use exactly half the bar height for a perfect S-curve transition
+            readonly property real hugCornerRadius: Math.min(Appearance.rounding.screenRounding, Math.floor(actualStatusBarHeight / 2))
+            readonly property real cornerRadius: isCentered ? (actualStatusBarHeight / 2) : (isHugBg ? hugCornerRadius : Math.round((Config.ready && Config.options.statusBar
+                ? (Config.options.statusBar.backgroundCornerRadius !== undefined ? Config.options.statusBar.backgroundCornerRadius : 20) : 20) * Appearance.effectiveScale))
 
             // ── Main Content Container (Animated) ──
             Item {
                 id: mainContainer
                 anchors.fill: parent
-                anchors.topMargin: (autoHide && !mustShow) ? -actualStatusBarHeight - (showBackground ? cornerRadius : 5 * Appearance.effectiveScale) : 0
+                anchors.topMargin: (autoHide && !mustShow) ? -actualStatusBarHeight - (bottomCornerExtra > 0 ? bottomCornerExtra : 5 * Appearance.effectiveScale) : 0
                 
                 Behavior on anchors.topMargin {
                     NumberAnimation {
@@ -160,8 +159,8 @@ Scope {
                 Item {
                     id: barBackgroundLayer
                     anchors.fill: parent
-                    visible: barWindow.showBackground
-                    opacity: barBg.opacity
+                    visible: barWindow.showFullBg
+                    opacity: 1.0
 
                     layer.enabled: true
                     layer.effect: DropShadow {
@@ -177,7 +176,7 @@ Scope {
                         id: barBg
                         
                         readonly property real targetHeight: actualStatusBarHeight + (barWindow.isCentered ? barWindow.cornerRadius : 0)
-                        readonly property real targetY: barWindow.showBackground 
+                        readonly property real targetY: barWindow.showFullBg
                             ? (barWindow.isCentered ? -barWindow.cornerRadius : 0)
                             : -targetHeight - (10 * Appearance.effectiveScale)
 
@@ -191,9 +190,7 @@ Scope {
                             : parent.width + (overlap * 2)
                         
                         height: targetHeight
-                        color: Appearance.colors.colStatusBarSolid
-                        opacity: isM3 ? 0.0 : 1.0
-                        visible: opacity > 0
+                        color: barWindow.isM3 ? Appearance.m3colors.m3surfaceContainer : Appearance.colors.colStatusBarSolid
                         
                         radius: barWindow.isCentered ? barWindow.cornerRadius : 0
 
@@ -211,14 +208,14 @@ Scope {
                             anchors.top: parent.bottom; anchors.left: parent.left
                             anchors.leftMargin: barBg.overlap
                             implicitSize: barWindow.cornerRadius; color: parent.color; corner: RoundCorner.CornerEnum.TopLeft
-                            opacity: !barWindow.isCentered && barWindow.showBackground ? 1.0 : 0.0; visible: opacity > 0
+                            opacity: !barWindow.isCentered && barWindow.showFullBg ? 1.0 : 0.0; visible: opacity > 0
                         }
                         RoundCorner {
                             id: stdRightCorner
                             anchors.top: parent.bottom; anchors.right: parent.right
                             anchors.rightMargin: barBg.overlap
                             implicitSize: barWindow.cornerRadius; color: parent.color; corner: RoundCorner.CornerEnum.TopRight
-                            opacity: !barWindow.isCentered && barWindow.showBackground ? 1.0 : 0.0; visible: opacity > 0
+                            opacity: !barWindow.isCentered && barWindow.showFullBg ? 1.0 : 0.0; visible: opacity > 0
                         }
                         // HUD Mode Corners (Top sides) - Pull IN and UP
                         RoundCorner {
@@ -226,14 +223,14 @@ Scope {
                             anchors.top: parent.top; anchors.topMargin: barWindow.cornerRadius - barBg.overlap; anchors.right: parent.left
                             anchors.rightMargin: -barBg.overlap
                             implicitSize: barWindow.cornerRadius; color: parent.color; corner: RoundCorner.CornerEnum.TopRight
-                            opacity: barWindow.isCentered && barWindow.showBackground ? 1.0 : 0.0; visible: opacity > 0
+                            opacity: barWindow.isCentered && barWindow.showFullBg ? 1.0 : 0.0; visible: opacity > 0
                         }
                         RoundCorner {
                             id: hudRightCorner
                             anchors.top: parent.top; anchors.topMargin: barWindow.cornerRadius - barBg.overlap; anchors.left: parent.right
                             anchors.leftMargin: -barBg.overlap
                             implicitSize: barWindow.cornerRadius; color: parent.color; corner: RoundCorner.CornerEnum.TopLeft
-                            opacity: barWindow.isCentered && barWindow.showBackground ? 1.0 : 0.0; visible: opacity > 0
+                            opacity: barWindow.isCentered && barWindow.showFullBg ? 1.0 : 0.0; visible: opacity > 0
                         }
                     }
                 }
@@ -247,8 +244,7 @@ Scope {
                     }
                     height: actualStatusBarHeight
                     color: "transparent"
-                    // User explicitly requested to disable gradient in M3 style
-                    opacity: !barWindow.showBackground && !isM3 && (Config.ready && Config.options.statusBar ? Config.options.statusBar.useGradient : true) ? 1.0 : 0.0
+                    opacity: !barWindow.showFullBg && !isM3 && (Config.ready && Config.options.statusBar ? Config.options.statusBar.useGradient : true) ? 1.0 : 0.0
                     gradient: Gradient {
                         GradientStop { position: 0.0; color: Appearance.colors.colStatusBarGradientStart }
                         GradientStop { position: 1.0; color: Appearance.colors.colStatusBarGradientEnd }

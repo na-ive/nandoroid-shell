@@ -415,6 +415,7 @@ property JsonObject background: JsonObject {
                 property string systemMonitorStyle: "outline"
                 property string textColorMode: "adaptive" 
                 property bool useGradient: true
+                // 0: Off | 1: Full | 2: Hug | 3: Adaptive, tiled windows only (basic)
                 property int backgroundStyle: 0
                 property int backgroundCornerRadius: 20
                 property string islandStyle: "pill" 
