@@ -19,8 +19,8 @@ Item {
         id: osdRow
         anchors {
             fill: parent
-            leftMargin: 4
-            rightMargin: 10
+            leftMargin: di.isMaterial ? 4 : 8
+            rightMargin: di.isMaterial ? 10 : 8
         }
         spacing: 6
 

@@ -712,8 +712,9 @@ Item {
                 anchors.centerIn: rootM3.centerWaterdrop ? undefined : parent
                 anchors.horizontalCenter: rootM3.centerWaterdrop ? parent.horizontalCenter : undefined
                 anchors.top: rootM3.centerWaterdrop ? parent.top : undefined
-                // Centered in the DynamicIsland ear region (3px stem + 28px ears).
-                anchors.topMargin: rootM3.centerWaterdrop ? (3 * Appearance.effectiveScale + (28 * Appearance.effectiveScale - wsIndicator.implicitHeight) / 2) : 0
+                // Bottom-anchored to the pill margin (never resized, only
+                // repositioned) so the bottom gap always equals the sides.
+                anchors.topMargin: rootM3.centerWaterdrop ? (dynamicIsland.pill.height - wsIndicator.implicitHeight - dynamicIsland.pill.margin) : 0
                 monitor: rootM3.monitor
                 z: 10
             }

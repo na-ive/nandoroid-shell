@@ -346,9 +346,11 @@ Item {
     Rectangle {
         id: pill
         anchors.left: parent.left
-        y: (root.isWaterdrop || root.insideM3Card) ? 0 : 4 * Appearance.effectiveScale
+        // Base pill synced with the regular island + lock (34px at y=3).
+        y: (root.isWaterdrop || root.insideM3Card) ? 0 : 3 * Appearance.effectiveScale
         width: root.displayedProvider?.width ?? root.idleWidth
-        height: root.isWaterdrop ? (root.isMaterial ? 40 : 34) * Appearance.effectiveScale : (root.insideM3Card ? 40 * Appearance.effectiveScale : 32 * Appearance.effectiveScale)
+        // Non-material waterdrop matches the regular island + lock (38px).
+        height: root.isWaterdrop ? (root.isMaterial ? 40 : 38) * Appearance.effectiveScale : (root.insideM3Card ? 40 * Appearance.effectiveScale : 34 * Appearance.effectiveScale)
         color: "black"
         radius: height / 2
         clip: false
@@ -501,7 +503,7 @@ Item {
                 anchors {
                     fill: parent
                     leftMargin: 8
-                    rightMargin: 10
+                    rightMargin: root.isMaterial ? 10 : 8
                 }
                 spacing: 6
 
@@ -543,8 +545,8 @@ Item {
             RowLayout {
                 anchors {
                     fill: parent
-                    leftMargin: 10
-                    rightMargin: 10
+                    leftMargin: root.isMaterial ? 10 : 8
+                    rightMargin: root.isMaterial ? 10 : 8
                 }
                 spacing: 6
 

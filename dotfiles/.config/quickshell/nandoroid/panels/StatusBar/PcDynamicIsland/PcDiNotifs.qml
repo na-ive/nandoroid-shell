@@ -18,7 +18,7 @@ Item {
         height: 20
         anchors {
             left: parent.left
-            leftMargin: 12
+            leftMargin: di.isMaterial ? 12 : 8
             verticalCenter: parent.verticalCenter
         }
         source: Quickshell.iconPath(notif?.appIcon ?? "", "notification-symbolic")
@@ -31,7 +31,7 @@ Item {
         id: notifMaterialIcon
         anchors {
             left: parent.left
-            leftMargin: 4
+            leftMargin: di.isMaterial ? 4 : 8
             verticalCenter: parent.verticalCenter
         }
         shape: MaterialShape.Shape.Cookie12Sided
@@ -82,7 +82,7 @@ Item {
         anchors {
             right: parent.right
             top: parent.top
-            rightMargin: 10
+            rightMargin: di.isMaterial ? 10 : 8
             topMargin: 8
         }
         text: DateTime.currentTime

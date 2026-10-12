@@ -134,10 +134,12 @@ MouseArea {
 
         readonly property bool isCentered: (!isM3 && Config.ready && Config.options.statusBar) ? Config.options.statusBar.layoutStyle === "centered" : false
         readonly property real centeredWidth: (Config.ready && Config.options.statusBar) ? Config.options.statusBar.centeredWidth * Appearance.effectiveScale : 1200 * Appearance.effectiveScale
-        readonly property real sidePadding: isCentered ? Math.round((parent.width - Math.min(centeredWidth, parent.width - 40 * Appearance.effectiveScale)) / 2) : 12 * Appearance.effectiveScale
+        readonly property real sidePadding: (isM3 && bgStyle === 2) ? 0 : (isCentered ? Math.round((parent.width - Math.min(centeredWidth, parent.width - 40 * Appearance.effectiveScale)) / 2) : 12 * Appearance.effectiveScale)
         readonly property real cornerRadius: isCentered ? (lockStatusBarContainer.height / 2) : Math.round(((Config.ready && Config.options.statusBar && Config.options.statusBar.backgroundCornerRadius !== undefined) ? Config.options.statusBar.backgroundCornerRadius : 20) * Appearance.effectiveScale)
 
         readonly property int bgStyle: (Config.ready && Config.options.statusBar) ? (Config.options.statusBar.backgroundStyle ?? 0) : 0
+        readonly property bool isHug: bgStyle === 2
+        readonly property real hugOutward: Appearance.rounding.screenRounding
         readonly property int activeWorkspaceId: root.monitor?.activeWorkspace?.id ?? -1
         readonly property bool hasTiledWindows: {
             if (bgStyle !== 3 || activeWorkspaceId === -1) return false;
@@ -148,16 +150,26 @@ MouseArea {
             );
         }
 
+        // Solid whenever the full bg shows, or hug clusters are drawn.
+        // Hug is excluded from barBg.showBg (desktop parity: hug floats,
+        // it never paints full-width) but text still sits on solid.
+        readonly property bool showSolid: barBg.showBg || (isHug && !isCentered)
+        // Center attach mirrors desktop (hug tab, or pcIsland/none waterdrop
+        // notch on hug/full). pcIsland pill always floats like desktop.
+        readonly property bool lockCenterTab: isHug && lockCenterIsClock && !isPcIslandActive
+        readonly property bool lockCenterNotch: (isPcIslandActive || !lockCenterIsClock) && isWaterdrop && (isHug || bgStyle === 1)
+        readonly property bool lockCenterAttached: lockCenterTab || lockCenterNotch
+
         // Selection of the final color based on actual visibility
         property color contentColor: {
-            if (barBg.showBg) return Appearance.lockM3colors.m3onSurface;
+            if (showSolid) return Appearance.lockM3colors.m3onSurface;
             const mode = Config.ready && Config.options.statusBar ? (Config.options.statusBar.textColorMode ?? "adaptive") : "adaptive";
             if (mode === "dark") return "#1E1E1E";
             if (mode === "light") return "#F5F5F5";
             return Appearance.lockM3colors.m3onSurface; // adaptive
         }
         property color subtextColor: {
-            if (barBg.showBg) return Appearance.lockM3colors.m3onSurfaceVariant;
+            if (showSolid) return Appearance.lockM3colors.m3onSurfaceVariant;
             const mode = Config.ready && Config.options.statusBar ? (Config.options.statusBar.textColorMode ?? "adaptive") : "adaptive";
             if (mode === "dark") return "#1E1E1E";
             if (mode === "light") return "#F5F5F5";
@@ -174,7 +186,7 @@ MouseArea {
             anchors.top: parent.top
             anchors.horizontalCenter: parent.horizontalCenter
             
-            readonly property bool showBg: lockStatusBarContainer.bgStyle === 1 || lockStatusBarContainer.bgStyle === 2 || (lockStatusBarContainer.bgStyle === 3 && lockStatusBarContainer.hasTiledWindows)
+            readonly property bool showBg: lockStatusBarContainer.bgStyle === 1 || (lockStatusBarContainer.bgStyle === 3 && lockStatusBarContainer.hasTiledWindows)
             
             width: (lockStatusBarContainer.isCentered && showBg) ? Math.min(lockStatusBarContainer.centeredWidth, parent.width - 40 * Appearance.effectiveScale) : parent.width
             height: parent.height + (lockStatusBarContainer.isCentered && showBg ? lockStatusBarContainer.cornerRadius : 0)
@@ -222,6 +234,101 @@ MouseArea {
             }
         }
 
+        // ── Hug cluster backgrounds (base style, mirrors StatusBarContent) ──
+        Rectangle {
+            id: lockLeftHugBg
+            visible: !lockStatusBarContainer.isM3 && lockStatusBarContainer.isHug && !lockStatusBarContainer.isCentered
+            anchors.left: parent.left
+            anchors.top: parent.top
+            width: lockLeftRow.anchors.leftMargin + lockLeftRow.width + (12 * Appearance.effectiveScale)
+            height: parent.height
+            color: Appearance.lockM3colors.m3surfaceContainerLow
+            topLeftRadius: 0
+            topRightRadius: 0
+            bottomLeftRadius: 0
+            bottomRightRadius: height / 2
+        }
+        RoundCorner {
+            visible: !lockStatusBarContainer.isM3 && lockStatusBarContainer.isHug && !lockStatusBarContainer.isCentered
+            anchors.left: lockLeftHugBg.right
+            anchors.top: parent.top
+            implicitSize: lockStatusBarContainer.hugOutward
+            color: Appearance.lockM3colors.m3surfaceContainerLow
+            corner: RoundCorner.CornerEnum.TopLeft
+        }
+        Rectangle {
+            id: lockRightHugBg
+            visible: !lockStatusBarContainer.isM3 && lockStatusBarContainer.isHug && !lockStatusBarContainer.isCentered
+            anchors.right: parent.right
+            anchors.top: parent.top
+            // Row + gap-to-privacy (collapses when privacy is hidden) +
+            // privacy + (sidePadding - 2) edge margin + 12px inner pad.
+            width: lockRightRow.width + privacyIndicator.width + lockStatusBarContainer.sidePadding + ((privacyIndicator.width > 0 ? 20 : 10) * Appearance.effectiveScale)
+            height: parent.height
+            color: Appearance.lockM3colors.m3surfaceContainerLow
+            topLeftRadius: 0
+            topRightRadius: 0
+            bottomRightRadius: 0
+            bottomLeftRadius: height / 2
+        }
+        RoundCorner {
+            visible: !lockStatusBarContainer.isM3 && lockStatusBarContainer.isHug && !lockStatusBarContainer.isCentered
+            anchors.right: lockRightHugBg.left
+            anchors.top: parent.top
+            implicitSize: lockStatusBarContainer.hugOutward
+            color: Appearance.lockM3colors.m3surfaceContainerLow
+            corner: RoundCorner.CornerEnum.TopRight
+        }
+        RoundCorner {
+            visible: !lockStatusBarContainer.isM3 && lockStatusBarContainer.isHug && !lockStatusBarContainer.isCentered
+            anchors.left: lockLeftHugBg.left
+            anchors.top: lockLeftHugBg.bottom
+            implicitSize: lockStatusBarContainer.hugOutward
+            color: Appearance.lockM3colors.m3surfaceContainerLow
+            corner: RoundCorner.CornerEnum.TopLeft
+        }
+        RoundCorner {
+            visible: !lockStatusBarContainer.isM3 && lockStatusBarContainer.isHug && !lockStatusBarContainer.isCentered
+            anchors.right: lockRightHugBg.right
+            anchors.top: lockRightHugBg.bottom
+            implicitSize: lockStatusBarContainer.hugOutward
+            color: Appearance.lockM3colors.m3surfaceContainerLow
+            corner: RoundCorner.CornerEnum.TopRight
+        }
+
+        // ── Center hug notch (base hug+clock, mirrors desktop centerHugBg:
+        // the waterdrop that wraps the island; lock has no clock texts so
+        // it wraps the pill with 12px pads like the side hugs) ──
+        Rectangle {
+            id: lockCenterHugBg
+            visible: !lockStatusBarContainer.isM3 && lockStatusBarContainer.isHug && !lockStatusBarContainer.isCentered && lockStatusBarContainer.lockCenterIsClock
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.top: parent.top
+            width: lockIndicatorPill.width + (24 * Appearance.effectiveScale)
+            height: parent.height
+            color: "black"
+            topLeftRadius: 0
+            topRightRadius: 0
+            bottomLeftRadius: height / 2
+            bottomRightRadius: height / 2
+        }
+        RoundCorner {
+            visible: !lockStatusBarContainer.isM3 && lockStatusBarContainer.isHug && !lockStatusBarContainer.isCentered && lockStatusBarContainer.lockCenterIsClock
+            anchors.right: lockCenterHugBg.left
+            anchors.top: parent.top
+            implicitSize: lockStatusBarContainer.hugOutward
+            color: "black"
+            corner: RoundCorner.CornerEnum.TopRight
+        }
+        RoundCorner {
+            visible: !lockStatusBarContainer.isM3 && lockStatusBarContainer.isHug && !lockStatusBarContainer.isCentered && lockStatusBarContainer.lockCenterIsClock
+            anchors.left: lockCenterHugBg.right
+            anchors.top: parent.top
+            implicitSize: lockStatusBarContainer.hugOutward
+            color: "black"
+            corner: RoundCorner.CornerEnum.TopLeft
+        }
+
         // 2. Gradient overlay
         Rectangle {
             anchors {
@@ -231,7 +338,8 @@ MouseArea {
             }
             height: parent.height
             color: "transparent"
-            opacity: !lockStatusBarContainer.isM3 && !barBg.showBg && (Config.ready && Config.options.statusBar ? (Config.options.statusBar.useGradient ?? true) : true) ? 1.0 : 0.0
+            // Gradient is transparent-bar only (desktop parity: never on hug).
+            opacity: !lockStatusBarContainer.isM3 && !barBg.showBg && lockStatusBarContainer.bgStyle !== 2 && (Config.ready && Config.options.statusBar ? (Config.options.statusBar.useGradient ?? true) : true) ? 1.0 : 0.0
             Behavior on opacity { NumberAnimation { duration: 300 } }
             
             gradient: Gradient {
@@ -242,7 +350,11 @@ MouseArea {
 
         // 3. Center: Dynamic Island Wannabe (Locked Indicator)
         readonly property string islandStyle: Config.options.statusBar?.islandStyle ?? "pill"
-        readonly property bool isWaterdrop: islandStyle === "waterdrop"
+        // Desktop parity (StatusBarContent): hug + clock forces the pill
+        // island even when islandStyle is waterdrop.
+        readonly property bool lockCenterIsClock: Config.ready && Config.options.statusBar ? ((Config.options.statusBar.centerModule ?? "clock") === "clock") : true
+        readonly property string effectiveIslandStyle: (!isM3 && isHug && !isCentered && lockCenterIsClock) ? "pill" : islandStyle
+        readonly property bool isWaterdrop: effectiveIslandStyle === "waterdrop"
         // PcIsland mode only: morph the Locked pill into the OSD pill.
         readonly property bool isPcIslandActive: Config.ready && Config.options.statusBar?.centerModule === "pcIsland"
         readonly property bool showLockOsd: isPcIslandActive && GlobalStates.osdVolumeOpen
@@ -252,11 +364,12 @@ MouseArea {
             visible: !lockStatusBarContainer.isM3
             anchors.horizontalCenter: parent.horizontalCenter
             
-            // Floor is pillWidth; grows with measured OSD content (matches desktop).
-            y: lockStatusBarContainer.isWaterdrop ? 0 : 4 * Appearance.effectiveScale
-            height: lockStatusBarContainer.isWaterdrop ? 34 * Appearance.effectiveScale : 32 * Appearance.effectiveScale
+            // Synced with the desktop island: waterdrop 38px top-attached,
+            // pill 34px floating at y=3, flat 8px side margins.
+            y: lockStatusBarContainer.isWaterdrop ? 0 : 3 * Appearance.effectiveScale
+            height: lockStatusBarContainer.isWaterdrop ? 38 * Appearance.effectiveScale : 34 * Appearance.effectiveScale
             readonly property real osdMeasuredWidth: lockOsdContent.anchors.leftMargin + lockOsdIcon.implicitWidth + lockOsdContent.spacing * 2 + lockOsdMetrics.implicitWidth + lockOsdContent.anchors.rightMargin
-            width: lockStatusBarContainer.showLockOsd ? Math.max(PcIsland.OsdHelper.pillWidth, lockIndicatorPill.osdMeasuredWidth) : lockedContent.implicitWidth + (24 * Appearance.effectiveScale)
+            width: lockStatusBarContainer.showLockOsd ? Math.max(PcIsland.OsdHelper.pillWidth, lockIndicatorPill.osdMeasuredWidth) : lockedContent.implicitWidth + (16 * Appearance.effectiveScale)
             color: "black"
             radius: height / 2
 
@@ -360,6 +473,7 @@ MouseArea {
             
             // Left: User (photo + name) + Network + (Notifications when position=left)
             RowLayout {
+                id: lockLeftRow
                 anchors.left: parent.left
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.leftMargin: lockStatusBarContainer.sidePadding + (lockStatusBarContainer.isCentered ? 12 * Appearance.effectiveScale : 0)
@@ -444,6 +558,7 @@ MouseArea {
 
             // Right: System Icons
             RowLayout {
+                id: lockRightRow
                 anchors.right: privacyIndicator.left
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.rightMargin: 10 * Appearance.effectiveScale
@@ -519,6 +634,9 @@ MouseArea {
                 anchors.right: parent.right
                 anchors.rightMargin: lockStatusBarContainer.sidePadding + (lockStatusBarContainer.isCentered ? 8 * Appearance.effectiveScale : -2 * Appearance.effectiveScale)
                 anchors.verticalCenter: parent.verticalCenter
+                // Standalone (not in a layout): follow implicit width so the
+                // hug bg and the right row measure it correctly.
+                width: implicitWidth
             }
         }
 
@@ -528,15 +646,20 @@ MouseArea {
             visible: lockStatusBarContainer.isM3
             anchors.fill: parent
 
-            // ── Left Cluster ──
+            // ── Left Cluster (hug: attached tab like desktop M3) ──
             Rectangle {
                 id: lockM3LeftCluster
                 anchors.left: parent.left
-                anchors.verticalCenter: parent.verticalCenter
+                anchors.top: lockStatusBarContainer.isHug ? parent.top : undefined
+                anchors.verticalCenter: lockStatusBarContainer.isHug ? undefined : parent.verticalCenter
                 anchors.leftMargin: lockStatusBarContainer.sidePadding
-                height: lockM3LeftRow.implicitHeight + (8 * Appearance.effectiveScale)
-                width: lockM3LeftRow.implicitWidth + (8 * Appearance.effectiveScale)
+                height: lockStatusBarContainer.isHug ? parent.height : lockM3LeftRow.implicitHeight + (8 * Appearance.effectiveScale)
+                width: lockM3LeftRow.implicitWidth + ((lockStatusBarContainer.isHug ? 12 : 8) * Appearance.effectiveScale)
                 radius: height / 2
+                topLeftRadius: lockStatusBarContainer.isHug ? 0 : height / 2
+                topRightRadius: lockStatusBarContainer.isHug ? 0 : height / 2
+                bottomLeftRadius: lockStatusBarContainer.isHug ? 0 : height / 2
+                bottomRightRadius: height / 2
                 color: Appearance.lockM3colors.m3surfaceContainer
 
                 RowLayout {
@@ -658,19 +781,32 @@ MouseArea {
                 }
             }
 
-            // ── Center Cluster ──
+            // ── Center Cluster (attached tab / notch like desktop M3) ──
             Rectangle {
                 id: lockM3CenterCluster
-                anchors.centerIn: parent
+                anchors.centerIn: lockStatusBarContainer.lockCenterAttached ? undefined : parent
+                anchors.horizontalCenter: lockStatusBarContainer.lockCenterAttached ? parent.horizontalCenter : undefined
+                anchors.top: lockStatusBarContainer.lockCenterAttached ? parent.top : undefined
 
-                readonly property real padding: Math.round(4 * Appearance.effectiveScale)
+                readonly property real padding: lockStatusBarContainer.lockCenterAttached ? Math.round(8 * Appearance.effectiveScale) : Math.round(4 * Appearance.effectiveScale)
 
-                height: Math.round(32 * Appearance.effectiveScale) + (padding * 2)
+                // Hug tab fills the bar; pcIsland notch/float is 40px like the
+                // desktop pcIsland pill; plain waterdrop notch is 38px like
+                // the desktop island.
+                height: lockStatusBarContainer.lockCenterTab ? parent.height : ((lockStatusBarContainer.lockCenterNotch && !lockStatusBarContainer.isPcIslandActive) ? Math.round(38 * Appearance.effectiveScale) : Math.round(40 * Appearance.effectiveScale))
                 // Floor is pillWidth; grows with measured OSD content (matches desktop).
                 readonly property real osdMeasuredWidth: lockM3OsdContent.anchors.leftMargin + lockM3OsdIcon.implicitWidth + lockM3OsdContent.spacing * 2 + lockM3OsdMetrics.implicitWidth + lockM3OsdContent.anchors.rightMargin
                 width: lockStatusBarContainer.showLockOsd ? Math.max(PcIsland.OsdHelper.pillWidth, lockM3CenterCluster.osdMeasuredWidth) : lockM3LockWrapper.implicitWidth + (padding * 2)
                 radius: height / 2
-                color: lockStatusBarContainer.isPcIslandActive ? "black" : Appearance.lockM3colors.m3surfaceContainer
+                // Square top on attached tab/notch (desktop parity), fully
+                // rounded floating pill otherwise.
+                topLeftRadius: lockStatusBarContainer.lockCenterAttached ? 0 : height / 2
+                topRightRadius: lockStatusBarContainer.lockCenterAttached ? 0 : height / 2
+                bottomLeftRadius: height / 2
+                bottomRightRadius: height / 2
+                // Bare (none/pcIsland) shows no card, like desktop — only the
+                // black inner pill. Notch stays black for a coherent shape.
+                color: (lockStatusBarContainer.isPcIslandActive || lockStatusBarContainer.lockCenterNotch) ? "black" : (lockStatusBarContainer.lockCenterIsClock ? Appearance.lockM3colors.m3surfaceContainer : "transparent")
 
                 Behavior on width {
                     NumberAnimation {
@@ -684,6 +820,8 @@ MouseArea {
                     id: lockM3LockWrapper
                     anchors.centerIn: parent
                     show: !lockStatusBarContainer.showLockOsd
+                    // 34px to match the desktop island height.
+                    height: Math.round(34 * Appearance.effectiveScale)
                     m3Color: "black"
                     m3ContentColor: "white"
 
@@ -742,15 +880,20 @@ MouseArea {
                 }
             }
 
-            // ── Right Cluster ──
+            // ── Right Cluster (hug: attached tab like desktop M3) ──
             Rectangle {
                 id: lockM3RightCluster
                 anchors.right: parent.right
-                anchors.verticalCenter: parent.verticalCenter
+                anchors.top: lockStatusBarContainer.isHug ? parent.top : undefined
+                anchors.verticalCenter: lockStatusBarContainer.isHug ? undefined : parent.verticalCenter
                 anchors.rightMargin: lockStatusBarContainer.sidePadding
-                height: lockM3RightRow.implicitHeight + (8 * Appearance.effectiveScale)
-                width: lockM3RightRow.implicitWidth + (8 * Appearance.effectiveScale)
+                height: lockStatusBarContainer.isHug ? parent.height : lockM3RightRow.implicitHeight + (8 * Appearance.effectiveScale)
+                width: lockM3RightRow.implicitWidth + ((lockStatusBarContainer.isHug ? 12 : 8) * Appearance.effectiveScale)
                 radius: height / 2
+                topLeftRadius: lockStatusBarContainer.isHug ? 0 : height / 2
+                topRightRadius: lockStatusBarContainer.isHug ? 0 : height / 2
+                bottomRightRadius: lockStatusBarContainer.isHug ? 0 : height / 2
+                bottomLeftRadius: height / 2
                 color: Appearance.lockM3colors.m3surfaceContainer
 
                 RowLayout {
@@ -876,6 +1019,56 @@ MouseArea {
                         }
                     }
                 }
+            }
+
+            // ── Hug concave corners (mirrors desktop M3) ──
+            RoundCorner {
+                visible: lockStatusBarContainer.isM3 && lockStatusBarContainer.isHug
+                anchors.left: lockM3LeftCluster.right
+                anchors.top: lockM3LeftCluster.top
+                implicitSize: lockStatusBarContainer.hugOutward
+                color: Appearance.lockM3colors.m3surfaceContainer
+                corner: RoundCorner.CornerEnum.TopLeft
+            }
+            RoundCorner {
+                visible: lockStatusBarContainer.isM3 && lockStatusBarContainer.isHug
+                anchors.right: lockM3RightCluster.left
+                anchors.top: lockM3RightCluster.top
+                implicitSize: lockStatusBarContainer.hugOutward
+                color: Appearance.lockM3colors.m3surfaceContainer
+                corner: RoundCorner.CornerEnum.TopRight
+            }
+            RoundCorner {
+                visible: lockStatusBarContainer.isM3 && lockStatusBarContainer.isHug
+                anchors.left: lockM3LeftCluster.left
+                anchors.top: lockM3LeftCluster.bottom
+                implicitSize: lockStatusBarContainer.hugOutward
+                color: Appearance.lockM3colors.m3surfaceContainer
+                corner: RoundCorner.CornerEnum.TopLeft
+            }
+            RoundCorner {
+                visible: lockStatusBarContainer.isM3 && lockStatusBarContainer.isHug
+                anchors.right: lockM3RightCluster.right
+                anchors.top: lockM3RightCluster.bottom
+                implicitSize: lockStatusBarContainer.hugOutward
+                color: Appearance.lockM3colors.m3surfaceContainer
+                corner: RoundCorner.CornerEnum.TopRight
+            }
+            RoundCorner {
+                visible: lockStatusBarContainer.isM3 && lockStatusBarContainer.lockCenterAttached
+                anchors.right: lockM3CenterCluster.left
+                anchors.top: lockM3CenterCluster.top
+                implicitSize: lockStatusBarContainer.hugOutward
+                color: lockM3CenterCluster.color
+                corner: RoundCorner.CornerEnum.TopRight
+            }
+            RoundCorner {
+                visible: lockStatusBarContainer.isM3 && lockStatusBarContainer.lockCenterAttached
+                anchors.left: lockM3CenterCluster.right
+                anchors.top: lockM3CenterCluster.top
+                implicitSize: lockStatusBarContainer.hugOutward
+                color: lockM3CenterCluster.color
+                corner: RoundCorner.CornerEnum.TopLeft
             }
         }
     }

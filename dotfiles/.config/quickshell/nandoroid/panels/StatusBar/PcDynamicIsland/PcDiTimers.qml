@@ -29,7 +29,7 @@ Item {
             height: di.isMaterial ? di.pillHeight : di.pillHeight - 8
             anchors {
                 left: parent.left
-                leftMargin: 4
+                leftMargin: di.isMaterial ? 4 : 8
                 verticalCenter: parent.verticalCenter
             }
 

@@ -62,7 +62,7 @@ Item {
             height: di.isMaterial ? di.pillHeight : di.pillHeight - 8
             anchors {
                 left: parent.left
-                leftMargin: 4
+                leftMargin: di.isMaterial ? 4 : 8
                 verticalCenter: parent.verticalCenter
             }
             radius: di.isMaterial ? Appearance.rounding.full : (Appearance.rounding.small ?? 8)
@@ -167,7 +167,7 @@ Item {
             id: islandVisualizer
             anchors {
                 right: parent.right
-                rightMargin: 10
+                rightMargin: di.isMaterial ? 10 : 8
                 verticalCenter: parent.verticalCenter
             }
             width: 30

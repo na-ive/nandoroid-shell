@@ -140,10 +140,10 @@ Item {
         id: leftEar
         anchors.right: root.left
         anchors.rightMargin: root.gapHalf
-        // Pill/m3: vertically centered in the pill. Waterdrop: sits on a 3px
+        // Pill/m3: vertically centered in the pill. Waterdrop: sits on a 4px
         // bottom pad so the bottom gap matches the side margins instead of
         // flushing against the pill edge.
-        y: isWaterdrop ? backgroundPill.y + backgroundPill.height - height - 3 * Appearance.effectiveScale : backgroundPill.y + (backgroundPill.height - height) / 2
+        y: isWaterdrop ? backgroundPill.y + backgroundPill.height - height - 4 * Appearance.effectiveScale : backgroundPill.y + (backgroundPill.height - height) / 2
         height: 28 * Appearance.effectiveScale
         clip: true
         
@@ -273,7 +273,7 @@ Item {
         id: rightEar
         anchors.left: root.right
         anchors.leftMargin: root.gapHalf
-        y: isWaterdrop ? backgroundPill.y + backgroundPill.height - height - 3 * Appearance.effectiveScale : backgroundPill.y + (backgroundPill.height - height) / 2
+        y: isWaterdrop ? backgroundPill.y + backgroundPill.height - height - 4 * Appearance.effectiveScale : backgroundPill.y + (backgroundPill.height - height) / 2
         height: 28 * Appearance.effectiveScale
         clip: true
         
@@ -337,12 +337,11 @@ Item {
         id: backgroundPill
         color: "black"
         
-        // Pill geometry is synced everywhere, pill follows waterdrop:
-        // fixed 34px height (waterdrop top-attached at y=0, others float
-        // at y=3 in the 40px bar) so switching styles or indicators
-        // never resizes the island.
+        // Waterdrop is 38px top-attached (6px stem + 28px ears + 4px
+        // bottom pad); plain pill is 34px floating at y=3. Fixed heights
+        // so switching styles or indicators never resizes the island.
         y: isWaterdrop ? 0 : 3 * Appearance.effectiveScale
-        height: 34 * Appearance.effectiveScale
+        height: isWaterdrop ? 38 * Appearance.effectiveScale : 34 * Appearance.effectiveScale
         radius: height / 2
         
         z: -1
