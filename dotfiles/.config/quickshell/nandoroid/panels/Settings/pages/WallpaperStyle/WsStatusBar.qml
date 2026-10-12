@@ -457,18 +457,17 @@ ColumnLayout {
                 readonly property bool sbSolidBg: Config.ready && Config.options.statusBar
                     ? ((Config.options.statusBar.backgroundStyle ?? 0) === 1 || (Config.options.statusBar.backgroundStyle ?? 0) === 2)
                     : false
-                readonly property bool sbIsHug: Config.ready && Config.options.statusBar
-                    ? (Config.options.statusBar.backgroundStyle ?? 0) === 2
-                    : false
                 readonly property bool sbAdaptiveBg: Config.ready && Config.options.statusBar
                     ? (Config.options.statusBar.backgroundStyle ?? 0) === 3
                     : false
-                readonly property bool sbCenterIsClock: Config.ready && Config.options.statusBar
-                    ? ((Config.options.statusBar.centerModule ?? "clock") === "clock")
-                    : true
                 readonly property bool sbIsCentered: Config.ready && Config.options.statusBar
                     ? ((Config.options.statusBar.layoutStyle ?? "standard") === "centered")
                     : false
+                readonly property bool sbIslandStyleVisible: Config.ready && Config.options.statusBar
+                    ? ((Config.options.statusBar.moduleStyle ?? "base") === "m3"
+                        ? ((Config.options.statusBar.centerModule ?? "clock") !== "clock")
+                        : !(((Config.options.statusBar.backgroundStyle ?? 0) === 2) && ((Config.options.statusBar.centerModule ?? "clock") === "clock")))
+                    : true
                 readonly property bool sbGradientActive: !sbFullBg
                     && (Config.ready && Config.options.statusBar ? Config.options.statusBar.useGradient : true)
     
@@ -1554,7 +1553,7 @@ ColumnLayout {
 
                     // ── Island Style ──
                     SegmentedWrapper {
-                        visible: !sbSettingsCol.parent.isM3Style && !(sbSettingsCol.parent.sbIsHug && sbSettingsCol.parent.sbCenterIsClock)
+                        visible: sbSettingsCol.parent.sbIslandStyleVisible
                         Layout.fillWidth: true
                         implicitHeight: Math.max(64 * Appearance.effectiveScale, islandStyleRow.implicitHeight)
                         orientation: Qt.Vertical

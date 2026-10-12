@@ -62,7 +62,7 @@ Item {
     readonly property real badgeSpacing: 6
     readonly property bool isMaterial: Config.ready && Config.options.statusBar && Config.options.statusBar.moduleStyle === "m3"
     readonly property string islandStyle: Config.ready && Config.options.statusBar ? (Config.options.statusBar.islandStyle ?? "pill") : "pill"
-    readonly property bool isWaterdrop: islandStyle === "waterdrop" && !isMaterial
+    readonly property bool isWaterdrop: islandStyle === "waterdrop"
     property bool insideM3Card: false
     property bool vertical: false
 
@@ -346,9 +346,9 @@ Item {
     Rectangle {
         id: pill
         anchors.left: parent.left
-        y: root.isWaterdrop ? 0 : (root.insideM3Card ? 0 : 4 * Appearance.effectiveScale)
+        y: (root.isWaterdrop || root.insideM3Card) ? 0 : 4 * Appearance.effectiveScale
         width: root.displayedProvider?.width ?? root.idleWidth
-        height: root.isWaterdrop ? 34 * Appearance.effectiveScale : (root.insideM3Card ? 40 * Appearance.effectiveScale : 32 * Appearance.effectiveScale)
+        height: root.isWaterdrop ? (root.isMaterial ? 40 : 34) * Appearance.effectiveScale : (root.insideM3Card ? 40 * Appearance.effectiveScale : 32 * Appearance.effectiveScale)
         color: "black"
         radius: height / 2
         clip: false

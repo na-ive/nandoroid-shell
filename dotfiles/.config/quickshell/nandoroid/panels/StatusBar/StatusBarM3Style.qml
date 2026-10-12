@@ -28,7 +28,10 @@ Item {
     readonly property int bgStyle: (Config.ready && Config.options.statusBar) ? (Config.options.statusBar.backgroundStyle ?? 0) : 0
     readonly property bool isHug: bgStyle === 2
     readonly property bool centerIsClock: (Config.ready && Config.options.statusBar) ? ((Config.options.statusBar.centerModule ?? "clock") === "clock") : true
+    readonly property bool centerIsBare: !centerIsClock || isPcIsland
     readonly property bool hugCenter: isHug && centerIsClock && !isPcIsland
+    readonly property bool centerWaterdrop: centerIsBare && (isHug || bgStyle === 1) && (rootM3.isPcIsland ? pcIslandM3.isWaterdrop : dynamicIsland.isWaterdrop)
+    readonly property bool centerAttached: hugCenter || centerWaterdrop
     readonly property real hugOutward: Appearance.rounding.screenRounding
 
     readonly property real targetSidePadding: isHug ? 0 : (isCentered ? Math.max(12 * Appearance.effectiveScale, (rootM3.width - centeredWidth) / 2) : 12 * Appearance.effectiveScale)
@@ -633,11 +636,13 @@ Item {
     // ── Center Cluster ──
     Rectangle {
         id: centerClusterCard
-        anchors.centerIn: hugCenter ? undefined : parent
-        anchors.horizontalCenter: hugCenter ? parent.horizontalCenter : undefined
-        anchors.top: hugCenter ? parent.top : undefined
+        anchors.centerIn: centerAttached ? undefined : parent
+        anchors.horizontalCenter: centerAttached ? parent.horizontalCenter : undefined
+        anchors.top: centerAttached ? parent.top : undefined
         
-        readonly property real padding: Math.round(4 * Appearance.effectiveScale)
+        // Attached (hug/waterdrop): 8px outer pads to match the island rhythm.
+        // Detached floating card keeps 4px.
+        readonly property real padding: centerAttached ? Math.round(8 * Appearance.effectiveScale) : Math.round(4 * Appearance.effectiveScale)
         readonly property real spacing: Math.round(4 * Appearance.effectiveScale)
         
         readonly property real timePillWidth: centerTimeWrapper.visible ? centerTimeWrapper.implicitWidth : 0
@@ -645,15 +650,18 @@ Item {
         readonly property real sidePillWidth: Math.round(Math.max(timePillWidth, datePillWidth))
         readonly property real islandWidth: rootM3.isPcIsland ? Math.round(pcIslandM3.implicitWidth) : Math.round(dynamicIsland.pill.width)
         
-        height: Math.round(32 * Appearance.effectiveScale) + (padding * 2)
-        width: rootM3.isPcIsland ? islandWidth : (sidePillWidth > 0 ? ((sidePillWidth * 2) + islandWidth + (spacing * 2) + (padding * 2)) : (islandWidth + (padding * 2)))
+        // Hug/attached: fill the full bar height like the side clusters so the
+        // island + side pills stay vertically centered in the 48px M3 bar.
+        // Detached: wrap the island host (34px pill) + 2x pads.
+        height: rootM3.centerAttached ? rootM3.height : (islandHost.height + (padding * 2))
+        width: rootM3.centerIsClock ? (sidePillWidth > 0 ? ((sidePillWidth * 2) + islandWidth + (spacing * 2) + (padding * 2)) : (islandWidth + (padding * 2))) : (islandWidth + (padding * 2))
         radius: height / 2
         topLeftRadius: hugCenter ? 0 : height / 2
         topRightRadius: hugCenter ? 0 : height / 2
         bottomLeftRadius: height / 2
         bottomRightRadius: height / 2
-        color: rootM3.isPcIsland ? "transparent" : Appearance.m3colors.m3surfaceContainer
-        border.width: rootM3.isPcIsland ? 0 : 0
+        color: rootM3.centerIsBare ? "transparent" : Appearance.m3colors.m3surfaceContainer
+        border.width: 0
 
         // Time Pill (Left)
         M3StatusWrapper {
@@ -681,14 +689,19 @@ Item {
             id: islandHost
             width: rootM3.isPcIsland ? pcIslandM3.implicitWidth : centerClusterCard.islandWidth
             height: rootM3.isPcIsland ? pcIslandM3.pill.height : Math.round(dynamicIsland.pill.height)
-            anchors.centerIn: parent
+            anchors.centerIn: centerWaterdrop ? undefined : parent
+            anchors.horizontalCenter: centerWaterdrop ? parent.horizontalCenter : undefined
+            anchors.top: centerWaterdrop ? parent.top : undefined
             visible: !rootM3.isPcIsland || true
 
             DynamicIsland {
                 id: dynamicIsland
                 visible: !rootM3.isPcIsland
-                forcedStyle: "m3"
-                anchors.centerIn: parent
+                forcedStyle: rootM3.centerIsClock ? "m3" : ""
+                roomy: !rootM3.centerIsClock
+                anchors.centerIn: centerWaterdrop ? undefined : parent
+                anchors.horizontalCenter: centerWaterdrop ? parent.horizontalCenter : undefined
+                anchors.top: centerWaterdrop ? parent.top : undefined
                 monitor: rootM3.monitor
                 indicatorWidth: wsIndicator.implicitWidth
                 indicatorStyle: wsIndicator.indicatorStyle
@@ -696,7 +709,11 @@ Item {
             WorkspaceIndicator {
                 id: wsIndicator
                 visible: !rootM3.isPcIsland
-                anchors.centerIn: parent
+                anchors.centerIn: rootM3.centerWaterdrop ? undefined : parent
+                anchors.horizontalCenter: rootM3.centerWaterdrop ? parent.horizontalCenter : undefined
+                anchors.top: rootM3.centerWaterdrop ? parent.top : undefined
+                // Centered in the DynamicIsland ear region (3px stem + 28px ears).
+                anchors.topMargin: rootM3.centerWaterdrop ? (3 * Appearance.effectiveScale + (28 * Appearance.effectiveScale - wsIndicator.implicitHeight) / 2) : 0
                 monitor: rootM3.monitor
                 z: 10
             }
@@ -704,7 +721,9 @@ Item {
                 id: pcIslandM3
                 visible: rootM3.isPcIsland
                 insideM3Card: true
-                anchors.centerIn: parent
+                anchors.centerIn: centerWaterdrop ? undefined : parent
+                anchors.horizontalCenter: centerWaterdrop ? parent.horizontalCenter : undefined
+                anchors.top: centerWaterdrop ? parent.top : undefined
             }
         }
 

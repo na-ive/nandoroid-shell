@@ -31,8 +31,9 @@ Item {
     property string forcedStyle: ""
     readonly property string islandStyle: forcedStyle !== "" ? forcedStyle : (Config.options.statusBar && Config.options.statusBar.islandStyle !== undefined ? Config.options.statusBar.islandStyle : "pill")
     readonly property bool isM3: islandStyle === "m3"
-    readonly property bool isWaterdrop: islandStyle === "waterdrop" && !isM3
+    readonly property bool isWaterdrop: islandStyle === "waterdrop"
     property string indicatorStyle: "pill"
+    property bool roomy: false
     
     TextMetrics {
         id: stopwatchMetrics
@@ -139,7 +140,10 @@ Item {
         id: leftEar
         anchors.right: root.left
         anchors.rightMargin: root.gapHalf
-        y: 6 * Appearance.effectiveScale 
+        // Pill/m3: vertically centered in the pill. Waterdrop: sits on a 3px
+        // bottom pad so the bottom gap matches the side margins instead of
+        // flushing against the pill edge.
+        y: isWaterdrop ? backgroundPill.y + backgroundPill.height - height - 3 * Appearance.effectiveScale : backgroundPill.y + (backgroundPill.height - height) / 2
         height: 28 * Appearance.effectiveScale
         clip: true
         
@@ -269,7 +273,7 @@ Item {
         id: rightEar
         anchors.left: root.right
         anchors.leftMargin: root.gapHalf
-        y: 6 * Appearance.effectiveScale
+        y: isWaterdrop ? backgroundPill.y + backgroundPill.height - height - 3 * Appearance.effectiveScale : backgroundPill.y + (backgroundPill.height - height) / 2
         height: 28 * Appearance.effectiveScale
         clip: true
         
@@ -333,13 +337,18 @@ Item {
         id: backgroundPill
         color: "black"
         
-        // Idle: y=6, height=28. Waterdrop: y=0, height=34. M3: y=4, height=32.
-        y: isWaterdrop ? 0 : (isM3 ? 4 * Appearance.effectiveScale : 6 * Appearance.effectiveScale)
-        height: isWaterdrop ? 34 * Appearance.effectiveScale : (isM3 ? 32 * Appearance.effectiveScale : 28 * Appearance.effectiveScale)
+        // Pill geometry is synced everywhere, pill follows waterdrop:
+        // fixed 34px height (waterdrop top-attached at y=0, others float
+        // at y=3 in the 40px bar) so switching styles or indicators
+        // never resizes the island.
+        y: isWaterdrop ? 0 : 3 * Appearance.effectiveScale
+        height: 34 * Appearance.effectiveScale
         radius: height / 2
         
         z: -1
-        readonly property real margin: isM3 ? 8 * Appearance.effectiveScale : (isWaterdrop && root.indicatorStyle === "unified" ? 10 : root.indicatorStyle === "unified" ? 4 : 10) * Appearance.effectiveScale
+        // Flat 8px sides everywhere, matching the ~7-9px bottom rhythm
+        // of the 34px pill (3px pad + centered 28px ears).
+        readonly property real margin: 8 * Appearance.effectiveScale
         x: leftEar.x - margin
         width: (rightEar.x + rightEar.width) - leftEar.x + (2 * margin)
 

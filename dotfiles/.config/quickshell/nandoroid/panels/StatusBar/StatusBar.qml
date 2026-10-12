@@ -244,7 +244,10 @@ Scope {
                     }
                     height: actualStatusBarHeight
                     color: "transparent"
-                    opacity: !barWindow.showFullBg && !isM3 && (Config.ready && Config.options.statusBar ? Config.options.statusBar.useGradient : true) ? 1.0 : 0.0
+                    // Gradient is only for the transparent bar (Off, or Adaptive
+                    // with no tiled windows). Hug/Full paint their own solid
+                    // backgrounds, so the full-width gradient must stay off.
+                    opacity: !barWindow.showFullBg && !barWindow.isHugBg && !isM3 && (Config.ready && Config.options.statusBar ? Config.options.statusBar.useGradient : true) ? 1.0 : 0.0
                     gradient: Gradient {
                         GradientStop { position: 0.0; color: Appearance.colors.colStatusBarGradientStart }
                         GradientStop { position: 1.0; color: Appearance.colors.colStatusBarGradientEnd }

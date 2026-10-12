@@ -226,16 +226,17 @@ Item {
                 // Owned by hoverGrabber (single source of truth).
                 readonly property bool isHovered: root._hoveredIndex === index
 
-                // Sizing
+                // Sizing (pill + no label: active stays an 8x8 dot like the
+                // rest, only its color switches to primary)
                 implicitWidth: isPill
                     ? (showLabel
                         ? (isActive ? 28 : (isHovered ? 20 : 8))
-                        : (isActive ? 26 : 8)) * Appearance.effectiveScale
+                        : 8) * Appearance.effectiveScale
                     : root._tabDotSize
                 implicitHeight: isPill
                     ? (showLabel
                         ? (isActive ? 18 : (isHovered ? 18 : 8))
-                        : (isActive ? 18 : 8)) * Appearance.effectiveScale
+                        : 8) * Appearance.effectiveScale
                     : root._tabDotSize
 
                 anchors.verticalCenter: parent.verticalCenter
@@ -290,19 +291,6 @@ Item {
                 // ----- Unified, no label: active MaterialShape over sliding wrapper -----
                 MaterialShape {
                     visible: !isPill && !showLabel && isActive
-                    anchors.centerIn: parent
-                    implicitSize: Math.round(12 * Appearance.effectiveScale)
-                    shape: root._shapeForWs(wsId)
-                    color: root._onWrapperColor
-                    scale: isActive ? 1 : 0.5
-                    opacity: isActive ? 1 : 0
-                    Behavior on scale { NumberAnimation { duration: 250; easing.type: Easing.OutBack; easing.overshoot: 2.0 } }
-                    Behavior on opacity { NumberAnimation { duration: 150 } }
-                }
-
-                // ----- Pill, no label: active MaterialShape over pill -----
-                MaterialShape {
-                    visible: isPill && !showLabel && isActive
                     anchors.centerIn: parent
                     implicitSize: Math.round(12 * Appearance.effectiveScale)
                     shape: root._shapeForWs(wsId)

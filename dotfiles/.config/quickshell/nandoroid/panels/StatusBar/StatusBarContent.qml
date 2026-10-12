@@ -40,6 +40,14 @@ Item {
     }
     readonly property bool showBackground: isFull || (isHug && !isCentered) || (isAdaptive && hasTiledWindows)
     readonly property real hugOutward: Appearance.rounding.screenRounding
+    readonly property bool centerIsClock: (Config.ready && Config.options.statusBar) ? ((Config.options.statusBar.centerModule ?? "clock") === "clock") : true
+    // Equal-width side boxes (M3 sidePillWidth pattern): time/date widths
+    // differ, so without this the hug content sits off-center and one side
+    // gap gets eaten by half the width difference.
+    readonly property real centerSideTextWidth: Math.max(centerTimeText.implicitWidth, centerDateText.implicitWidth)
+    // Side pads follow the text bottom gap ((hugH - textH) / 2) so
+    // left/right always equal bottom/top at any bar height or font size.
+    readonly property real centerHugSidePad: (root.height - centerTimeText.implicitHeight) / 2
 
     property color contentColor: showBackground ? Appearance.m3colors.m3onSurface : Appearance.colors.colStatusBarText
     property color subtextColor: showBackground ? Appearance.m3colors.m3onSurfaceVariant : Appearance.colors.colStatusBarSubtext
@@ -502,7 +510,9 @@ Item {
         visible: root.isHug && !root.isCentered && !root.isPcIsland && root.centerIsClock
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: parent.top
-        width: centerTimeText.implicitWidth + dynamicIsland.pill.width + centerDateText.implicitWidth + (52 * Appearance.effectiveScale)
+        // 16px gaps to the pill on each side + outer pads matching the text
+        // bottom gap (centerHugSidePad each side).
+        width: 2 * root.centerSideTextWidth + dynamicIsland.pill.width + (32 * Appearance.effectiveScale) + (2 * root.centerHugSidePad)
         height: parent.height
         color: "black"
         topLeftRadius: 0
@@ -555,6 +565,8 @@ Item {
         id: centerTimeText
         visible: !root.isPcIsland && Config.ready && Config.options.statusBar && Config.options.statusBar.centerModule === "clock"
         anchors.verticalCenter: parent.verticalCenter
+        width: root.centerSideTextWidth
+        horizontalAlignment: Text.AlignRight
         x: dynamicIsland.x + dynamicIsland.pill.x - width - 16 * Appearance.effectiveScale
         font.family: Appearance.font.family.numbers
         text: DateTime.currentTime
@@ -568,6 +580,8 @@ Item {
         id: centerDateText
         visible: !root.isPcIsland && Config.ready && Config.options.statusBar && Config.options.statusBar.centerModule === "clock"
         anchors.verticalCenter: parent.verticalCenter
+        width: root.centerSideTextWidth
+        horizontalAlignment: Text.AlignLeft
         x: dynamicIsland.x + dynamicIsland.pill.x + dynamicIsland.pill.width + 16 * Appearance.effectiveScale
         font.family: Appearance.font.family.numbers
         text: DateTime.currentDate
