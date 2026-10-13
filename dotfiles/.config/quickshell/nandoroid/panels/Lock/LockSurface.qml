@@ -261,9 +261,8 @@ MouseArea {
             visible: !lockStatusBarContainer.isM3 && lockStatusBarContainer.isHug && !lockStatusBarContainer.isCentered
             anchors.right: parent.right
             anchors.top: parent.top
-            // Row + gap-to-privacy (collapses when privacy is hidden) +
-            // privacy + (sidePadding - 2) edge margin + 12px inner pad.
-            width: lockRightRow.width + privacyIndicator.width + lockStatusBarContainer.sidePadding + ((privacyIndicator.width > 0 ? 20 : 10) * Appearance.effectiveScale)
+            // 12px edge margin + 12px inner pad in both privacy states.
+            width: lockRightRow.width + privacyIndicator.width + lockStatusBarContainer.sidePadding + ((privacyIndicator.width > 0 ? 22 : 12) * Appearance.effectiveScale)
             height: parent.height
             color: Appearance.lockM3colors.m3surfaceContainerLow
             topLeftRadius: 0
@@ -561,7 +560,8 @@ MouseArea {
                 id: lockRightRow
                 anchors.right: privacyIndicator.left
                 anchors.verticalCenter: parent.verticalCenter
-                anchors.rightMargin: 10 * Appearance.effectiveScale
+                // 0 when privacy is hidden to keep the 12px edge gap.
+                anchors.rightMargin: (privacyIndicator.width > 0 ? 10 : 0) * Appearance.effectiveScale
                 spacing: 8 * Appearance.effectiveScale
 
                 // Notifications (when position is NOT left)
@@ -632,7 +632,7 @@ MouseArea {
             PrivacyIndicator {
                 id: privacyIndicator
                 anchors.right: parent.right
-                anchors.rightMargin: lockStatusBarContainer.sidePadding + (lockStatusBarContainer.isCentered ? 8 * Appearance.effectiveScale : -2 * Appearance.effectiveScale)
+                anchors.rightMargin: lockStatusBarContainer.sidePadding + (lockStatusBarContainer.isCentered ? 8 * Appearance.effectiveScale : 0)
                 anchors.verticalCenter: parent.verticalCenter
                 // Standalone (not in a layout): follow implicit width so the
                 // hug bg and the right row measure it correctly.
