@@ -20,11 +20,6 @@ FocusScope {
 
     property bool _triggeredByClear: false
 
-    // Statusbar punya roundcorner bawah -> sudut kiri panel square (nempel layar)
-    readonly property int sbBgStyle: Config.ready && Config.options.statusBar ? (Config.options.statusBar.backgroundStyle ?? 0) : 0
-    readonly property bool sbIsCentered: Config.ready && Config.options.statusBar ? ((Config.options.statusBar.moduleStyle ?? "base") !== "m3" && (Config.options.statusBar.layoutStyle ?? "standard") === "centered") : false
-    readonly property bool barHasBottomCorners: sbBgStyle !== 0 && !sbIsCentered
-
     function close() {
         root.closed();
     }
@@ -477,7 +472,6 @@ FocusScope {
         anchors.fill: parent
         color: Appearance.colors.colLayer0
         radius: Appearance.rounding.panel
-        topLeftRadius: root.barHasBottomCorners ? 0 : Appearance.rounding.panel
         
         
         // Prevent clicks inside the panel from falling through to the Overlay background closer
