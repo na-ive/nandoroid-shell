@@ -722,19 +722,16 @@ ColumnLayout {
 
                             MaterialSymbol { text: "rounded_corner"; iconSize: 24 * Appearance.effectiveScale; color: Appearance.colors.colPrimary }
                             StyledText {
-                                text: I18nService.tr("Corner radius")
+                                text: I18nService.tr("Rounded corners")
                                 Layout.fillWidth: true
                                 color: Appearance.colors.colOnLayer1
                             }
 
-                            StyledStepper {
+                            AndroidToggle {
                                 Layout.alignment: Qt.AlignVCenter
-                                from: 0; to: 20; stepSize: 1
-                                decimals: 0
-                                suffix: "px"
-                                value: Config.ready && Config.options.statusBar ? (Config.options.statusBar.backgroundCornerRadius ?? 20) : 20
-                                onValueChanged: if (Config.ready && Config.options.statusBar)
-                                    Config.options.statusBar.backgroundCornerRadius = Math.round(value)
+                                checked: Config.ready && Config.options.statusBar ? (Config.options.statusBar.roundedCorners ?? true) : true
+                                onToggled: if (Config.ready && Config.options.statusBar)
+                                    Config.options.statusBar.roundedCorners = !(Config.options.statusBar.roundedCorners ?? true)
                             }
                         }
                     }

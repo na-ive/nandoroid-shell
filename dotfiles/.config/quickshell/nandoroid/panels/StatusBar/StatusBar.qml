@@ -136,10 +136,10 @@ Scope {
             }
             readonly property bool showFullBg: isFullBg || (!isM3 && isAdaptiveBg && hasTiledWindows)
 
-            // In centered mode, use exactly half the bar height for a perfect S-curve transition
-            readonly property real hugCornerRadius: Math.min(Appearance.rounding.screenRounding, Math.floor(actualStatusBarHeight / 2))
-            readonly property real cornerRadius: isCentered ? (actualStatusBarHeight / 2) : (isHugBg ? hugCornerRadius : Math.round((Config.ready && Config.options.statusBar
-                ? (Config.options.statusBar.backgroundCornerRadius !== undefined ? Config.options.statusBar.backgroundCornerRadius : 20) : 20) * Appearance.effectiveScale))
+            // Fixed radius, matches the hug S-curve cutout (screenRounding).
+            // Toggleable on/off via roundedCorners.
+            readonly property bool barRounded: Config.ready && Config.options.statusBar ? (Config.options.statusBar.roundedCorners ?? true) : true
+            readonly property real cornerRadius: isCentered ? (actualStatusBarHeight / 2) : (barRounded ? Appearance.rounding.screenRounding : 0)
 
             // ── Main Content Container (Animated) ──
             Item {

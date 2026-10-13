@@ -28,9 +28,9 @@ Variants {
     anchors.top: true
     anchors.left: true
 
-    readonly property real shoulderRadius: Math.max(1, (Config.ready && Config.options.statusBar
-      ? (Config.options.statusBar.backgroundCornerRadius ?? 20) : 20) * Appearance.effectiveScale)
-    readonly property real dashWidth: Appearance.sizes.dashboardWidth + 2 * panelWindow.shoulderRadius
+    // Width follows the content (panel + shoulder pieces) — single source
+    // of truth lives in DashboardContent, no duplicated radius math here.
+    readonly property real dashWidth: dashContent.implicitWidth
     readonly property real dashHeight: Appearance.sizes.dashboardHeight
     readonly property real centeredX: Math.max(0, Math.round((modelData.width - panelWindow.dashWidth) / 2))
 

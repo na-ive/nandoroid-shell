@@ -53,9 +53,10 @@ Item {
     // The panel itself is centred inside the full-screen-width window
     readonly property int panelWidth: Appearance.sizes.dashboardWidth
     readonly property int panelHeight: Appearance.sizes.dashboardHeight
-    // Corner radius used for the shoulder pieces — match statusbar corner radius
-    readonly property int shoulderRadius: (Config.ready && Config.options.statusBar
-        ? (Config.options.statusBar.backgroundCornerRadius ?? 20) : 20) * Appearance.effectiveScale
+    // Corner radius used for the shoulder pieces — fixed, matches the
+    // statusbar/hug cutout radius (screenRounding, toggleable on/off)
+    readonly property int shoulderRadius: (Config.ready && Config.options.statusBar && (Config.options.statusBar.roundedCorners ?? true))
+        ? Appearance.rounding.screenRounding : 0
 
     // Window is sized exactly for the panel plus shoulder pieces
     implicitWidth: panelWidth + (shoulderRadius * 2)

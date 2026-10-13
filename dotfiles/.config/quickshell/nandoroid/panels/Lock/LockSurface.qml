@@ -135,7 +135,7 @@ MouseArea {
         readonly property bool isCentered: (!isM3 && Config.ready && Config.options.statusBar) ? Config.options.statusBar.layoutStyle === "centered" : false
         readonly property real centeredWidth: (Config.ready && Config.options.statusBar) ? Config.options.statusBar.centeredWidth * Appearance.effectiveScale : 1200 * Appearance.effectiveScale
         readonly property real sidePadding: (isM3 && bgStyle === 2) ? 0 : (isCentered ? Math.round((parent.width - Math.min(centeredWidth, parent.width - 40 * Appearance.effectiveScale)) / 2) : 12 * Appearance.effectiveScale)
-        readonly property real cornerRadius: isCentered ? (lockStatusBarContainer.height / 2) : Math.round(((Config.ready && Config.options.statusBar && Config.options.statusBar.backgroundCornerRadius !== undefined) ? Config.options.statusBar.backgroundCornerRadius : 20) * Appearance.effectiveScale)
+        readonly property real cornerRadius: isCentered ? (lockStatusBarContainer.height / 2) : (((Config.ready && Config.options.statusBar && (Config.options.statusBar.roundedCorners ?? true))) ? Appearance.rounding.screenRounding : 0)
 
         readonly property int bgStyle: (Config.ready && Config.options.statusBar) ? (Config.options.statusBar.backgroundStyle ?? 0) : 0
         readonly property bool isHug: bgStyle === 2
