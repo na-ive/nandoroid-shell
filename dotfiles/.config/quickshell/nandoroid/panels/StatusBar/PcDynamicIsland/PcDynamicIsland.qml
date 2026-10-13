@@ -60,7 +60,10 @@ Item {
     readonly property real batteryWidth: 170
     readonly property real badgeSize: 32
     readonly property real badgeSpacing: 6
-    readonly property bool isMaterial: Config.ready && Config.options.statusBar && Config.options.statusBar.moduleStyle === "m3"
+    // Unified sizing: pc island always uses the M3 metrics as the single
+    // reference size (base no longer shrinks it). Kept as a property so all
+    // PcDi* content branches keep working unchanged.
+    readonly property bool isMaterial: true
     readonly property string islandStyle: Config.ready && Config.options.statusBar ? (Config.options.statusBar.islandStyle ?? "pill") : "pill"
     readonly property bool isWaterdrop: islandStyle === "waterdrop"
     property bool insideM3Card: false
@@ -346,11 +349,10 @@ Item {
     Rectangle {
         id: pill
         anchors.left: parent.left
-        // Base pill synced with the regular island + lock (34px at y=3).
-        y: (root.isWaterdrop || root.insideM3Card) ? 0 : 3 * Appearance.effectiveScale
+        // Unified pill: 40px at y=0 in every mode (M3 reference size).
+        y: 0
         width: root.displayedProvider?.width ?? root.idleWidth
-        // Non-material waterdrop matches the regular island + lock (38px).
-        height: root.isWaterdrop ? (root.isMaterial ? 40 : 38) * Appearance.effectiveScale : (root.insideM3Card ? 40 * Appearance.effectiveScale : 34 * Appearance.effectiveScale)
+        height: 40 * Appearance.effectiveScale
         color: "black"
         radius: height / 2
         clip: false
