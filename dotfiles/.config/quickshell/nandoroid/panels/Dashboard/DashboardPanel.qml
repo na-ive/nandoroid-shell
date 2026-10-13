@@ -34,6 +34,11 @@ Variants {
     readonly property real dashHeight: Appearance.sizes.dashboardHeight
     readonly property real centeredX: Math.max(0, Math.round((modelData.width - panelWindow.dashWidth) / 2))
 
+    // Docking mengikuti kontennya sendiri: docking (top=0) hanya saat
+    // shoulder ditampilkan (bar base solid, bukan M3 — lih. showShoulders
+    // di DashboardContent). Selain itu floating 4px seperti QS/NC.
+    // Bind langsung ke showShoulders agar tidak pernah drift lagi.
+    margins.top: dashContent.showShoulders ? 0 : 4 * Appearance.effectiveScale
     margins.left: panelWindow.centeredX
     implicitWidth: panelWindow.dashWidth
     implicitHeight: panelWindow.dashHeight
@@ -57,6 +62,7 @@ Variants {
     }
 
     DashboardContent {
+      id: dashContent
       onClosed: GlobalStates.dashboardOpen = false
     }
   }

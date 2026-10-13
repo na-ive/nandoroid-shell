@@ -24,7 +24,6 @@ Scope {
             required property var modelData
             property int monitorIndex: modelData.index !== undefined ? modelData.index : 0
             readonly property bool isM3: Config.ready && Config.options.statusBar && Config.options.statusBar.moduleStyle === "m3"
-            readonly property bool notifIsLeft: (Config.ready && Config.options.notifications) ? Config.options.notifications.position === "left" : false
 
             screen: modelData
             exclusionMode: ExclusionMode.Ignore
@@ -198,9 +197,6 @@ Scope {
                         Behavior on width { NumberAnimation { duration: 450; easing.type: Easing.OutQuint } }
                         Behavior on height { NumberAnimation { duration: 450; easing.type: Easing.OutQuint } }
                         Behavior on radius { NumberAnimation { duration: 400; easing.type: Easing.OutQuint } }
-
-                        readonly property bool isLeftPanelOpen: GlobalStates.dashboardOpen || (GlobalStates.notificationCenterOpen && barWindow.notifIsLeft)
-                        readonly property bool isRightPanelOpen: GlobalStates.quickSettingsOpen || (GlobalStates.notificationCenterOpen && !barWindow.notifIsLeft)
 
                         // Standard Mode Corners (Bottom)
                         RoundCorner {

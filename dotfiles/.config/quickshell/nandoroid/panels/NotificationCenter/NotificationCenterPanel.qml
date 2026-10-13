@@ -35,9 +35,15 @@ Variants {
       ? Math.round((modelData.width - Math.min(centeredWidth, modelData.width - 40 * Appearance.effectiveScale)) / 2)
       : 0
 
-    margins.left: panelWindow.sidePadding
+    // NC selalu floating: inset 4px atas + sisi. Di centered mode bar
+    // tidak menyentuh corner layar, jadi sisi tidak perlu inset.
+    readonly property real floatGap: 4 * Appearance.effectiveScale
+    readonly property real topGap: panelWindow.floatGap
+
+    margins.top: panelWindow.topGap
+    margins.left: panelWindow.sidePadding + (panelWindow.isCentered ? 0 : panelWindow.floatGap)
     implicitWidth: Appearance.sizes.notificationCenterWidth
-    implicitHeight: modelData.height
+    implicitHeight: modelData.height - panelWindow.topGap
 
     Timer { id: closeTimer; interval: 300 }
 
