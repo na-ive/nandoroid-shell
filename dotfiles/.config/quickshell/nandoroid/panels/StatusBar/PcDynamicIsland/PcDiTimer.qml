@@ -25,8 +25,8 @@ Item {
 
         Item {
             id: iconBox
-            width: di.isMaterial ? di.pillHeight : di.pillHeight - 8
-            height: di.isMaterial ? di.pillHeight : di.pillHeight - 8
+            width: di.thumbSize
+            height: di.thumbSize
             anchors {
                 left: parent.left
                 leftMargin: di.isMaterial ? 4 : 8

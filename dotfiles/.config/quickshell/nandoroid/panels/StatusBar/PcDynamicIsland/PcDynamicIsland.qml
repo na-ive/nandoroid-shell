@@ -17,6 +17,9 @@ Item {
     property alias pill: pill
 
     readonly property real pillHeight: 32
+    // Content thumb: 32px in the full pill, 28px in the compact pill so the
+    // top/bottom gaps equal the 4px side margins.
+    readonly property real thumbSize: root.compactPill ? root.pillHeight - 4 : root.pillHeight
     readonly property real idleCollapsedWidth: 144
     property real idleTextContentWidth: 0
     property real idleExpandedContentWidth: 0
@@ -60,14 +63,19 @@ Item {
     readonly property real batteryWidth: 170
     readonly property real badgeSize: 32
     readonly property real badgeSpacing: 6
-    // Unified sizing: pc island always uses the M3 metrics as the single
-    // reference size (base no longer shrinks it). Kept as a property so all
-    // PcDi* content branches keep working unchanged.
+    // Content metrics stay M3 in every mode: the compact pill (36px) is
+    // itself the downsize from 40px, so shrinking the content too would
+    // double-shrink it (small glyphs + wide end gaps, unlike waterdrop).
+    // All PcDi* branches key off this, so nothing else needs touching.
     readonly property bool isMaterial: true
     readonly property string islandStyle: Config.ready && Config.options.statusBar ? (Config.options.statusBar.islandStyle ?? "pill") : "pill"
     readonly property bool isWaterdrop: islandStyle === "waterdrop"
     property bool insideM3Card: false
     property bool vertical: false
+    readonly property bool isBaseStyle: Config.ready && Config.options.statusBar ? ((Config.options.statusBar.moduleStyle ?? "base") !== "m3") : true
+    // Base plain pill floats like the regular island instead of filling the
+    // 40px bar edge-to-edge. Waterdrop (attached by design) and M3 keep 40px.
+    readonly property bool compactPill: root.isBaseStyle && !root.isWaterdrop && !root.insideM3Card
 
     property string manualFocusId: ""
     property string forcedCycleId: ""
@@ -349,10 +357,11 @@ Item {
     Rectangle {
         id: pill
         anchors.left: parent.left
-        // Unified pill: 40px at y=0 in every mode (M3 reference size).
-        y: 0
+        // Plain base pill floats centered instead of sticking to the bar
+        // edges (36px in the 40px bar); content metrics follow via isMaterial.
+        y: root.compactPill ? (parent.height - height) / 2 : 0
         width: root.displayedProvider?.width ?? root.idleWidth
-        height: 40 * Appearance.effectiveScale
+        height: root.compactPill ? 36 * Appearance.effectiveScale : 40 * Appearance.effectiveScale
         color: "black"
         radius: height / 2
         clip: false

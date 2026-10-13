@@ -541,11 +541,15 @@ Item {
         visible: root.isPcIsland
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.verticalCenter: parent.verticalCenter
+        // Explicit size so the pill position is deterministic: full bar
+        // height, content width tracking the island.
         implicitWidth: pcIsland.implicitWidth
-        implicitHeight: pcIsland.implicitHeight
+        implicitHeight: root.height
+        width: implicitWidth
+        height: implicitHeight
         PcDynamicIsland.PcDynamicIsland {
             id: pcIsland
-            anchors.centerIn: parent
+            anchors.fill: parent
         }
     }
 
