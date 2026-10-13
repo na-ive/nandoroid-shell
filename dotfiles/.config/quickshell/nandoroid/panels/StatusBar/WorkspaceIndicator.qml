@@ -46,6 +46,36 @@ Item {
     property bool fullHeightMode: isPcIslandActive
     readonly property real _hitHPad: fullHeightMode ? 8 * Appearance.effectiveScale : 0
 
+    // True when sitting on the black island pill (notch colors always
+    // correct there). False in side clusters, where the backdrop is the
+    // bar/wallpaper and dots must follow the sibling modules: onSurface
+    // tones on solid pills/bars, adaptive status-bar text otherwise.
+    property bool onNotch: false
+    readonly property string _barModuleStyle: Config.options.statusBar?.moduleStyle ?? "base"
+    readonly property string _barLayout: Config.options.statusBar?.layoutStyle ?? "standard"
+    readonly property int _barBgStyle: Config.options.statusBar?.backgroundStyle ?? 0
+    readonly property bool _barCentered: root._barModuleStyle !== "m3" && root._barLayout === "centered"
+    readonly property int _monitorIndex: {
+        const name = root.monitor?.name ?? "";
+        const ms = Hyprland.monitors.values;
+        for (let i = 0; i < ms.length; i++) if (ms[i].name === name) return i;
+        return 0;
+    }
+    readonly property bool _hasTiled: {
+        if (root._barBgStyle !== 3) return false;
+        const wsId = root.monitor?.activeWorkspace?.id ?? -1;
+        if (wsId === -1) return false;
+        return HyprlandData.windowList.some(w => w.workspace.id === wsId && !w.floating && w.monitor === root._monitorIndex);
+    }
+    // M3 pills always draw their own bg; base side clusters are solid
+    // except in centered mode (bar becomes a middle island).
+    readonly property bool _onSolidPill: root._barModuleStyle === "m3" ? true
+        : (!root._barCentered && (root._barBgStyle === 1 || root._barBgStyle === 2 || (root._barBgStyle === 3 && root._hasTiled)))
+    readonly property color _fgColor: root.onNotch ? Appearance.colors.colNotchText
+        : (root._onSolidPill ? Appearance.m3colors.m3onSurface : Appearance.colors.colStatusBarText)
+    readonly property color _fgSubtle: root.onNotch ? Appearance.colors.colNotchSubtext
+        : (root._onSolidPill ? Appearance.m3colors.m3onSurfaceVariant : Appearance.colors.colStatusBarSubtext)
+
     // Contiguous occupied groups — one rect per group, no overlap
     readonly property var _occGroups: {
         const occ = root.workspaceOccupied;
@@ -125,9 +155,12 @@ Item {
         return _noneShapePool[(wsId * 7 + 3) % _noneShapePool.length]
     }
 
-    // Warna shape aktif mengikuti wrappernya:
-    // wrapper primary (darkmode) -> onPrimary, wrapper primaryContainer -> onPrimaryContainer
-    readonly property color _onWrapperColor: Appearance.m3colors.darkmode ? Appearance.colors.colOnPrimary : Appearance.colors.colOnPrimaryContainer
+    // Active accent: saturated in both modes. Pastel containers
+    // (primaryContainer) camouflage against light surfaces in light mode,
+    // so mirror the dark-mode contrast structure (bright wrapper + pale
+    // shape) instead of container + dark shape.
+    readonly property color _activeColor: Appearance.m3colors.darkmode ? Appearance.colors.colNotchPrimary : Appearance.colors.colPrimary
+    readonly property color _onActiveColor: Appearance.m3colors.darkmode ? Appearance.colors.colOnPrimary : Appearance.colors.colOnPrimary
 
     implicitWidth: (root.isSpecialActive ? specialOverlay.implicitWidth : pillRow.implicitWidth) + _hitHPad * 2
     implicitHeight: fullHeightMode ? Appearance.sizes.statusBarHeightCurrent : pillRow.implicitHeight
@@ -248,12 +281,12 @@ Item {
                     radius: height / 2
 
                     color: {
-                        if (isActive) return Appearance.m3colors.darkmode ? Appearance.colors.colNotchPrimary : Appearance.colors.colPrimaryContainer
-                        if (isHovered || isOccupied) return Appearance.colors.colNotchText
-                        return Appearance.colors.colNotchSubtext
+                        if (isActive) return root._activeColor
+                        if (isHovered || isOccupied) return root._fgColor
+                        return root._fgSubtle
                     }
                     border.width: (!isActive && !isOccupied && !isHovered) ? 1 : 0
-                    border.color: Appearance.colors.colNotchSubtext
+                    border.color: root._fgSubtle
                 }
 
                 // ----- Number label -----
@@ -272,7 +305,7 @@ Item {
                         }
                         font.pixelSize: Appearance.font.pixelSize.smallest
                         font.weight: isActive ? Font.DemiBold : Font.Normal
-                        color: isActive ? root._onWrapperColor : Appearance.colors.colNotchSubtext
+                        color: isActive ? root._onActiveColor : root._fgSubtle
                         opacity: isPill ? ((isActive || isHovered) ? 1 : 0) : 1
                     }
                 }
@@ -284,7 +317,7 @@ Item {
                     width: Math.round(root._tabDotSize * (isHovered ? 0.4 : 0.25))
                     height: width
                     radius: width / 2
-                    color: (isOccupied || isHovered) ? Appearance.colors.colNotchText : Appearance.colors.colNotchSubtext
+                    color: (isOccupied || isHovered) ? root._fgColor : root._fgSubtle
                     Behavior on width { NumberAnimation { duration: 120; easing.type: Easing.OutSine } }
                 }
 
@@ -294,7 +327,7 @@ Item {
                     anchors.centerIn: parent
                     implicitSize: Math.round(12 * Appearance.effectiveScale)
                     shape: root._shapeForWs(wsId)
-                    color: root._onWrapperColor
+                    color: root._onActiveColor
                     scale: isActive ? 1 : 0.5
                     opacity: isActive ? 1 : 0
                     Behavior on scale { NumberAnimation { duration: 250; easing.type: Easing.OutBack; easing.overshoot: 2.0 } }
@@ -367,7 +400,7 @@ Item {
                 implicitWidth: (gEnd - gStart) * root._tabStep + root._tabDotSize
                 implicitHeight: root._tabDotSize
 
-                color: Appearance.colors.colNotchText
+                color: root._fgColor
                 opacity: 0.25
 
                 Behavior on x { NumberAnimation { duration: 150; easing.type: Easing.OutSine } }
@@ -387,7 +420,7 @@ Item {
             implicitHeight: root._tabDotSize
             radius: height / 2
 
-            color: Appearance.m3colors.darkmode ? Appearance.colors.colNotchPrimary : Appearance.colors.colPrimaryContainer
+            color: root._activeColor
         }
 
         // Hover overlay (white circle)
@@ -397,7 +430,7 @@ Item {
             implicitWidth: root._tabDotSize
             implicitHeight: root._tabDotSize
             radius: height / 2
-            color: "#ffffff"
+            color: root.onNotch ? "#ffffff" : root._fgColor
             opacity: root._hoveredIndex >= 0 ? 0.28 : 0
             Behavior on x { NumberAnimation { duration: 100; easing.type: Easing.OutSine } }
             Behavior on opacity { NumberAnimation { duration: 100 } }
@@ -419,7 +452,7 @@ Item {
         radius: height / 2
         opacity: root.isSpecialActive ? 1 : 0
         scale: root.isSpecialActive ? 1 : 0.8
-        color: Appearance.m3colors.darkmode ? Appearance.colors.colNotchPrimary : Appearance.colors.colPrimaryContainer
+        color: root._activeColor
         visible: opacity > 0
 
         Behavior on opacity { NumberAnimation { duration: 250; easing.type: Easing.OutExpo } }
@@ -431,7 +464,7 @@ Item {
             text: root.activeSpecialName ? (root.activeSpecialName.charAt(0).toUpperCase() + root.activeSpecialName.slice(1)) : ""
             font.pixelSize: Math.round(11 * Appearance.effectiveScale)
             font.weight: Font.DemiBold
-            color: Appearance.colors.colNotchActive
+            color: Appearance.m3colors.darkmode ? Appearance.colors.colNotchActive : Appearance.colors.colOnPrimary
         }
 
         MouseArea {

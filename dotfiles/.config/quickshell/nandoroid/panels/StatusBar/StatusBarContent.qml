@@ -595,13 +595,14 @@ Item {
     }
 
     // --- Absolute Center Workspace Indicator (hide when PcIsland, use module instead) ---
-    // Bottom-anchored to the pill margin (never resized, only repositioned).
+    // Vertically centered in the pill, same as the ears.
     WorkspaceIndicator {
         id: wsIndicator
         visible: !root.isPcIsland
         anchors.horizontalCenter: parent.horizontalCenter
-        y: dynamicIsland.pill.y + dynamicIsland.pill.height - implicitHeight - dynamicIsland.pill.margin
+        y: dynamicIsland.pill.y + (dynamicIsland.pill.height - implicitHeight) / 2
         monitor: root.monitor
+        onNotch: true
         z: 10
         onHoveredChanged: (hovered) => {
             if (hovered) dynamicIsland.triggerMediaHover()
