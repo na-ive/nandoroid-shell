@@ -256,5 +256,64 @@ ColumnLayout {
                 }
             }
         }
+
+        // Memory saver: unload heavy panels/pages when inactive
+        SegmentedWrapper {
+            id: memorySaverCard
+            Layout.fillWidth: true
+            implicitHeight: Math.max(64 * Appearance.effectiveScale, memorySaverRow.implicitHeight)
+            orientation: Qt.Vertical
+            color: Appearance.m3colors.m3surfaceContainerHigh
+
+            RippleButton {
+                anchors.fill: parent
+                colBackground: Appearance.m3colors.m3surfaceContainerHigh
+                colBackgroundHover: Appearance.m3colors.m3surfaceContainerHigh
+                buttonRadius: 0
+                topLeftRadius: memorySaverCard.rTopLeft
+                topRightRadius: memorySaverCard.rTopRight
+                bottomLeftRadius: memorySaverCard.rBottomLeft
+                bottomRightRadius: memorySaverCard.rBottomRight
+                onClicked: {
+                    if (Config.ready && Config.options.system) {
+                        Config.options.system.unloadInactivePanels = !Config.options.system.unloadInactivePanels;
+                    }
+                }
+                StyledToolTip {
+                    extraVisibleCondition: parent.hovered || parent.realHovered
+                    text: I18nService.tr("Unload heavy panels/pages when closed (slower reopen, lower memory).")
+                }
+            }
+
+            RowLayout {
+                id: memorySaverRow
+                anchors.fill: parent
+                anchors {
+                    leftMargin: 16 * Appearance.effectiveScale
+                    rightMargin: 16 * Appearance.effectiveScale
+                }
+                spacing: 16 * Appearance.effectiveScale
+
+                MaterialSymbol {
+                    text: "memory"
+                    iconSize: 24 * Appearance.effectiveScale
+                    color: Appearance.colors.colPrimary
+                }
+                StyledText {
+                    text: I18nService.tr("Memory Saver")
+                    color: Appearance.colors.colOnLayer1
+                    Layout.fillWidth: true
+                }
+
+                AndroidToggle {
+                    checked: (Config.ready && Config.options.system && Config.options.system.unloadInactivePanels)
+                    onToggled: {
+                        if (Config.ready && Config.options.system) {
+                            Config.options.system.unloadInactivePanels = !Config.options.system.unloadInactivePanels;
+                        }
+                    }
+                }
+            }
+        }
     }
 }

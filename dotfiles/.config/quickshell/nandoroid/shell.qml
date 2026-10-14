@@ -96,7 +96,7 @@ ShellRoot {
     }
 
     // ── Phase 6: Wallpaper Selector & Screen Decor ──
-    WallpaperSelector {}
+    Loader { active: Config.ready && Config.options.system ? (Config.options.system.unloadInactivePanels ? GlobalStates.wallpaperSelectorOpen : true) : true; asynchronous: false; sourceComponent: WallpaperSelector {} }
     ScreenCorners {}
 
     IpcHandler {
@@ -126,19 +126,25 @@ ShellRoot {
     SnackbarPanel {}
 
     // ── Phase 8: Session Menu ──
-    SessionPanel {}
+    Loader { active: Config.ready && Config.options.system ? (Config.options.system.unloadInactivePanels ? GlobalStates.sessionOpen : true) : true; asynchronous: false; sourceComponent: SessionPanel {} }
 
     // ── Phase 8.5: Dock ──
     Dock {}
 
     // ── Phase 9: Launcher & Overview ──
-    Launcher {}
-    OverviewPopup {}
+    Loader { active: Config.ready && Config.options.system ? (Config.options.system.unloadInactivePanels ? GlobalStates.launcherOpen : true) : true; asynchronous: false; sourceComponent: Launcher {} }
+    Loader { active: Config.ready && Config.options.system ? (Config.options.system.unloadInactivePanels ? GlobalStates.overviewOpen : true) : true; asynchronous: false; sourceComponent: OverviewPopup {} }
 
-    SpotlightLauncher {}
+    Loader { active: Config.ready && Config.options.system ? (Config.options.system.unloadInactivePanels ? GlobalStates.spotlightOpen : true) : true; asynchronous: false; sourceComponent: SpotlightLauncher {} }
 
     // ── Phase 10: Settings ──
-    Settings {}
+    Loader {
+        active: Config.ready && Config.options.system
+            ? (Config.options.system.unloadInactivePanels ? GlobalStates.settingsOpen : true)
+            : true
+        asynchronous: false
+        sourceComponent: Settings {}
+    }
 
 
     // ── Phase 12: System Monitor & Onboarding ──

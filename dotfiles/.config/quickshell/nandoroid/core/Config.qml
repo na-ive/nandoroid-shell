@@ -575,6 +575,7 @@ property JsonObject background: JsonObject {
                 property bool bluetoothEnabled: true
                 property bool onboardingCompleted: false
                 property bool dndActive: false
+                property bool unloadInactivePanels: false
                 property int notificationMode: 0 // 0=Normal, 1=Silent, 2=DND
                 property list<var> monitoredDisks: [ { "path": "/", "alias": "System" } ]
             }
