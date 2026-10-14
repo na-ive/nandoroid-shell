@@ -363,10 +363,10 @@ MouseArea {
             visible: !lockStatusBarContainer.isM3
             anchors.horizontalCenter: parent.horizontalCenter
             
-            // Synced with the desktop island: waterdrop 38px top-attached,
-            // pill 34px floating at y=3, flat 8px side margins.
-            y: lockStatusBarContainer.isWaterdrop ? 0 : 3 * Appearance.effectiveScale
-            height: lockStatusBarContainer.isWaterdrop ? 38 * Appearance.effectiveScale : 34 * Appearance.effectiveScale
+            // Synced with the desktop island: OSD 40px / waterdrop 38px
+            // top-attached, pill 34px floating at y=3, flat 8px side margins.
+            y: (lockStatusBarContainer.showLockOsd || lockStatusBarContainer.isWaterdrop) ? 0 : 3 * Appearance.effectiveScale
+            height: lockStatusBarContainer.showLockOsd ? 40 * Appearance.effectiveScale : (lockStatusBarContainer.isWaterdrop ? 38 * Appearance.effectiveScale : 34 * Appearance.effectiveScale)
             readonly property real osdMeasuredWidth: lockOsdContent.anchors.leftMargin + lockOsdIcon.implicitWidth + lockOsdContent.spacing * 2 + lockOsdMetrics.implicitWidth + lockOsdContent.anchors.rightMargin
             width: lockStatusBarContainer.showLockOsd ? Math.max(PcIsland.OsdHelper.pillWidth, lockIndicatorPill.osdMeasuredWidth) : lockedContent.implicitWidth + (16 * Appearance.effectiveScale)
             color: "black"
