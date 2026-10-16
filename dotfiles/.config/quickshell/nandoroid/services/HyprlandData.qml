@@ -63,6 +63,16 @@ Singleton {
     Timer { id: monitorUpdateTimer; interval: 1000; repeat: false; onTriggered: updateMonitors() }
     Timer { id: activeWinUpdateTimer; interval: 150; repeat: false; onTriggered: updateActiveWindow() }
 
+    // Leading + trailing debounce: react instantly on the first event,
+    // coalesce follow-up bursts into one trailing refresh
+    function refreshWindowsSmart() {
+        if (windowUpdateTimer.running) {
+            windowUpdateTimer.restart();
+        } else {
+            updateWindowList();
+        }
+    }
+
     Process {
         id: layoutProc
     }
@@ -182,7 +192,7 @@ Singleton {
             } else if (name === "activewindow" || name === "activewindowv2") {
                 activeWinUpdateTimer.restart();
             } else if (["openwindow", "closewindow", "movewindow", "movewindowv2", "windowtitle", "fullscreen", "changefloatingmode"].includes(name)) {
-                windowUpdateTimer.restart();
+                refreshWindowsSmart();
             } else if (name === "monitoradded" || name === "monitorremoved") {
                 monitorUpdateTimer.restart();
             } else if (name === "activelayout") {
@@ -198,10 +208,14 @@ Singleton {
                     temp[monName] = (specialName ? specialName.replace("special:", "") : "").trim();
                     root.monitorSpecialWorkspace = temp;
                     monitorUpdateTimer.restart();
+                    // Snappier reaction: refresh client list so consumers see the
+                    // (de)moved special-workspace windows right away
+                    refreshWindowsSmart();
                 }
             } else {
-                // Fallback for other events
+                // Fallback for other events (safety net so nothing goes stale)
                 refreshTimer.restart();
+                refreshWindowsSmart();
             }
         }
     }

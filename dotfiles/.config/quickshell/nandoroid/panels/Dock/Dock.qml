@@ -84,11 +84,31 @@ Scope {
                 implicitHeight: 500 * Appearance.effectiveScale
                 readonly property real screenY: modelData.height - height
 
+                readonly property var monitorActiveWs: Hyprland.monitorFor(modelData)?.activeWorkspace ?? null
+
+                // Robust special-workspace detection via HyprlandData (updated from
+                // 'activespecial' events and 'hyprctl monitors')
+                readonly property bool specialActive: Config.ready
+                    ? ((HyprlandData.monitorSpecialWorkspace[modelData.name] ?? "") !== "" || (monitorActiveWs?.id ?? 0) < 0)
+                    : false
+
                 readonly property bool hasActiveWindows: {
-                    if (!Config.ready || !HyprlandData.activeWorkspace) return false;
-                    
-                    // Get windows for THIS specific monitor on the active workspace
-                    const wsId = HyprlandData.activeWorkspace.id;
+                    if (!Config.ready) return false;
+
+                    // Special workspace active: only counted as occupied when it
+                    // actually contains a window on this monitor
+                    if (specialActive) {
+                        const specialWindows = HyprlandData.windowList.filter(w =>
+                            w.monitor === screenScope.monitorIndex && w.mapped && !w.hidden &&
+                            ((w.workspace?.id ?? 0) < 0 || String(w.workspace?.name ?? "").startsWith("special"))
+                        );
+                        return specialWindows.length > 0;
+                    }
+
+                    if (!HyprlandData.activeWorkspace || !monitorActiveWs) return false;
+
+                    // Use THIS monitor's active workspace, not the globally focused one
+                    const wsId = monitorActiveWs.id;
                     const windows = HyprlandData.hyprlandClientsForWorkspace(wsId);
                     
                     for (let i = 0; i < windows.length; i++) {
