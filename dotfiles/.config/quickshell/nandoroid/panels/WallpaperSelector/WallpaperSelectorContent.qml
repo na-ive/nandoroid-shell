@@ -569,8 +569,8 @@ Item {
             id: targetPopup
             visible: false
             z: 100
-            width: 180 * Appearance.effectiveScale
-            height: targetCol.implicitHeight + (16 * Appearance.effectiveScale)
+            width: 200 * Appearance.effectiveScale
+            height: targetCol.implicitHeight + (8 * Appearance.effectiveScale)
             
             x: {
                 let _ = visible;
@@ -591,8 +591,8 @@ Item {
             ColumnLayout {
                 id: targetCol
                 anchors.fill: parent
-                anchors.margins: 8 * Appearance.effectiveScale
-                spacing: 4 * Appearance.effectiveScale
+                anchors.margins: 4 * Appearance.effectiveScale
+                spacing: 0 * Appearance.effectiveScale
                 
                 Repeater {
                     model: [
@@ -601,11 +601,12 @@ Item {
                     ]
                     delegate: RippleButton {
                         Layout.fillWidth: true
-                        implicitHeight: 36 * Appearance.effectiveScale
-                        buttonRadius: 8 * Appearance.effectiveScale
+                        implicitHeight: 40 * Appearance.effectiveScale
+                        buttonRadius: 12 * Appearance.effectiveScale
                         toggled: GlobalStates.wallpaperSelectorTarget === modelData.id
                         colBackground: "transparent"
-                        colBackgroundToggled: Appearance.m3colors.m3primaryContainer
+                        colBackgroundHover: "transparent"
+                        colBackgroundToggled: Appearance.m3colors.m3secondaryContainer
                         
                         onClicked: {
                             GlobalStates.wallpaperSelectorTarget = modelData.id;
@@ -613,16 +614,16 @@ Item {
                         }
                         
                         RowLayout {
-                            anchors.fill: parent; anchors.leftMargin: 12 * Appearance.effectiveScale; spacing: 12 * Appearance.effectiveScale
+                            anchors.fill: parent; anchors.leftMargin: 16 * Appearance.effectiveScale; spacing: 8 * Appearance.effectiveScale
                             MaterialSymbol { 
                                 text: modelData.icon; iconSize: 18 * Appearance.effectiveScale
-                                color: parent.parent.toggled ? Appearance.m3colors.m3onPrimaryContainer : Appearance.colors.colOnLayer0
+                                color: parent.parent.toggled ? Appearance.m3colors.m3onSecondaryContainer : Appearance.colors.colOnLayer0
                             }
                             StyledText { 
                                 text: modelData.name; Layout.fillWidth: true; 
                                 font.pixelSize: Appearance.font.pixelSize.smaller
                                 font.weight: parent.parent.toggled ? Font.DemiBold : Font.Normal
-                                color: parent.parent.toggled ? Appearance.m3colors.m3onPrimaryContainer : Appearance.colors.colOnLayer0
+                                color: parent.parent.toggled ? Appearance.m3colors.m3onSecondaryContainer : Appearance.colors.colOnLayer0
                             }
                         }
                     }
@@ -650,8 +651,8 @@ Item {
             id: sortPopup
             visible: false
             z: 100
-            width: 180 * Appearance.effectiveScale
-            height: sortCol.implicitHeight + (16 * Appearance.effectiveScale)
+            width: 200 * Appearance.effectiveScale
+            height: sortCol.implicitHeight + (8 * Appearance.effectiveScale)
             
             // Map absolute position relative to the button
             x: {
@@ -673,8 +674,8 @@ Item {
             ColumnLayout {
                 id: sortCol
                 anchors.fill: parent
-                anchors.margins: 8 * Appearance.effectiveScale
-                spacing: 4 * Appearance.effectiveScale
+                anchors.margins: 4 * Appearance.effectiveScale
+                spacing: 0 * Appearance.effectiveScale
                 
                 Repeater {
                     model: [
@@ -683,11 +684,12 @@ Item {
                     ]
                     delegate: RippleButton {
                         Layout.fillWidth: true
-                        implicitHeight: 36 * Appearance.effectiveScale
-                        buttonRadius: 8 * Appearance.effectiveScale
+                        implicitHeight: 40 * Appearance.effectiveScale
+                        buttonRadius: 12 * Appearance.effectiveScale
                         toggled: mainSelector.sortMode === modelData.id
                         colBackground: "transparent"
-                        colBackgroundToggled: Appearance.m3colors.m3primaryContainer
+                        colBackgroundHover: "transparent"
+                        colBackgroundToggled: Appearance.m3colors.m3secondaryContainer
                         
                         onClicked: {
                             mainSelector.sortMode = modelData.id;
@@ -695,16 +697,16 @@ Item {
                         }
                         
                         RowLayout {
-                            anchors.fill: parent; anchors.leftMargin: 12 * Appearance.effectiveScale; spacing: 12 * Appearance.effectiveScale
+                            anchors.fill: parent; anchors.leftMargin: 16 * Appearance.effectiveScale; spacing: 8 * Appearance.effectiveScale
                             MaterialSymbol { 
                                 text: modelData.icon; iconSize: 18 * Appearance.effectiveScale
-                                color: parent.parent.toggled ? Appearance.m3colors.m3onPrimaryContainer : Appearance.colors.colOnLayer0
+                                color: parent.parent.toggled ? Appearance.m3colors.m3onSecondaryContainer : Appearance.colors.colOnLayer0
                             }
                             StyledText { 
                                 text: modelData.name; Layout.fillWidth: true; 
                                 font.pixelSize: Appearance.font.pixelSize.smaller
                                 font.weight: parent.parent.toggled ? Font.DemiBold : Font.Normal
-                                color: parent.parent.toggled ? Appearance.m3colors.m3onPrimaryContainer : Appearance.colors.colOnLayer0
+                                color: parent.parent.toggled ? Appearance.m3colors.m3onSecondaryContainer : Appearance.colors.colOnLayer0
                             }
                         }
                     }

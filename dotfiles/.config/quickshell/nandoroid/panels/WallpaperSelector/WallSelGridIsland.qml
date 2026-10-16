@@ -162,10 +162,10 @@ import Quickshell.Io
                         anchors.right: parent.right
                         anchors.bottom: parent.bottom
                         anchors.top: lockscreenSyncRow.visible ? lockscreenSyncRow.bottom : (backendTabs.visible ? backendTabs.bottom : (onlineTabs.visible ? onlineTabs.bottom : parent.top))
-                        anchors.topMargin: lockscreenSyncRow.visible ? 12 * Appearance.effectiveScale : (backendTabs.visible ? 10 * Appearance.effectiveScale : (onlineTabs.visible ? 10 * Appearance.effectiveScale : 20 * Appearance.effectiveScale))
-                        anchors.leftMargin: 20 * Appearance.effectiveScale
-                        anchors.rightMargin: 20 * Appearance.effectiveScale
-                        anchors.bottomMargin: 20 * Appearance.effectiveScale
+                        anchors.topMargin: lockscreenSyncRow.visible ? 8 * Appearance.effectiveScale : (backendTabs.visible ? 8 * Appearance.effectiveScale : (onlineTabs.visible ? 8 * Appearance.effectiveScale : 8 * Appearance.effectiveScale))
+                        anchors.leftMargin: 8 * Appearance.effectiveScale
+                        anchors.rightMargin: 8 * Appearance.effectiveScale
+                        anchors.bottomMargin: 8 * Appearance.effectiveScale
                         opacity: mainSelector.lockSelectionDisabled ? 0.6 : 1
                         Behavior on opacity { NumberAnimation { duration: 200 } }
                         cellWidth: width / (mainSelector.showDetails ? 3 : 4)
@@ -322,16 +322,16 @@ import Quickshell.Io
                             }
 
                             ColumnLayout {
-                                anchors.fill: parent; anchors.margins: 12 * Appearance.effectiveScale; spacing: 8 * Appearance.effectiveScale
+                                anchors.fill: parent; anchors.margins: 8 * Appearance.effectiveScale; spacing: 8 * Appearance.effectiveScale
                                 
                                 Item {
                                     Layout.fillWidth: true; Layout.fillHeight: true
                                         Rectangle {
                                             id: imgPlate
-                                            anchors.fill: parent; radius: 10 * Appearance.effectiveScale; color: delegateRoot.inNaiveMode ? (model.color || Appearance.colors.colLayer2) : Appearance.colors.colLayer2
+                                            anchors.fill: parent; radius: Appearance.rounding.large; color: delegateRoot.inNaiveMode ? (model.color || Appearance.colors.colLayer2) : Appearance.colors.colLayer2
                                             layer.enabled: true
                                             layer.effect: OpacityMask {
-                                                maskSource: Rectangle { width: imgPlate.width; height: imgPlate.height; radius: 10 * Appearance.effectiveScale }
+                                                maskSource: Rectangle { width: imgPlate.width; height: imgPlate.height; radius: Appearance.rounding.large }
                                             }
 
                                         HoverHandler { id: imgHover }
@@ -360,7 +360,7 @@ import Quickshell.Io
                                             anchors.fill: parent
                                             border.width: 3 * Appearance.effectiveScale
                                             border.color: Appearance.colors.colPrimary
-                                            radius: 10 * Appearance.effectiveScale
+                                            radius: Appearance.rounding.large
                                             color: "transparent"
                                             antialiasing: true
                                             visible: delegateRoot.isSelected || delegateRoot.isCurrentWallpaper
@@ -391,7 +391,7 @@ import Quickshell.Io
                                             anchors.fill: parent
                                             border.width: Math.max(1, 2 * Appearance.effectiveScale)
                                             border.color: Appearance.colors.colPrimary
-                                            radius: 10 * Appearance.effectiveScale
+                                            radius: Appearance.rounding.large
                                             color: "transparent"
                                             visible: delegateRoot.GridView.isCurrentItem && grid.activeFocus
                                             z: 999
