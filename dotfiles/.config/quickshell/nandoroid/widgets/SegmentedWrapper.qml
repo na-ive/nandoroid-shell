@@ -107,7 +107,7 @@ Item {
     }
 
     function notifySiblings() {
-        updatePosition();
+        root.updatePosition();
         if (!parent) return;
         let pChildren = parent.children;
         if (!pChildren) return;
@@ -119,9 +119,15 @@ Item {
         }
     }
 
-    Component.onCompleted: Qt.callLater(notifySiblings)
-    onParentChanged: Qt.callLater(notifySiblings)
-    onVisibleChanged: Qt.callLater(notifySiblings)
+    Timer {
+        id: notifyTimer
+        interval: 0
+        repeat: false
+        onTriggered: root.notifySiblings()
+    }
+    Component.onCompleted: notifyTimer.restart()
+    onParentChanged: notifyTimer.restart()
+    onVisibleChanged: notifyTimer.restart()
     
     // Standalone logic: only true if both first and last, AND not explicitly managed to be otherwise.
     readonly property bool isStandalone: {

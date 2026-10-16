@@ -18,10 +18,10 @@ Singleton {
         precision: SystemClock.Seconds
     }
 
-    readonly property date now: clock.date
-    readonly property int hours: clock.date.getHours()
-    readonly property int minutes: clock.date.getMinutes()
-    readonly property int seconds: clock.date.getSeconds()
+    readonly property date now: clock.date ?? new Date()
+    readonly property int hours: (clock.date ?? new Date()).getHours()
+    readonly property int minutes: (clock.date ?? new Date()).getMinutes()
+    readonly property int seconds: (clock.date ?? new Date()).getSeconds()
 
     readonly property var _shortDays: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
     readonly property var _longDays: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
@@ -29,7 +29,7 @@ Singleton {
     readonly property var _longMonths: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
 
     readonly property string currentDate: {
-        const d = clock.date
+        const d = clock.date ?? new Date()
         const dayIdx = d.getDay()
         const monthIdx = d.getMonth()
 
