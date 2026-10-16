@@ -16,7 +16,7 @@ Rectangle {
     id: root
     Layout.fillWidth: true
     implicitHeight: mainLayout.implicitHeight + (20 * Appearance.effectiveScale)
-    radius: Appearance.rounding.normal
+    radius: Appearance.rounding.large
     color: Appearance.colors.colLayer1
 
     // ── Disk carousel model (capped at 2, kept fresh to mirror SystemData.diskStats) ──
@@ -162,8 +162,8 @@ Rectangle {
                 hoverSelectsIndex: false
                 showCurrentIndicator: false
                 showFooter: false
-                clipRadius: Appearance.rounding.small
-                cardBackgroundRadius: Appearance.rounding.small
+                clipRadius: Appearance.rounding.normal
+                cardBackgroundRadius: Appearance.rounding.normal
                 cardBackgroundColor: Appearance.colors.colLayer2
 
                 delegate: Component {
@@ -172,7 +172,7 @@ Rectangle {
 
                         Rectangle {
                             anchors.fill: parent
-                            radius: Appearance.rounding.small
+                            radius: Appearance.rounding.normal
                             color: isHovered ? Appearance.colors.colLayer2Hover : Appearance.colors.colLayer2
 
                             Behavior on color { ColorAnimation { duration: 150 } }
@@ -262,7 +262,7 @@ Rectangle {
         property int shape: MaterialShape.Shape.Gem
 
         implicitHeight: 92 * Appearance.effectiveScale
-        buttonRadius: Appearance.rounding.small
+        buttonRadius: Appearance.rounding.normal
         colBackground: Appearance.colors.colLayer2
         colBackgroundHover: Appearance.colors.colLayer2Hover
         colRipple: Appearance.colors.colLayer2Active
@@ -324,7 +324,7 @@ Rectangle {
         id: moreCard
         implicitWidth: (moreCard.realHovered ? 64 : 44) * Appearance.effectiveScale
         implicitHeight: 56 * Appearance.effectiveScale
-        buttonRadius: Appearance.rounding.small
+        buttonRadius: Appearance.rounding.normal
         colBackground: Appearance.colors.colLayer2
         colBackgroundHover: Appearance.colors.colLayer2Hover
         colRipple: Appearance.colors.colLayer2Active

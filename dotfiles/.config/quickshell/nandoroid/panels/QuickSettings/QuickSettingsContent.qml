@@ -712,7 +712,7 @@ Item {
             id: normalHeaderComponent
             Rectangle {
                 implicitHeight: 64 * Appearance.effectiveScale
-                radius: Appearance.rounding.panel
+                radius: Appearance.rounding.large
                 color: Appearance.colors.colLayer1
 
                 RowLayout {
@@ -903,7 +903,7 @@ Item {
             id: bannerComponent
             Rectangle {
                 implicitHeight: 180 * Appearance.effectiveScale
-                radius: Appearance.rounding.panel
+                radius: Appearance.rounding.large
                 color: Appearance.colors.colLayer1
                 clip: true
 
@@ -911,10 +911,9 @@ Item {
                     id: bannerImgRect
                     anchors {
                         top: parent.top; left: parent.left; right: parent.right
-                        topMargin: 2; leftMargin: 2; rightMargin: 2
                     }
                     height: 120 * Appearance.effectiveScale
-                    radius: parent.radius - 2
+                    radius: parent.radius
                     color: "transparent"
 
                     StyledImage {
@@ -938,114 +937,101 @@ Item {
                     }
                 }
 
-                // Bottom area: avatar + identity (left), buttons (right), vertically centered
-                Item {
+                // Identity (bottom-left, floating avatar + text below like end4-pC)
+                Column {
                     anchors {
-                        top: bannerImgRect.bottom
                         left: parent.left
+                        bottom: parent.bottom
+                        leftMargin: 12 * Appearance.effectiveScale
+                        bottomMargin: 8 * Appearance.effectiveScale
+                    }
+                    spacing: 1 * Appearance.effectiveScale
+
+                    Rectangle {
+                        width: 48 * Appearance.effectiveScale
+                        height: 48 * Appearance.effectiveScale
+                        radius: width / 2
+                        color: Appearance.colors.colPrimaryContainer
+
+                        Image {
+                            id: bannerAvatar
+                            anchors.fill: parent
+                            source: {
+                                const profPath = Config.options.profile?.avatarPicture;
+                                if (profPath && profPath !== "") return "file://" + profPath;
+                                const cfgPath = Config.options.bar?.avatar_path;
+                                if (cfgPath && cfgPath !== "") return "file://" + cfgPath;
+                                if (SystemInfo.userAvatarValid) return "file://" + SystemInfo.userAvatarPath;
+                                return "";
+                            }
+                            sourceSize: Qt.size(48 * Appearance.effectiveScale, 48 * Appearance.effectiveScale)
+                            fillMode: Image.PreserveAspectCrop
+                            layer.enabled: true
+                            layer.effect: OpacityMask {
+                                maskSource: Rectangle {
+                                    width: 48 * Appearance.effectiveScale
+                                    height: 48 * Appearance.effectiveScale
+                                    radius: 24 * Appearance.effectiveScale
+                                }
+                            }
+                            onStatusChanged: {
+                                if (status === Image.Error) visible = false
+                            }
+                        }
+
+                        MaterialSymbol {
+                            anchors.centerIn: parent
+                            text: "account_circle"
+                            iconSize: 28 * Appearance.effectiveScale
+                            color: Appearance.colors.colOnPrimaryContainer
+                            visible: bannerAvatar.status === Image.Error
+                        }
+
+                        MouseArea {
+                            anchors.fill: parent
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: {
+                                root.close()
+                                GlobalStates.settingsPageIndex = 9
+                                GlobalStates.activateSettings()
+                            }
+                        }
+                    }
+
+                    StyledText {
+                        text: {
+                            const displayName = Config.options.profile?.displayName;
+                            if (displayName && displayName !== "") return displayName;
+                            return SystemInfo.realName || SystemInfo.username;
+                        }
+                        font.pixelSize: Appearance.font.pixelSize.small
+                        font.weight: Font.DemiBold
+                        color: Appearance.colors.colOnLayer1
+                        elide: Text.ElideRight
+                    }
+
+                    StyledText {
+                        text: {
+                            const descMode = Config.options.profile?.descriptionText || "::distro::";
+                            if (descMode === "::uptime::") return I18nService.tr("Up ") + DateTime.uptime;
+                            return SystemInfo.distroName || "Linux System";
+                        }
+                        font.pixelSize: Appearance.font.pixelSize.smaller
+                        font.family: Appearance.font.family.numbers
+                        color: Appearance.colors.colOnLayer1
+                        opacity: 0.6
+                    }
+                }
+
+                Row {
+                    id: buttonsRow
+                    anchors {
                         right: parent.right
                         bottom: parent.bottom
+                        rightMargin: 12 * Appearance.effectiveScale
+                        bottomMargin: 8 * Appearance.effectiveScale
                     }
-
-                    RowLayout {
-                        anchors {
-                            left: parent.left
-                            right: buttonsRow.left
-                            verticalCenter: parent.verticalCenter
-                            leftMargin: 12 * Appearance.effectiveScale
-                            rightMargin: 8 * Appearance.effectiveScale
-                        }
-                        spacing: 10 * Appearance.effectiveScale
-
-                        Rectangle {
-                            width: 44 * Appearance.effectiveScale
-                            height: 44 * Appearance.effectiveScale
-                            radius: width / 2
-                            color: Appearance.colors.colPrimaryContainer
-
-                            Image {
-                                id: bannerAvatar
-                                anchors.fill: parent
-                                source: {
-                                    const profPath = Config.options.profile?.avatarPicture;
-                                    if (profPath && profPath !== "") return "file://" + profPath;
-                                    const cfgPath = Config.options.bar?.avatar_path;
-                                    if (cfgPath && cfgPath !== "") return "file://" + cfgPath;
-                                    if (SystemInfo.userAvatarValid) return "file://" + SystemInfo.userAvatarPath;
-                                    return "";
-                                }
-                                sourceSize: Qt.size(44 * Appearance.effectiveScale, 44 * Appearance.effectiveScale)
-                                fillMode: Image.PreserveAspectCrop
-                                layer.enabled: true
-                                layer.effect: OpacityMask {
-                                    maskSource: Rectangle {
-                                        width: 44 * Appearance.effectiveScale
-                                        height: 44 * Appearance.effectiveScale
-                                        radius: 22 * Appearance.effectiveScale
-                                    }
-                                }
-                                onStatusChanged: {
-                                    if (status === Image.Error) visible = false
-                                }
-                            }
-
-                            MaterialSymbol {
-                                anchors.centerIn: parent
-                                text: "account_circle"
-                                iconSize: 28 * Appearance.effectiveScale
-                                color: Appearance.colors.colOnPrimaryContainer
-                                visible: bannerAvatar.status === Image.Error
-                            }
-
-                            MouseArea {
-                                anchors.fill: parent
-                                cursorShape: Qt.PointingHandCursor
-                                onClicked: {
-                                    root.close()
-                                    GlobalStates.settingsPageIndex = 9
-                                    GlobalStates.activateSettings()
-                                }
-                            }
-                        }
-
-                        ColumnLayout {
-                            Layout.fillWidth: true
-                            spacing: -2 * Appearance.effectiveScale
-
-                            StyledText {
-                                text: {
-                                    const displayName = Config.options.profile?.displayName;
-                                    if (displayName && displayName !== "") return displayName;
-                                    return SystemInfo.realName || SystemInfo.username;
-                                }
-                                font.pixelSize: Appearance.font.pixelSize.normal
-                                font.weight: Font.Medium
-                                color: Appearance.colors.colOnLayer1
-                                elide: Text.ElideRight
-                                Layout.fillWidth: true
-                            }
-
-                            StyledText {
-                                text: {
-                                    const descMode = Config.options.profile?.descriptionText || "::distro::";
-                                    if (descMode === "::uptime::") return I18nService.tr("Up ") + DateTime.uptime;
-                                    return SystemInfo.distroName || "Linux System";
-                                }
-                                font.pixelSize: Appearance.font.pixelSize.smaller
-                                font.family: Appearance.font.family.numbers
-                                color: Appearance.m3colors.m3outline
-                            }
-                        }
-                    }
-
-                    Row {
-                        id: buttonsRow
-                        anchors {
-                            right: parent.right
-                            verticalCenter: parent.verticalCenter
-                            rightMargin: 12 * Appearance.effectiveScale
-                        }
-                        spacing: 4 * Appearance.effectiveScale
+                    spacing: 4 * Appearance.effectiveScale
 
                         RippleButton {
                             focusPolicy: Qt.NoFocus
@@ -1134,7 +1120,6 @@ Item {
                         }
                     }
                 }
-            }
         }
 
         // ── Performance Stats Island ──
