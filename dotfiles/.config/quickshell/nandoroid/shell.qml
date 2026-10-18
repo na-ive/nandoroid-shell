@@ -132,10 +132,14 @@ ShellRoot {
     Dock {}
 
     // ── Phase 9: Launcher & Overview ──
-    Loader { active: Config.ready && Config.options.system ? (Config.options.system.unloadInactivePanels ? GlobalStates.launcherOpen : true) : true; asynchronous: false; sourceComponent: Launcher {} }
+    // Launchers stay always-loaded (exempt from the memory saver): LauncherSearch
+    // seeds its prefix through GlobalStates.initialSpotlightQuery when spotlight
+    // opens, so an on-demand loader would miss that state change and break the
+    // shortcuts that open a prefix directly (emoji, files, command, tools, clipboard).
+    Launcher {}
     Loader { active: Config.ready && Config.options.system ? (Config.options.system.unloadInactivePanels ? GlobalStates.overviewOpen : true) : true; asynchronous: false; sourceComponent: OverviewPopup {} }
 
-    Loader { active: Config.ready && Config.options.system ? (Config.options.system.unloadInactivePanels ? GlobalStates.spotlightOpen : true) : true; asynchronous: false; sourceComponent: SpotlightLauncher {} }
+    SpotlightLauncher {}
 
     // ── Phase 10: Settings ──
     Loader {
