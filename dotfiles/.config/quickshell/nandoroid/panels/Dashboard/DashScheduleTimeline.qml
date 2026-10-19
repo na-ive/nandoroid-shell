@@ -18,6 +18,10 @@ Item {
     anchors.fill: parent
     visible: ctrl._view === "timeline"
 
+    // Normal event chip tone: a light tint of the Schedule accent over the
+    // neutral layer, so events stay distinct from the hour islands below.
+    readonly property color eventContainer: Functions.ColorUtils.mix(Appearance.colors.colSecondary, Appearance.colors.colLayer3, 0.14)
+
     function scrollToDayStart() {
         if (ctrl.dayOffset !== 0) {
             timelineFlickable.contentY = 0;
@@ -173,6 +177,9 @@ Item {
         ColumnLayout {
             anchors.fill: parent
             anchors.margins: 12 * Appearance.effectiveScale
+            // No extra inset on the left: the centered hour labels then sit the
+            // same distance from the card edge as the grid does on the right.
+            anchors.leftMargin: 0
             spacing: 8 * Appearance.effectiveScale
 
             // ── Hour grid timeline ──
@@ -195,18 +202,22 @@ Item {
                         width: timelineFlickable.width
                         height: ctrl.timelineContentHeight
 
-                        // Horizontal grid lines
+                        // Hour islands: one rounded block per hour, with a small
+                        // gap between rows instead of full-width grid lines.
                         Repeater {
-                            model: 25
+                            model: 24
 
                             delegate: Rectangle {
                                 required property int index
 
+                                readonly property real rowGap: 4 * Appearance.effectiveScale
+
                                 x: ctrl.gutterWidth
-                                y: index * ctrl.hourHeight
+                                y: index * ctrl.hourHeight + rowGap / 2
                                 width: parent.width - ctrl.gutterWidth
-                                height: 1
-                                color: Functions.ColorUtils.applyAlpha(Appearance.m3colors.m3onSurface, 0.06)
+                                height: ctrl.hourHeight - rowGap
+                                radius: Appearance.rounding.verysmall
+                                color: Appearance.m3colors.m3surfaceContainerHigh
                             }
 
                         }
@@ -227,15 +238,20 @@ Item {
                                     height: ctrl.hourHeight
 
                                     StyledText {
-                                        anchors.topMargin: 2 * Appearance.effectiveScale
-                                        anchors.rightMargin: 8 * Appearance.effectiveScale
+                                        // Midnight label omitted — the top of the
+                                        // timeline reads as the day boundary, not an hour.
+                                        visible: index !== 0
                                         text: ctrl._hourLabel(index)
                                         font.pixelSize: Appearance.font.pixelSize.smaller
                                         color: Appearance.colors.colSubtext
-                                        horizontalAlignment: Text.AlignRight
+                                        // Center the label in the gutter so its left
+                                        // and right padding match.
+                                        horizontalAlignment: Text.AlignHCenter
 
                                         anchors {
-                                            top: parent.top
+                                            // Straddle the hour line so each label
+                                            // lines up with the top edge of its island.
+                                            verticalCenter: parent.top
                                             left: parent.left
                                             right: parent.right
                                         }
@@ -252,7 +268,7 @@ Item {
                         Item {
                             x: ctrl.gutterWidth
                             y: 0
-                            width: parent.width - x
+                            width: parent.width - ctrl.gutterWidth
                             height: parent.height
 
                             Repeater {
@@ -276,7 +292,7 @@ Item {
                                         id: evBlock
                                         visible: !blockDelegate.isRem
                                         radius: Appearance.rounding.small
-                                        color: blockDelegate.ev.focus ? Appearance.m3colors.m3tertiaryContainer : Appearance.colors.colLayer3
+                                        color: blockDelegate.ev.focus ? Appearance.m3colors.m3tertiaryContainer : rootView.eventContainer
                                         clip: true
 
                                         anchors {
