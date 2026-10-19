@@ -31,11 +31,29 @@ Item {
     readonly property real gutterWidth: 46 * Appearance.effectiveScale
     readonly property real minBlockHeight: 22 * Appearance.effectiveScale
     readonly property real timelineContentHeight: 24 * root.hourHeight
-    // Current-time fraction for the "now" line (refreshed while visible)
-    property real nowFrac: 0
-    readonly property string _dayDate: root._canonical(root._dateForOffset(root.dayOffset))
+    // Current-time fraction for the "now" line.
+    // Bound directly to the system clock so it is always accurate — it moves
+    // every minute regardless of timers or dashboard visibility. Previously
+    // this was only refreshed by a timer that ran while the dashboard was
+    // open, so the line froze at the moment of the last refresh after reopen.
+    readonly property real nowFrac: {
+        const now = DateTime.now;
+        return (now.getHours() + now.getMinutes() / 60) / 24;
+    }
+    // Guard with DateTime.currentDate so the day re-evaluates when the clock
+    // rolls over at midnight: `new Date()` inside _dateForOffset is evaluated
+    // non-reactively, and without this guard the selection freezes on the day
+    // the shell started (stale "Today" events in overnight sessions). The
+    // current date string only flips at midnight, so downstream bindings
+    // (dayEvents/dayLayout → Repeater) never churn per-second.
+    readonly property string _dayDate: {
+        const _ = DateTime.currentDate;
+        return root._canonical(root._dateForOffset(root.dayOffset));
+    }
     readonly property string _dayLabel: {
+        const _ = DateTime.currentDate; // midnight rollover (see _dayDate)
         const d = root._dateForOffset(root.dayOffset);
+
         if (root.dayOffset === 0)
             return I18nService.tr("Today");
 
@@ -178,11 +196,6 @@ Item {
     // ── Date/time pickers ──
     property string _datePickerTarget: ""
     property string _timePickerTarget: ""
-
-    function _nowFrac() {
-        const now = DateTime.now;
-        return (now.getHours() + now.getMinutes() / 60) / 24;
-    }
 
     // ── Date helpers ──
     function _canonical(d) {
@@ -717,18 +730,22 @@ Item {
     }
     Component.onCompleted: {
         clearForm();
-        root.nowFrac = root._nowFrac();
         Qt.callLater(() => {
             return timelineView.scrollToDayStart();
         });
         recenterTimer.start();
     }
 
-    Timer {
-        interval: 30000
-        running: root._view === "timeline" && root.dayOffset === 0 && GlobalStates.dashboardOpen
-        repeat: true
-        onTriggered: root.nowFrac = root._nowFrac()
+    // Re-center the timeline on the "now" line every time the dashboard
+    // opens, so it shows the current hour instead of the startup position
+    // (without this, the scroll position and now-line placement both go
+    // stale between dashboard sessions).
+    Connections {
+        target: GlobalStates
+        function onDashboardOpenChanged() {
+            if (GlobalStates.dashboardOpen && root._view === "timeline" && root.dayOffset === 0)
+                Qt.callLater(() => timelineView.scrollToDayStart());
+        }
     }
 
     // Recenter once layout/panel animation has settled so the target hour

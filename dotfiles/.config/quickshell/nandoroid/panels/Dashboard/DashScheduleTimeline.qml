@@ -23,7 +23,6 @@ Item {
             timelineFlickable.contentY = 0;
             return;
         }
-        ctrl.nowFrac = ctrl._nowFrac();
         const target = ctrl.nowFrac * ctrl.timelineContentHeight;
         const maxScroll = Math.max(0, ctrl.timelineContentHeight - timelineFlickable.height);
         timelineFlickable.contentY = Math.max(0, Math.min(maxScroll, target - timelineFlickable.height / 2));
