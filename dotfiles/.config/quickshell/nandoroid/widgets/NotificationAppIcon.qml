@@ -20,6 +20,10 @@ MaterialShape { // App icon
     property bool isUrgent: urgency === NotificationUrgency.Critical
     property bool isRestart: false
     property var image: ""
+    // Image source can be a transient file (e.g. hints images under /tmp) that
+    // is already gone after a restart — fall back to the app icon instead.
+    property bool brokenImage: false
+    onImageChanged: brokenImage = false
     property real materialIconScale: 0.57
     property real appIconScale: 0.8
     property real smallAppIconScale: 0.49
@@ -39,7 +43,7 @@ MaterialShape { // App icon
     
     Loader {
         id: materialSymbolLoader
-        active: (root.appIcon == "" || root.isRestart) && root.image == ""
+        active: (root.appIcon == "" || root.isRestart) && (root.image == "" || root.brokenImage)
         anchors.fill: parent
         z: 10
         sourceComponent: MaterialSymbol {
@@ -62,7 +66,7 @@ MaterialShape { // App icon
     
     Loader {
         id: appIconLoader
-        active: !root.isRestart && root.image == "" && root.appIcon != ""
+        active: !root.isRestart && (root.image == "" || root.brokenImage) && root.appIcon != ""
         anchors.centerIn: parent
         sourceComponent: IconImage {
             id: appIconImage
@@ -74,7 +78,7 @@ MaterialShape { // App icon
     
     Loader {
         id: notifImageLoader
-        active: root.image != ""
+        active: root.image != "" && !root.brokenImage
         anchors.fill: parent
         sourceComponent: Item {
             anchors.fill: parent
@@ -89,6 +93,8 @@ MaterialShape { // App icon
                 antialiasing: true
                 asynchronous: true
                 visible: false
+
+                onStatusChanged: if (status === Image.Error) root.brokenImage = true
 
                 width: size
                 height: size

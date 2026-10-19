@@ -257,7 +257,9 @@ Variants {
                 property real aspectY: 1.0
                 property vector2d aspectRatio: Qt.vector2d(aspectX, aspectY)
                 property vector2d origin: Qt.vector2d(0.5, 0.5)
-                fragmentShader: Qt.resolvedUrl(`shaders/${bgRoot.currentShader}.frag.qsb`)
+                // No .qsb exists for "materialshape" (MaterialShapeTransition
+                // handles it); point at a valid shader so ShaderEffect doesn't fail.
+                fragmentShader: Qt.resolvedUrl(`shaders/${bgRoot.currentShader === "materialshape" ? "transition" : bgRoot.currentShader}.frag.qsb`)
 
                 Timer {
                     interval: 16

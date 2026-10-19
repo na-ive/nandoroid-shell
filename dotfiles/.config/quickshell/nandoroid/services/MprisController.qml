@@ -92,11 +92,26 @@ Singleton {
             return;
         }
 
+        // Transient art files (e.g. plasma-browser-integration under /tmp)
+        // are copied into the cache instead of referenced directly.
         const url = activePlayer.trackArtUrl
         if (url.startsWith("file://")) {
-            _activeArtPath = Functions.FileUtils.trimFileProtocol(url)
-            _cacheBuster = Date.now()
-            _artDownloaded = true
+            const localPath = Functions.FileUtils.trimFileProtocol(url).split("?")[0]
+            if (localPath.startsWith(_artDownloadLocation)) {
+                _activeArtPath = localPath
+                _cacheBuster = Date.now()
+                _artDownloaded = true
+            } else {
+                const dest = `${_artDownloadLocation}/${Qt.md5(localPath)}`
+                if (_activeArtPath === dest && _artDownloaded) return
+                _artDownloaded = false
+                _activeArtPath = dest
+                _pendingUrl = `file://${localPath}`
+                _pendingDest = dest
+                if (!coverArtDownloader.running) {
+                    startNextDownload()
+                }
+            }
         } else {
             let dest = `${_artDownloadLocation}/${Qt.md5(url)}`
             if (_activeArtPath === dest && _artDownloaded) return;
@@ -129,9 +144,13 @@ Singleton {
     Process {
         id: coverArtDownloader
         onExited: (exitCode, exitStatus) => {
-            if (root._activeArtPath !== "") {
+            if (exitCode === 0 && root._activeArtPath !== "") {
                 root._cacheBuster = Date.now();
                 root._artDownloaded = true;
+            } else if (root._activeArtPath !== "") {
+                // Copy/download failed: don't advertise an unusable path.
+                root._artDownloaded = false;
+                root._activeArtPath = "";
             }
             if (root._pendingUrl !== "") {
                 root.startNextDownload();
