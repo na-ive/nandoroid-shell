@@ -104,6 +104,20 @@ Item {
     property real _tabIdx1: 0
     property real _tabIdx2: 0
     property int _hoveredIndex: -1
+    property int _hoverXIndex: 0
+    property bool _hoverWasVisible: false
+    property bool _hoverSliding: false
+
+    on_HoveredIndexChanged: {
+        if (_hoveredIndex >= 0) {
+            _hoverSliding = _hoverWasVisible
+            _hoverWasVisible = true
+            _hoverXIndex = _hoveredIndex
+        } else {
+            _hoverWasVisible = false
+            _hoverSliding = false
+        }
+    }
 
     // Public hover API for overlaying owners (e.g. M3 pill):
     // map pointer coords to hoverRow, then call hoveredIndexAt().
@@ -426,13 +440,16 @@ Item {
         // Hover overlay (white circle)
         Rectangle {
             anchors.verticalCenter: parent.verticalCenter
-            x: root._hoveredIndex * root._tabStep
+            x: root._hoverXIndex * root._tabStep
             implicitWidth: root._tabDotSize
             implicitHeight: root._tabDotSize
             radius: height / 2
             color: root.onNotch ? "#ffffff" : root._fgColor
             opacity: root._hoveredIndex >= 0 ? 0.28 : 0
-            Behavior on x { NumberAnimation { duration: 100; easing.type: Easing.OutSine } }
+            Behavior on x {
+                enabled: root._hoverSliding
+                NumberAnimation { duration: 100; easing.type: Easing.OutSine }
+            }
             Behavior on opacity { NumberAnimation { duration: 100 } }
         }
 
