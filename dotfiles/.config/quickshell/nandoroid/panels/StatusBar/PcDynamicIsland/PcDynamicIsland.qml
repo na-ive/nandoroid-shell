@@ -271,10 +271,13 @@ Item {
 
     // --- OSD bridging (via GlobalStates) ---
     // GlobalStates.osdVolumeOpen / osdIndicatorType set by OSD.qml or direct volume/brightness changes
-    readonly property bool osdActive: GlobalStates.osdVolumeOpen ?? false
+    readonly property var ownScreen: root.QsWindow.window ? root.QsWindow.window.screen : null
+    readonly property bool onFocusedScreen: !root.ownScreen || !Hyprland.focusedMonitor
+        || root.ownScreen.name === Hyprland.focusedMonitor.name
+    readonly property bool osdActive: (GlobalStates.osdVolumeOpen ?? false) && root.onFocusedScreen
 
     readonly property var contentProviders: [
-        { id: "notification", active: root.latestNotification !== null, component: notificationComponent, width: root.notificationWidth },
+        { id: "notification", active: root.latestNotification !== null && root.onFocusedScreen, component: notificationComponent, width: root.notificationWidth },
         { id: "battery",      active: root.batteryAlertActive,          component: batteryComponent,      width: root.batteryWidth },
         { id: "recording",    active: root.isRecording,                 component: recordingComponent,    width: 140 },
         { id: "pomodoro",     active: root.hasPomodoro,                 component: pomodoroComponent,     width: root.pomodoroWidth },

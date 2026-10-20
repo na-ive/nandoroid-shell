@@ -39,23 +39,22 @@ Scope {
     ]
 
     readonly property bool isPcIslandActive: Config.ready && Config.options.statusBar && Config.options.statusBar.centerModule === "pcIsland"
-    // Fullscreen detection: if any window on active workspace is fullscreen
-    readonly property bool hasFullscreen: {
-        if (!Hyprland.focusedMonitor || !Hyprland.focusedMonitor.activeWorkspace) return false
-        const wsId = Hyprland.focusedMonitor.activeWorkspace.id
-        return HyprlandData.windowList.some(w => w.workspace.id === wsId && w.fullscreen)
-    }
+    readonly property bool hasFullscreen: HyprlandData.fullscreenActive
 
     function triggerOsd() {
         if (!root.ready) return;
         // Bridge to PcIsland when active, otherwise float. Bridging also
         // covers lockscreen since the lock pill renders the island OSD.
         if (root.isPcIslandActive && !root.hasFullscreen) {
+            osdLoader.active = false;
+            osdTimeout.stop();
             GlobalStates.osdIndicatorType = root.currentIndicator
             GlobalStates.osdVolumeOpen = true
             pcIslandOsdTimer.restart()
             return
         }
+        pcIslandOsdTimer.stop();
+        GlobalStates.osdVolumeOpen = false;
         osdLoader.active = true;
         osdTimeout.restart();
     }

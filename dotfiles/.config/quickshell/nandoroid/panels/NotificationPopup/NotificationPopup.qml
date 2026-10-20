@@ -19,10 +19,12 @@ Scope {
 
     readonly property bool isPcIslandActive: Config.ready && Config.options.statusBar && Config.options.statusBar.centerModule === "pcIsland"
     readonly property bool hasFullscreen: HyprlandData.fullscreenActive
+    property var focusedScreen: Quickshell.screens.find(s => s.name === Hyprland.focusedMonitor?.name)
 
     PanelWindow {
         id: popupWindow
         visible: Notifications.popupList.length > 0 && !GlobalStates.screenLocked && !(scope.isPcIslandActive && !scope.hasFullscreen)
+        screen: scope.focusedScreen
 
         WlrLayershell.namespace: "nandoroid:notificationPopup"
         WlrLayershell.layer: WlrLayer.Overlay

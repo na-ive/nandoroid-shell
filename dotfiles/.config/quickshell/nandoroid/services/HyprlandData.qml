@@ -33,7 +33,10 @@ Singleton {
 
     readonly property bool fullscreenActive: {
         if (!activeWorkspace) return false;
-        return windowList.some(win => win.workspace.id === activeWorkspace.id && (win.fullscreen || win.fullscreenClient !== 0));
+        return windowList.some(win => {
+            if (win.workspace.id !== activeWorkspace.id) return false;
+            return (win.fullscreen ?? 0) >= 2 || (win.fullscreenClient ?? 0) >= 2;
+        });
     }
 
     function updateWindowList() { getClients.running = true; }
